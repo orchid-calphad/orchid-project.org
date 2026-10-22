@@ -61,7 +61,8 @@ with its checksum, so it can be reproduced. Several published assessments exist 
     <dl>
       <dt>TDB</dt><dd><a id="tdblink" href="#">—</a></dd>
       <dt>SHA-256</dt><dd id="sha" style="font-size:.78rem">—</dd>
-      <dt>Source</dt><dd>SGTE binary supplement (Hallstedt 2025), CC BY 4.0</dd>
+      <dt>Assessment</dt><dd id="orig">—</dd>
+      <dt>Compiled in</dt><dd><a href="https://doi.org/10.1016/j.calphad.2025.102833">SGTE binary collection (Hallstedt 2025)</a>, CC BY 4.0</dd>
       <dt>Engine</dt><dd id="engine">—</dd>
     </dl>
     <div id="point" style="margin-top:12px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;min-height:3em"><b>Point</b><div id="pointtxt" style="color:var(--muted)">Hover the diagram to see the phase field.</div></div>
@@ -121,6 +122,7 @@ function render(){
   $("title").textContent=$("sys").selectedOptions[0].textContent+" · "+d.tdb.replace(/\.tdb$/i,"");
   const href="https://github.com/orchid-calphad/orchid-project.org/blob/main/data/databases/sgte-binary/"+d.tdb;
   $("tdblink").href=href;$("tdblink").textContent=d.tdb;$("sha").textContent=d.sha256;$("engine").textContent=d.engine;
+  const o=d.original_source||{},od=$("orig");od.textContent=o.citation||"(not stated in the TDB file)";if(o.url){od.append(" ");const a=document.createElement("a");a.href=o.url;a.textContent="doi:"+o.doi;a.target="_blank";a.rel="noopener";od.append(a);}
   const inv=$("inv");inv.innerHTML="";d.invariants.forEach(iv=>{const li=document.createElement("li");li.textContent=Math.round(iv.T-off)+(K?" K: ":" °C: ")+iv.points.map(p=>`${p.phase} (${(100*p.x).toFixed(1)}%)`).join(", ");inv.appendChild(li);});
 }
 
