@@ -64,6 +64,7 @@ with its checksum, so it can be reproduced. Several published assessments exist 
       <dt>Source</dt><dd>SGTE binary supplement (Hallstedt 2025), CC BY 4.0</dd>
       <dt>Engine</dt><dd id="engine">—</dd>
     </dl>
+    <div id="point" style="margin-top:12px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;min-height:3em"><b>Point</b><div id="pointtxt" style="color:var(--muted)">Hover the diagram to see the phase field.</div></div>
     <div style="margin-top:12px"><b>Invariant reactions</b><ol class="inv" id="inv"></ol></div>
     <p class="note">Shaded areas are two-phase fields (hover for phases); white areas are single-phase fields; horizontal lines are invariant reactions.
     Calculated diagrams depend on the assessment; they are not measured data.</p>
@@ -100,22 +101,41 @@ function render(){
   el("rect",{x:M.l,y:M.t,width:W-M.l-M.r,height:H-M.t-M.b,fill:"none",stroke:ax});
   el("text",{x:(M.l+W-M.r)/2,y:H-10,"text-anchor":"middle","font-size":13,fill:ax}).textContent="Mole fraction "+d.x_component.charAt(0)+d.x_component.slice(1).toLowerCase()+" (%)";
   const yl=el("text",{x:16,y:(M.t+H-M.b)/2,"text-anchor":"middle","font-size":13,fill:ax,transform:`rotate(-90 16 ${(M.t+H-M.b)/2})`});yl.textContent="Temperature ("+(K?"K":"°C")+")";
-  const tip=$("tip"),seen=new Set();
+  const tip=$("tip"),seen=new Set(); const G=decodeGrid(d.grid);
+  const hit=el("rect",{x:M.l,y:M.t,width:W-M.l-M.r,height:H-M.t-M.b,fill:"transparent"});
+  const toData=e=>{const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());return [(q.x-M.l)/(W-M.l-M.r),tmin+(H-M.b-q.y)/(H-M.t-M.b)*(tmax-tmin)];};
+  svg.onmousemove=e=>{const [x,T]=toData(e);if(x<0||x>1||T<tmin||T>tmax){tip.style.display="none";return;}const r=describe(d,G,x,T,off,K);$("pointtxt").innerHTML=r.html;if(r.short)show(e,r.short);else tip.style.display="none";};
+  svg.onmouseleave=()=>{tip.style.display="none";};
+  if(G){const seenLab={};for(let i=0;i<G.cells.length;i++){const T=G.T0+i*G.dT;if(T<tmin||T>tmax)continue;for(let j=0;j<G.x_points;j++){const L=G.labels[G.cells[i][j]];if(!L||L.includes("+"))continue;(seenLab[L]=seenLab[L]||[]).push([j*G.x_step,T]);}}
+    Object.entries(seenLab).forEach(([L,pts])=>{if(pts.length<25)return;const mx=pts.reduce((a,p)=>a+p[0],0)/pts.length,mT=pts.reduce((a,p)=>a+p[1],0)/pts.length;if(gridAt(G,mx,mT)!==L)return;const anc=mx>0.88?"end":(mx<0.12?"start":"middle"),tx=mx>0.88?X(1)-4:(mx<0.12?X(0)+4:X(mx));const t=el("text",{x:tx,y:Y(mT),"text-anchor":anc,"font-size":12,"font-weight":600,fill:css("--axis"),"pointer-events":"none"});t.textContent=L;});}
   const show=(e,txt)=>{tip.style.display="block";tip.textContent=txt;const b=svg.parentNode.getBoundingClientRect();tip.style.left=(e.clientX-b.left+12)+"px";tip.style.top=(e.clientY-b.top+12)+"px";};
   d.regions.forEach(seg=>{
     if(seg.length<2) return; const [a,b]=seg; const n=Math.min(a.x.length,b.x.length); if(n<2) return;
     const name=seg.map(p=>p.phase).join(" + ");
     if($("fill").value==="1"){const pts=[];for(let i=0;i<n;i++)pts.push(X(a.x[i])+","+Y(a.T[i]));for(let i=n-1;i>=0;i--)pts.push(X(b.x[i])+","+Y(b.T[i]));
-      const pg=el("polygon",{points:pts.join(" "),fill:colorOf(a.phase),"fill-opacity":.10,stroke:"none"});pg.onmousemove=e=>show(e,name);pg.onmouseleave=()=>tip.style.display="none";}
-    seg.forEach(p=>{seen.add(p.phase);const pl=el("polyline",{points:p.x.slice(0,n).map((x,i)=>X(x)+","+Y(p.T[i])).join(" "),fill:"none",stroke:colorOf(p.phase),"stroke-width":1.6});pl.onmousemove=e=>show(e,p.phase+" boundary ("+name+")");pl.onmouseleave=()=>tip.style.display="none";});
+      const pg=el("polygon",{points:pts.join(" "),fill:colorOf(a.phase),"fill-opacity":.10,stroke:"none"});}
+    seg.forEach(p=>{seen.add(p.phase);const pl=el("polyline",{points:p.x.slice(0,n).map((x,i)=>X(x)+","+Y(p.T[i])).join(" "),fill:"none",stroke:colorOf(p.phase),"stroke-width":1.6});});
   });
-  d.invariants.forEach(iv=>{const xs=iv.points.map(p=>p.x);const ln=el("line",{x1:X(Math.min(...xs)),x2:X(Math.max(...xs)),y1:Y(iv.T),y2:Y(iv.T),stroke:ax,"stroke-width":1.4});const t=Math.round(iv.T-off)+(K?" K":" °C")+": "+iv.points.map(p=>p.phase).join(" + ");ln.onmousemove=e=>show(e,t);ln.onmouseleave=()=>tip.style.display="none";});
+  d.invariants.forEach(iv=>{const xs=iv.points.map(p=>p.x);const ln=el("line",{x1:X(Math.min(...xs)),x2:X(Math.max(...xs)),y1:Y(iv.T),y2:Y(iv.T),stroke:ax,"stroke-width":1.4});const t=Math.round(iv.T-off)+(K?" K":" °C")+": "+iv.points.map(p=>p.phase).join(" + ");ln.addEventListener("mousemove",e=>{e.stopPropagation();show(e,t);});});
   [...seen].sort().forEach(p=>{const s=document.createElement("span");s.innerHTML=`<i style="background:${colorOf(p)}"></i>`;s.append(p);$("legend").appendChild(s);});
   $("title").textContent=$("sys").selectedOptions[0].textContent+" · "+d.tdb.replace(/\.tdb$/i,"");
   const href="https://github.com/orchid-calphad/orchid-project.org/blob/main/data/databases/sgte-binary/"+d.tdb;
   $("tdblink").href=href;$("tdblink").textContent=d.tdb;$("sha").textContent=d.sha256;$("engine").textContent=d.engine;
   const inv=$("inv");inv.innerHTML="";d.invariants.forEach(iv=>{const li=document.createElement("li");li.textContent=Math.round(iv.T-off)+(K?" K: ":" °C: ")+iv.points.map(p=>`${p.phase} (${(100*p.x).toFixed(1)}%)`).join(", ");inv.appendChild(li);});
 }
+
+function decodeGrid(g){if(!g)return null;const nx=g.x_points,rows=g.rows.map(r=>{const a=new Int16Array(nx);let j=0;r.forEach(([k,c])=>{a.fill(k,j,j+c);j+=c;});return a;});return {...g,cells:rows};}
+function gridAt(G,x,T){const j=Math.round(x/G.x_step),i=Math.round((T-G.T0)/G.dT);if(i<0||i>=G.cells.length||j<0||j>=G.x_points)return null;return G.labels[G.cells[i][j]];}
+function boundaryX(d,phase,other,T){let best=null;d.regions.forEach(seg=>{const names=seg.map(p=>p.phase);if(!(names.includes(phase)&&names.includes(other)))return;const p=seg[names.indexOf(phase)];for(let i=0;i+1<p.T.length;i++){const a=p.T[i],b=p.T[i+1];if((T-a)*(T-b)<=0&&a!==b){const xv=p.x[i]+(p.x[i+1]-p.x[i])*(T-a)/(b-a);best=xv;}}});return best;}
+function describe(d,G,x,T,off,K){const lab=G?gridAt(G,x,T):null;const t=Math.round(T-off)+(K?" K":" °C"),xp=(100*x).toFixed(1)+"% "+d.x_component;
+  if(lab===null||lab===undefined)return {short:"",html:"Outside the computed grid."};
+  if(lab==="")return {short:"(not converged)",html:`${t}, ${xp}: equilibrium did not converge here.`};
+  const ph=lab.split("+");
+  if(ph.length===1)return {short:ph[0],html:`<b>${ph[0]}</b> (single phase)<br>${t}, ${xp}`};
+  if(ph.length===2){const xa=boundaryX(d,ph[0],ph[1],T),xb=boundaryX(d,ph[1],ph[0],T);let extra="";
+    if(xa!==null&&xb!==null&&Math.abs(xb-xa)>1e-6){const fb=(x-xa)/(xb-xa);extra=`<br>${ph[0]}: ${(100*xa).toFixed(1)}% ${d.x_component}, fraction ${(100*(1-fb)).toFixed(0)}%<br>${ph[1]}: ${(100*xb).toFixed(1)}% ${d.x_component}, fraction ${(100*fb).toFixed(0)}%`;}
+    return {short:ph.join(" + "),html:`<b>${ph.join(" + ")}</b> (two-phase)<br>${t}, ${xp}${extra}`};}
+  return {short:ph.join(" + "),html:`<b>${ph.join(" + ")}</b><br>${t}, ${xp}`};}
 load();
 </script>
 </body>
