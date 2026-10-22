@@ -40,6 +40,10 @@ import unicodedata
 from collections import Counter, defaultdict
 from fractions import Fraction
 
+sys.dont_write_bytecode = True
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import orchid_cite  # noqa: E402
+
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OPEN_TDB = os.path.expanduser("~/projects/open-tdb")
 LIT = os.path.join(SITE, "data", "literature")
@@ -521,6 +525,7 @@ def build(open_tdb, sign_check_path):
     n_matched_rec = len(rows)
     out = {
         "schema": "orchid-dft-parity-v1",
+        "cite_as": orchid_cite.cite_as("dft-benchmark"),
         "description": "Literature formation enthalpies (HM_FORM, kJ/mol-atom) against the lowest-energy DFT "
                        "entry at the same composition. Materials Project and OQMD are separate sources with "
                        "different energy references and are never averaged. Residual = DFT - literature.",

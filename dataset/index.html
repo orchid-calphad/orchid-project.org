@@ -62,6 +62,7 @@ code{font-size:.88em;background:var(--accent2);padding:1px 5px;border-radius:4px
 li{margin:4px 0}
 .muted{color:var(--muted)}
 footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+.ocite{background:var(--card,#fff);border:1px solid var(--line,#e2dfe6);border-left:4px solid var(--accent,#7b3fa0);border-radius:10px;padding:4px 16px 12px;margin:28px 0 0;overflow-wrap:anywhere}.ocite h2{margin:12px 0 6px;font-size:1.2rem}.ocite ul{padding-left:20px;margin:6px 0}.ocite li{margin:4px 0}.ocite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem;line-height:1.4;background:var(--accent2,#f2eaf7);color:var(--fg,#1d1b20);border-radius:6px;padding:8px 10px;margin:8px 0 0}.ocite .muted{color:var(--muted,#5e5a66);font-size:.9rem}
 </style>
 <script src="../assets/data-base.js"></script>
 </head>
@@ -76,6 +77,7 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;colo
 enthalpies, heat capacities, activities and lattice parameters. Each value carries its evidence class, units and conditions, the
 citation and DOI of the work it comes from, and the sentence or table row that backs it. <a href="../data-explorer/">Open the explorer</a>
 · <a href="../dft-parity/">DFT vs experiment</a> (formation enthalpies against Materials Project and OQMD).</p>
+<p class="ostatus" id="status" style="border-left:4px solid var(--accent,#7b3fa0);background:var(--card,#fff);border-radius:0 8px 8px 0;padding:8px 12px;margin:12px 0;font-size:.95rem"><b>Version 1, machine-extracted:</b> values were read from papers by language-model readers constrained to quote their source and checked automatically (quote verification, field-placement rule, printed-page sign checks, DFT and Kim et al. 2017 cross-checks); a hand-checked precision sample is in progress.</p>
 
 <section class="stats" id="stats" aria-label="Dataset size"><div class="stat"><b>…</b><span>loading counts</span></div></section>
 
@@ -134,9 +136,72 @@ citation and DOI of the work it comes from, and the sentence or table row that b
 Each quoted sentence is reproduced under fair use, only so that a value can be checked against its source. The source papers,
 page images, figure or table crops and full text are not redistributed; read them at the publisher through the DOI.</p>
 
-<h2>How to cite</h2>
-<p><code>R. Arróyave, J. Saal, D. Shin, ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery — literature data, https://orchid-project.org/dataset/ (2026).</code></p>
-<p>and cite the original paper of every value you use (fields <code>paper</code> and <code>cited_sources</code>). Versioned releases will be archived on Zenodo.</p>
+<!-- orchid-cite:begin (DOIs: tools/orchid_cite.py, zenodo/dois.json; replaced by tools/zenodo_release.py writeback) -->
+<section class="ocite" id="cite" aria-labelledby="cite-h">
+<h2 id="cite-h">Please cite</h2>
+<p>Release v2026.10 is archived on Zenodo as four datasets, each with its own DOI, linked by the umbrella record <i>ORCHID data</i>. Cite the dataset you use and the umbrella record, and the original paper of every value you use (fields <code>paper</code> and <code>cited_sources</code>). Every JSON file carries the same citation in a top-level <code>cite_as</code> object; <a href="../data/literature/CITATION.txt">CITATION.txt</a> sits beside the CSV.</p>
+<ul>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID literature values (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-literature">doi:10.5281/zenodo.PENDING-literature</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID calculated binary phase diagrams (version 2026.10), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-phase-diagrams">doi:10.5281/zenodo.PENDING-phase-diagrams</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID binary convex hulls (Materials Project, OQMD, assessed CALPHAD) (version 2026.10), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-hulls">doi:10.5281/zenodo.PENDING-hulls</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID DFT-vs-experiment formation-enthalpy benchmark (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-dft-benchmark">doi:10.5281/zenodo.PENDING-dft-benchmark</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID data (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-orchid-data">doi:10.5281/zenodo.PENDING-orchid-data</a></li>
+</ul>
+<p class="muted">Also cite the original source of every value you use (paper_citation / paper_doi, and cited_dois for values the paper cites from earlier work); B. Hallstedt, The SGTE collection of binary datasets, Calphad 89 (2025) 102833, https://doi.org/10.1016/j.calphad.2025.102833 (CC BY 4.0), and the original assessment named in each file; A. Jain et al., The Materials Project: A materials genome approach to accelerating materials innovation, APL Materials 1 (2013) 011002, https://doi.org/10.1063/1.4812323 (CC BY 4.0); J. E. Saal et al., JOM 65 (2013) 1501, https://doi.org/10.1007/s11837-013-0755-4 and S. Kirklin et al., npj Comput. Mater. 1 (2015) 15010, https://doi.org/10.1038/npjcompumats.2015.10 (CC BY 4.0); G. Kim, S. V. Meschel, P. Nash, W. Chen, Experimental formation enthalpies for intermetallic phases and other inorganic compounds, Scientific Data 4 (2017) 170162, https://doi.org/10.1038/sdata.2017.162.</p>
+<pre>@misc{orchid_literature_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID literature values}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-literature},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-literature},
+  note      = {Version 1, machine-extracted}
+}
+
+@misc{orchid_phase_diagrams_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID calculated binary phase diagrams}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-phase-diagrams},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-phase-diagrams}
+}
+
+@misc{orchid_hulls_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID binary convex hulls (Materials Project, OQMD, assessed CALPHAD)}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-hulls},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-hulls}
+}
+
+@misc{orchid_dft_benchmark_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID DFT-vs-experiment formation-enthalpy benchmark}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-dft-benchmark},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-dft-benchmark},
+  note      = {Version 1, machine-extracted}
+}
+
+@misc{orchid_data_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID data}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-orchid-data},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-orchid-data},
+  note      = {Version 1, machine-extracted}
+}</pre>
+</section>
+<!-- orchid-cite:end -->
 <p class="muted" id="release"></p>
 </main>
 <footer><div class="wrap">Machine-readable: <a href="../data/croissant.json">Croissant metadata</a> · <a href="../llms.txt">llms.txt</a>. Site content: MIT; literature data: CC BY 4.0.</div></footer>

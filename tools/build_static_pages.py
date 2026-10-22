@@ -43,12 +43,15 @@ from collections import Counter, defaultdict
 from fractions import Fraction
 
 sys.dont_write_bytecode = True  # importing build_dft_parity must not leave __pycache__ behind
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import orchid_cite  # noqa: E402
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_DATA = os.path.join(os.path.dirname(SITE), "orchid-data")
 DATA_URL = "https://data.orchid-project.org/"
 SITE_URL = "https://orchid-project.org/"
 LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/"
+CITE_DATA = DEFAULT_DATA  # repository holding zenodo/dois.json (set from --data in main)
 CAP_VALUES = 1500
 QUOTE_MAX = 400
 DATASET_NAME = "ORCHID data: literature thermodynamic data, calculated phase diagrams and DFT hulls"
@@ -99,6 +102,9 @@ q{font-style:italic}q::before{content:"\\201C"}q::after{content:"\\201D"}
 .b-experimental{background:var(--exp-bg);color:var(--exp)}.b-model{background:var(--mod-bg);color:var(--mod)}
 .b-dft{background:var(--dft-bg);color:var(--dft)}.b-unspecified{background:var(--uns-bg);color:var(--uns)}
 code{font-size:.85em;overflow-wrap:anywhere}ol.src li{margin:3px 0}
+.cite{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--card);border-radius:8px;padding:4px 16px 10px;margin:28px 0 0}
+.cite h2{margin:10px 0 6px}.cite ul{padding-left:20px;margin:6px 0}.cite li{margin:4px 0;overflow-wrap:anywhere}
+.cite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem;background:var(--row);border-radius:6px;padding:8px 10px;margin:6px 0}
 footer{border-top:1px solid var(--line);margin-top:40px;padding:18px 16px 40px;color:var(--muted);font-size:.9rem}"""
 
 
@@ -316,6 +322,8 @@ def render_html(page, page_dir):
                     cells.append("<%s%s>%s</%s>" % (tag, attrs, h_parts(c, page_dir), tag))
                 o.append("<tr>" + "".join(cells) + "</tr>\n")
             o.append("</tbody>\n</table></div>\n")
+    if page.get("cite"):
+        o.append(cite_html(page["cite"]))
     o.append("</main>\n<footer>%s</footer>\n</body>\n</html>\n" % h_parts(page["footer"], page_dir))
     return "".join(o)
 
@@ -344,7 +352,47 @@ def render_md(page):
             for row in rows:
                 o.append("| " + " | ".join(m_parts(c, True) for c in row) + " |\n")
             o.append("\n")
+    if page.get("cite"):
+        o.append(cite_md(page["cite"]))
     o.append("---\n\n" + m_parts(page["footer"]) + "\n")
+    return "".join(o)
+
+
+def cite_names(names):
+    """Datasets to cite on a page, in release order, umbrella last."""
+    order = [n for n in orchid_cite.NAMES if n != orchid_cite.UMBRELLA]
+    return [n for n in order if n in names] + [orchid_cite.UMBRELLA]
+
+
+def cite_also(names):
+    seen = []
+    for n in names:
+        for x in orchid_cite.cite_as(n, CITE_DATA)["also_cite"]:
+            if x not in seen:
+                seen.append(x)
+    return seen
+
+
+def cite_html(names):
+    names = cite_names(names)
+    o = ['<aside class="cite" id="cite" aria-labelledby="cite-h">\n<h2 id="cite-h">Please cite</h2>\n<ul>\n']
+    for n in names:
+        e = orchid_cite.entry(n, CITE_DATA)
+        o.append('<li>%s <a href="%s">doi:%s</a></li>\n' % (html.escape(e["text"].rsplit(" https://", 1)[0]),
+                                                         html.escape(e["url"]), html.escape(e["doi"])))
+    o.append("</ul>\n<p><small>Also cite %s. %s</small></p>\n" % (
+        html.escape("; ".join(cite_also(names))), html.escape(orchid_cite.STATUS)))
+    o.append("<pre>%s</pre>\n</aside>\n" % html.escape(orchid_cite.bibtex_block(names, CITE_DATA)))
+    return "".join(o)
+
+
+def cite_md(names):
+    names = cite_names(names)
+    o = ["## Please cite\n\n"]
+    for n in names:
+        o.append("- %s\n" % orchid_cite.entry(n, CITE_DATA)["text"])
+    o.append("\nAlso cite %s.\n\n%s\n\n```bibtex\n%s\n```\n\n" % (
+        "; ".join(cite_also(names)), orchid_cite.STATUS, orchid_cite.bibtex_block(names, CITE_DATA)))
     return "".join(o)
 
 
@@ -361,7 +409,8 @@ def creator():
 
 
 def is_part_of():
-    return {"@type": "Dataset", "name": DATASET_NAME, "url": DATA_URL, "license": LICENSE_URL}
+    u = orchid_cite.entry(orchid_cite.UMBRELLA, CITE_DATA)
+    return {"@type": "Dataset", "name": DATASET_NAME, "url": DATA_URL, "license": LICENSE_URL, "identifier": u["url"]}
 
 
 # --------------------------------------------------------------------------------------------- build --
@@ -671,7 +720,9 @@ def build(data, date):
               "variableMeasured": vm, "citation": cits, "keywords": ["CALPHAD", "phase diagram", "thermodynamics", label],
               "isAccessibleForFree": True, "version": release, "dateModified": date}
         page = {"title": title, "h1": "%s system" % label, "description": desc, "url": url, "md_url": md_url,
-                "jsonld": jl, "blocks": blocks, "footer": footer_parts()}
+                "jsonld": jl, "blocks": blocks, "footer": footer_parts(),
+                "cite": (["literature"] if recs else []) + (["phase-diagrams"] if pds else []) +
+                        (["hulls"] if hull_links(s) else [])}
         out["systems/%s.html" % s] = render_html(page, "systems")
         out["systems/%s.md" % s] = render_md(page)
         if meta:
@@ -760,7 +811,8 @@ def build(data, date):
               "citation": src.citations(), "keywords": ["formation enthalpy", f, "CALPHAD", "DFT"],
               "isAccessibleForFree": True, "version": release, "dateModified": date}
         page = {"title": "%s formation enthalpy — ORCHID" % f, "h1": "%s: enthalpy of formation" % f, "description": desc,
-                "url": url, "md_url": md_url, "jsonld": jl, "blocks": blocks, "footer": footer_parts()}
+                "url": url, "md_url": md_url, "jsonld": jl, "blocks": blocks, "footer": footer_parts(),
+                "cite": ["literature", "dft-benchmark"]}
         out["compounds/%s.html" % f] = render_html(page, "compounds")
         out["compounds/%s.md" % f] = render_md(page)
         comp_summary[f] = {"n": len(items), "ev": ev, "systems": syss,
@@ -840,7 +892,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
           "license": LICENSE_URL, "creator": creator(), "isPartOf": is_part_of(), "dateModified": date,
           "hasPart": [DATA_URL + "systems/%s.html" % s for s in sorted(sys_summary)][:1000]}
     page = {"title": "Chemical systems — ORCHID", "h1": "Chemical systems", "description": desc, "url": url, "md_url": md_url,
-            "jsonld": jl, "blocks": blocks, "footer": foot}
+            "jsonld": jl, "blocks": blocks, "footer": foot, "cite": ["literature", "phase-diagrams", "hulls"]}
     out["systems/index.html"] = render_html(page, "systems")
     out["systems/index.md"] = render_md(page)
 
@@ -861,7 +913,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
           "url": url, "license": LICENSE_URL, "creator": creator(), "isPartOf": is_part_of(), "dateModified": date,
           "variableMeasured": ["Enthalpy of formation", "DFT formation energy"]}
     page = {"title": "Compounds — ORCHID", "h1": "Compounds: enthalpies of formation", "description": desc, "url": url,
-            "md_url": md_url, "jsonld": jl, "blocks": blocks, "footer": foot}
+            "md_url": md_url, "jsonld": jl, "blocks": blocks, "footer": foot, "cite": ["literature", "dft-benchmark"]}
     out["compounds/index.html"] = render_html(page, "compounds")
     out["compounds/index.md"] = render_md(page)
 
@@ -887,7 +939,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
           "citation": [{"@type": "CreativeWork", "name": papers_all[pid].get("citation") or pid,
                         **({"sameAs": doi_url(papers_all[pid]["doi"])} if papers_all[pid].get("doi") else {})} for pid in sorted(rep)[:50]]}
     page = {"title": "Reporting papers — ORCHID", "h1": "Reporting papers", "description": desc, "url": url, "md_url": md_url,
-            "jsonld": jl, "blocks": blocks, "footer": foot}
+            "jsonld": jl, "blocks": blocks, "footer": foot, "cite": ["literature"]}
     out["papers/index.html"] = render_html(page, "papers")
     out["papers/index.md"] = render_md(page)
 
@@ -903,6 +955,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
                ("a", "orchid-project.org", SITE_URL), "). Every value carries its evidence class (experimental, model, "
                "DFT, unspecified; never mixed or averaged), its source paper and DOI, and the table row or one verbatim "
                "sentence and page it was read from. Release: ", ("code", release), "."]),
+        ("p", ["Status: " + orchid_cite.STATUS]),
         ("h2", "browse", "Browse without JavaScript"),
         ("ul", [[("a", "Chemical systems", DATA_URL + "systems/index.html"), " — %d pages (also " % len(sys_summary),
                  ("a", "Markdown", DATA_URL + "systems/index.md"), "): literature values, invariants, formation enthalpies, calculated phase diagrams."],
@@ -919,9 +972,14 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
             [[("a", "compounds/", DATA_URL + "compounds/index.html")], ["Static pages per compound (reduced formula): <FORMULA>.html, <FORMULA>.md."]],
             [[("a", "papers/", DATA_URL + "papers/index.html")], ["Index of reporting papers."]],
             [["parquet/"], ["Columnar copies of the tables, where present."]],
+            [["zenodo/"], ["Zenodo release metadata: one deposition record per citable dataset plus the umbrella record, with file manifests (sizes, SHA-256)."]],
             [[("a", "llms.txt", DATA_URL + "llms.txt"), ", ", ("a", "llms-full.txt", DATA_URL + "llms-full.txt")], ["Guides for language models and agents."]],
         ], set()),
         ("h2", "licence", "Licence and citation"),
+        ("p", ["Release %s is archived on Zenodo as four citable datasets, each with its own DOI, linked by an umbrella "
+               "record: " % orchid_cite.RELEASE_TAG] +
+              sum([[("a", orchid_cite.entry(n, CITE_DATA)["title"], orchid_cite.entry(n, CITE_DATA)["url"]),
+                    "; " if i < len(orchid_cite.NAMES) - 1 else "."] for i, n in enumerate(orchid_cite.NAMES)], [])),
         ("p", ["Derived data: CC BY 4.0. Cite the ORCHID release (", ("a", "CITATION.cff", DATA_URL + "CITATION.cff"),
                ") and the original source of every value you use (its paper and DOI). Quoted sentences are single sentences "
                "reproduced under fair use so values can be checked; source papers, page images and full text are not "
@@ -935,7 +993,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
                            {"@type": "DataDownload", "encodingFormat": "application/gzip", "contentUrl": DATA_URL + "literature/orchid-literature.jsonl.gz"},
                            {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": DATA_URL + "literature/index.json"}]}
     page = {"title": "ORCHID data", "h1": "ORCHID data", "description": desc, "url": url, "md_url": md_url, "jsonld": jl,
-            "blocks": blocks, "footer": foot}
+            "blocks": blocks, "footer": foot, "cite": list(orchid_cite.NAMES)}
     out["index.html"] = render_html(page, "")
     out["index.md"] = render_md(page)
 
@@ -962,6 +1020,11 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- %sliterature/orchid-literature.csv.gz (all records, flattened)" % DATA_URL,
         "- %sliterature/dft_parity.json (literature formation enthalpies vs DFT)" % DATA_URL, "",
         "## Licence and citation",
+        "- Status: %s" % orchid_cite.STATUS,
+        "- Zenodo release %s (cite the dataset you use and the umbrella record):" % orchid_cite.RELEASE_TAG] + [
+        "  - %s: https://doi.org/%s" % (orchid_cite.entry(n, CITE_DATA)["title"], orchid_cite.entry(n, CITE_DATA)["doi"])
+        for n in orchid_cite.NAMES] + [
+        "- Every JSON file carries a top-level cite_as object (text, BibTeX, DOI); Parquet files carry orchid.cite_as metadata; literature/CITATION.txt sits beside the CSV.",
         "- Derived data CC BY 4.0. Cite the ORCHID release (%sCITATION.cff) and each value's source paper (DOI given per value)." % DATA_URL,
         "- Quotes: one verbatim sentence per value, fair use. Source papers, page images and full text are not redistributed.",
         "- Use values with extraction_accepted = true unless you handle disputes; uncertainty with basis stated_default is a placeholder, not a measurement.",
@@ -1019,6 +1082,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", a.date):
         ap.error("--date must be YYYY-MM-DD")
+    global CITE_DATA
+    CITE_DATA = a.data
     data_out, capped = build(a.data, a.date)
     pages = sorted(p for p in data_out if p.endswith(".html"))
     urls = [DATA_URL + ("" if p == "index.html" else p) for p in pages]

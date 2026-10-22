@@ -44,6 +44,7 @@ from collections import Counter, defaultdict
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import literature_quality as quality  # noqa: E402
+import orchid_cite  # noqa: E402
 
 DEFAULT_CORPUS = os.path.expanduser("~/projects/open-tdb/build/sgte-corpus")
 DEFAULT_PDFS = os.path.expanduser("~/data/PD-extraction")
@@ -885,6 +886,8 @@ deterministic checks. **Licence:** derived data CC BY 4.0 with attribution to OR
 papers; each `quote` is a single sentence reproduced under fair use to make the value verifiable. The source
 papers, page images, crops and full text are **not** redistributed.
 
+**Status.** {status}
+
 ## Files
 
 | file | content |
@@ -895,6 +898,7 @@ papers, page images, crops and full text are **not** redistributed.
 | `contexts.json` | paper id -> experimental-context items (samples, treatments, measurements), each with its quote and page |
 | `orchid-literature.jsonl.gz` | all records, one JSON object per line (same fields as `systems/*.json`) |
 | `orchid-literature.csv.gz` | all records flattened; nested fields are compact JSON strings |
+| `CITATION.txt`, `CITATION.cff` | how to cite this dataset (the CSV carries no metadata; a leading comment line would break CSV readers). `index.json` and every `systems/*.json` also carry a top-level `cite_as` object: text citation, BibTeX and Zenodo DOI of this dataset and of the umbrella record, and the sources to cite as well |
 | `QUALITY_FIXES.md`, `quality_fixes.json` | data-hardening report: duplicates merged, vocabulary maps, garbled fields, DFT-parity outlier classes (every changed record with before / after / evidence) |
 
 ## Record fields
@@ -1028,6 +1032,7 @@ def outputs(store, records, papers, contexts):
     if os.path.exists(pdi):
         PD_SYSTEMS.update(json.load(open(pdi, encoding="utf-8")).get("systems", {}))
     files = {}
+    cite = orchid_cite.cite_as("literature")
     by_sys = defaultdict(list)
     for r in records:
         by_sys[r["system"]].append(r)
@@ -1068,6 +1073,7 @@ def outputs(store, records, papers, contexts):
                 r2.pop("elements", None)
                 compact.append(r2)
             doc = {"system": sysn, "elements": recs[0]["elements"], "part": i + 1, "parts": len(chunks),
+                   "cite_as": cite,
                    "release": RELEASE, "licence": "CC BY 4.0 (derived data; quotes under fair use)",
                    "note": "records[].locator.ref -> artifacts; records[].model -> models (full records: orchid-literature.jsonl.gz)",
                    "records": compact, "artifacts": dict(sorted(arts.items())), "models": dict(sorted(models.items())),
@@ -1111,10 +1117,11 @@ def outputs(store, records, papers, contexts):
     }
     index = {"release": RELEASE, "licence": {"derived_data": "CC BY 4.0", "quotes": "fair use, one sentence per value",
                                              "source_papers": "not redistributed"},
-             "schema": "SCHEMA.md", "totals": tot,
+             "schema": "SCHEMA.md", "totals": tot, "cite_as": cite,
              "files": {"papers": "papers.json", "contexts": "contexts.json", "jsonl": "orchid-literature.jsonl.gz",
                        "csv": "orchid-literature.csv.gz", "quality_fixes": "QUALITY_FIXES.md",
-                       "quality_fixes_json": "quality_fixes.json"},
+                       "quality_fixes_json": "quality_fixes.json", "citation_txt": "CITATION.txt",
+                       "citation_cff": "CITATION.cff"},
              "systems": index_systems}
     files["index.json"] = dumps(index).encode()
     papers = repair_replacement_chars(papers, crossref_name_words(store.bib.cache_dir))
@@ -1134,10 +1141,15 @@ def outputs(store, records, papers, contexts):
             "conditions in the cited source" if (r.get("conditions") or {}).get("kind") == "cited_source" else None)
         w.writerow([csv_value(row.get(c)) for c in CSV_COLUMNS])
     files["orchid-literature.csv.gz"] = gz(sbuf.getvalue().encode())
-    files["SCHEMA.md"] = SCHEMA_MD.format(release=RELEASE, kinds=", ".join("`%s`" % k for k in quality.TRANSITION_KINDS),
+    files["SCHEMA.md"] = SCHEMA_MD.format(release=RELEASE, status=orchid_cite.STATUS, kinds=", ".join("`%s`" % k for k in quality.TRANSITION_KINDS),
                                           propmap=", ".join("`%s` -> `%s`" % (k, v) for k, v in sorted(quality.PROPERTY_FIX.items()))).encode()
     files["QUALITY_FIXES.md"] = quality.quality_md(store.quality, RELEASE).encode()
     files["quality_fixes.json"] = dumps(dict(store.quality, release=RELEASE)).encode()
+    # the CSV cannot carry metadata (a leading comment line breaks CSV readers): citation in a file beside it
+    files["CITATION.txt"] = orchid_cite.citation_txt("literature", intro=(
+        "ORCHID literature values: orchid-literature.csv.gz, orchid-literature.jsonl.gz, index.json, "
+        "systems/*.json, papers.json, contexts.json (release %s)." % RELEASE)).encode()
+    files["CITATION.cff"] = orchid_cite.cff("literature").encode()
     return files, tot
 
 
@@ -1184,6 +1196,8 @@ def croissant_update(path, files):
                           "source": {"fileObject": {"@id": "literature-csv"}, "extract": {"column": n}}}
                          for n, t in LIT_FIELDS]})
     d["recordSet"] = rs
+    d["version"] = orchid_cite.VERSION
+    d["citeAs"] = orchid_cite.bibtex_block([])
     if "literature" not in d.get("description", ""):
         d["description"] = d["description"].rstrip(".") + ", and literature data (invariant reactions, transitions, phase compositions, thermochemical and structural values with evidence class, citation and quote)."
     return json.dumps(d, indent=1, ensure_ascii=False).encode()

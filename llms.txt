@@ -1,8 +1,11 @@
 # ORCHID
 
 > Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery (Texas A&M University). Openly licensed CALPHAD
-> thermodynamic databases (TDB), binary convex hulls (DFT and CALPHAD) and, as they pass review, evaluated
-> phase-equilibrium and thermochemical data. Every value carries its source, licence and evidence class.
+> thermodynamic databases (TDB), binary convex hulls (DFT and CALPHAD), calculated binary phase diagrams and
+> phase-equilibrium and thermochemical values read from published papers. Every value carries its source, licence and
+> evidence class.
+
+Status of the data release v2026.10: Version 1, machine-extracted: values were read from papers by language-model readers constrained to quote their source and checked automatically (quote verification, field-placement rule, printed-page sign checks, DFT and Kim et al. 2017 cross-checks); a hand-checked precision sample is in progress.
 
 Evidence classes are never mixed: experimental | model (linked to the exact TDB file by SHA-256) | dft | assessed_phase_diagram.
 
@@ -34,4 +37,10 @@ Evidence classes are never mixed: experimental | model (linked to the exact TDB 
 - DFT layers carry formation enthalpy only; reference kinds differ between sources and must not be averaged.
 - Literature data: derived data CC BY 4.0 (cite ORCHID and each value's source paper); each quote is one sentence under fair use; source papers are not redistributed. Use only records with flags.extraction_accepted = true unless you handle disputes; uncertainty with basis stated_default is a placeholder, not a measurement.
 - Files we may not redistribute are listed in the catalog with links to their original sources only.
-- Cite releases by their Zenodo DOI; see CITATION.cff.
+- Cite releases by their Zenodo DOI; see CITATION.cff. Release v2026.10 is four datasets plus an umbrella record (cite the dataset you use and the umbrella):
+  - ORCHID data: https://doi.org/10.5281/zenodo.PENDING-orchid-data
+  - ORCHID literature values: https://doi.org/10.5281/zenodo.PENDING-literature
+  - ORCHID calculated binary phase diagrams: https://doi.org/10.5281/zenodo.PENDING-phase-diagrams
+  - ORCHID binary convex hulls (Materials Project, OQMD, assessed CALPHAD): https://doi.org/10.5281/zenodo.PENDING-hulls
+  - ORCHID DFT-vs-experiment formation-enthalpy benchmark: https://doi.org/10.5281/zenodo.PENDING-dft-benchmark
+- Every data JSON carries a top-level cite_as object (text, BibTeX, DOI); Parquet files carry orchid.cite_as key-value metadata; data/literature/CITATION.txt sits beside the CSV.

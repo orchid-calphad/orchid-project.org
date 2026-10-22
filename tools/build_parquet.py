@@ -44,6 +44,14 @@ import json
 import os
 import sys
 
+sys.dont_write_bytecode = True
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import orchid_cite  # noqa: E402
+
+# table -> citable Zenodo dataset it belongs to (tools/orchid_cite.py)
+TABLE_DATASET = {"literature_values": "literature", "papers": "literature", "experimental_context": "literature",
+                 "dft_parity": "dft-benchmark", "phase_diagram_index": "phase-diagrams",
+                 "phase_diagram_invariants": "phase-diagrams", "hull_vertices": "hulls"}
 KJ_PER_MOL_PER_EV = 96.485  # same factor as literature/dft_parity.json
 SPLIT_SALT = "orchid-split-v1:"
 ZSTD_LEVEL = 9
@@ -462,14 +470,28 @@ def content_hash(rows):
     return h.hexdigest()
 
 
-def write_table(pa, pq, name, rows, schema, path, release):
-    md = {"orchid.release": release, "orchid.table": name, "orchid.license": "CC-BY-4.0",
-          "orchid.generator": "orchid-project.org/tools/build_parquet.py"}
+def table_metadata(name, release, data):
+    """Parquet key-value metadata: release, licence and how to cite (orchid.cite_as = JSON of tools/orchid_cite.py)."""
+    c = orchid_cite.cite_as(TABLE_DATASET[name], data)
+    return {"orchid.release": release, "orchid.table": name, "orchid.license": "CC-BY-4.0",
+            "orchid.generator": "orchid-project.org/tools/build_parquet.py",
+            "orchid.dataset": TABLE_DATASET[name], "orchid.doi": c["doi"], "orchid.citation": c["text"],
+            "orchid.cite_as": json.dumps(c, sort_keys=True, ensure_ascii=False)}
+
+
+def write_table(pa, pq, name, rows, schema, path, release, data):
+    md = table_metadata(name, release, data)
     t = pa.Table.from_pylist(rows, schema=schema.with_metadata(md))
     pq.write_table(t, path, compression="zstd", compression_level=ZSTD_LEVEL,
                    row_group_size=ROW_GROUP.get(name, DEFAULT_ROW_GROUP), write_statistics=True,
                    use_dictionary=True, data_page_version="2.0")
     return t
+
+
+def manifest_cite(data):
+    """MANIFEST.json cite_as: the umbrella record plus each table's dataset (tables name theirs in `dataset`)."""
+    return {"umbrella": orchid_cite.cite_as(orchid_cite.UMBRELLA, data),
+            "datasets": {n: orchid_cite.cite_as(n, data) for n in sorted(set(TABLE_DATASET.values()))}}
 
 
 def main():
@@ -500,6 +522,8 @@ def main():
         man = json.load(open(man_path)) if os.path.exists(man_path) else {"tables": {}, "inputs": {}}
         if man.get("inputs") != inputs:
             bad.append("inputs changed since the last build")
+        if man.get("cite_as") != manifest_cite(a.data):
+            bad.append("MANIFEST.json cite_as differs")
         for name, b in built.items():
             p = os.path.join(out, name + ".parquet")
             if not os.path.exists(p):
@@ -511,6 +535,11 @@ def main():
             for k in ("rows", "schema", "content_sha256"):
                 if disk[k] != b[k] or (man["tables"].get(name) or {}).get(k) != b[k]:
                     bad.append("%s: %s differs" % (name, k))
+            kv = {k.decode(): v.decode() for k, v in (t.schema.metadata or {}).items() if k.startswith(b"orchid.")}
+            if kv != table_metadata(name, release, a.data):
+                bad.append("%s: key-value metadata (release / cite_as) differs" % name)
+            if (man["tables"].get(name) or {}).get("dataset") != TABLE_DATASET[name]:
+                bad.append("%s: MANIFEST dataset differs" % name)
         print("\n".join(bad) if bad else "parquet/ is up to date (%d tables)" % len(built))
         sys.exit(1 if bad else 0)
 
@@ -520,13 +549,14 @@ def main():
            "release": release, "split_rule": "sha256('%s' + paper_id)[:8] mod 100: <80 train, <90 validation, "
                                               "else test" % SPLIT_SALT,
            "kJ_per_mol_per_eV": KJ_PER_MOL_PER_EV, "compression": "zstd level %d" % ZSTD_LEVEL,
-           "inputs": inputs, "tables": {}}
+           "inputs": inputs, "cite_as": manifest_cite(a.data), "tables": {}}
     for name, (rows, schema) in tables.items():
         p = os.path.join(out, name + ".parquet")
         tmp = p + ".tmp"
-        write_table(pa, pq, name, rows, schema, tmp, release)
+        write_table(pa, pq, name, rows, schema, tmp, release, a.data)
         os.replace(tmp, p)
         man["tables"][name] = dict(built[name], file=name + ".parquet", bytes=os.path.getsize(p),
+                                   dataset=TABLE_DATASET[name],
                                    file_sha256=sha256_file(p))
         print("%-28s %8d rows %10d bytes" % (name, built[name]["rows"], os.path.getsize(p)))
     with open(man_path + ".tmp", "w") as f:

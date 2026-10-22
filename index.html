@@ -14,6 +14,8 @@
   "name": "ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery",
   "description": "Curated catalog of openly available CALPHAD thermodynamic databases, redistributable TDB files, and binary convex-hull documents from DFT (Materials Project, OQMD) and assessed CALPHAD descriptions, each with licence and provenance.",
   "url": "https://orchid-project.org/",
+  "identifier": "https://doi.org/10.5281/zenodo.PENDING-orchid-data",
+  "version": "2026.10",
   "keywords": ["CALPHAD", "thermodynamic database", "TDB", "phase diagram", "convex hull", "DFT", "materials data", "AI-ready data"],
   "creator": [{"@type": "Person", "name": "Raymundo Arróyave", "affiliation": {"@type": "Organization", "name": "Texas A&M University"}}, {"@type": "Person", "name": "James Saal", "affiliation": {"@type": "Organization", "name": "Citrine Informatics"}}, {"@type": "Person", "name": "Dongwon Shin", "affiliation": {"@type": "Organization", "name": "Oak Ridge National Laboratory"}}],
   "logo": "https://orchid-project.org/assets/logo/orchid-mark.svg",
@@ -58,6 +60,7 @@ th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mut
 .tablewrap{overflow-x:auto}
 footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
 code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
+.ocite{background:var(--card,#fff);border:1px solid var(--line,#e2dfe6);border-left:4px solid var(--accent,#7b3fa0);border-radius:10px;padding:4px 16px 12px;margin:28px 0 0;overflow-wrap:anywhere}.ocite h2{margin:12px 0 6px;font-size:1.2rem}.ocite ul{padding-left:20px;margin:6px 0}.ocite li{margin:4px 0}.ocite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem;line-height:1.4;background:var(--accent2,#f2eaf7);color:var(--fg,#1d1b20);border-radius:6px;padding:8px 10px;margin:8px 0 0}.ocite .muted{color:var(--muted,#5e5a66);font-size:.9rem}
 </style>
 </head>
 <body>
@@ -85,6 +88,8 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
   </div>
 </section>
 
+<p class="ostatus" id="status" style="border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 8px;max-width:820px"><b>Version 1, machine-extracted:</b> values were read from papers by language-model readers constrained to quote their source and checked automatically (quote verification, field-placement rule, printed-page sign checks, DFT and Kim et al. 2017 cross-checks); a hand-checked precision sample is in progress.</p>
+
 <section class="stats" aria-label="Current contents">
   <div class="stat"><b>2,912</b><span>catalogued CALPHAD databases</span></div>
   <div class="stat"><b>2,788</b><span>redistributable TDB files</span></div>
@@ -94,9 +99,9 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 
 <h2>Explore</h2>
 <div class="grid">
-  <a class="card" href="data-explorer/" style="text-decoration:none"><h3>Literature data <span class="tag">prototype</span></h3><p>Invariant reactions, transitions, phase compositions and thermochemical values from published papers, with evidence class, source, quote and page; also overlaid on the phase diagrams.</p></a>
-  <a class="card" href="dft-parity/" style="text-decoration:none"><h3>DFT vs experiment <span class="tag">prototype</span></h3><p>Parity plots of literature formation enthalpies against Materials Project and OQMD, side by side, with error statistics and the quote behind every point.</p></a>
-  <a class="card" href="phase-diagrams/" style="text-decoration:none"><h3>Phase diagrams <span class="tag">prototype</span></h3><p>Binary phase diagrams calculated from open TDB files, each linked to the exact file and checksum; compare assessments of the same system.</p></a>
+  <a class="card" href="data-explorer/" style="text-decoration:none"><h3>Literature data <span class="tag">Version 1</span></h3><p>Invariant reactions, transitions, phase compositions and thermochemical values from published papers, with evidence class, source, quote and page; also overlaid on the phase diagrams.</p></a>
+  <a class="card" href="dft-parity/" style="text-decoration:none"><h3>DFT vs experiment <span class="tag">Version 1</span></h3><p>Parity plots of literature formation enthalpies against Materials Project and OQMD, side by side, with error statistics and the quote behind every point.</p></a>
+  <a class="card" href="phase-diagrams/" style="text-decoration:none"><h3>Phase diagrams <span class="tag">Version 1</span></h3><p>Binary phase diagrams calculated from open TDB files, each linked to the exact file and checksum; compare assessments of the same system.</p></a>
   <a class="card" href="catalog/compatibility/unary-compatibility-network.html" style="text-decoration:none"><h3>Compatibility network</h3><p>All 2,912 databases as a network: which share identical pure-element descriptions and can be combined.</p></a>
   <a class="card" href="catalog/" style="text-decoration:none"><h3>Database catalog</h3><p>Search 2,912 databases by elements, category, licence and parser compatibility; download the redistributable files.</p></a>
   <a class="card" href="catalog/binary-thermo.html" style="text-decoration:none"><h3>Binary hulls &amp; mixing</h3><p>DFT and CALPHAD formation-energy hulls and mixing curves on one composition axis, with every reference state named.</p></a>
@@ -115,18 +120,84 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 <tr><td>CALPHAD hulls</td><td>Assessed SGTE isotherms, same interval schema</td><td>CC BY 4.0</td><td><a href="https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/calphad-sgte">calphad-sgte</a></td></tr>
 </table></div>
 
-<h2 id="releases">Coming releases</h2>
-<p>Each dataset below is published only after expert review and a benchmark gate. Every value keeps its evidence class —
-<b>experimental</b>, <b>model</b> (linked to the exact TDB file by SHA-256), <b>DFT</b>, or <b>assessed phase diagram</b> — and these are never mixed.</p>
+<h2 id="releases">Releases</h2>
+<p><b>v2026.10 (Version 1, machine-extracted)</b> is archived on Zenodo as four citable datasets, each with its own DOI, linked by the
+umbrella record <a href="https://doi.org/10.5281/zenodo.PENDING-orchid-data">ORCHID data</a>. Every value keeps its evidence class —
+<b>experimental</b>, <b>model</b> (linked to the exact TDB file by SHA-256), <b>DFT</b> or <b>unspecified</b> — and these are never mixed.</p>
 <div class="grid">
-  <div class="card"><h3>Assessed binary phase diagrams <span class="tag">in review</span></h3><p>2,272 diagrams from Okamoto's <i>Desk Handbook</i> as phase fields, boundaries and invariant reactions, citing the original assessments. Derived data only; no page images.</p></div>
-  <div class="card"><h3>Invariant reactions <span class="tag">prototype</span></h3><p>Eutectic, peritectic and other invariants from published assessments, split by evidence class: first release in the <a href="data-explorer/">literature data explorer</a>; ESPEI-ready exports follow review.</p></div>
-  <div class="card"><h3>Thermochemical tables <span class="tag">prototype</span></h3><p>Enthalpies, heat capacities, activities and related measurements with conditions, reference states and sources: first release in the <a href="data-explorer/">explorer</a>.</p></div>
+  <div class="card"><h3>Literature values <span class="tag">Version 1</span></h3><p>Invariant reactions, transitions, phase compositions, thermochemical and structural values read from published papers, with quote and page. <a href="https://doi.org/10.5281/zenodo.PENDING-literature">doi:10.5281/zenodo.PENDING-literature</a></p></div>
+  <div class="card"><h3>Calculated binary phase diagrams <span class="tag">Version 1</span></h3><p>pycalphad calculations from the SGTE binary collection, each tied to its TDB file by SHA-256. <a href="https://doi.org/10.5281/zenodo.PENDING-phase-diagrams">doi:10.5281/zenodo.PENDING-phase-diagrams</a></p></div>
+  <div class="card"><h3>Binary convex hulls <span class="tag">Version 1</span></h3><p>Materials Project, OQMD and assessed CALPHAD (SGTE) hulls as interval documents. <a href="https://doi.org/10.5281/zenodo.PENDING-hulls">doi:10.5281/zenodo.PENDING-hulls</a></p></div>
+  <div class="card"><h3>DFT-vs-experiment benchmark <span class="tag">Version 1</span></h3><p>Literature formation enthalpies against Materials Project and OQMD, with a Kim et al. 2017 cross-check. <a href="https://doi.org/10.5281/zenodo.PENDING-dft-benchmark">doi:10.5281/zenodo.PENDING-dft-benchmark</a></p></div>
+  <div class="card"><h3>Assessed binary phase diagrams <span class="tag">next</span></h3><p>2,272 diagrams from Okamoto's <i>Desk Handbook</i> as phase fields, boundaries and invariant reactions, citing the original assessments. Derived data only; no page images. Not part of v2026.10.</p></div>
 </div>
 
-<h2 id="cite">Cite</h2>
-<p>Versioned releases are archived on Zenodo with a DOI for each version. Until the first release, please cite:</p>
-<p><code>R. Arróyave, J. Saal, D. Shin, ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery, https://orchid-project.org (2026).</code></p>
+<!-- orchid-cite:begin (DOIs: tools/orchid_cite.py, zenodo/dois.json; replaced by tools/zenodo_release.py writeback) -->
+<section class="ocite" id="cite" aria-labelledby="cite-h">
+<h2 id="cite-h">Cite</h2>
+<p>Cite the dataset you use and the umbrella record, and the original source of every value (its paper and DOI).</p>
+<ul>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID literature values (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-literature">doi:10.5281/zenodo.PENDING-literature</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID calculated binary phase diagrams (version 2026.10), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-phase-diagrams">doi:10.5281/zenodo.PENDING-phase-diagrams</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID binary convex hulls (Materials Project, OQMD, assessed CALPHAD) (version 2026.10), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-hulls">doi:10.5281/zenodo.PENDING-hulls</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID DFT-vs-experiment formation-enthalpy benchmark (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-dft-benchmark">doi:10.5281/zenodo.PENDING-dft-benchmark</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID data (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-orchid-data">doi:10.5281/zenodo.PENDING-orchid-data</a></li>
+</ul>
+<p class="muted">Also cite the original source of every value you use (paper_citation / paper_doi, and cited_dois for values the paper cites from earlier work); B. Hallstedt, The SGTE collection of binary datasets, Calphad 89 (2025) 102833, https://doi.org/10.1016/j.calphad.2025.102833 (CC BY 4.0), and the original assessment named in each file; A. Jain et al., The Materials Project: A materials genome approach to accelerating materials innovation, APL Materials 1 (2013) 011002, https://doi.org/10.1063/1.4812323 (CC BY 4.0); J. E. Saal et al., JOM 65 (2013) 1501, https://doi.org/10.1007/s11837-013-0755-4 and S. Kirklin et al., npj Comput. Mater. 1 (2015) 15010, https://doi.org/10.1038/npjcompumats.2015.10 (CC BY 4.0); G. Kim, S. V. Meschel, P. Nash, W. Chen, Experimental formation enthalpies for intermetallic phases and other inorganic compounds, Scientific Data 4 (2017) 170162, https://doi.org/10.1038/sdata.2017.162.</p>
+<pre>@misc{orchid_literature_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID literature values}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-literature},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-literature},
+  note      = {Version 1, machine-extracted}
+}
+
+@misc{orchid_phase_diagrams_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID calculated binary phase diagrams}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-phase-diagrams},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-phase-diagrams}
+}
+
+@misc{orchid_hulls_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID binary convex hulls (Materials Project, OQMD, assessed CALPHAD)}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-hulls},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-hulls}
+}
+
+@misc{orchid_dft_benchmark_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID DFT-vs-experiment formation-enthalpy benchmark}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-dft-benchmark},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-dft-benchmark},
+  note      = {Version 1, machine-extracted}
+}
+
+@misc{orchid_data_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID data}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-orchid-data},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-orchid-data},
+  note      = {Version 1, machine-extracted}
+}</pre>
+</section>
+<!-- orchid-cite:end -->
 <p class="soon">For machines: <a href="llms.txt">llms.txt</a> · <a href="CITATION.cff">CITATION.cff</a> · <a href="data/croissant.json">Croissant metadata</a></p>
 </main>
 
