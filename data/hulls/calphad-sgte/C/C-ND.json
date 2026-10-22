@@ -1,0 +1,295 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 5,
+    "intervals": 4,
+    "vertices": 5
+  },
+  "elements": [
+    "C",
+    "ND"
+  ],
+  "flags": [
+    "has_intermediate_phases",
+    "liquid_on_hull",
+    "solution_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "C": {
+          "energy": -1712.0722452781345,
+          "phase": "GRAPHITE_A9"
+        },
+        "ND": {
+          "energy": -21194.350779328986,
+          "phase": "DHCP"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -42917.99988749676
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 28.19999986575368
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "GRAPHITE_A9",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -51325.82984747124,
+          "right": {
+            "phase": "NDC2_C11A",
+            "x": 0.3333333333430647
+          },
+          "slope": -51325.82984747124,
+          "x_hi": 0.3333333333430647,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -21307.77177736946,
+            "slope": 21005.31544274544
+          },
+          "entropy": {
+            "intercept": 8.880129024362928,
+            "slope": 1.5596127934426356
+          },
+          "intercept": -23955.382245983288,
+          "kind": "two_phase",
+          "left": {
+            "phase": "NDC2_C11A",
+            "x": 0.3333333333430647
+          },
+          "mu_a_rel": -23955.382245983288,
+          "mu_b_rel": -3415.065357602729,
+          "right": {
+            "phase": "LIQUID",
+            "x": 0.6536184388183297
+          },
+          "slope": 20540.31688838056,
+          "x_hi": 0.6536184388183297,
+          "x_lo": 0.3333333333430647
+        },
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                -7578.3102907956345,
+                659.9965793798665,
+                280.2920757861432,
+                -21.404302427087032
+              ]
+            ],
+            "knots": [
+              0.6536184388183297,
+              0.700321802381357
+            ],
+            "max_abs_error": 0.0292176242937785
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                4.535213493452556,
+                -0.757341441283573,
+                0.048479604859744674,
+                1.8358674955809562e-06
+              ]
+            ],
+            "knots": [
+              0.6536184388183297,
+              0.700321802381357
+            ],
+            "max_abs_error": 5.301353298570177e-07
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              -8930.484193868508,
+              885.7979300986766,
+              265.837881595947,
+              -21.40484978983227
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.6536184388183297,
+            0.700321802381357
+          ],
+          "max_abs_error": 0.029133095253200736,
+          "phase": "LIQUID",
+          "x_hi": 0.700321802381357,
+          "x_lo": 0.6536184388183297
+        },
+        {
+          "enthalpy": {
+            "intercept": -22221.92335303351,
+            "slope": 22221.92335303351
+          },
+          "entropy": {
+            "intercept": 29.708843938169707,
+            "slope": -29.708843938169707
+          },
+          "intercept": -31079.61517319879,
+          "kind": "two_phase",
+          "left": {
+            "phase": "LIQUID",
+            "x": 0.700321802381357
+          },
+          "mu_a_rel": -31079.61517319879,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "DHCP",
+            "x": 1.0
+          },
+          "slope": 31079.61517319879,
+          "x_hi": 1.0,
+          "x_lo": 0.700321802381357
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "GRAPHITE_A9",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -17108.60994965655,
+          "energy_per_atom": -17108.60994965655,
+          "enthalpy": -14305.99996291657,
+          "entries_at_x": 1,
+          "entropy": 9.39999995552565,
+          "formula": "",
+          "nsites": null,
+          "phase": "NDC2_C11A",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333430647
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -10529.852388566216,
+          "energy_per_atom": -10529.852388566216,
+          "enthalpy": -7578.3102907956345,
+          "entries_at_x": 1,
+          "entropy": 9.899520703573998,
+          "formula": "",
+          "nsites": null,
+          "phase": "LIQUID",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6536184388183297
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -9313.883057785242,
+          "energy_per_atom": -9313.883057785242,
+          "enthalpy": -6659.425938056715,
+          "entries_at_x": 1,
+          "entropy": 8.903092804724245,
+          "formula": "",
+          "nsites": null,
+          "phase": "LIQUID",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.700321802381357
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "DHCP",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "NdC-15Bia",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:51:35Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/NdC-15Bia.tdb",
+    "source_sha256": "656f44203593022933f1dbd4347585b4c23f86215344cba9b0c859bcdfea3baa"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "C-ND",
+  "x_element": "ND"
+}

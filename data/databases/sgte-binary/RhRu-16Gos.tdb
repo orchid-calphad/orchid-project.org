@@ -1,0 +1,128 @@
+$
+$ Database for Rh-Ru from S. Gosse et al. 2016.
+$
+$ S. Gosse, N. Dupin, C. Gueneau, J.-C. Crivello, J.-M. Joubert,
+$ J. Nucl. Mater., 474, 163-73(2016).
+$
+$ Dataset created 2018.08.29 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT RH   FCC_A1                    102.9055    4920.384   31.5557 ! 
+ ELEMENT RU   HCP_A3                    101.07      4602.4     28.6144 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : RH RU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : RH RU : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : RH RU : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : RH RU : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Rh
+$
+ PAR  G(FCC_A1,RH:VA),,                 +GHSERRH;                2500 N 91Din !
+ PAR  G(BCC_A2,RH:VA),,                 +GHSERRH+19000-4.7*T;    2500 N 91Din !
+ PAR  G(HCP_A3,RH:VA),,                 +GHSERRH+3000-0.5*T;     2500 N 91Din !
+ PAR  G(LIQUID,RH),,                    +GLIQRH;                 2500 N 91Din !
+$
+ FUNCTION GHSERRH   298.15  -7848.828+132.020923*T-24.0178336*T*LN(T)
+       -0.003424186*T**2-1.68032E-07*T**3+55846*T**(-1);
+      1200.00  Y  -28367.852+305.771019*T-48.3766632*T*LN(T)
+       +0.00966345*T**2-1.512774E-06*T**3+3348162*T**(-1);
+      2237.00  Y  -6237470.48+30151.6342*T-3874.21058*T*LN(T)
+       +1.04921361*T**2-5.3978814E-05*T**3+1.88036218E+09*T**(-1);
+      2450.00  Y  -44863.489+344.889895*T-50.58456*T*LN(T);
+      2500.00  N !
+ FUNCTION GLIQRH    298.15  +19092.91-6.92133*T+GHSERRH;
+       700.00  Y  +35898.508-147.926418*T+15.6492377*T*LN(T)
+       -0.028665357*T**2+2.100572E-06*T**3-2638940*T**(-1);
+      2237.00  Y  -18208.54+332.974832*T-50.58456*T*LN(T);
+      2500.00  N !
+$ ------------------------------------------------------------------------------
+$ Ru
+$
+$ BCC_A2 revised in unary 4.4
+$
+ PAR  G(HCP_A3,RU:VA),,                 +GHSERRU;                4500 N 91Din !
+ PAR  G(FCC_A1,RU:VA),,                 +GHSERRU+12500-2.4*T;    4500 N 91Din !
+ PAR  G(BCC_A2,RU:VA),,                 +GHSERRU+21500-5.05*T;   4500 N 01SGUN !
+$PAR  G(BCC_A2,RU:VA),,                 +GHSERRU+26500-6.2*T;    4500 N 91Din !
+ PAR  G(LIQUID,RU),,                    +GLIQRU;                 4500 N 91Din !
+$
+ FUNCTION GHSERRU   298.15  -7561.873+127.866233*T-22.9143287*T*LN(T)
+       -0.004062566*T**2+1.7641E-07*T**3+56377*T**(-1);
+      1500.00  Y  -59448.103+489.516214*T-72.3241219*T*LN(T)
+       +0.018726245*T**2-1.952433E-06*T**3+11063885*T**(-1);
+      2607.00  Y  -38588773+168610.517*T-21329.705*T*LN(T)
+       +5.221639*T**2-2.40245985E-04*T**3+1.30829926E+10*T**(-1);
+      2740.00  Y  -55768.304+364.482314*T-51.8816*T*LN(T);
+      4500.00  N !
+ FUNCTION GLIQRU    298.15  +27480.616-8.398748*T+GHSERRU;
+       800.00  Y  +50827.232-179.818561*T+19.539341*T*LN(T)
+       -0.026524167*T**2+1.667839E-06*T**3-3861125*T**(-1);
+      2607.00  Y  -17161.807+349.673561*T-51.8816*T*LN(T);
+      4500.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Gosse, N. Dupin, C. Gueneau, J.-C. Crivello, J.-M. Joubert,
+$ J. Nucl. Mater., 474, 163-73(2016).
+$
+$ Checked against paper. Checked at 6000K.
+$
+ PAR  L(LIQUID,RH,RU;0),,               +ZERO;,,                      N 16Gos !
+$
+ PAR  L(FCC_A1,RH,RU:VA;0),,            -6013.6-1.62*T;,,             N 16Gos !
+ PAR  L(FCC_A1,RH,RU:VA;1),,            +3727.8;,,                    N 16Gos !
+$
+ PAR  L(HCP_A3,RH,RU:VA;0),,            -1654;,,                      N 16Gos !
+ PAR  L(HCP_A3,RH,RU:VA;1),,            +2703.8;,,                    N 16Gos !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,RH,RU:VA;0),,            -6013.6-1.62*T;,,             N Same !
+ PAR  L(BCC_A2,RH,RU:VA;1),,            +3727.8;,,                    N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  16Gos  'S. Gosse, N. Dupin, C. Gueneau, J.-C. Crivello, J.-M. Joubert,
+          J. Nucl. Mater., 474, 163-73(2016); Rh-Ru'
+!

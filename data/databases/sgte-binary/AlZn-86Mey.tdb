@@ -1,0 +1,171 @@
+$
+$ Database for Al-Zn from S. an Mey and G. Effenberg 1986
+$
+$ S. an Mey, G. Effenberg, Z. Metallkd., 77, 449-53(1986).
+$
+$ Dataset created 2013.05.31 by Bengt Hallstedt.
+$ 2020.04.05: Modified for use with GES6.
+$
+$ Note! This dataset does not use SGTE lattice stabilities.
+$
+$ When SGTE lattice stabilities are used, the phase diagram is not reproduced.
+$
+$ Solid phases reappear above 2500 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL ZN : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+$ Non-SGTE lattice stabilities used here
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 86Mey !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5559.6-1.855*T; 2900 N 86Mey !
+$PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 86Mey !
+$
+ FUNCTION GHSERAL   298.15  -10019.1+179.885*T-31.3758*T*LN(T)
+       +0.00819645*T**2-3.45883E-06*T**3+180331*T**(-1);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  -785.1+177.381*T-31.7482*T*LN(T);          2900 N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+$ Non-SGTE lattice stabilities used here
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 86Mey !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN+2281-1.694*T;   1700 N 86Mey !
+$PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 86Mey !
+$
+ FUNCTION GHSERZN   298.15  -6459.2+100.512*T-20.7359*T*LN(T)
+       -0.0062551*T**2-41631*T**(-1);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  -3629.1+161.624*T-31.38*T*LN(T);           1700 N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$ ------------------------------------------------------------------------------
+$
+$ S. an Mey, G. Effenberg, Z. Metallkd., 77, 449-53(1986).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Note! This dataset does not use SGTE lattice stabilities.
+$
+$ When SGTE lattice stabilities are used, the phase diagram is not reproduced.
+$
+$ Solid phases reappear above 2500 K.
+$
+ PAR  L(LIQUID,AL,ZN;0),,               +10483.5-4.74442*T;,,         N 86Mey !
+ PAR  L(LIQUID,AL,ZN;1),,               -210.4+0.85139*T;,,           N 86Mey !
+$
+ PAR  L(FCC_A1,AL,ZN:VA;0),,            +11014.8-3.71812*T;,,         N 86Mey !
+ PAR  L(FCC_A1,AL,ZN:VA;1),,            +1546.9+1.60179*T;,,          N 86Mey !
+ PAR  L(FCC_A1,AL,ZN:VA;2),,            -308.7;,,                     N 86Mey !
+$
+ PAR  L(HCP_A3,AL,ZN:VA;0),,            +17047.8-10.37525*T;,,        N 86Mey !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,AL,ZN:VA;0),,            +11014.8-3.71812*T;,,         N Same !
+ PAR  L(BCC_A2,AL,ZN:VA;1),,            +1546.9+1.60179*T;,,          N Same !
+ PAR  L(BCC_A2,AL,ZN:VA;2),,            -308.7;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-ZN(TDB -* +LIQ +FCC_A1 +HCP_A3 
+  ;G5 MAJ:FCC/AL:VA C_S:FCC/ZN:VA ;P3 TMM:300/1000 STP:.3/560) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  86Mey  'S. an Mey, G. Effenberg, Z. Metallkd., 77, 449-53(1986); Al-Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+!

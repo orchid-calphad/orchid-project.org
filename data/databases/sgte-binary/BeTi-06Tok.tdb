@@ -1,0 +1,210 @@
+$
+$ Database for Be-Ti from T. Tokunaga et al. 2006.
+$
+$ T. Tokunaga, H. Ohtani, M.Hasebe, J. Phase Equilib. Diffus., 27, 83-91(2006).
+$
+$ Dataset created 2018.04.02 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ Including metastable B2 ordering of the bcc phase.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BE   HCP_A3                      9.01218   1950.0      9.50   ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : BE TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : BE TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+$PHASE BCC_A2 %B 2 1 3 !
+$CONST BCC_A2 : BE% TI% : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$ also bcc (cI2, Im-3m)
+$
+ PHASE BCC_B2 %B 3 0.5 0.5 3 !
+ CONST BCC_B2 : BE% TI : BE TI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : BE% TI% : VA : !
+$
+$ Prototype Mn12Th (tI26, I4/mmm)
+$
+ PHASE BE12TI_D2B % 2 12 1 !
+ CONST BE12TI_D2B : BE : TI : !
+$
+$ unknown structure
+$
+ PHASE BE10TI % 2 10 1 !
+ CONST BE10TI : BE : TI : !
+$
+$ Prototype Th2Zn17 (hR19, R-3m), alpha
+$ Prototype Ni17Th2 (hP38, P6_3/mmc), beta
+$
+ PHASE BE17TI2 % 2 17 2 !
+ CONST BE17TI2 : BE : TI : !
+$
+$ unknown structure
+$
+ PHASE BE13TI2 % 2 13 2 !
+ CONST BE13TI2 : BE : TI : !
+$
+$ Prototype Ni3Pu (hR12, R-3m)
+$
+ PHASE BE3TI % 2 3 1 !
+ CONST BE3TI : BE : TI : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE BE2TI_C15 % 2 2 1 !
+ CONST BE2TI_C15 : BE : TI : !
+$
+$ unknown structure
+$
+ PHASE BE5TI4 % 2 5 4 !
+ CONST BE5TI4 : BE : TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Be
+$
+ PAR  G(HCP_A3,BE:VA),,                 +GHSERBE;                3000 N 91Din !
+ PAR  G(BCC_A2,BE:VA),,                 +GBCCBE;                 3000 N 91Din !
+ PAR  G(FCC_A1,BE:VA),,                 +GHSERBE+6349-1.085*T;   3000 N 91Din !
+ PAR  G(LIQUID,BE),,                    +GLIQBE;                 3000 N 91Din !
+$
+ PAR  G(BCC_B2,BE:BE:VA),,              +GBCCBE;                 3000 N 91Din !
+$
+ FUNCTION GHSERBE   298.15  -8553.651+137.560219*T-21.204*T*LN(T)
+       -0.00284715*T**2-1.60413E-07*T**3+293690*T**(-1);
+      1527.00  Y  -121305.858+772.405844*T-103.9843*T*LN(T)
+       +0.021078651*T**2-1.119065E-06*T**3+27251743*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCBE    298.15  -1076.057+109.411712*T-17.1727841*T*LN(T)
+       -0.008672487*T**2+9.61427E-07*T**3+242309*T**(-1);
+      1527.00  Y  -6970.378+196.411689*T-30*T*LN(T);
+      1560.00  Y  -2609.973+178.131722*T-27.7823769*T*LN(T)
+       -1.03629E-04*T**2-5.9331E-08*T**3-1250847*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQBE    298.15  +7511.838+120.362788*T-20.0497038*T*LN(T)
+       -0.004821347*T**2+4.15958E-07*T**3+281044*T**(-1);
+      1560.00  Y  +5364.713+156.961141*T-25.486*T*LN(T)
+       -0.0010572*T**2-1.117E-09*T**3+15920*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ PAR  G(BCC_B2,TI:TI:VA),,              +GBCCTI;                 4000 N 91Din !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ T. Tokunaga, H. Ohtani, M.Hasebe, J. Phase Equilib. Diffus., 27, 83-91(2006).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Including metastable B2 ordering of the bcc phase.
+$
+ PAR  L(LIQUID,BE,TI;0),,               -65086.12+12.07518*T;,,       N 06Tok !
+ PAR  L(LIQUID,BE,TI;1),,               -23038.84;,,                  N 06Tok !
+$
+ PAR  G(BCC_B2,BE:TI:VA),,              +0.5*GBCCBE+0.5*GBCCTI
+             -26975.75+6.63472*T;,,                                   N 06Tok !
+ PAR  G(BCC_B2,TI:BE:VA),,              +0.5*GBCCBE+0.5*GBCCTI
+             -26975.75+6.63472*T;,,                                   N 06Tok !
+ PAR  L(BCC_B2,BE,TI:BE:VA;0),,         -1000-4*T;,,                  N 06Tok !
+ PAR  L(BCC_B2,BE:BE,TI:VA;0),,         -1000-4*T;,,                  N 06Tok !
+ PAR  L(BCC_B2,BE,TI:TI:VA;0),,         +15000;,,                     N 06Tok !
+ PAR  L(BCC_B2,TI:BE,TI:VA;0),,         +15000;,,                     N 06Tok !
+$
+ PAR  L(HCP_A3,BE,TI:VA;0),,            +20000;,,                     N 06Tok !
+$
+ PAR  G(BE12TI_D2B,BE:TI),,             +12*GHSERBE+GHSERTI
+             -217142.84+35.07137*T;,,                                 N 06Tok !
+ PAR  G(BE10TI,BE:TI),,                 +10*GHSERBE+GHSERTI
+             -192214.22+25.12979*T;,,                                 N 06Tok !
+ PAR  G(BE17TI2,BE:TI),,                +17*GHSERBE+2*GHSERTI
+             -347203.54+37.43699*T;,,                                 N 06Tok !
+ PAR  G(BE13TI2,BE:TI),,                +13*GHSERBE+2*GHSERTI
+             -300774.29+33.62421*T;,,                                 N 06Tok !
+ PAR  G(BE3TI,BE:TI),,                  +3*GHSERBE+GHSERTI
+             -88071.56+5.04869*T;,,                                   N 06Tok !
+ PAR  G(BE2TI_C15,BE:TI),,              +2*GHSERBE+GHSERTI
+             -71410.16+5.74848*T;,,                                   N 06Tok !
+ PAR  G(BE5TI4,BE:TI),,                 +5*GHSERBE+4*GHSERTI
+             -241192.35+44.63426*T;,,                                 N 06Tok !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,BE,TI:VA;0),,            +20000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  06Tok  'T. Tokunaga, H. Ohtani, M.Hasebe,
+          J. Phase Equilib. Diffus., 27, 83-91(2006); Be-Ti'
+!

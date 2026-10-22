@@ -1,0 +1,204 @@
+$
+$ Database for Cu-Ti from H. Yang et al. 2023.
+$
+$ H. Yang, B. Zeng, H. Wang, H. Jin, C. Zhou, Calphad, 82, 102594(2023).
+$
+$ Dataset created 2024.02.06 by Bengt Hallstedt.
+$
+$ Based on 11Wan/96Har.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : CU% TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : CU TI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : CU TI% : VA: !
+$
+$ Prototype Au4Zr (oP20, Pnma); beta-Cu4Ti
+$ According to LB, alpha-Cu4Ti has prototype MoNi4 (tI10, I4/m, D1_a)
+$ Alpha-Cu4Ti is metastable according to 23Yan.
+$
+ PHASE CU4TI %  2 4 1 !
+ CONST CU4TI : CU% TI : CU TI% : !
+$
+$ Prototype Au2V (oC12, Cmcm)
+$
+ PHASE CU2TI % 2 2 1 !
+ CONST CU2TI : CU : TI : !
+$
+$ Prototype Cu3Ti2 (tP10, P4/nmm)
+$
+ PHASE CU3TI2 % 2 3 2 !
+ CONST CU3TI2 : CU : TI : !
+$
+$ Prototype Cu4Ti3 (tI14, I4/mmm)
+$
+ PHASE CU4TI3 %  2 4 3 !
+ CONST CU4TI3 : CU : TI : !
+$
+$ Prototype gamma-CuTi (tP4, P4/nmm)
+$
+ PHASE CUTI_B11 %  2 1 1 !
+ CONST CUTI_B11 : CU% TI : CU TI% : !
+$
+$ Prototype CuZr2 (tI6, I4/mmm)
+$
+ PHASE CUTI2 %  2 1 2 !
+ CONST CUTI2 : CU : TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+$ BCT_A5 from 00Moo not included in unary
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+$PAR  G(BCT_A5,CU),,                    +GHSERCU+4184;           3200 N 00Moo !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ PAR  G(CU4TI,CU:CU),,                  +5*GHSERCU+25000;,,           N 96Har2 !
+ PAR  G(CUTI_B11,CU:CU),,               +2*GHSERCU+10000;,,           N 96Har2 !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCCU    298.15  +GHSERCU+4017-1.255*T;                     3200 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ PAR  G(CU4TI,TI:TI),,                  +5*GHSERTI+25000;,,           N 96Har2 !
+ PAR  G(CUTI_B11,TI:TI),,               +2*GHSERTI+10000;,,           N 96Har2 !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H. Yang, B. Zeng, H. Wang, H. Jin, C. Zhou, Calphad, 82, 102594(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Based on 11Wan/96Har.
+$
+ PAR  L(LIQUID,CU,TI;0),,               -38776.2+17.9199*T;,,         N 23Yan !
+ PAR  L(LIQUID,CU,TI;1),,               +12257.5-4.4987*T;,,          N 23Yan !
+ PAR  L(LIQUID,CU,TI;2),,               +2462.2;,,                    N 23Yan !
+$
+ PAR  L(FCC_A1,CU,TI:VA;0),,            -9004.9+6.3183*T;,,           N 23Yan !
+$
+ PAR  L(BCC_A2,CU,TI:VA;0),,            -3970.6;,,                    N 23Yan !
+ PAR  L(BCC_A2,CU,TI:VA;1),,            -1892.7;,,                    N 23Yan !
+$
+ PAR  L(HCP_A3,CU,TI:VA;0),,            +12308.9-1.951*T;,,           N 23Yan !
+$
+ PAR  G(CU4TI,CU:TI),,                  +4*GHSERCU+GHSERTI
+              -34798.2+10.937*T;,,                                    N 23Yan !
+ PAR  G(CU4TI,TI:CU),,                  +4*GHSERTI+GHSERCU
+              +84798.2-10.937*T;,,                                    N 23Yan !
+ PAR  L(CU4TI,CU,TI:TI;0),,             +7039.9;,,                    N 23Yan !
+$
+ PAR  G(CU2TI,CU:TI),,                  +2*GHSERCU+GHSERTI
+             -18318.1-2.4795*T;,,                                     N 23Yan !
+ PAR  G(CU3TI2,CU:TI),,                 +3*GHSERCU+2*GHSERTI
+             -52661.2+10.3108*T;,,                                    N 23Yan !
+ PAR  G(CU4TI3,CU:TI),,                 +4*GHSERCU+3*GHSERTI
+             -77270.5+14.7622*T;,,                                    N 23Yan !
+$
+ PAR  G(CUTI_B11,CU:TI),,               +GHSERCU+GHSERTI
+             -24072.4+4.947*T;,,                                      N 23Yan !
+ PAR  G(CUTI_B11,TI:CU),,               +GHSERTI+GHSERCU
+             +44072.4-4.947*T;,,                                      N 23Yan !
+ PAR  L(CUTI_B11,CU,TI:TI;0),,          +12465.7;,,                   N 23Yan !
+ PAR  L(CUTI_B11,CU:CU,TI;0),,          +15952.2;,,                   N 23Yan !
+$
+ PAR  G(CUTI2,CU:TI),,                  +GHSERCU+2*GHSERTI
+             -27662.1+2.2238*T;,,                                     N 23Yan !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CU-TI(TDB -* +LIQUID +FCC_A1 +BCC_A2 +HCP_A3 +CU2TI +CU3TI2 +CU4TI3
+  +CUTI2 +CU4TI +CUTI_B11 ;P3 TMM:300/2200 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Har2 'K.C. Hari Kumar, I. Ansara, P. Wollants, L. Delaey,
+          Z. Metallkd., 87, 666-72(1996); Cu-Ti'
+  00Moo  'K.-W. Moon, W.J. Boettinger, U.R. Kattner, F.S. Biancaniello,
+          C.A, Handwerker, J. Electron. Mater., 29, 1122-36(2000); Cu, Cu-Sn'
+  11Wan  'J. Wang, C. Liu, C. Leinenbach, U.E. Klotz, P.J. Uggowitzer,
+          J.F. Loeffler, Calphad, 35, 82-94(2011); Cu-Ti, Cu-Sn-Ti'
+  23Yan  'H. Yang, B. Zeng, H. Wang, H. Jin, C. Zhou,
+          Calphad, 82, 102594(2023); Cu-Ti'
+!

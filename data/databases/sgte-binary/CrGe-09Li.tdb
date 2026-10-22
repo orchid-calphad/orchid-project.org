@@ -1,0 +1,218 @@
+$
+$ Database for Cr-Ge from M. Li et al. 2009.
+$
+$ M. Li, C. Guo, C. Li, Z. Du, J. Alloys Compd., 481, 283-90(2009).
+$
+$ Dataset created 2020.08.08 by Bengt Hallstedt.
+$
+$ In the paper a version using the Kaptay model for liquid and bcc is also
+$ presented.
+$
+$ According to I. Jandl and K.W. Richter, J. Alloys Compd., 500, L6-L8(2010),
+$ there is only a high temperature form of Cr5Ge3 with the Si3W5 structure
+$ type stable between 1269 and 1535 K. There is no low temperature form.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CR GE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CR GE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CR% GE : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : CR GE : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : CR GE% : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE CR3GE_A15 % 2 3 1 !
+ CONST CR3GE_A15 : CR : CR GE% : !
+$
+$ Low temperature form, probably non-existant
+$
+ PHASE CR5GE3_LT % 2 5 3 !
+ CONST CR5GE3_LT : CR% GE : GE : !
+$
+$ Prototype Si3W5 (tI32, I4/mcm)
+$
+ PHASE CR5GE3_D8M % 2 5 3 !
+ CONST CR5GE3_D8M : CR% GE : GE : !
+$
+$ Prototype Cr11Ge8 (oP76, Pnma)
+$
+ PHASE CR11GE8 % 2 11 8 !
+ CONST CR11GE8 : CR : GE : !
+$
+$ Prototype FeSi (cP8, P2_13)
+$
+ PHASE CRGE_B20 % 2 1 1 !
+ CONST CRGE_B20 : CR : GE : !
+$
+$ Prototype Mn11Si19 (tP120, P-4n2)
+$
+ PHASE CR11GE19 % 2 11 19 !
+ CONST CR11GE19 : CR : GE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+$ DIAMOND_A4 from 09Li not included in unary
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,CR),,                +GHSERCR+5000;,,              N 09Li !
+$PAR  G(CUB_A13,CR:VA),,                +GHSERCR+15899+0.6276*T;,,    N 91Din !
+$PAR  G(CBCC_A12,CR:VA),,               +GHSERCR+11087+2.7196*T;,,    N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ PAR  G(CR3GE_A15,CR:CR),,              +4*GHSERCR+20000;,,           N 09Li !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCR    298.15  +GHSERCR+7284+0.163*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ PAR  G(CR5GE3_LT,GE:GE),,              +8*GHSERGE+70004.1;,,         N 09Li !
+ PAR  G(CR5GE3_D8M,GE:GE),,             +8*GHSERGE+70004.4;,,         N 09Li !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Li, C. Guo, C. Li, Z. Du, J. Alloys Compd., 481, 283-90(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ In the paper a version using the Kaptay model for liquid and bcc is also
+$ presented.
+$
+$ According to I. Jandl and K.W. Richter, J. Alloys Compd., 500, L6-L8(2010),
+$ there is only a high temperature form of Cr3Ge5 with the Si3W5 structure
+$ type stable between 1269 and 1535 K. There is no low temperature form.
+$
+ PAR  L(LIQUID,CR,GE;0),,               -64827+45.9024*T
+             -3.7924*T*LN(T);,,                                       N 09Li !
+ PAR  L(LIQUID,CR,GE;1),,               -50081.8+34.7733*T
+             -1.5293*T*LN(T);,,                                       N 09Li !
+ PAR  L(LIQUID,CR,GE;2),,               -3507.1;,,                    N 09Li !
+$
+ PAR  L(BCC_A2,CR,GE:VA;0),,            +110660.5-137.0887*T
+             +13.5664*T*LN(T);,,                                      N 09Li !
+ PAR  L(BCC_A2,CR,GE:VA;1),,            -274440.9+60.5808*T;,,        N 09Li !
+ PAR  L(BCC_A2,CR,GE:VA;2),,            +73361.7;,,                   N 09Li !
+ PAR  TC(BCC_A2,CR,GE:VA;0),,           -8714.1;,,                    N 09Li !
+ PAR  TC(BCC_A2,CR,GE:VA;1),,           -1687;,,                      N 09Li !
+$
+ PAR  L(DIAMOND_A4,CR,GE;0),,           +12034;,,                     N 09Li !
+$
+ PAR  G(CR3GE_A15,CR:GE),,              -75425.5+423.0595*T
+             -77.382*T*LN(T)-0.0316096*T**2+3.3049E-06*T**3
+             +78498*T**(-1);,,                                        N 09Li !
+ PAR  L(CR3GE_A15,CR:CR,GE;0),,         -18705.6+7*T;,,               N 09Li !
+$
+ PAR  G(CR5GE3_LT,CR:GE),,              -185489.6+1053.0793*T
+             -185.5555*T*LN(T)-0.0378927*T**2+2.914E-06*T**3
+             +189609*T**(-1);,,                                       N 09Li !
+ PAR  G(CR5GE3_D8M,CR:GE),,             -167361+832.6527*T
+             -151.9697*T*LN(T)-0.0698641*T**2+7.1144E-06*T**3
+             +158983*T**(-1);,,                                       N 09Li !
+ PAR  G(CR11GE8,CR:GE),,                +11*GHSERCR+8*GHSERGE
+             -315678.2+830.635*T-133.1277*T*LN(T)+0.0834402*T**2
+             -2238303*T**(-1);,,                                      N 09Li !
+ PAR  G(CRGE_B20,CR:GE),,               -43580.7+237.5845*T
+             -42.4821*T*LN(T)-0.0129997*T**2+1.0493E-06*T**3
+             +21830*T**(-1);,,                                        N 09Li !
+ PAR  G(CR11GE19,CR:GE),,               -563367.2+3753.0249*T
+             -675.8578*T*LN(T)-0.1231449*T**2+8.2216E-06*T**3
+             +1571766*T**(-1);,,                                      N 09Li !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,CR,GE:VA;0),,            +110660.5-137.0887*T
+             +13.5664*T*LN(T);,,                                      N Same !
+ PAR  L(FCC_A1,CR,GE:VA;1),,            -274440.9+60.5808*T;,,        N Same !
+ PAR  L(FCC_A1,CR,GE:VA;2),,            +73361.7;,,                   N Same !
+$
+ PAR  L(HCP_A3,CR,GE:VA;0),,            +110660.5-137.0887*T
+             +13.5664*T*LN(T);,,                                      N Same !
+ PAR  L(HCP_A3,CR,GE:VA;1),,            -274440.9+60.5808*T;,,        N Same !
+ PAR  L(HCP_A3,CR,GE:VA;2),,            +73361.7;,,                   N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09Li   'M. Li, C. Guo, C. Li, Z. Du,
+          J. Alloys Compd., 481, 283-90(2009); Cr, Cr-Ge'
+  10Liu  'Y.Q. Liu, Y. Du, Calphad, 34, 26-35(2010); Cr-Ge'
+!

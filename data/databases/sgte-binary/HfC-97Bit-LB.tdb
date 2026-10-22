@@ -1,0 +1,145 @@
+$
+$ Database for Hf-C from H. Bittermann and P. Rogl 1997 (Included in LB Vol. 2)
+$
+$ H. Bittermann, P. Rogl, J. Phase Equilib., 18, 344-56(1997).
+$
+$ Dataset created 2015.03.22 by Bengt Hallstedt.
+$ 2021.01.17: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT HF   HCP_A3                    178.49      5845.0     43.56   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C HF : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : HF : C% VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : HF : C VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : HF : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Hf
+$
+$ HCP_A3 and BCC_A2 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(HCP_A3,HF:VA),,                 +GHSERHF;                3001 N 91Din !
+ PAR  G(BCC_A2,HF:VA),,                 +GBCCHF;                 3001 N 91Din !
+ PAR  G(FCC_A1,HF:VA),,                 +GHSERHF+10000-2.2*T;    3001 N 91Din !
+ PAR  G(LIQUID,HF),,                    +GLIQHF;                 3001 N 91Din !
+$
+ FUNCTION GHSERHF   298.15  -6987.297+110.744026*T-22.7075*T*LN(T)
+       -0.004146145*T**2-4.77E-10*T**3-22590*T**(-1);
+      2506.00  Y  -1446776.329+6193.609991*T-787.5363829*T*LN(T)
+       +0.1735215*T**2-7.575759E-06*T**3+5.01742495E+08*T**(-1);
+      3000.00  Y  -34274.698+277.882368*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCHF    298.15  +5370.703+103.836026*T-22.8995*T*LN(T)
+       -0.004206605*T**2+8.71923E-07*T**3-22590*T**(-1)-1.446E-10*T**4;
+      2506.00  Y  +1912456.771-8624.20573*T+1087.6141247*T*LN(T)
+       -0.286857065*T**2+1.3427829E-05*T**3-6.10085091E+08*T**(-1);
+      3000.00  Y  -32498.178+276.723247*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHF    298.15  +27402.256-10.953093*T+GHSERHF;
+      1000.00  Y  +49731.499-149.91739*T+12.116812*T*LN(T)
+       -0.021262021*T**2+1.376466E-06*T**3-4449699*T**(-1);
+      2506.00  Y  -4247.217+265.470523*T-44*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From H. Bittermann and P. Rogl 1997 (Included in LB Vol. 2)
+$
+$ H. Bittermann, P. Rogl, J. Phase Equilib., 18, 344-56(1997).
+$
+$ Checked against LB and paper. Checked at 6000K.
+$
+ PAR  L(LIQUID,C,HF;0),,                -395564+42.9738*T;,,          N 97Bit !
+ PAR  L(LIQUID,C,HF;1),,                -67417.5;,,                   N 97Bit !
+ PAR  L(LIQUID,C,HF;2),,                +225427-44.5905*T;,,          N 97Bit !
+ PAR  L(LIQUID,C,HF;3),,                +231368-29.9471*T;,,          N 97Bit !
+$
+ PAR  G(FCC_A1,HF:C),,                  -226447+272.916*T
+             -45.61482*T*LN(T)-0.00299726*T**2+501495*T**(-1)
+             -9.58263E+08*T**(-3);,,                                  N 97Bit !
+ PAR  L(FCC_A1,HF:C,VA;0),,             -102413+27.976*T;,,           N 97Bit !
+ PAR  L(FCC_A1,HF:C,VA;1),,             -151822+38.2048*T;,,          N 97Bit !
+$
+ PAR  G(BCC_A2,HF:C),,                  -75417.6+584.036*T
+             -90.8379*T*LN(T)-0.00385324*T**2+2223284*T**(-1);,,      N 97Bit !
+ PAR  L(BCC_A2,HF:C,VA;0),,             -435839;,,                    N 97Bit !
+$
+ PAR  G(HCP_A3,HF:C),,                  -51407.9+192.576*T
+             -34.064*T*LN(T)-0.003139792*T**2+176580*T**(-1);,,       N 97Bit !
+ PAR  L(HCP_A3,HF:C,VA;0),,             -136694-9.91735*T;,,          N 97Bit !
+ PAR  L(HCP_A3,HF:C,VA;1),,             -145903;,,                    N 97Bit !
+ PAR  L(HCP_A3,HF:C,VA;2),,             -92328.7;,,                   N 97Bit !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  C-HF(TDB -* +LIQ +FCC_A1 +BCC_A2 +HCP_A3 +GRAP ;G5 C_S:FCC_A1/HF:C
+  ;P3 TMM:300/5000 STP:0.4/2000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97Bit  'H. Bittermann, P. Rogl, J. Phase Equilib., 18, 344-56(1997); Hf-C'
+!

@@ -1,0 +1,265 @@
+$
+$ Database for Co-Y from Z. Du and D. Lu 2004 (included in LB Vol. 5)
+$
+$ Z. Du, D. Lu, J. Alloys Compd., 373, 171-78(2004).
+$
+$ Dataset created 2010.09.21 by Bengt Hallstedt.
+$ 2020.07.31: Modified for use with GES6.
+$
+$ Inverse miscibility gap with min at x(Y)=0.54 and 3841 K.
+$
+$ A common model for CO17Y2 and CO5Y is used.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT Y    HCP_A3                     88.9059    5983.457   44.7875 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CO2                                CO2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO Y : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% Y : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO Y% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% Y% : VA : !
+$
+$ Prototype Th2Zn17 (hR19, R-3m), alpha-Co17Y2
+$ Prototype Ni17Th2 (hP38, P6_3/mmc), beta-Co17Y2
+$ Prototype CaCu5 (hP6, P6/mmm, D2_d), Co5Y
+$
+ PHASE CO17Y2 %A 3 1 2 15 !
+ CONST CO17Y2 : CO2 Y : CO2 Y : CO : !
+$
+$ Prototype Co7Gd2 (hR18, R-3m)
+$
+ PHASE CO7Y2 %A 2 7 2 !
+ CONST CO7Y2 : CO : Y : !
+$
+$ Prototype Ni3Pu (hR12, R-3m) or CeNi3 (hP24, P6_3/mmc)
+$
+ PHASE CO3Y %A 2 3 1 !
+ CONST CO3Y : CO : Y : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE CO2Y_C15 %A 2 2 1 !
+ CONST CO2Y_C15 : CO : Y : !
+$
+$ Pearson cP*
+$
+ PHASE CO3Y2 % 2 3 2 !
+ CONST CO3Y2 : CO : Y : !
+$
+$ Unknown structure
+$
+ PHASE CO7Y6 % 2 7 6 !
+ CONST CO7Y6 : CO : Y : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE COY_B33 % 2 1 1 !
+ CONST COY_B33 : CO : Y : !
+$
+$ Prototype Co3Ho4 (hP22, P6_3/m)
+$
+ PHASE CO3Y4 % 2 3 4 !
+ CONST CO3Y4 : CO : Y : !
+$
+$ Prototype Co5Y8 (mP52, P2_1/c)
+$
+ PHASE CO5Y8 % 2 5 8 !
+ CONST CO5Y8 : CO : Y : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE COY3_D011 % 2 1 3 !
+ CONST COY3_D011 : CO : Y : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  G(CO17Y2,CO2:CO2:CO),,            +21*GHSERCO+119773.9;,,       N 04Du !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Y
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ FCC_A1 added in unary 4.1
+$
+$ FCC_A1 from 04Du not included in unary
+$
+ PAR  G(HCP_A3,Y:VA)            100.00  +GHSERYY;                3700 N 95She3 !
+ PAR  G(BCC_A2,Y:VA)            100.00  +GBCCYY;                 3700 N 95She3 !
+ PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+6000;           3700 N Frie2 !
+$PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+5000;           3700 N 04Du !
+ PAR  G(LIQUID,Y)               100.00  +GLIQYY;                 3700 N 95She3 !
+$
+ FUNCTION GHSERYY   100.00  -8011.09379+128.572856*T-25.6656992*T*LN(T)
+       -0.00175716414*T**2-4.17561786E-07*T**3+26911.509*T**(-1);
+      1000.00  Y  -7179.74574+114.497104*T-23.4941827*T*LN(T)
+       -0.0038211802*T**2-8.2534534E-08*T**3;
+      1795.15  Y  -67480.7761+382.124727*T-56.9527111*T*LN(T)
+       +0.00231774379*T**2-7.22513088E-08*T**3+18077162.6*T**(-1);
+      3700.00  N !
+ FUNCTION GBCCYY    100.00  -833.658863+123.667346*T-25.5832578*T*LN(T)
+       -0.00237175965*T**2+9.10372497E-09*T**3+27340.0687*T**(-1);
+      1000.00  Y  -1297.79829+134.528352*T-27.3038477*T*LN(T)
+       -5.41757644E-04*T**2-3.05012175E-07*T**3;
+      1795.15  Y  +15389.4975+0.981325399*T-8.88296647*T*LN(T)
+       -0.00904576576*T**2+4.02944768E-07*T**3-2542575.96*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQYY    100.00  +2098.50738+119.41873*T-24.6467508*T*LN(T)
+       -0.00347023463*T**2-8.12981167E-07*T**3+23713.7332*T**(-1);
+      1000.00  Y  +7386.44846+19.4520171*T-9.0681627*T*LN(T)
+       -0.0189533369*T**2+1.7595327E-06*T**3;
+      1795.15  Y  -12976.5957+257.400783*T-43.0952*T*LN(T);
+      3700.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From Z. Du and D. Lu 2004 (included in LB Vol. 5)
+$
+$ Z. Du, D. Lu, J. Alloys Compd., 373, 171-78(2004).
+$
+$ Checked against LB and paper. Checked at 6000K.
+$
+$ Inverse miscibility gap with min at x(Y)=0.54 and 3841 K.
+$
+$ Interaction parameter for fcc adjusted by P. Franke to SGTE lattice
+$ stability of fcc-Y.
+$
+$ A common model for CO17Y2 and CO5Y is used.
+$
+ PAR  L(LIQUID,CO,Y;0),,                -101134.8+8.4818*T;,,         N 04Du !
+ PAR  L(LIQUID,CO,Y;1),,                +43011.7-23.7629*T;,,         N 04Du !
+ PAR  L(LIQUID,CO,Y;2),,                +137805.8-68.6983*T;,,        N 04Du !
+$
+$PAR  L(FCC_A1,CO,Y:VA;0),,             -2000;,,                      N 04Du !
+ PAR  L(FCC_A1,CO,Y:VA;0),,             -3000;,,                      N 05Fra !
+ PAR  L(BCC_A2,CO,Y:VA;0),,             -2000;,,                      N 04Du !
+ PAR  L(HCP_A3,CO,Y:VA;0),,             -2000;,,                      N 04Du !
+$
+ PAR  G(CO17Y2,CO2:Y:CO),,              +17*GHSERCO+2*GHSERYY
+             -311181.1+75.6484*T;,,                                   N 04Du !
+ PAR  TC(CO17Y2,CO2:Y:CO),,              1167;,,                      N 04Du !
+ PAR  BM(CO17Y2,CO2:Y:CO),,                27.8;,,                    N 04Du !
+$ Possible misprint in lb5-v2.tdb below (no visible change)
+$PAR  G(CO17Y2,Y:CO2:CO),,              +19*GHSERCO+GHSERYY
+$            +56432.5;,,                                              N 04Du !
+ PAR  G(CO17Y2,Y:CO2:CO),,              +19*GHSERCO+GHSERYY
+             +56423.5;,,                                              N 04Du !
+ PAR  G(CO17Y2,Y:Y:CO),,                +15*GHSERCO+3*GHSERYY
+             -357436.8+50.8521*T;,,                                   N 04Du !
+ PAR  TC(CO17Y2,Y:Y:CO),,                 977;,,                      N 04Du !
+ PAR  BM(CO17Y2,Y:Y:CO),,                  22.5;,,                    N 04Du !
+ PAR  L(CO17Y2,CO2,Y:CO2:CO;0),,        +33619.8-4.4009*T;,,          N 04Du !
+ PAR  L(CO17Y2,CO2,Y:CO2:CO;1),,        +25602.6-12.5843*T;,,         N 04Du !
+ PAR  L(CO17Y2,CO2,Y:Y:CO;0),,          +33619.8-4.4009*T;,,          N 04Du !
+ PAR  L(CO17Y2,CO2,Y:Y:CO;1),,          +25602.6-12.5843*T;,,         N 04Du !
+ PAR  L(CO17Y2,CO2:CO2,Y:CO;0),,        -133455.8+1.1847*T;,,         N 04Du !
+ PAR  L(CO17Y2,CO2:CO2,Y:CO;1),,        -81324.3+0.3753*T;,,          N 04Du !
+ PAR  L(CO17Y2,Y:CO2,Y:CO;0),,          -133455.8+1.1847*T;,,         N 04Du !
+ PAR  L(CO17Y2,Y:CO2,Y:CO;1),,          -81324.3+0.3753*T;,,          N 04Du !
+$
+ PAR  G(CO7Y2,CO:Y),,                   +7*GHSERCO+2*GHSERYY
+             -229613.3+35.7764*T;,,                                   N 04Du !
+ PAR  TC(CO7Y2,CO:Y),,                    639;,,                      N 04Du !
+ PAR  BM(CO7Y2,CO:Y),,                      7.4;,,                    N 04Du !
+$
+ PAR  G(CO3Y,CO:Y),,                    +3*GHSERCO+GHSERYY
+             -111453+17.6087*T;,,                                     N 04Du !
+ PAR  TC(CO3Y,CO:Y),,                     305;,,                      N 04Du !
+ PAR  BM(CO3Y,CO:Y),,                       1.4;,,                    N 04Du !
+$
+ PAR  G(CO2Y_C15,CO:Y),,                +2*GHSERCO+GHSERYY
+             -100487.3+19.917*T;,,                                    N 04Du !
+ PAR  TC(CO2Y_C15,CO:Y),,                 296;,,                      N 04Du !
+ PAR  BM(CO2Y_C15,CO:Y),,                   0.23;,,                   N 04Du !
+$
+ PAR  G(CO3Y2,CO:Y),,                   +3*GHSERCO+2*GHSERYY
+             -188175.5+53.3971*T;,,                                   N 04Du !
+ PAR  G(CO7Y6,CO:Y),,                   +7*GHSERCO+6*GHSERYY
+             -538737.1+197.7479*T;,,                                  N 04Du !
+ PAR  G(COY_B33,CO:Y),,                 +GHSERCO+GHSERYY
+             -79627.9+28.4422*T;,,                                    N 04Du !
+ PAR  G(CO3Y4,CO:Y),,                   +3*GHSERCO+4*GHSERYY
+             -250492.3+87.227*T;,,                                    N 04Du !
+ PAR  G(CO5Y8,CO:Y),,                   +5*GHSERCO+8*GHSERYY
+             -420469.1+135.4779*T;,,                                  N 04Du !
+ PAR  G(COY3_D011,CO:Y),,               +GHSERCO+3*GHSERYY
+             -84089.6+15.7381*T;,,                                    N 04Du !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CO-Y(TDB -* +LIQUID +FCC +HCP_A3 +BCC_A2 +CO17Y2 +CO7Y2 +CO3Y +CO2Y_C15
+   +CO3Y2 +CO7Y6 +COY_B33 +CO3Y4 +CO5Y8 +COY3_D011
+   ;G5 C_S:CO17Y2/CO2:Y:CO2 MAJ:CO17Y2/Y:CO2:CO2 ;P3 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  Frie2  'Suzana Fries and Leo Lukas, unpublished,
+          SGTE unary database V.4.1, 1999; Y'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95She3 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-03,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Y'
+  04Du   'Z. Du, D. Lu, J. Alloys Compd., 373, 171-78(2004); Y, Co-Y'
+  05Fra  'P. Franke, 2005, adjustment to SGTE unaries; Co-Y'
+!

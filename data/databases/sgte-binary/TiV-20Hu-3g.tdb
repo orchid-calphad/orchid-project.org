@@ -1,0 +1,187 @@
+$
+$ Database for Ti-V from B. Hu et al. 2020.
+$
+$ B. Hu, S. Sridar, L. Hao, W. Xiong, Intermetallics, 122, 106791(2020).
+$
+$ Dataset created 2023.10.23 by Bengt Hallstedt.
+$
+$ 3rd generation modelling of the elements.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 0.01 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+ ELEMENT V    BCC_A2                     50.9415    4507.0     30.89   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : TI V : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : TI V : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : TI% V% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : TI% V : VA : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE OMEGA_C32 % 1 1 !
+ CONST OMEGA_C32 : TI V : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO        0.01  0;                                         6000 N !
+ FUNCTION UN_ASS      0.01  0;                                         6000 N !
+ FUNCTION R           0.01  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ There is possibly some error in the fcc function. The G-curve for fcc
+$ in Fig. 8 is not exactly reproduced.
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GTISER;,,                    N 20Hu !
+ PAR  LNTHETA1(HCP_A3,TI:VA),,          +LN(269.66);,,                N 20Hu !
+ PAR  THETAF1(HCP_A3,TI:VA),,           +1;,,                         N 20Hu !
+$
+ PAR  G(BCC_A2,TI:VA),,                 +GTIBCC;,,                    N 20Hu !
+ PAR  LNTHETA1(BCC_A2,TI:VA),,          +LN(192.01);,,                N 20Hu !
+ PAR  THETAF1(BCC_A2,TI:VA),,           +1;,,                         N 20Hu !
+$
+ PAR  G(FCC_A1,TI:VA),,                 +GTIFCC;,,                    N 20Hu !
+ PAR  LNTHETA1(FCC_A1,TI:VA),,          +LN(236.67);,,                N 20Hu !
+ PAR  THETAF1(FCC_A1,TI:VA),,           +1;,,                         N 20Hu !
+$
+ PAR  G(OMEGA_C32,TI),,                 +GTIOME;,,                    N 20Hu !
+ PAR  LNTHETA1(OMEGA_C32,TI),,          +LN(289.30);,,                N 20Hu !
+ PAR  THETAF1(OMEGA_C32,TI),,           +1;,,                         N 20Hu !
+$
+ PAR  G(LIQUID,TI),,                    +4349.70025
+             -0.00200294843*T**2;,,                                   N 20Hu !
+ PAR  GD(LIQUID,TI),,                   +49395.411-8.314*T
+             -0.737261354*T*LN(T);,,                                  N 20Hu !
+ PAR  LNTHETA1(LIQUID,TI),,             +LN(185.76);,,                N 20Hu !
+ PAR  THETAF1(LIQUID,TI),,              +1;,,                         N 20Hu !
+$
+ FUNCTION GTISER      0.01  -8187.11746-0.00388479749*T**2
+       -1.12754876E-14*T**5;
+      1941.00  Y  -34429.8962+168.6069891*T-21.5018141*T*LN(T)
+       -1.5326273E+18*T**(-5)+8.83870501E+37*T**(-11);
+      6000.00  N !
+ FUNCTION GTIBCC      0.01  -1189.30591-0.00175640865*T**2
+       -2.11276133E-14*T**5;
+      1941.00  Y  -38328.0689+179.0443615*T-21.6601815*T*LN(T)
+       +2.08872908E+19*T**(-5)-6.22559747E+37*T**(-11);
+      6000.00  N !
+ FUNCTION GTIFCC      0.01  -1308.28194-0.00110005324*T**2
+       -4.8222583E-14*T**5;
+      1941.00  Y  -34080.288+176.8506164*T-21.5028284*T*LN(T)
+       -1.09974048E+18*T**(-5)+9.0000148E+37*T**(-11);
+      6000.00  N !
+ FUNCTION GTIOME      0.01  -8646.04379-0.00175612531*T**2
+       -3.77858605E-14*T**5;
+      1941.00  Y  -40191.3391+175.1217992*T-21.5072012*T*LN(T)
+       -1.00203889E+18*T**(-5)+9.79952638E+37*T**(-11);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ V
+$
+ PAR  G(BCC_A2,V:VA),,                  +GVVSER;,,                    N 20Hu !
+ PAR  LNTHETA1(BCC_A2,V:VA),,           +LN(265.09);,,                N 20Hu !
+ PAR  THETAF1(BCC_A2,V:VA),,            +1;,,                         N 20Hu !
+$
+ PAR  G(FCC_A1,V:VA),,                  +GVVFCC;,,                    N 20Hu !
+ PAR  LNTHETA1(FCC_A1,V:VA),,           +LN(266.97);,,                N 20Hu !
+ PAR  THETAF1(FCC_A1,V:VA),,            +1;,,                         N 20Hu !
+$
+ PAR  G(HCP_A3,V:VA),,                  +GVVHCP;,,                    N 20Hu !
+ PAR  LNTHETA1(HCP_A3,V:VA),,           +LN(283.11);,,                N 20Hu !
+ PAR  THETAF1(HCP_A3,V:VA),,            +1;,,                         N 20Hu !
+$
+ PAR  G(OMEGA_C32,V),,                  +GVVOME;,,                    N 20Hu !
+ PAR  LNTHETA1(OMEGA_C32,V),,           +LN(247.98);,,                N 20Hu !
+ PAR  THETAF1(OMEGA_C32,V),,            +1;,,                         N 20Hu !
+$
+ PAR  G(LIQUID,V),,                     +8708.02961
+             -0.0018769914*T**2;,,                                    N 20Hu !
+ PAR  GD(LIQUID,V),,                    +55393.8187-8.314*T
+             -0.642018852*T*LN(T);,,                                  N 20Hu !
+ PAR  LNTHETA1(LIQUID,V),,              +LN(202.79);,,                N 20Hu !
+ PAR  THETAF1(LIQUID,V),,               +1;,,                         N 20Hu !
+$
+ FUNCTION GVVSER      0.01  -8012.67406-0.00195296216*T**2
+       -3.02272704E-14*T**5;
+      2202.00  Y  -36942.5742+173.1051476*T-21.4019136*T*LN(T)
+       -3.45690255E+19*T**(-5)+7.56563717E+38*T**(-11);
+      6000.00  N !
+ FUNCTION GVVFCC      0.01  -512.674044-0.00118125097*T**2
+       -3.77342177E-14*T**5;
+      2202.00  Y  -31683.8285+175.6948765*T-21.4019136*T*LN(T)
+       -3.35723154E+19*T**(-5)+7.18557415E+38*T**(-11);
+      6000.00  N !
+ FUNCTION GVVHCP      0.01  -4237.429-0.00144727302*T**2
+       -3.52503774E-14*T**5;
+      2202.00  Y  -34633.497+174.8234249*T-21.4100569*T*LN(T)
+       -3.35922789E+19*T**(-5)+7.18817987E+38*T**(-11);
+      6000.00  N !
+ FUNCTION GVVOME      0.01  -801.827408-0.00109936065*T**2
+       -3.813577374E-14*T**5;
+      2202.00  Y  -32200.8701+175.8889109*T-21.3974779*T*LN(T)
+       -3.50362716E+19*T**(-5)+7.72223051E+38*T**(-11);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ B. Hu, S. Sridar, L. Hao, W. Xiong, Intermetallics, 122, 106791(2020).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ 3rd generation modelling of the elements.
+$
+ PAR  L(LIQUID,TI,V;0),,                +163.57;,,                    N 20Hu !
+ PAR  L(LIQUID,TI,V;1),,                +2896.31;,,                   N 20Hu !
+$
+ PAR  L(BCC_A2,TI,V:VA;0),,             +6625.26;,,                   N 20Hu !
+ PAR  L(BCC_A2,TI,V:VA;1),,             +1676.53;,,                   N 20Hu !
+$
+ PAR  L(HCP_A3,TI,V:VA;0),,             +44830.75-10*T;,,             N 20Hu !
+ PAR  L(HCP_A3,TI,V:VA;1),,             -26396.3;,,                   N 20Hu !
+$
+ PAR  L(OMEGA_C32,TI,V;0),,             +8000-8*T;,,                  N 20Hu !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,TI,V:VA;0),,             +44830.75-10*T;,,             N Same !
+ PAR  L(FCC_A1,TI,V:VA;1),,             -26396.3;,,                   N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  TI-V(TDB -* +LIQUID +BCC_A2 +HCP_A3 ;P3 TMM:300/3000 STP:.5/1500/2/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  20Hu   'B. Hu, S. Sridar, L. Hao, W. Xiong,
+          Intermetallics, 122, 106791(2020); Ti, V, Ti-V'
+!

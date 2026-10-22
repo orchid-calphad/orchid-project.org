@@ -1,0 +1,177 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "CU",
+    "HG"
+  ],
+  "flags": [
+    "has_intermediate_phases",
+    "liquid_on_hull"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "CU": {
+          "energy": -9883.671534146868,
+          "phase": "FCC_A1"
+        },
+        "HG": {
+          "energy": -22629.579212053868,
+          "phase": "LIQUID"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -8096.955500413934
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -20.213711671679693
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -2070.237365502642,
+          "right": {
+            "phase": "CU7HG6_D810",
+            "x": 0.46153846153846156
+          },
+          "slope": -2070.237365502642,
+          "x_hi": 0.46153846153846156,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -6940.247571783372,
+            "slope": 6940.247571783372
+          },
+          "entropy": {
+            "intercept": -17.326038575725452,
+            "slope": 17.326038575725452
+          },
+          "intercept": -1774.4891704308363,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CU7HG6_D810",
+            "x": 0.46153846153846156
+          },
+          "mu_a_rel": -1774.4891704308363,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "LIQUID",
+            "x": 1.0
+          },
+          "slope": 1774.4891704308363,
+          "x_hi": 1.0,
+          "x_lo": 0.46153846153846156
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -955.4941686935272,
+          "energy_per_atom": -955.4941686935272,
+          "enthalpy": -3737.056384806431,
+          "entries_at_x": 1,
+          "entropy": -9.32940538692909,
+          "formula": "",
+          "nsites": null,
+          "phase": "CU7HG6_D810",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.46153846153846156
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "LIQUID",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "CuHg-12Liu",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:30:28Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/CuHg-12Liu.tdb",
+    "source_sha256": "8828bc33c96d3b4c2dbbd17e72b32fcc74096d629d77bbf3624f66fbf1a23380"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "CU-HG",
+  "x_element": "HG"
+}

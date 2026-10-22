@@ -1,0 +1,310 @@
+$
+$ Database for Ni-Ti from B. Hu et al. 2014
+$
+$ B. Hu, Y. Du, J.C. Schuster, W. Sun, S. Liu, C. Tang,
+$ J. Alloys Compd., 578, 35-42(2014).
+$
+$ Dataset created 2013.04.21 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ Based on the dataset from 09Key.
+$
+$ Changed model to a 4SL bcc (using option B) for the NiTi phase by 14Hu.
+$
+$ Ti added on the first sublattice by 09Key. The reference state used for
+$ G(NI3TI,NI:TI) was taken from 96Bel and not changed as written in the paper.
+$ 4 SL model for fcc.
+$
+$ NiTi2 modified by N. Dupin (99Dup2).
+$
+$ There is an inverse miscibility gap with a minimum at 4981 K and x(Ti)=0.41.
+$
+$ The congruent melting temperature of Ni3Ti is 4K higher than in paper.
+$
+$ The fcc ordering diagram (metastable) is not compatible with the isothermal
+$ section shown in Fig. 24 in 09Key.
+$
+$ When using option F for FCC_4SL Thermo-Calc 3.0 cannot read the interaction
+$ parameters without wildcards.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% TI : VA : !
+$
+$ Disordered part of FCC_4SL, identical to FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : NI% TI : VA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m, L1_2) and AuCu (tP4, P4/mmm, L1_0)
+$
+ PHASE FCC_4SL:F %AY 5 0.25 0.25 0.25 0.25 1 !
+ CONST FCC_4SL:F : NI TI : NI TI : NI TI : NI TI : VA :  !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI TI% : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : NI TI : VA : !
+$
+$ Prototype CsCl (B2, cP2, Pm-3m), NaTl (B32, cF16, Fd-3m),
+$ BiF3 (D0_3, cF16, Fm-3m), AlCu2Mn (L2_1, cF16)
+$
+ PHASE BCC_4SL:B %BZ 5 0.25 0.25 0.25 0.25 3 !
+ CONST BCC_4SL:B : NI TI : NI TI : NI TI : NI TI : VA :  !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI TI% : VA : !
+$
+$ Prototype Ni3Ti (hP16, P6_3/mmc)
+$
+ PHASE NI3TI_D024 % 2 3 1 !
+ CONST NI3TI_D024 : NI% TI : NI TI% : !
+$
+$ Prototype NiTi2 (cF96, Fd-3m)
+$
+ PHASE NITI2 % 2 1 2 !
+ CONST NITI2 : NI% TI : NI TI% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE BCC_A2 A1_FCC FCC_4SL !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION FCC_4SL DIS_PART A1_FCC !
+ TYPE-DEF Z GES AMEND_PHASE_DESCRIPTION BCC_4SL DIS_PART A2_BCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(A1_FCC,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(A1_FCC,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(A1_FCC,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(A2_BCC,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(A2_BCC,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(A2_BCC,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(NI3TI_D024,NI:NI),,             +2*GHCPNI+2*GHSERNI;,,        N 09Key !
+ PAR  G(NITI2,NI:NI),,                  +3*GHSERNI+15000;,,           N 99Dup2 !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+ FUNCTION GHCPNI    298.15  +GHSERNI+1046+1.255*T;                     3000 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(A2_BCC,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+ PAR  G(A1_FCC,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ PAR  G(NI3TI_D024,TI:TI),,             +2*GHSERTI+2*GFCCTI;,,        N 09Key !
+ PAR  G(NITI2,TI:TI),,                  +3*GHSERTI+15000;,,           N 99Dup2 !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCTI    298.15  +GHSERTI+6000-0.1*T;                       4000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ B. Hu, Y. Du, J.C. Schuster, W. Sun, S. Liu, C. Tang,
+$ J. Alloys Compd., 578, 35-42(2014).
+$
+$ Checked against manuscript. Checked at 6000 K.
+$
+$ Based on the dataset from 09Key.
+$
+$ Changed model to a 4SL bcc (using option B) for the NiTi phase by 14Hu.
+$
+$ Ti added on the first sublattice by 09Key. The reference state used for
+$ G(NI3TI,NI:TI) was taken from 96Bel and not changed as written in the paper.
+$ 4 SL model for fcc.
+$
+$ NiTi2 modified by N. Dupin (99Dup2).
+$
+$ There is an inverse miscibility gap with a minimum at 4981 K and x(Ti)=0.41.
+$
+$ The congruent melting temperature of Ni3Ti is 4K higher than in paper.
+$
+$ The fcc ordering diagram (metastable) is not compatible with the isothermal
+$ section shown in Fig. 24 in 09Key.
+$
+$ When using option F for FCC_4SL Thermo-Calc 3.0 cannot read the interaction
+$ parameters without wildcards.
+$
+ PAR  L(LIQUID,NI,TI;0),,               -153707+34.8594*T;,,          N 96Bel !
+ PAR  L(LIQUID,NI,TI;1),,               -81824.8+25.8099*T;,,         N 96Bel !
+ PAR  L(LIQUID,NI,TI;2),,               -10.0779*T;,,                 N 96Bel !
+$
+ PAR  L(FCC_A1,NI,TI:VA;0),,            -98143+6.706*T;,,             N 09Key !
+ PAR  L(FCC_A1,NI,TI:VA;1),,            -62430;,,                     N 09Key !
+ PAR  TC(FCC_A1,NI,TI:VA;0),,           -2500;,,                      N 09Key !
+ PAR  TC(FCC_A1,NI,TI:VA;1),,           -3000;,,                      N 09Key !
+ PAR  TC(FCC_A1,NI,TI:VA;2),,           +1300;,,                      N 09Key !
+$
+ PAR  L(A1_FCC,NI,TI:VA;0),,            -98143+6.706*T;,,             N 09Key !
+ PAR  L(A1_FCC,NI,TI:VA;1),,            -62430;,,                     N 09Key !
+ PAR  TC(A1_FCC,NI,TI:VA;0),,           -2500;,,                      N 09Key !
+ PAR  TC(A1_FCC,NI,TI:VA;1),,           -3000;,,                      N 09Key !
+ PAR  TC(A1_FCC,NI,TI:VA;2),,           +1300;,,                      N 09Key !
+$
+ PAR  G(FCC_4SL,NI:NI:NI:TI:VA),,       +3*UFNITI;,,                  N 09Key !
+ PAR  G(FCC_4SL,NI:NI:TI:TI:VA),,       +4*UFNITI+30466;,,            N 09Key !
+ PAR  G(FCC_4SL,NI:TI:TI:TI:VA),,       +3*UFNITI;,,                  N 09Key !
+ PAR  L(FCC_4SL,NI,TI:*:*:*:VA;0),,     -5408;,,                      N 09Key !
+$PAR  L(FCC_4SL,NI,TI:NI:NI:NI:VA;0),,  -5408;,,                      N 09Key !
+$PAR  L(FCC_4SL,NI,TI:NI:NI:TI:VA;0),,  -5408;,,                      N 09Key !
+$PAR  L(FCC_4SL,NI,TI:NI:TI:TI:VA;0),,  -5408;,,                      N 09Key !
+$PAR  L(FCC_4SL,NI,TI:TI:TI:TI:VA;0),,  -5408;,,                      N 09Key !
+$
+ PAR  L(BCC_A2,NI,TI:VA;0),,            -97427.4+12.112*T;,,          N 96Bel !
+ PAR  L(BCC_A2,NI,TI:VA;1),,            -32315.3;,,                   N 96Bel !
+$
+ PAR  L(A2_BCC,NI,TI:VA;0),,            -97427.4+12.112*T;,,          N 96Bel !
+ PAR  L(A2_BCC,NI,TI:VA;1),,            -32315.3;,,                   N 96Bel !
+$
+ PAR  G(BCC_4SL,NI:NI:NI:TI:VA),,       +GD03NITI;,,                  N 14Hu !
+ PAR  G(BCC_4SL,NI:NI:TI:TI:VA),,       +GB2NITI;,,                   N 14Hu !
+ PAR  G(BCC_4SL,NI:TI:NI:TI:VA),,       +GB32NITI;,,                  N 14Hu !
+ PAR  G(BCC_4SL,NI:TI:TI:TI:VA),,       +GD03TINI;,,                  N 14Hu !
+ PAR  L(BCC_4SL,NI,TI:NI,TI:*:*:VA;0),, +SB1NITI;,,                   N 14Hu !
+ PAR  L(BCC_4SL,NI,TI:*:NI,TI:*:VA;0),, +SB2NITI;,,                   N 14Hu !
+$
+ PAR  L(HCP_A3,NI,TI:VA;0),,            -20000;,,                     N 96Bel !
+$
+$ Parameter taken from 96Bel below
+ PAR  G(NI3TI_D024,NI:TI),,             +3*GHCPNI+GHSERTI
+             -157744+18.6544*T;,,                                     N 09Key !
+$ Parameter according to paper (09Key) below
+$PAR  G(NI3TI_D024,NI:TI),,             +1.5*GHCPNI+1.5*GHSERNI
+$            +0.5*GHSERTI+0.5*GFCCTI-157744+18.6544*T;,,              N 09Key !
+ PAR  G(NI3TI_D024,TI:NI),,             +1.5*GHSERTI+1.5*GFCCTI
+             +0.5*GHCPNI+0.5*GHSERNI+157744-18.6544*T;,,              N 09Key !
+ PAR  L(NI3TI_D024,NI,TI:TI;0),,        +60000;,,                     N 09Key !
+ PAR  L(NI3TI_D024,NI:NI,TI;0),,        +143216-101.776*T;,,          N 09Key !
+ PAR  L(NI3TI_D024,NI:NI,TI;1),,        +109156-66.448*T;,,           N 09Key !
+ PAR  L(NI3TI_D024,TI:NI,TI;0),,        +20000;,,                     N 09Key !
+$
+ PAR  G(NITI2,NI:TI),,                  +GHSERNI+2*GHSERTI
+             -82542.6+8.56035*T;,,                                    N 96Bel !
+ PAR  G(NITI2,TI:NI),,                  +GHSERTI+2*GHSERNI
+             +112542.6-8.56035*T;,,                                   N 99Dup2 !
+ PAR  L(NITI2,NI,TI:NI;0),,             +60000;,,                     N 99Dup2 !
+ PAR  L(NITI2,NI,TI:TI;0),,             +60000;,,                     N 99Dup2 !
+ PAR  L(NITI2,NI:NI,TI;0),,             +60000;,,                     N 99Dup2 !
+ PAR  L(NITI2,TI:NI,TI;0),,             +60000;,,                     N 99Dup2 !
+$
+ FUNCTION UFNITI    298.15  -8562+4.1*T;                               6000 N !
+$
+ FUNCTION UB1NITI   298.15  -8298.42+2.571*T;                          6000 N !
+ FUNCTION UB2NITI   298.15  -2148.766+9.819*T;                         6000 N !
+ FUNCTION GB2NITI   298.15  +4*UB1NITI;                                6000 N !
+ FUNCTION GB32NITI  298.15  +2*UB1NITI+3*UB2NITI;                      6000 N !
+ FUNCTION GD03NITI  298.15  +2*UB1NITI+1.5*UB2NITI-20596.7895;         6000 N !
+ FUNCTION GD03TINI  298.15  +2*UB1NITI+1.5*UB2NITI+42787.269-30.713*T; 6000 N !
+ FUNCTION SB1NITI   298.15  -2447.1371-12.274*T;                       6000 N !
+ FUNCTION SB2NITI   298.15  -2447.1371-12.274*T;                       6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-TI(TDB -* +LIQUID +FCC_A1 +A2_BCC +BCC_4SL +HCP_A3 +NI3TI_D024 +NITI2 
+  ;G5 C_S:BCC_B2/NI:TI:VA MAJ:BCC_B2/TI:TI:VA
+  ;P3 TMM:300/3000 STP:.51/1000/1 ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Bel  'P. Bellen, K.C. Hari Kumar, P. Wollants,
+          Z. Metallkd., 87, 972-78(1996); Ni-Ti'
+  99Dup2 'N. Dupin, unpublished, 1999; Cr-Ni-Ti, Al-Cr-Ni-Ti'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  00Dup  'N. Dupin, unpublished, 2000; Al-Ni-Ti'
+  09Key  'J. De Keyzer, G. Cacciamani, N. Dupin, P. Wollants,
+          Calphad, 33, 109-23(2009); Ni-Ti, Fe-Ni-Ti'
+  10Pav  'J. Pavlu, J. Vrestal, M. Sob, Calphad, 34, 215-21(2010); Cr-Ti'
+  14Hu   'B. Hu, Y. Du, J.C. Schuster, W. Sun, S. Liu, C. Tang,
+          J. Alloys Compd., 578, 35-42(2014); Ni-Ti, Cr-Ni-Ti'
+!

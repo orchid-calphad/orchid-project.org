@@ -1,0 +1,188 @@
+$
+$ Database for Bi-Mg from C.-S. Oh et al. 1992 (included in LB Vol. 2)
+$
+$ C.-S. Oh, S.-Y. Kang, D.N. Lee, Calphad, 16, 181-91(1992).
+$
+$ Dataset created 2012.10.01 by Bengt Hallstedt.
+$ 2019.10.20: Modified for use with GES6.
+$ 2023.02.24: Unary Bi changed from V4.4 to V5.0.
+$
+$ This dataset is incorrectly attributed to Chevalier 1998 in LBall-v7+fun.tdb.
+$
+$ The parameter L(ION,MG+2:BI-3,VA;1) has an incorrect sign in LBall-v7+fun.tdb.
+$ This changes the L = Bi2Mg3 + hcp equilibrium from 826 K to 803 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BI   RHOMBOHEDRAL_A7           208.98      6426.6     56.735  !
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  BI-3                               BI/-3 !
+ SPECIE  MG+2                               MG1/+2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : MG+2 : BI-3 VA BI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : BI MG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : BI MG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : BI MG% : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : BI : !
+$
+$ Prototype La2O3 (hP5, P-3m1)
+$
+ PHASE BI2MG3_D52 % 2 2 3 !
+ CONST BI2MG3_D52 : BI VA : MG : !
+$
+$ Prototype Ag2S (cI20, Im-3m)
+$
+ PHASE BI2MG3_BETA % 2 2 3 !
+ CONST BI2MG3_BETA : BI VA : MG : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Bi
+$
+$ RHOMBOHEDRAL_A7 and LIQUID modified in unary 5.0
+$ DIAMOND_A4 added in unary 5.0
+$
+ PAR  G(RHOMBOHEDRAL_A7,BI),,           +GHSERBI;                3000 N 09SGUN !
+ PAR  G(FCC_A1,BI:VA),,                 +GHSERBI+9900-12.5*T;    3000 N 91Din !
+ PAR  G(BCC_A2,BI:VA),,                 +GHSERBI+11297-13.9*T;   3000 N 91Din !
+ PAR  G(HCP_A3,BI:VA),,                 +GHSERBI+9900-11.8*T;    3000 N 91Din !
+$PAR  G(DIAMOND_A4,BI),,                +GHSERBI
+$            +11296.8+9.253655*T;                                3000 N 88Che2 !
+$PAR  G(BCT_A5,BI),,                    +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,BI),,             +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TET_ALPHA1_A6,BI),,             +GHSERBI+4234;           3000 N 91Din !
+$PAR  G(LIQUID,BI),,                    +GLIQBI;                 3000 N 09SGUN ! 
+$
+ PAR  G(ION,BI),,                       +GLIQBI;                 3000 N 09SGUN !
+$
+ FUNCTION GHSERBI   298.15  -7817.776+128.418925*T-28.4096529*T*LN(T)
+       +0.012338888*T**2-8.381598E-6*T**3;
+       544.55  Y  +29293.369-379.605174*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1)+1.66309E+25*T**(-9);
+       800.00  Y  -11085.609+182.955328*T-36.041*T*LN(T)
+       +7.4641E-3*T**2-1.05047E-6*T**3+5175*T**(-1)+1.66309E+25*T**(-9);
+      1200.00  Y  -7580.864+124.770814*T-27.196*T*LN(T)+1.66309E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQBI    298.15  +11246.017-20.636399*T+GHSERBI-5.9608E-19*T**7;
+       544.55  Y  +40629.667-400.415652*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1);
+       800.00  Y  +250.689+162.14485*T-36.041*T*LN(T)
+       +0.0074641*T**2-1.05047E-6*T**3+5175*T**(-1);
+      1200.00  Y  +3755.434+103.960336*T-27.196*T*LN(T);
+      3000.00 N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+$PAR  G(CBCC_A12,MG:VA),,               +GHSERMG
+$            +4602.4-3.011*T;                                    3000 N 91Din !
+$PAR  G(CUB_A13,MG:VA),,                +GHSERMG+5000-3*T;       3000 N 91Din !
+$PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(ION,MG+2:VA),,                  +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(BI2MG3_D52,VA:MG),,             +3*GHSERMG+42000-7.5*T;  3000 N 92Oh !
+ PAR  G(BI2MG3_BETA,VA:MG),,            +3*GHSERMG+55000-6*T;    3000 N 92Oh !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From C.-S. Oh et al. 1992 (included in LB Vol. 2)
+$
+$ C.-S. Oh, S.-Y. Kang, D.N. Lee, Calphad, 16, 181-91(1992).
+$
+$ Checked against paper and LB. Checked at 6000 K.
+$
+$ This dataset is incorrectly attributed to Chevalier 1998 in LBall-v7+fun.tdb.
+$
+$ The parameter L(ION,MG+2:BI-3,VA;1) has an incorrect sign in LBall-v7+fun.tdb.
+$ This changes the L = Bi2Mg3 + hcp equilibrium from 826 K to 803 K.
+$
+ PAR  G(ION,MG+2:BI-3),,                +2*GLIQBI+3*GLIQMG
+             -144662.8+10.0453*T;,,                                   N 92Oh !
+ PAR  L(ION,MG+2:BI-3,VA;0),,           +46080.2-43.2921*T;,,         N 92Oh !
+ PAR  L(ION,MG+2:BI-3,VA;1),,           -4360.4;,,                    N 92Oh !
+ PAR  L(ION,MG+2:VA,BI;0),,             -45273.5+0.7754*T;,,          N 92Oh !
+ PAR  L(ION,MG+2:BI-3,BI;0),,           +7991-17.3103*T;,,            N 92Oh !
+ PAR  L(ION,MG+2:BI-3,BI;1),,           -12164.4;,,                   N 92Oh !
+$
+ PAR  L(HCP_A3,BI,MG:VA),,              -33774.6-21.0447*T;,,         N 92Oh !
+$
+ PAR  G(BI2MG3_D52,BI:MG),,             +2*GHSERBI+3*GHSERMG
+             -172515.7+155.9054*T-21.0105*T*LN(T);,,                  N 92Oh !
+ PAR  L(BI2MG3_D52,BI,VA:MG;0),,        -53113.9+33.1212*T;,,         N 92Oh !
+ PAR  L(BI2MG3_D52,BI,VA:MG;1),,        +22521.9;,,                   N 92Oh !
+$
+ PAR  G(BI2MG3_BETA,BI:MG),,            +2*GHSERBI+3*GHSERMG
+             -152413.1+135.3248*T-21.0105*T*LN(T);,,                  N 92Oh !
+ PAR  L(BI2MG3_BETA,BI,VA:MG;0),,       -23075.9;,,                   N 92Oh !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,BI,MG:VA),,              -33774.6-21.0447*T;,,         N Same !
+ PAR  L(BCC_A2,BI,MG:VA),,              -33774.6-21.0447*T;,,         N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  BI-MG(TDB -* +ION +HCP_A3 +RHOM_A7 +BI2MG3_D52 +BI2MG3_BETA
+  ;P3 TMM:300/1500 STP:0.4321/500) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  88Che2 'P.-Y. Chevalier, Thermochim. Acta, 132, 111-16(1988),
+          SGTE unary database V.5.0, 2009; Bi' 
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Oh   'C.-S. Oh, S.-Y. Kang, D.N. Lee, Calphad, 16, 181-91(1992); Bi-Mg'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

@@ -1,0 +1,133 @@
+$
+$ Database for Nb-Zr from A. Fernandez Guillermet 1991 (included in LB Vol. 4)
+$
+$ A. Fernandez Guillermet, Z. Metallkd., 82, 478-87(1991).
+$
+$ Dataset created 2011.04.02 by Bengt Hallstedt.
+$ 2020.10.13: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+ ELEMENT ZR   HCP_A3                     91.22      5566.27    39.1809 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NB ZR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB ZR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NB ZR : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NB ZR : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zr
+$
+$ CUB_A13, CBCC_A12, ORTHORHOMBIC_A20 and TETRAGONAL_U added in unary 4.1
+$
+ PAR  G(HCP_A3,ZR:VA)           130.00  +GHSERZR;,,                   N 91Din !
+ PAR  G(BCC_A2,ZR:VA)           130.00  +GBCCZR;,,                    N 91Din !
+$PAR  G(OMEGA,ZR)               130.00  +GOMEZR;,,                    N 91Din !
+ PAR  G(FCC_A1,ZR:VA)           130.00  +GHSERZR+7600-0.9*T;,,        N 91Din !
+$PAR  G(CBCC_A12,ZR:VA)         130.00  +GHSERZR+4602.2;,,            N 99SGUN !
+$PAR  G(CUB_A13,ZR:VA)          130.00  +GHSERZR+7531.2;,,            N 99SGUN !
+$PAR  G(ORTHORHOMBIC_A20,ZR)    130.00  +GBCCZR+5000;,,               N 99SGUN !
+$PAR  G(TETRAGONAL_U,ZR)        130.00  +GBCCZR+5000;,,               N 99SGUN !
+ PAR  G(LIQUID,ZR)              130.00  +GLIQZR;,,                    N 91Din !
+$
+ FUNCTION GHSERZR   130.00  -7827.595+125.64905*T-24.1618*T*LN(T)
+       -0.00437791*T**2+34971*T**(-1);
+      2128.00  Y  -26085.921+262.724183*T-42.144*T*LN(T)-1.342896E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GBCCZR    130.00  -525.539+124.9457*T-25.607406*T*LN(T)
+       -3.40084E-04*T**2-9.729E-09*T**3+25233*T**(-1)-7.6143E-11*T**4;
+      2128.00  Y  -4620.034+1.55998*T+GHSERZR+1.4103476E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GOMEZR    130.00  -8878.082+144.432234*T-26.8556*T*LN(T)
+       -0.002799446*T**2+38376*T**(-1);
+      2128.00  Y  -3414.603+2.566675*T+GHSERZR+8.517346E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQZR    130.00  +18147.69-9.080812*T+GHSERZR+1.6275E-22*T**7;
+      2128.00  Y  -8281.26+253.812609*T-42.144*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From A. Fernandez Guillermet 1991 (included in LB Vol. 4)
+$
+$ A. Fernandez Guillermet, Z. Metallkd., 82, 478-87(1991).
+$
+$ Checked against LB and paper. Checked at 6000K.
+$
+$ The fcc interaction is included in LBall-v7+fun.tdb, but not in the
+$ original publication.
+$
+ PAR  L(LIQUID,NB,ZR;0),,               +10311;,,                     N 91Fer !
+ PAR  L(LIQUID,NB,ZR;1),,               +6709;,,                      N 91Fer !
+$
+ PAR  L(BCC_A2,NB,ZR:VA;0),,            +15911+3.35*T;,,              N 91Fer !
+ PAR  L(BCC_A2,NB,ZR:VA;1),,            +3919-1.091*T;,,              N 91Fer !
+$
+ PAR  L(HCP_A3,NB,ZR:VA;0),,            +24411;,,                     N 91Fer !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,NB,ZR:VA;0),,            +24411;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NB-ZR(TDB -* +LIQUID +BCC_A2 +FCC_A1 +HCP_A3 
+  ;G5 MAJ:BCC/ZR:VA C_S:BCC/NB:VA ;P3 TMM:300/3000 STP:.8/1000/2/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  91Fer  'A. Fernandez Guillermet, Z. Metallkd., 82, 478-87(1991); Nb-Zr'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+!

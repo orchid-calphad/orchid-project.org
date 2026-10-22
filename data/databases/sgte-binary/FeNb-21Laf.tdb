@@ -1,0 +1,189 @@
+$
+$ Database for Fe-Nb from P. Lafaye et al. 2021.
+$
+$ P. Lafaye, C. Toffolon-Masclet, J.-C. Crivello, J.-M. Joubert,
+$ J. Nucl. Mater., 544, 152692(2021).
+$
+$ Dataset created 2020.10.11 by Bengt Hallstedt.
+$
+$ Modified from 16Jac/13Khv1 by 20Tof. Using a 3-sl model for C14-Laves.
+$ Further modified by 21Laf.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT FE   BCC_A2                     55.847     4489.0     27.2797 ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : FE NB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : FE% NB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : FE% NB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : FE NB : VA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE C14_LAVES % 3 4 2 6 !
+ CONST C14_LAVES : FE NB : FE NB : FE NB : !
+$
+$ Prototype Fe7W6 (hR13, R-3m)
+$
+ PHASE MU_D85 % 4 1 4 2 6 !
+ CONST MU_D85 : FE% NB : NB : FE NB% : FE% NB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Fe
+$
+$ ORTHORHOMBIC_A20 and TETRAGONAL_U added im unary 4.1
+$
+ PAR  G(BCC_A2,FE:VA),,                 +GHSERFE;,,                   N 91Din !
+ PAR  TC(BCC_A2,FE:VA),,                 1043.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,FE:VA),,                    2.22;,,                   N 91Din !
+ PAR  G(FCC_A1,FE:VA),,                 +GFCCFE;,,                    N 91Din !
+ PAR  TC(FCC_A1,FE:VA),,                 -201.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,FE:VA),,                   -2.10;,,                   N 91Din !
+ PAR  G(HCP_A3,FE:VA),,                 +GHCPFE;,,                    N 91Din !
+$PAR  G(CBCC_A12,FE:VA),,               +GHSERFE+4745;,,              N 91Din !
+$PAR  G(CUB_A13,FE:VA),,                +GHSERFE+3745;,,              N 91Din !
+$PAR  G(ORTHORHOMBIC_A20,FE),,          +GHSERFE+5000;,,              N 99SGUN !
+$PAR  G(TETRAGONAL_U,FE),,              +GHSERFE+5000;,,              N 99SGUN !
+ PAR  G(LIQUID,FE),,                    +GLIQFE;,,                    N 91Din !
+$
+ PAR  G(C14_LAVES,FE:FE:FE),,           +12*GHSERFE+148839.37;,,      N 21Laf !
+$
+ FUNCTION GHSERFE   298.15  +1225.7+124.134*T-23.5143*T*LN(T)
+       -0.00439752*T**2-5.8927E-08*T**3+77359*T**(-1);
+      1811.00  Y  -25383.581+299.31255*T-46*T*LN(T)+2.29603E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GFCCFE    298.15  -1462.4+8.282*T-1.15*T*LN(T)
+       +6.4E-04*T**2+GHSERFE;
+      1811.00  Y  -1713.815+0.940009*T+GHSERFE+4.9251E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GHCPFE    298.15  -3705.78+12.591*T-1.15*T*LN(T)
+       +6.4E-04*T**2+GHSERFE;
+      1811.00  Y  -3957.195+5.249009*T+GHSERFE+4.9251E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQFE    298.15  +12040.17-6.55843*T+GHSERFE-3.67516E-21*T**7;
+      1811.00  Y  -10838.83+291.302*T-46*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+$PAR  G(CBCC_A12,NB:VA;0),,             +GHSERNB+17600;,,             N 06Slu !
+$PAR  G(CUB_A13,NB:VA),,                +GHSERNB+22000;,,             N 06Slu !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(C14_LAVES,NB:NB:NB),,           +12*GHSERNB+188612;,,         N 19Laf !
+ PAR  G(MU_D85,NB:NB:NB:NB),,           +13*GHSERNB+221890;,,         N 21Laf ! 
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ P. Lafaye, C. Toffolon-Masclet, J.-C. Crivello, J.-M. Joubert,
+$ J. Nucl. Mater., 544, 152692(2021).
+$
+$ Checked against author's tdb. Checked at 6000 K.
+$
+$ Modified from 16Jac/13Khv1 by 20Tof. Using a 3-sl model for C14-Laves.
+$ Further modified by 21Laf.
+$
+ PAR  L(LIQUID,FE,NB;0),,               -74858+99.7*T-10*T*LN(T);,,   N 20Tof !
+ PAR  L(LIQUID,FE,NB;1),,               +17624-10.805*T;,,            N 13Khv1 !
+$
+ PAR  L(FCC_A1,FE,NB:VA;0),,            -9123;,,                      N 20Tof !
+$
+ PAR  L(BCC_A2,FE,NB:VA;0),,            -13127+11.8*T;,,              N 20Tof !
+ PAR  L(BCC_A2,FE,NB:VA;1),,            +6812-7.26*T;,,               N 20Tof !
+$
+ PAR  G(C14_LAVES,FE:FE:NB),,           +6*GHSERFE+6*GHSERNB
+             +492692;,,                                               N 20Tof !
+ PAR  G(C14_LAVES,FE:NB:FE),,           +10*GHSERFE+2*GHSERNB
+             +209136;,,                                               N 20Tof !
+ PAR  G(C14_LAVES,FE:NB:NB),,           +4*GHSERFE+8*GHSERNB
+             +682920;,,                                               N 20Tof !
+ PAR  G(C14_LAVES,NB:FE:FE),,           +8*GHSERFE+4*GHSERNB
+             -237991+38.8*T;,,                                        N 20Tof !
+ PAR  G(C14_LAVES,NB:FE:NB),,           +2*GHSERFE+10*GHSERNB
+             +120679;,,                                               N 20Tof !
+ PAR  G(C14_LAVES,NB:NB:FE),,           +6*GHSERFE+6*GHSERNB
+             -63529;,,                                                N 20Tof !
+ PAR  L(C14_LAVES,FE,NB:FE:FE;0),,      -175475.25+38.2965*T;,,       N 21Laf !
+ PAR  L(C14_LAVES,NB:FE,NB:FE,NB;0),,   -85624;,,                     N 21Laf !
+$
+ PAR  G(MU_D85,FE:NB:FE:FE),,           +9*GHSERFE+4*GHSERNB
+             -90419;,,                                                N 21Laf !
+ PAR  G(MU_D85,FE:NB:FE:NB),,           +3*GHSERFE+10*GHSERNB
+             +431760;,,                                               N 21Laf !
+ PAR  G(MU_D85,FE:NB:NB:FE),,           +7*GHSERFE+6*GHSERNB
+             -260187+51.5*T;,,                                        N 21Laf !
+ PAR  G(MU_D85,FE:NB:NB:NB),,           +GHSERFE+12*GHSERNB+179830;,, N 21Laf !
+ PAR  G(MU_D85,NB:NB:FE:FE),,           +8*GHSERFE+5*GHSERNB-24646;,, N 21Laf !
+ PAR  G(MU_D85,NB:NB:FE:NB),,           +2*GHSERFE+11*GHSERNB
+             +507244;,,                                               N 21Laf !
+ PAR  G(MU_D85,NB:NB:NB:FE),,           +6*GHSERFE+7*GHSERNB
+             -122654;,,                                               N 21Laf !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,FE,NB:VA;0),,            +25000;,,                     N 21Laf !
+ PAR  L(HCP_A3,FE,NB:VA;1),,            -90000;,,                     N 21Laf !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  06Slu  'M.H.F. Sluiter, Calphad, 30, 357-44(2006); Nb'
+  13Khv1 'A.V. Khvan, B. Hallstedt,
+          Calphad, 40, 10-15(2013); Fe-Nb, Fe-Nb-C, Fe-Nb-N'
+  19Laf  'P. Lafaye, C. Toffolon-Masclet, J.-C. Crivello, J.-M. Joubert,
+          Calphad, 64, 43-54(2019); Cr-Nb-Zr'
+  20Tof  'C. Toffolon-Masclet, L. Martinelli, C. Desgranges, P. Lafaye,
+          J.-C. Brachet, F. Legendre, J.-C. Crivello, J.-M. Joubert,
+          D. Monceau, An ASTM journal (conf. proc.), in print, 2020; Fe-Nb'
+  21Laf  'P. Lafaye, C. Toffolon-Masclet, J.-C. Crivello, J.-M. Joubert,
+          J. Nucl. Mater., 544, 152692(2021); Cr-Fe, Cr-Nb, Fe-Nb, Cr-Fe-Nb,
+          Cr-Fe-Zr'
+!

@@ -1,0 +1,150 @@
+{
+  "counts": {
+    "above_hull": 15,
+    "entries": 97,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "TI",
+    "U"
+  ],
+  "flags": [
+    "degenerate_vertices",
+    "has_intermediate_compounds",
+    "mp_agreement_not_comparable"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-9315",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -0.15703710189313352,
+          "right": {
+            "phase": "oqmd-18165",
+            "x": 0.6666666666666666
+          },
+          "slope": -0.15703710189313352,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.314074203786267,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-18165",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -0.314074203786267,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "oqmd-2032972",
+            "x": 1.0
+          },
+          "slope": 0.314074203786267,
+          "x_hi": 1.0,
+          "x_lo": 0.6666666666666666
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Ti"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -7.77563880666667,
+          "entries_at_x": 31,
+          "formula": "Ti1",
+          "nsites": 3,
+          "phase": "oqmd-9315",
+          "phase_kind": "structure",
+          "spacegroup_number": 191,
+          "spacegroup_symbol": "P6/mmm",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.104691401262089,
+          "energy_per_atom": -10.1989431333333,
+          "entries_at_x": 2,
+          "formula": "Ti1 U2",
+          "nsites": 3,
+          "phase": "oqmd-18165",
+          "phase_kind": "structure",
+          "spacegroup_number": 191,
+          "spacegroup_symbol": "P6/mmm",
+          "theoretical": false,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-U"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -11.29651353125,
+          "entries_at_x": 20,
+          "formula": "U1",
+          "nsites": 8,
+          "phase": "oqmd-2032972",
+          "phase_kind": "structure",
+          "spacegroup_number": 62,
+          "spacegroup_symbol": "Pnma",
+          "theoretical": true,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "is_stable is derived by the extraction, not an upstream flag, so comparing it against a hull recomputed from the same energies tests the derivation rather than the data",
+    "max_abs_delta_energy_above_hull": 2.991183134515296e-10,
+    "only_mp_stable": [
+      "oqmd-675537"
+    ],
+    "only_ours_stable": [],
+    "stable_sets_match": false
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "derived",
+    "mp_release": "qmdb_v1_8_022026",
+    "observed_at": "2026-09-05T17:02:03Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "2a9393262c52ec35600424236c352a4cdb3291c8b25c1c6588f5e62abe8e0d8d",
+    "stability_tol": 0.0001,
+    "thermo_type": "standard"
+  },
+  "reference": {
+    "kind": "dft_fitted_elemental_reference_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "TI-U",
+  "x_element": "U"
+}

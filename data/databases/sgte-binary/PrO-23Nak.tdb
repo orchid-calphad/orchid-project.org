@@ -1,0 +1,217 @@
+$
+$ Database for Pr-O from R. Nakazawa et al. 2023.
+$
+$ R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+$ Calphad, 83, 102636(2023).
+$
+$ Dataset created 2024.02.08 by Bengt Hallstedt.
+$
+$ Modified from 07Zin using own data on the Pr2O3 liquidus.
+$
+$ This is rather simplified compared to 16McM, where Pr+4 ions are included.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT PR   DHCP                      140.9077    7418.232   73.9313 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  PR+3                               PR/+3 !
+ SPECIE  PRO                                PR1O1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : PR+3 : O-2 VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PR : VA : !
+$
+$ Prototype alpha-La (SB A3', hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : PR : !
+$
+$ Prototype A-La2O3 (hP5, P-3m1)
+$
+ PHASE A_R2O3_D52:I % 2 2 3 !
+ CONST A_R2O3_D52:I : PR+3 : O-2 : !
+$
+$ Prototype H-La2O3 (hP10, P6_3/mmc)
+$
+ PHASE H_R2O3:I % 2 2 3 !
+ CONST H_R2O3:I : PR+3 : O-2 : !
+$
+$ Prototype Nd2O3 (cI26, Im-3m)
+$
+ PHASE X_R2O3:I % 2 2 3 !
+ CONST X_R2O3:I : PR+3 : O-2 : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : O O2 O3 PR PRO : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE GAS !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$PAR  G(LIQUID,O),,                     +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+ FUNCTION GSOLOO    298.15  +GHSEROO+65*T;                             6000 N !
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Pr
+$
+ PAR  G(DHCP,PR),,                      +GHSERPR;                3800 N 91Din !
+ PAR  G(BCC_A2,PR:VA),,                 +GBCCPR;                 3800 N 91Din !
+$PAR  G(LIQUID,PR),,                    +GLIQPR;                 3800 N 91Din !
+$
+ PAR  G(ION,PR+3:VA),,                  +GLIQPR;                 3800 N 91Din !
+$
+ PAR  G(GAS,PR),,                       +F14629T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERPR   298.15  -18803.379+356.587384*T-68.9176*T*LN(T)
+       +0.072929*T**2-2.5184333E-05*T**3+507385*T**(-1);
+       500.00  Y  -7246.848+82.427384*T-22.8909*T*LN(T)
+       -0.00497126*T**2-1.22951E-06*T**3;
+       800.00  Y  +95411.023-1073.55111*T+146.764*T*LN(T)
+       -0.1288205*T**2+1.5592233E-05*T**3-11588800*T**(-1);
+      1068.00  Y  -481663.131+4234.33311*T-606.120311*T*LN(T)
+       +0.305181506*T**2-3.0994702E-05*T**3+70926840*T**(-1);
+      1204.00  Y  -20014.678+227.685155*T-42.9697*T*LN(T);
+      3800.00  N !
+ FUNCTION GBCCPR    298.15  -2863.651+28.274853*T-13.7470527*T*LN(T)
+       -0.02284377*T**2+3.542468E-06*T**3-87486*T**(-1);
+      1068.00  Y  -11985.919+188.657121*T-38.451*T*LN(T);
+      1204.00  Y  +953.224+100.826281*T-26.6824313*T*LN(T)
+       -0.004106833*T**2+1.76214E-07*T**3-2473024*T**(-1);
+      3800.00  N !
+ FUNCTION GLIQPR    298.15  +3848.961-29.099465*T-4.7344931*T*LN(T)
+       -0.035119723*T**2+5.427467E-06*T**3-207406*T**(-1);
+      1068.00  Y  -10539.574+219.508805*T-42.9697*T*LN(T);
+      3800.00  N !
+$ Pr(g)
+ FUNCTION F14629T   298.15  +350995.389-89.1034159*T-14.16287*T*LN(T)
+       -0.01141872*T**2+1.44039167E-06*T**3-51244.05*T**(-1);
+       700.00  Y  +341411.209+41.130672*T-33.93032*T*LN(T)
+       +0.006738815*T**2-1.69407667E-06*T**3+821625*T**(-1);
+      1500.00  Y  +483669.097-945.571862*T+99.88821*T*LN(T)
+       -0.04932399*T**2+2.721675E-06*T**3-27577185*T**(-1);
+      2200.00  Y  +320228.724-189.330548*T+3.557685*T*LN(T)
+       -0.02456199*T**2+1.55794483E-06*T**3+23659165*T**(-1);
+      2900.00  Y  -96331.9787+1573.44308*T-218.353*T*LN(T)
+       +0.027912925*T**2-7.65952667E-07*T**3+1.7007825E+08*T**(-1);
+      4600.00  Y  +449046.253+49.547987*T-37.20254*T*LN(T)
+       +0.001010353*T**2-1.26796233E-08*T**3-1.397395E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+$ Calphad, 83, 102636(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Modified from 07Zin using own data on the Pr2O3 liquidus.
+$
+$ This is rather simplified compared to 16McM, where Pr+4 ions are included.
+$
+ PAR  G(ION,PR+3:O-2),,                 +GPR2O3L;,,                   N 07Zin !
+ PAR  L(ION,PR+3:O-2,VA;0),,            +54527;,,                     N 23Nak !
+ PAR  L(ION,PR+3:O-2,VA;1),,            -24961;,,                     N 23Nak !
+$
+ PAR  G(A_R2O3_D52,PR+3:O-2),,          +GPR2O3A;,,                   N 07Zin !
+ PAR  G(H_R2O3,PR+3:O-2),,              +GPR2O3H;,,                   N 07Zin !
+ PAR  G(X_R2O3,PR+3:O-2),,              +GPR2O3X;,,                   N 07Zin !
+$
+ PAR  G(GAS,PRO),,                      +F13393T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GPR2O3A   298.15  -1851548+683.38*T-122.78*T*LN(T)
+       -0.01236*T**2-1.3E-07*T**3+638000*T**(-1)-1.0E+07*T**(-2);
+      6000.00  N !
+ FUNCTION GPR2O3B   298.15  +GPR2O3A+839+1.798*T;                      6000 N !
+ FUNCTION GPR2O3C   298.15  +GPR2O3A+1320+6.847*T;                     6000 N !
+ FUNCTION GPR2O3H   298.15  +GPR2O3A+32909-13.986*T;                   6000 N !
+ FUNCTION GPR2O3X   298.15  +GPR2O3A+44071-18.555*T;                   6000 N !
+ FUNCTION GPR2O3L   298.15  +GPR2O3A+139494-55.641*T;                  6000 N !
+$ PrO(g)
+ FUNCTION F13393T   298.15  -152548.378-85.4508187*T-22.78072*T*LN(T)
+       -0.012636945*T**2-7.791795E-07*T**3-123037.05*T**(-1);
+       600.00  Y  -144256.671-228.675077*T-.1305746*T*LN(T)
+       -0.039374065*T**2+5.00061333E-06*T**3-672071*T**(-1);
+      1100.00  Y  -207819.257+374.214258*T-86.12392*T*LN(T)
+       +0.01234186*T**2-8.3196E-07*T**3+8138855*T**(-1);
+      2400.00  Y  -115779.611-76.3054026*T-28.10862*T*LN(T)
+       -0.004207244*T**2+6.80211167E-08*T**3-19752850*T**(-1);
+      5500.00  Y  +72204.7044-559.147092*T+28.63284*T*LN(T)
+       -0.011838495*T**2+2.60637333E-07*T**3-1.3706395E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  97SUB  'SGTE Substance Database, version 1997'
+  07Zin  'M. Zinkevich, Prog. Mater. Sci., 52, 597-647(2007); Pr-O'
+  23Nak  'R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+          Calphad, 83, 102636(2023); Pr-O'
+!

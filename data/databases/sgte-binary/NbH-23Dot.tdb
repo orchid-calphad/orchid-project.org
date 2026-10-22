@@ -1,0 +1,179 @@
+$
+$ Database for Nb-H from M. Dottor et al. 2023.
+$
+$ M. Dottor, J.-C. Crivello, J.-M. Joubert, Calphad, 83, 102617(2023).
+$
+$ Dataset created 2024.03.10 by Bengt Hallstedt.
+$
+$ Non-standard model for hcp.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT H    1/2_MOLE_H2(G)              1.0079    4234.      65.285  ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  H2                                 H2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : H NB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB : H VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NB% : H VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 2 !
+ CONST HCP_A3 : NB : H VA% : !
+$
+$ Prototype NbH (oP8, Pnnn, 48), beta
+$ (also suggested in Pauling file: Prototype Ta2H (oC8, C222))
+$
+ PHASE NBH % 2 1 1 !
+ CONST NBH : NB : H% VA : !
+$
+$ Prototype CaF2 (cF12, Fm-3m), delta
+$
+ PHASE NBH2_C1 % 2 1 2 !
+ CONST NBH2_C1 : NB : H% VA : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : NB H H2 : !
+$
+ PHASE H2GAS % 1 1 !
+ CONST H2GAS : H2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ H
+$
+$ H is not included in unary
+$
+ PAR  G(LIQUID,H),,                     +GHSERHH
+             +8035+25*T+2*T*LN(T);,,                                  N 06Qiu !
+$
+ PAR  G(H2GAS,H2),,                     +GHSERH2+RTLNP;,,             N 97SUB !
+$
+ PAR  G(GAS,H),,                        +F10383T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,H2),,                       +GHSERH2+RTLNP;,,             N 97SUB !
+$
+$ H(g)
+ FUNCTION F10383T   298.15  +211801.621+24.4989821*T-20.78611*T*LN(T);
+      6000.00  N !
+$ H2(g)
+ FUNCTION GHSERH2   298.15  -9522.9741+78.5273879*T-31.35707*T*LN(T)
+       +0.0027589925*T**2-7.46390667E-07*T**3+56582.3*T**(-1);
+      1000.00  Y  +180.108664-15.6128256*T-17.84857*T*LN(T)
+       -0.00584168*T**2+3.14618667E-07*T**3-1280036*T**(-1);
+      2100.00  Y  -18840.1663+92.3120255*T-32.05082*T*LN(T)
+       -0.0010728235*T**2+1.14281783E-08*T**3+3561002.5*T**(-1);
+      6000.00  N !
+ FUNCTION GHSERHH   298.15  +0.5*GHSERH2;                              6000 N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(GAS,NB),,                       +F13077T+RTLNP;,,             N 97SUB !
+$
+ PAR  G(NBH,NB:VA),,                    +GFCCNB+5000;,,               N 23Dot !
+ PAR  G(NBH2_C1,NB:VA),,                +GFCCNB;,,                    N 23Dot !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCNB    298.15  +GHSERNB+13500+1.7*T;                      6000 N !
+$ Nb(g)
+ FUNCTION F13077T   298.15  +712766.598+48.6410598*T-35.6334*T*LN(T)
+       +0.0078268*T**2-9.99561333E-07*T**3+58000.7*T**(-1);
+      1000.00  Y  +718250.236-5.01491454*T-27.90045*T*LN(T)
+       +0.0026618495*T**2-3.10671333E-07*T**3-710928.5*T**(-1);
+      2800.00  Y  +747948.465-181.458415*T-4.752182*T*LN(T)
+       -0.004599283*T**2+9.27975E-08*T**3-6445975*T**(-1);
+      6400.00  Y  +744601.843-140.597978*T-9.951641*T*LN(T)
+       -0.0035367055*T**2+6.06727333E-08*T**3-16843960*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Dottor, J.-C. Crivello, J.-M. Joubert, Calphad, 83, 102617(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000K.
+$
+$ Non-standard model for hcp.
+$
+ PAR  G(LIQUID,H,NB;0),,                +UN_ASS;,,                    N !
+$
+ PAR  G(BCC_A2,NB:H),,                  +GHSERNB+3*GHSERHH
+             +199994+196.2*T;,,                                       N 23Dot !
+ PAR  L(BCC_A2,NB:H,VA;0),,             -563483;,,                    N 23Dot !
+ PAR  L(BCC_A2,NB:H,VA;1),,             -284063;,,                    N 23Dot !
+ PAR  L(BCC_A2,NB:H,VA;2),,             +31269;,,                     N 23Dot !
+ PAR  L(BCC_A2,NB:H,VA;3),,             +52413;,,                     N 23Dot !
+$
+ PAR  G(NBH,NB:H),,                     +GHSERNB+GHSERHH
+             -45226+68.55*T;,,                                        N 23Dot !
+ PAR  L(NBH,NB:H,VA;0),,                -31513+4.92*T;,,              N 23Dot !
+ PAR  L(NBH,NB:H,VA;1),,                +14993;,,                     N 23Dot !
+$
+ PAR  G(NBH2_C1,NB:H),,                 +GHSERNB+2*GHSERHH
+             -63104+128.56*T;,,                                       N 23Dot !
+$
+$ Metastable
+$
+ PAR  G(HCP_A3,NB:H),,                  +GHSERNB+2*GHSERHH
+             -4.123+130.8*T;,,                                        N 23Dot !
+ PAR  L(HCP_A3,NB:H,VA;0),,             +ZERO;,,                      N 23Dot !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  H-NB(TDB -* +GAS +BCC_A2 +NBH2_C1 +NBH ;G5 C_S:BCC/NB:H
+  ;P3 TMM:300/1000 STP:.9/340/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  06Qiu  'C. Qiu, S.M. Opalka, G.B. Olson, D.L. Anton,
+          Int. J. Mater. Res., 97, 845-53(2006); Na-H'
+  23Dot  'M. Dottor, J.-C. Crivello, J.-M. Joubert,
+          Calphad, 83, 102617(2023); Nb-H'
+!

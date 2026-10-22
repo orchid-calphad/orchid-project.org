@@ -1,0 +1,213 @@
+$
+$ Database for Ru-O from S. Gosse et al. 2018.
+$
+$ S. Gosse, S. Bordier, C. Gueneau, E. Brackx, R. Domenger, J. Rogez,
+$ J. Nucl. Mater., 500, 252-64(2018).
+$
+$ Dataset created 2018.08.29 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ There are no parameters for liquid RuO2 included in the paper.
+$ In the paper some O solubility in liquid Ru is shown, but this requires
+$ parameters for liquid RuO2 at least.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT RU   HCP_A3                    101.07      4602.4     28.6144 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  RU+4                               RU/+4 !
+ SPECIE  RUO                                RU1O1 !
+ SPECIE  RUO2                               RU1O2 !
+ SPECIE  RUO3                               RU1O3 !
+ SPECIE  RUO4                               RU1O4 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : RU+4 : O-2 VA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : RU : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : RU : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : RU : VA : !
+$
+$ Prototype TiO2 (tP6, P4_2/mnm)
+$
+ PHASE RUO2_C4:I % 2 1 2 !
+ CONST RUO2_C4:I : RU+4 : O-2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : O O2 O3 RU RUO RUO2 RUO3 RUO4 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE GAS !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+ PAR  G(ION,O),,                        +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$PAR  G(LIQUID,O),,                     +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+ FUNCTION GSOLOO    298.15  +GHSEROO+65*T;                             6000 N !
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ru
+$
+$ BCC_A2 revised in unary 4.4
+$
+ PAR  G(HCP_A3,RU:VA),,                 +GHSERRU;                4500 N 91Din !
+ PAR  G(FCC_A1,RU:VA),,                 +GHSERRU+12500-2.4*T;    4500 N 91Din !
+ PAR  G(BCC_A2,RU:VA),,                 +GHSERRU+21500-5.05*T;   4500 N 01SGUN !
+$PAR  G(BCC_A2,RU:VA),,                 +GHSERRU+26500-6.2*T;    4500 N 91Din !
+$PAR  G(LIQUID,RU),,                    +GLIQRU;                 4500 N 91Din !
+$
+ PAR  G(ION,RU+4:VA),,                  +GLIQRU;                 4500 N 91Din !
+$
+ PAR  G(GAS,RU),,                       +F14820T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERRU   298.15  -7561.873+127.866233*T-22.9143287*T*LN(T)
+       -0.004062566*T**2+1.7641E-07*T**3+56377*T**(-1);
+      1500.00  Y  -59448.103+489.516214*T-72.3241219*T*LN(T)
+       +0.018726245*T**2-1.952433E-06*T**3+11063885*T**(-1);
+      2607.00  Y  -38588773+168610.517*T-21329.705*T*LN(T)
+       +5.221639*T**2-2.40245985E-04*T**3+1.30829926E+10*T**(-1);
+      2740.00  Y  -55768.304+364.482314*T-51.8816*T*LN(T);
+      4500.00  N !
+ FUNCTION GLIQRU    298.15  +27480.616-8.398748*T+GHSERRU;
+       800.00  Y  +50827.232-179.818561*T+19.539341*T*LN(T)
+       -0.026524167*T**2+1.667839E-06*T**3-3861125*T**(-1);
+      2607.00  Y  -17161.807+349.673561*T-51.8816*T*LN(T);
+      4500.00  N !
+$ Ru(g)
+ FUNCTION F14820T   298.15  +647068.786-84.8380982*T-14.23411*T*LN(T)
+       -0.012450605*T**2+2.17271667E-06*T**3-45362.465*T**(-1);
+       800.00  Y  +634552.466+66.8337672*T-36.79786*T*LN(T)
+       +0.00570265*T**2-5.7829E-07*T**3+1261186.5*T**(-1);
+      2000.00  Y  +668049.819-147.367387*T-8.154724*T*LN(T)
+       -0.00501343*T**2+1.64185617E-07*T**3-5934605*T**(-1);
+      4400.00  Y  +629646.768+22.3232894*T-29.35906*T*LN(T)
+       -5.44767E-04*T**2+7.84363167E-10*T**3+2379071.5*T**(-1);
+      8600.00  Y  +784704.836-262.769717*T+2.696574*T*LN(T)
+       -0.003465424*T**2+5.02576167E-08*T**3-1.3718125E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Gosse, S. Bordier, C. Gueneau, E. Brackx, R. Domenger, J. Rogez,
+$ J. Nucl. Mater., 500, 252-64(2018).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ There are no parameters for liquid RuO2 included in the paper.
+$ In the paper some O solubility in liquid Ru is shown, but this requires
+$ parameters for liquid RuO2 at least.
+$
+ PAR  G(ION,RU+4:O-2),,                 +UN_ASS;,,                    N !
+ PAR  L(ION,RU+4:O-2,VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(RUO2_C4,RU+4:O-2),,             +GRUO2S;,,                    N 18Gos !
+$
+ PAR  G(GAS,RUO),,                      +F13440T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,RUO2),,                     +F13812T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,RUO3),,                     +F14077T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,RUO4),,                     +F14205T+RTLNP;,,             N 97SUB !
+$
+$ RuO2(s)
+ FUNCTION GRUO2S    298.15  -343228.92+463*T-73.487961*T*LN(T)
+       -0.0080607*T**2+924554.189*T**(-1);
+      6000.00  N !
+$ RuO(g)
+ FUNCTION F13440T   298.15  +364285.794-6.32289774*T-34.7983*T*LN(T)
+       -0.00125457*T**2+1.03763167E-07*T**3+183715.5*T**(-1);
+      2500.00  N !
+$ RuO2(g)
+ FUNCTION F13812T   298.15  +115791.654+109.89529*T-55.3878*T*LN(T)
+       -6.1484E-04*T**2+542740*T**(-1);
+      2500.00  N !
+$ RuO3(g)
+ FUNCTION F14077T   298.15  -107768.732+261.32494*T-78.6592*T*LN(T)
+       -0.0012552*T**2+889100*T**(-1);
+      2000.00  N !
+$ RuO4(g)
+ FUNCTION F14205T   298.15  -222665.567+405.487358*T-101.7967*T*LN(T)
+       -0.00152716*T**2+1204992*T**(-1);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  97SUB  'SGTE Substance Database, version 1997'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  18Gos  'S. Gosse, S. Bordier, C. Gueneau, E. Brackx, R. Domenger, J. Rogez,
+          J. Nucl. Mater., 500, 252-64(2018); Ru-O'
+!

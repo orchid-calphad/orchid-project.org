@@ -1,0 +1,221 @@
+$
+$ Database for Mg-C from B. Hu et al. 2010.
+$
+$ B. Hu, Y. Du, H. Xu, W. Sun, W.W. Zhang, D. Zhao,
+$ J. Mining Metall. B, 46, 97-103(2010).
+$
+$ Dataset created 2018.07.28 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$
+$ Equilibria with gas differ from paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  C2                                 C2 !
+ SPECIE  C3                                 C3 !
+ SPECIE  C4                                 C4 !
+ SPECIE  C5                                 C5 !
+ SPECIE  C60                                C60 !
+ SPECIE  MG2                                MG2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C MG : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MG : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MG : C VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : MG% : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype Mg2C3 (oP10, Pnnm)
+$
+ PHASE MG2C3 % 2 2 3 !
+ CONST MG2C3 : MG : C : !
+$
+$ Prototype MgC2 (tP6, P4_2/mnm)
+$
+ PHASE MGC2 % 2 1 2 !
+ CONST MGC2 : MG : C : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : C C2 C3 C4 C5 C60 MG MG2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ PAR  G(GAS,C),,                        +F3880T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C2),,                       +F4635T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C3),,                       +F5109T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C4),,                       +F5190T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C5),,                       +F5273T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C60),,                      +F3869T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ C(g)
+ FUNCTION F3880T     298.15  +710430.933-17.7062915*T-20.97529*T*LN(T)
+       +1.998237E-04*T**2-3.34617167E-08*T**3+1680.6515*T**(-1);
+      3400.00  Y  +698015.711+2.57175229*T-23.05071*T*LN(T)
+       -6.04604E-05*T**2+6.74291667E-10*T**3+8558245*T**(-1);
+     10000.00  Y  +736197.571-32.7975305*T-19.44529*T*LN(T)
+       -1.5396035E-04*T**2-6.15402167E-11*T**3-56188350*T**(-1);
+     20000.00  N !
+$ C2(g)
+ FUNCTION F4635T     298.15  +803005.137+419.91537*T-97.48141*T*LN(T)
+       +0.08202995*T**2-1.97357E-05*T**3+690749.5*T**(-1);
+       500.00  Y  +826732.963-2.78396986*T-30.08349*T*LN(T)
+       -0.002621389*T**2+8.30959667E-08*T**3-868501*T**(-1);
+      4300.00  Y  +850321.492-26.7776258*T-27.96957*T*LN(T)
+       -0.0019408995*T**2+3.222655E-08*T**3-22380050*T**(-1);
+     12000.00  Y  +409662.375+520.538141*T-86.66656*T*LN(T)
+       +0.0015642485*T**2-7.28093667E-09*T**3+6.04612E+08*T**(-1);
+     20000.00  N !
+$ C3(g)
+ FUNCTION F5109T     298.15  +829826.554-14.7696342*T-32.21563*T*LN(T)
+       -0.014548565*T**2+1.77806833E-06*T**3-100277.6*T**(-1);
+      1000.00  Y  +809388.443+179.252911*T-59.93982*T*LN(T)
+       +0.0025413955*T**2-2.54139667E-07*T**3+2769455*T**(-1);
+      2800.00  Y  +959399.017-367.175864*T+7.286391*T*LN(T)
+       -0.010483215*T**2+2.00694833E-07*T**3-58720050*T**(-1);
+      5100.00  Y  +645204.419+237.848567*T-60.73106*T*LN(T)
+       -0.0047721765*T**2+1.3846755E-07*T**3+1.945987E+08*T**(-1);
+      8000.00  Y  -79243.2065+1580.271*T-211.8741*T*LN(T)
+       +0.009202285*T**2-1.030498E-07*T**3+8.44019E+08*T**(-1);
+     10000.00  N !
+$ C4(g)
+ FUNCTION F5190T     298.15  +1015583.43+114.927797*T-53.39543*T*LN(T)
+       -0.01399763*T**2+8.26027167E-07*T**3+181008.25*T**(-1);
+      2500.00  Y  +937071.116+522.054722*T-106.1735*T*LN(T)
+       +0.0016641645*T**2-4.03015E-08*T**3+21906740*T**(-1);
+      7000.00  Y  +974994.002+406.652033*T-92.4518*T*LN(T)
+       -2.6888155E-04*T**2+7.07303167E-09*T**3+7587140*T**(-1);
+     10000.00  N !
+$ C5(g)
+ FUNCTION F5273T     298.15  +1028316.51+169.994577*T-62.97185*T*LN(T)
+       -0.0317015*T**2+4.09694E-06*T**3+186275.3*T**(-1);
+       900.00  Y  +999750.246+470.150389*T-106.5965*T*LN(T)
+       -0.0014783715*T**2+7.07236167E-08*T**3+3747842.5*T**(-1);
+      3500.00  Y  +990603.917+513.736613*T-112.1708*T*LN(T)
+       -6.611165E-06*T**2+1.10554567E-10*T**3+6565820*T**(-1);
+     10000.00  N !
+$ C60(g)
+ FUNCTION F3869T     298.15  +2466802.51+88.4522291*T+10.293*T*LN(T)
+       -1.15472*T**2+1.77008333E-04*T**3+4621630*T**(-1);
+       800.00  Y  +1709986.12+9262.2894*T-1356.31*T*LN(T)
+       -0.0366229*T**2+1.98371667E-06*T**3+84578000*T**(-1);
+      3300.00  N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+$PAR  G(CBCC_A12,MG:VA),,               +GHSERMG
+$            +4602.4-3.011*T;                                    3000 N 91Din !
+$PAR  G(CUB_A13,MG:VA),,                +GHSERMG+5000-3*T;       3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(GAS,MG),,                       +F12309T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,MG2),,                      +F12397T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+$ Mg(g)
+ FUNCTION F12309T   298.15  +140825.883-8.26177982*T-20.96302*T*LN(T)
+       +1.331861E-04*T**2-1.51554617E-08*T**3+5221.91*T**(-1);
+      2900.00  Y  +141959.02+20.1923541*T-25.1271*T*LN(T)
+       +0.002179723*T**2-1.502275E-07*T**3-3744678*T**(-1);
+      5400.00  Y  +458455.469-794.05688*T+70.54811*T*LN(T)
+       -0.010649025*T**2+1.716475E-07*T**3-1.996814E+08*T**(-1);
+      9200.00  Y  -315972.848+423.179252*T-63.73726*T*LN(T)
+       -2.847232E-04*T**2+2.15099667E-08*T**3+6.39436E+08*T**(-1);
+     10000.00  N !
+$ Mg2(g)
+ FUNCTION F12397T   298.15  +281408.793-104.38489*T-20.63169*T*LN(T)
+       -6.14869E-05*T**2+4.25457833E-09*T**3-156733.25*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ B. Hu, Y. Du, H. Xu, W. Sun, W.W. Zhang, D. Zhao,
+$ J. Mining Metall. B, 46, 97-103(2010).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Equilibria with gas differ from paper.
+$
+ PAR  L(LIQUID,C,MG;0),,                -113771.49;,,                 N 10Hu !
+$
+ PAR  G(MG2C3,MG:C),,                   +2*GHSERMG+3*GHSERCC
+             +3492.85-13.0563*T;,,                                    N 10Hu !
+ PAR  G(MGC2,MG:C),,                    +GHSERMG+2*GHSERCC
+             +1738.23-6.51873*T;,,                                    N 10Hu !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  10Hu   'B. Hu, Y. Du, H. Xu, W. Sun, W.W. Zhang, D. Zhao,
+          J. Mining Metall. B, 46, 97-103(2010); Mg-C'
+!

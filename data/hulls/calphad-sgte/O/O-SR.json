@@ -1,0 +1,219 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "O",
+    "SR"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "O": {
+          "energy": -30548.980163362416,
+          "phase": "O2GAS"
+        },
+        "SR": {
+          "energy": -16605.16688855467,
+          "phase": "FCC_A1"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -635882.5545103158
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -174.49532426104102
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "O2GAS",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -583856.7735818863,
+          "right": {
+            "phase": "SRO2_C11A",
+            "x": 0.3333333333333333
+          },
+          "slope": -583856.7735818863,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -43739.999357579974,
+            "slope": -504662.55643757584
+          },
+          "entropy": {
+            "intercept": -69.9452778849108,
+            "slope": 35.340509393691384
+          },
+          "intercept": -22885.814756193664,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SRO2_C11A",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -22885.814756193664,
+          "mu_b_rel": -538085.144069499,
+          "right": {
+            "phase": "SRO_B1",
+            "x": 0.5
+          },
+          "slope": -515199.3293133053,
+          "x_hi": 0.5,
+          "x_lo": 0.3333333333333333
+        },
+        {
+          "enthalpy": {
+            "intercept": -592142.5551527358,
+            "slope": 592142.5551527358
+          },
+          "entropy": {
+            "intercept": -104.55004637613021,
+            "slope": 104.55004637613021
+          },
+          "intercept": -560970.9588256927,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SRO_B1",
+            "x": 0.5
+          },
+          "mu_a_rel": -560970.9588256927,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "FCC_A1",
+            "x": 1.0
+          },
+          "slope": 560970.9588256927,
+          "x_hi": 1.0,
+          "x_lo": 0.5
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "O2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -194618.92452729543,
+          "energy_per_atom": -194618.92452729543,
+          "enthalpy": -211960.85150343858,
+          "entries_at_x": 1,
+          "entropy": -58.16510808701367,
+          "formula": "",
+          "nsites": null,
+          "phase": "SRO2_C11A",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -280485.4794128463,
+          "energy_per_atom": -280485.4794128463,
+          "enthalpy": -296071.2775763679,
+          "entries_at_x": 1,
+          "entropy": -52.275023188065106,
+          "formula": "",
+          "nsites": null,
+          "phase": "SRO_B1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "SrO-96Ris-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:02:25Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/SrO-96Ris-LB.tdb",
+    "source_sha256": "a0cbfdaeb5428ddd43c1bd812ea869a15614c64e004ab8645d4320f389dfee10"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "O-SR",
+  "x_element": "SR"
+}

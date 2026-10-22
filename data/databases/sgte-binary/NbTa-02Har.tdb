@@ -1,0 +1,116 @@
+$
+$ Database for Nb-Ta from K.C. Hari Kumar et al. 2002
+$
+$ K.C. Hari Kumar, T. Van Rompaey, P. Wollants, Z. Metallkd., 93, 1146-53(2002).
+$
+$ Dataset created 2017.05.14 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+ ELEMENT TA   BCC_A2                    180.9479    5681.872   41.4718 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NB TA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB TA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NB% TA% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NB TA : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ta
+$
+ PAR  G(BCC_A2,TA:VA),,                 +GHSERTA;,,                   N 91Din !
+ PAR  G(FCC_A1,TA:VA),,                 +GHSERTA+16000+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,TA:VA),,                 +GHSERTA+12000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,TA),,                    +GLIQTA;,,                    N 91Din !
+$
+ FUNCTION GHSERTA   298.15  -7285.889+119.139857*T-23.7592624*T*LN(T)
+       -0.002623033*T**2+1.70109E-07*T**3-3293*T**(-1);
+      1300.00  Y  -22389.955+243.88676*T-41.137088*T*LN(T)
+       +0.006167572*T**2-6.55136E-07*T**3+2429586*T**(-1);
+      2500.00  Y  +229382.886-722.59722*T+78.5244752*T*LN(T)
+       -0.017983376*T**2+1.95033E-07*T**3-93813648*T**(-1);
+      3290.00  Y  -1042384.01+2985.49125*T-362.159132*T*LN(T)
+       +0.043117795*T**2-1.055148E-06*T**3+5.54714342E+08*T**(-1);
+      6000.00  N !
+ FUNCTION GLIQTA    298.15  +29160.975-7.578729*T+GHSERTA;
+      1000.00  Y  +43884.339-61.981795*T+0.0279523*T*LN(T)
+       -0.012330066*T**2+6.14599E-07*T**3-3523338*T**(-1);
+      3290.00  Y  -6314.543+258.110873*T-41.84*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K.C. Hari Kumar, T. Van Rompaey, P. Wollants, Z. Metallkd., 93, 1146-53(2002).
+$
+$ Checked against paper. Checked at 6000K.
+$
+ PAR  L(LIQUID,NB,TA;0),,               +427;,,                       N 02Har !
+ PAR  L(BCC_A2,NB,TA:VA;0),,            +583;,,                       N 02Har !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,NB,TA:VA;0),,            +583;,,                       N 02Har !
+ PAR  L(HCP_A3,NB,TA:VA;0),,            +583;,,                       N 02Har !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NB-TA(TDB -* +LIQUID +BCC_A2 ;P3 TMM:500/3500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  02Har  'K.C. Hari Kumar, T. Van Rompaey, P. Wollants,
+          Z. Metallkd., 93, 1146-53(2002); Nb-Ta'
+!

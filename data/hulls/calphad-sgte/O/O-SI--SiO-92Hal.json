@@ -1,0 +1,177 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "O",
+    "SI"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "O": {
+          "energy": -30548.98042755232,
+          "phase": "O2GAS"
+        },
+        "SI": {
+          "energy": -5608.212012224458,
+          "phase": "DIAMOND_A4"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -910699.9955238476
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -182.27358622179153
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "O2GAS",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -856355.1257918203,
+          "right": {
+            "phase": "QUARTZ",
+            "x": 0.3333333333333333
+          },
+          "slope": -856355.1257918203,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -455349.99776192376,
+            "slope": 455349.99776192376
+          },
+          "entropy": {
+            "intercept": -91.13679311089575,
+            "slope": 91.13679311089575
+          },
+          "intercept": -428177.5628959101,
+          "kind": "two_phase",
+          "left": {
+            "phase": "QUARTZ",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -428177.5628959101,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "DIAMOND_A4",
+            "x": 1.0
+          },
+          "slope": 428177.5628959101,
+          "x_hi": 1.0,
+          "x_lo": 0.3333333333333333
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "O2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -285451.70859727345,
+          "energy_per_atom": -285451.70859727345,
+          "enthalpy": -303566.66517461586,
+          "entries_at_x": 1,
+          "entropy": -60.75786207393051,
+          "formula": "",
+          "nsites": null,
+          "phase": "QUARTZ",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "DIAMOND_A4",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "SiO-92Hal",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:00:59Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/SiO-92Hal.tdb",
+    "source_sha256": "243e703636b34ae02c6403902c61aa1a555872ee4b8fdd9d76ffa304a104875a"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "O-SI",
+  "x_element": "SI"
+}

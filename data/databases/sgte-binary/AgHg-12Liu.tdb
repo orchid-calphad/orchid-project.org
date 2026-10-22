@@ -1,0 +1,165 @@
+$
+$ Database for Ag-Hg from Y. Liu et al. 2012.
+$
+$ Y. Liu, G. Wang, J. Wang, Y. Chen, Z. Long,
+$ Thermochim. Acta, 547, 83-88(2012).
+$
+$ Dataset created 2018.03.17 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ Ag11Hg9 is modelled as an intermetallic phase, but should be modelled as
+$ HCP_A3.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AG   FCC_A1                    107.8682    5745.      42.55   ! 
+ ELEMENT HG   LIQUID                    200.59      9342.      75.90   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AG HG : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AG% HG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AG : VA : !
+$
+$ Prototype Hg (hR1, R-3m)
+$
+ PHASE RHOMBO_A10 % 1 1 !
+ CONST RHOMBO_A10 : HG : !
+$
+$ Prototype Mg (hP2, P6_3/mmc)
+$
+ PHASE AG11HG9_A3 % 2 11 9 !
+ CONST AG11HG9_A3 : AG : HG : !
+$
+$ Prototype Ag11Hg15 (cI52, I23, 197)
+$
+ PHASE AG11HG15 % 2 11 15 !
+ CONST AG11HG15 : AG : HG : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ag
+$
+$ CUB_A13 added in unary 3.0
+$ CUB_A13 revised in unary 4.1
+$ BCT_A5 added in unary 4.1
+$
+ PAR  G(FCC_A1,AG:VA),,                 +GHSERAG;                3000 N 91Din !
+ PAR  G(HCP_A3,AG:VA),,                 +GHSERAG+300+0.3*T;      3000 N 91Din !
+ PAR  G(BCC_A2,AG:VA),,                 +GHSERAG+3400-1.05*T;    3000 N 91Din !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG+3400-1.05*T;    3000 N 95Lim !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG
+$            +3765.6-1.8826*T;                                   3000 N 96SGUN !
+$PAR  G(BCT_A5,AG:VA),,                 +GHSERAG+4184.1;         3000 N 96Oh !
+ PAR  G(LIQUID,AG),,                    +GLIQAG;                 3000 N 91Din !
+$
+ FUNCTION GHSERAG   298.15  -7209.512+118.202013*T-23.8463314*T*LN(T)
+       -0.001790585*T**2-3.98587E-07*T**3-12011*T**(-1);
+      1234.93  Y  -15095.252+190.266404*T-33.472*T*LN(T)+1.411773E+29*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQAG    298.15  +11025.076-8.89102*T+GHSERAG-1.033905E-20*T**7;
+      1234.93  Y  -3587.111+180.964656*T-33.472*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Hg
+$
+$ HCP_A3 and TETRAGONAL_A6 added in unary 4.1
+$ FCC_A1 added in unary 5.0
+$
+$ FCC_A1 from 12Liu not included in unary
+$
+ PAR  G(LIQUID,HG)              200.00  +GHSERHG;                2000 N 91Din !
+ PAR  G(RHOMBO_A10,HG)          200.00  +GRHOHG;                 2000 N 91Din !
+$PAR  G(FCC_A1,HG:VA)           200.00  +GHSERHG+5+8.368*T;      2000 N 02Mai !
+ PAR  G(FCC_A1,HG:VA)           200.00  +GRHOHG+1000;            2000 N 12Liu !
+$PAR  G(HCP_A3,HG:VA)           200.00  +GRHOHG+200+0.7*T;       2000 N 95Yan !
+$PAR  G(TETRAGONAL_A6,HG)       200.00  +GRHOHG
+$            +208.68+1.765592*T;                                 2000 N 95Yan !
+$
+ FUNCTION GHSERHG   200.00  +82356.855-3348.19466*T+618.193308*T*LN(T)
+       -2.0282337*T**2+0.00118398213*T**3-2366612*T**(-1);
+       234.32  Y  -8961.207+135.232291*T-32.257*T*LN(T)
+       +0.0097977*T**2-3.20695E-06*T**3+6670*T**(-1);
+       400.00  Y  -7970.627+112.33345*T-28.414*T*LN(T)
+       +0.00318535*T**2-1.077802E-06*T**3-41095*T**(-1);
+       700.00  Y  -7161.338+90.797305*T-24.87*T*LN(T)
+       -0.00166775*T**2+8.737E-09*T**3-27495*T**(-1);
+      2000.00  N !
+ FUNCTION GRHOHG    200.00  -10668.401+123.274598*T-28.847*T*LN(T)
+       +0.01699705*T**2-2.4555667E-05*T**3+13330*T**(-1);
+       234.32  Y  -11425.394+135.928158*T-30.2091*T*LN(T)
+       +0.00107555*T**2-2.28298E-07*T**3+35545*T**(-1);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Liu, G. Wang, J. Wang, Y. Chen, Z. Long,
+$ Thermochim. Acta, 547, 83-88(2012).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Ag11Hg9 is modelled as an intermetallic phase, but should be modelled as
+$ HCP_A3.
+$
+ PAR  L(LIQUID,AG,HG;0),,               -12300.7+8.88*T;,,            N 12Liu !
+ PAR  L(LIQUID,AG,HG;1),,               -10490.8;,,                   N 12Liu !
+ PAR  L(LIQUID,AG,HG;2),,               -950.955;,,                   N 12Liu !
+$
+ PAR  L(FCC_A1,AG,HG:VA;0),,            -16000+13.9*T;,,              N 12Liu !
+ PAR  L(FCC_A1,AG,HG:VA;1),,            -18622.9;,,                   N 12Liu !
+$
+ PAR  G(AG11HG9_A3,AG:HG),,             +11*GHSERAG+9*GRHOHG
+             -85723.6-40.08*T;,,                                      N 12Liu !
+ PAR  G(AG11HG15,AG:HG),,               +11*GHSERAG+15*GRHOHG
+             -85239.5-65.47*T;,,                                      N 12Liu !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Lim  'S.S. Lim, P.L. Rossiter, J.W. Tibballs, Calphad, 19, 131-41(1995),
+          SGTE unary database V.4.1, 1999; Ag'
+  95Yan  'J. Yang, N.J. Silk, A. Watson, A.W. Bryant, T.G. Chart, B.B. Argent,
+          Calphad, 19, 415-30(1995), SGTE unary database V.4.1, 1999; Cd, Hg'
+  96Oh   'C.-S. Oh, J.-H. Shim, B.-J. Lee, D.N. Lee,
+          J. Alloys Compounds, 238, 155-66(1996),
+          SGTE unary database V.4.1, 1999; Ag'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  02Mai  'A. Maitre, J.M. Fiorani, M. Vilasi, J. Phase Equilib.,
+          23, 329-38(2002), SGTE unary database V.5.0, 2009; Hg'
+  12Liu  'Y. Liu, G. Wang, J. Wang, Y. Chen, Z. Long,
+          Thermochim. Acta, 547, 83-88(2012); Hg, Ag-Hg'
+!

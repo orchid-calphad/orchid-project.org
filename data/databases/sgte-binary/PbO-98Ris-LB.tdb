@@ -1,0 +1,322 @@
+$
+$ Database for Pb-O from D. Risold et al. 1998 (Included in LB Vol. 4)
+$
+$ D. Risold, J.-I. Nagata, R.O. Suzuki, J. Phase Equilib., 19, 213-33(1998).
+$
+$ Dataset created 2010.02.20 by Bengt Hallstedt.
+$ 2021.02.03: Modified for use with GES6.
+$
+$ Liquid modified by M. Cancarevic et al. 2005.
+$
+$ There are minor differences (up to 2K) for high temperature liquid equilibria
+$ compared to LB because neutral O is included in the LB ionic liquid.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT PB   FCC_A1                    207.2       6870.      64.80   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  PB+2                               PB/+2 !
+ SPECIE  PB+4                               PB/+4 !
+ SPECIE  PB2                                PB2   !
+ SPECIE  PBO                                PB1O1 !
+ SPECIE  PB2O2                              PB2O2 !
+ SPECIE  PB3O3                              PB3O3 !
+ SPECIE  PB4O4                              PB4O4 !
+ SPECIE  PB5O5                              PB5O5 !
+ SPECIE  PB6O6                              PB6O6 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : PB+2 : O-2 VA : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PB% : O VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PB : O VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : PB : VA : !
+$
+$ Prototype PbO-L (tP4, P4/nmm)
+$ Litharge, red PbO, alpha-PbO
+$
+ PHASE PBO_B10:I % 2 1 1 !
+ CONST PBO_B10:I : PB+2 : O-2 : !
+$
+$ Prototype PbO-M (oP8, Pbma)
+$ Massicot, yellow PbO, beta-PbO
+$
+ PHASE PBO_M:I % 2 1 1 !
+ CONST PBO_M:I : PB+2 : O-2 : !
+$
+$ Prototype Pb3O4-T (tP28, P4_2/mbc)
+$ Minium, red lead
+$
+ PHASE PB3O4:I % 3 2 1 4 !
+ CONST PB3O4:I : PB+2 : PB+4 : O-2 : !
+$
+$ oP58 ?, Pmc2_1 ?
+$
+ PHASE PB12O17:I % 3 7 5 17 !
+ CONST PB12O17:I : PB+2 : PB+4 : O-2 : !
+$
+$ mP62, Pc or P2_1/c
+$
+ PHASE PB12O19:I % 3 5 7 19 !
+ CONST PB12O19:I : PB+2 : PB+4 : O-2 : !
+$
+$ Prototype TiO2 (rutile, tP6, P4_2/mnm)
+$ Plattnerite, PbO2-I, beta-PbO2
+$
+ PHASE PBO2_C4:I % 2 1 2 !
+ CONST PBO2_C4:I : PB+4 : O-2 : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : O O2% O3 PB PB2 PBO PB2O2 PB3O3 PB4O4 PB5O5 PB6O6 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F12575T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F13204T+RTLNP;,,             N 94SUB !
+$
+$PAR  G(LIQUID,O),,                     +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+$PAR  G(HALITE_B1,VA:O-2),,             +ZERO;,,                      N 91Sun !
+$
+$ GBCCOO below from LBall-v7 is incorrect (GHSEROO is for one mole of O)
+$
+$FUNCTION GBCCOO    298.15  +0.5*GHSEROO+1000000;                      3000 N !
+ FUNCTION GSOLOO    298.15  +GHSEROO+65*T;                             6000 N !
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F12575T   298.15  +243206.494-20.8612587*T-21.01555*T*LN(T)
+       +1.2687055E-04*T**2-1.23131283E-08*T**3-42897.09*T**(-1);
+      2950.00  Y  +252301.423-52.0847285*T-17.21188*T*LN(T)
+       -5.413565E-04*T**2+7.64520667E-09*T**3-3973170.5*T**(-1);
+      6000.00  N !
+$ O3(g)
+ FUNCTION F13204T   298.15  +130696.944-37.9096651*T-27.58118*T*LN(T)
+     -0.02763076*T**2+4.60539333E-06*T**3+99530.45*T**(-1);
+     700.00  Y  +114760.623+176.626736*T-60.10286*T*LN(T)
+     +0.00206456*T**2-5.17486667E-07*T**3+1572175*T**(-1);
+    1300.00  Y  +49468.3958+710.094819*T-134.3696*T*LN(T)
+     +0.039707355*T**2-4.10457667E-06*T**3+12362250*T**(-1);
+    2100.00  Y  +866367.075-3566.80563*T+421.2001*T*LN(T)
+     -0.1284109*T**2+5.44768833E-06*T**3-2.1304835E+08*T**(-1);
+    2800.00  Y  +409416.384-1950.70834*T+223.4437*T*LN(T)
+     -0.0922361*T**2+4.306855E-06*T**3-21589870*T**(-1);
+    3500.00  Y  -1866338.6+6101.13383*T-764.8435*T*LN(T)
+     +0.09852775*T**2-2.59784667E-06*T**3+9.610855E+08*T**(-1);
+    4900.00  Y  +97590.0432+890.79836*T-149.9608*T*LN(T)
+     +0.01283575*T**2-3.555105E-07*T**3-2.1699975E+08*T**(-1);
+    6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Pb
+$
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 3.0
+$ RHOMBOHEDRAL_A7, TETRAGONAL_A6 and TET_ALPHA1_A6 revised in unary 4.1
+$ RHOMBO_A10 added in unary 5.0
+$
+ PAR  G(FCC_A1,PB:VA),,                 +GHSERPB;                2100 N 91Din !
+ PAR  G(BCC_A2,PB:VA),,                 +GHSERPB+2400-1.1*T;     2100 N 91Din !
+ PAR  G(HCP_A3,PB:VA),,                 +GHSERPB+300+T;          2100 N 91Din !
+$PAR  G(BCT_A5,PB),,                    +GHSERPB+489+3.52*T;     2100 N 91Din !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+4493.235;       2100 N 98Boa !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+473.23+3.5531*T
+$            -0.0396834*T*LN(T)+2.1489E-05*T**2;                 2100 N 96SGUN !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB
+$            +1903.3-2.0602*T;                                   2100 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB+183.2+0.45314*T
+$            -0.0396834*T*LN(T)+2.149E-06*T**2;                  2100 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+300+T;          2100 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+4900+3.52*T;    2100 N 96SGUN !
+$PAR  G(RHOMBO_A10,PB),,                +GHSERPB+10;             2100 N 09SGUN !
+ PAR  G(LIQUID,PB),,                    +GLIQPB;                 2100 N 91Din !
+$
+ PAR  G(ION,PB+2:VA),,                  +GLIQPB;                 2100 N 91Din !
+$
+ PAR  G(GAS,PB),,                       +PBGAS+RTLNP;,,               N 94SUB !
+ PAR  G(GAS,PB2),,                      +PB2GAS+RTLNP;,,              N 94SUB !
+$
+ FUNCTION GHSERPB   298.15  -7650.085+101.700244*T-24.5242231*T*LN(T)
+       -0.00365895*T**2-2.4395E-07*T**3;
+       600.61  Y  -10531.095+154.243182*T-32.4913959*T*LN(T)
+       +0.00154613*T**2+8.05448E+25*T**(-9);
+      1200.00  Y  +4157.616+53.139072*T-18.9640637*T*LN(T)
+       -0.002882943*T**2+9.8144E-08*T**3-2696755*T**(-1)+8.05448E+25*T**(-9);
+      2100.00  N !
+ FUNCTION GLIQPB    298.15  +4672.124-7.750683*T+GHSERPB-6.019E-19*T**7;
+       600.61  Y  +4853.137-8.067136*T+GHSERPB-8.05448E+25*T**(-9);
+      2100.00  N !
+$ Pb(g) : 
+ FUNCTION PBGAS     298.15  +188835.507-32.9195926*T-21.30643*T*LN(T)
+       +6.551465E-04*T**2-1.4308295E-07*T**3+9337.21*T**(-1);
+      1100.00  Y  +186417.546+1.1925361*T-26.43463*T*LN(T)
+       +0.004836378*T**2-7.36003167E-07*T**3+151170.2*T**(-1);
+      2000.00  Y  +284618.057-556.413056*T+46.90369*T*LN(T)
+       -0.01960158*T**2+7.96842E-07*T**3-24599010*T**(-1);
+      3700.00  Y  -79601.0582+672.214164*T-102.9479*T*LN(T)
+       +0.007928075*T**2-1.55617667E-07*T**3+1.4219575E+08*T**(-1);
+      5200.00  Y  -180900.472+937.376132*T-134.2151*T*LN(T)
+       +0.01228287*T**2-2.70638667E-07*T**3+2.0490225E+08*T**(-1);
+      8200.00  Y  +1427349.52-1723.55876*T+161.2387*T*LN(T)
+           -0.011905435*T**2+1.01633317E-07*T**3-1.440972E+09*T**(-1);
+     10000.00  N !
+$ Pb2(g) : 
+ FUNCTION PB2GAS    298.15  +294478.493-30.0067503*T-36.885*T*LN(T)
+       -0.001044156*T**2-1.93234833E-08*T**3-834.586*T**(-1);
+      1400.00  Y  +308511.945-91.1346139*T-29.46399*T*LN(T)
+       -0.001186672*T**2-2.884025E-07*T**3-3780887*T**(-1);
+      2300.00  Y  +400773.9-645.007872*T+43.76939*T*LN(T)
+       -0.02616466*T**2+1.27101733E-06*T**3-24494475*T**(-1);
+      3500.00  Y  -89794.022+1153.00625*T-178.0027*T*LN(T)
+       +0.018362105*T**2-4.039735E-07*T**3+1.7883455E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From D. Risold et al. 1998  (Included in LB Vol. 4)
+$
+$ D. Risold, J.-I. Nagata, R.O. Suzuki, J. Phase Equilib., 19, 213-33(1998).
+$
+$ Liquid modified by M. Cancarevic et al. 2005.
+$
+$ Checked against LB and papers. Fcc becomes stable for O-rich compositions
+$ (if gas is supressed) above 3773 K.
+$
+$ There are minor differences (up to 2K) for high temperature liquid equilibria
+$ compared to LB because neutral O is included in the LB ionic liquid.
+$
+ PAR  G(ION,PB+2:O-2),,                 +2*GPBOLIQ;              3000 N 98Ris !
+$PAR  L(ION,PB+2:O-2,VA;0),,            +168750-61*T;,,               N 98Ris !
+$PAR  L(ION,PB+2:O-2,VA;1),,            +29510-20*T;,,                N 98Ris !
+ PAR  L(ION,PB+2:O-2,VA;0),,            +240630-39.306*T;,,           N 05Can !
+ PAR  L(ION,PB+2:O-2,VA;1),,            +2206.5;,,                    N 05Can !
+ PAR  L(ION,PB+2:O-2,VA;2),,            -102024;,,                    N 05Can !
+$
+ PAR  G(FCC_A1,PB:O),,                  +GHSERPB+GHSEROO+30000;,,     N 05Can !
+$
+ PAR  G(PBO_B10,PB+2:O-2),,             +GPBORED;                3000 N 98Ris !
+ PAR  G(PBO_M,PB+2:O-2),,               +GPBOYEL;                3000 N 98Ris !
+ PAR  G(PB3O4,PB+2:PB+4:O-2),,          +GPB3O4;                 3000 N 98Ris !
+ PAR  G(PB12O17,PB+2:PB+4:O-2),,        +GPBO141;                3000 N 98Ris !
+ PAR  G(PB12O19,PB+2:PB+4:O-2),,        +GPBO157;                3000 N 98Ris !
+ PAR  G(PBO2_C4,PB+4:O-2),,             +GPBO2;                  3000 N 98Ris !
+$
+ PAR  G(GAS,PBO;0),,                    +PBOGAS+RTLNP;,,              N 98Ris !
+ PAR  G(GAS,PB2O2;0),,                  +PB2O2GAS+RTLNP;,,            N 98Ris !
+ PAR  G(GAS,PB3O3;0),,                  +PB3O3GAS+RTLNP;,,            N 98Ris !
+ PAR  G(GAS,PB4O4;0),,                  +PB4O4GAS+RTLNP;,,            N 98Ris !
+ PAR  G(GAS,PB5O5;0),,                  +PB5O5GAS+RTLNP;,,            N 98Ris !
+ PAR  G(GAS,PB6O6;0),,                  +PB6O6GAS+RTLNP;,,            N 98Ris !
+$
+ FUNCTION GPBORED   298.15  -235043+250.4*T-46.2*T*LN(T)
+       -0.008*T**2+225000*T**(-1); 
+      3000.00  N ! 
+ FUNCTION GPBOYEL   298.15  -232910+244.7*T-45.9*T*LN(T)
+       -0.0067*T**2+178000*T**(-1); 
+      3000.00  N ! 
+ FUNCTION GPBOLIQ   298.15  -219210+360*T-65*T*LN(T); 
+      3000.00 N ! 
+ FUNCTION GPB3O4    298.15  -802140+1112*T-194.5*T*LN(T)
+       -0.0025*T**2+1566000*T**(-1); 
+      3000.00  N ! 
+ FUNCTION GPBO141   298.15  +3.5*GPB3O4+1.5*GPBO2-33000+40*T;          3000 N ! 
+ FUNCTION GPBO157   298.15  +2.5*GPB3O4+4.5*GPBO2-9000-16*T;           3000 N ! 
+ FUNCTION GPBO2     298.15  -305000+385.6*T-67*T*LN(T)
+       -0.007*T**2+400000*T**(-1); 
+      3000.00  N ! 
+ FUNCTION PBOGAS    298.15  +PBOGSGTE-2710;                            6000 N ! 
+ FUNCTION PB2O2GAS  298.15  +2*PBOGAS-268600+148*T;                    6000 N ! 
+ FUNCTION PB3O3GAS  298.15  +3*PBOGAS-527400+296*T;                    6000 N ! 
+ FUNCTION PB4O4GAS  298.15  +4*PBOGAS-818100+444*T;                    6000 N ! 
+ FUNCTION PB5O5GAS  298.15  +5*PBOGAS-1055000+592*T;                   6000 N ! 
+ FUNCTION PB6O6GAS  298.15  +6*PBOGAS-1343000+740*T;                   6000 N ! 
+$ PbO(g) : 
+ FUNCTION PBOGSGTE  298.14  +57091.4835-12.9608905*T-33.41877*T*LN(T)
+       -0.0034174485*T**2+4.87887167E-07*T**3+119823.95*T**(-1);
+      1000.00  Y  +50999.6993+44.2651041*T-41.6039*T*LN(T)
+       +0.001760351*T**2-1.68793667E-07*T**3+1005370*T**(-1);
+      3000.00  Y  +146288.119-249.067564*T-6.518045*T*LN(T)
+       -0.0033059825*T**2-6.89833E-08*T**3-44351775*T**(-1);
+      5000.00  Y  +774304.19-1949.59558*T+194.7178*T*LN(T)
+       -0.032009745*T**2+6.99459333E-07*T**3-4.126524E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  O-PB(TDB -* +ION +GAS +FCC_A1 +PBO_M +PBO_B10 +PB3O4 +PB12O17 +PB12O19
+  +PBO2_C4 ;G5 C_S:IONIC_LIQ/PB+2:O-2 MAJ:IONIC_LIQ/PB+2:VA
+  ;P3 TMM:300/2500 STP:.7/1200/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  91Sun  'B. Sundman, J. Phase Equilib., 12, 127-40(1991); Fe-O'
+  94SUB  'SGTE substance database, version 1994'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  98Ris  'D. Risold, J.-I. Nagata, R.O. Suzuki,
+          J. Phase Equilib., 19, 213-33(1998); Pb-O'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  05Can  'M. Cancarevic, M. Zinkevich, F. Aldinger,
+          Z. Metallkd., 96, 879-87(2005); Pb-O, Cu-Pb-O'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

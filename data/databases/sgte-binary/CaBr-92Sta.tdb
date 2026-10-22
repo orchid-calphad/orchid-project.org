@@ -1,0 +1,222 @@
+$
+$ Database for Ca-Br from L.-I. Staffansson and D. Sichen 1992.
+$
+$ L.-I. Staffansson, D. Sichen, Scand. J. Metall., 21, 165-71(1992).
+$
+$ Dataset created 2018.05.03 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ In the paper data for pure Ca were taken from the SGTE substance database,
+$ not from the unary database. Here data for Ca are taken from the unary
+$ database. No data for Br are included in the paper. There are no data for Br
+$ in the unary database. Data for Br are taken from SGSUB.
+$
+$ Liquid Br2 behaves badly at high T and was removed. It was not included in
+$ in the paper anyway.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BR   1/2_MOLE_BR2(LIQ)          79.904    12260.0     76.105  ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  BR-1                               BR1/-1 !
+ SPECIE  BR2                                BR2 !
+ SPECIE  CA+2                               CA1/+2 !
+ SPECIE  CA2                                CA2 !
+ SPECIE  CABR                               CA1BR1 !
+ SPECIE  CABR2                              CA1BR2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : CA+2 : BR-1 VA : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA BR2 : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CA : VA : !
+$
+$ Prototype alpha-FeS2 (oP6, Pnnm)
+$
+ PHASE CABR2_C18:I % 2 1 2 !
+ CONST CABR2_C18:I : CA+2 : BR-1 : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : CA CA2 CABR CABR2 BR BR2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Br
+$
+$ Liquid Br2 behaves badly at high T.
+$
+ PAR  G(LIQUID,BR2),,                   +F3249T;,,                    N 97SUB !
+$ 
+ PAR  G(ION,BR2),,                      +F3249T;,,                    N 97SUB !
+$
+ PAR  G(GAS,BR;0),,                     +F2877T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,BR2;0),,                    +F3251T+RTLNP;,,              N 97SUB !
+$
+$ Br2(l)
+ FUNCTION F3249T    298.15  -35828.8255+797.103043*T-155.5776*T*LN(T)
+       +0.2064111*T**2-9.74919667E-05*T**3+391199.95*T**(-1);
+       500.00  N !
+$ Br(g)
+ FUNCTION F2877T    298.15  +105678.057-35.156587*T-20.92111*T*LN(T)
+       +5.101245E-04*T**2-2.419295E-07*T**3-1962.3375*T**(-1);
+      1100.00  Y  +103675.988-31.6175973*T-21.07269*T*LN(T)
+       -8.38273E-04*T**2+6.10508667E-08*T**3+553705*T**(-1);
+      3100.00  Y  +102426.082-11.5549197*T-23.84616*T*LN(T)
+       +2.526443E-04*T**2-4.02449667E-09*T**3-595552*T**(-1);
+     10000.00  N !
+$ Br2(g)
+ FUNCTION F3251T    298.15  +19077.8947+9.66580142*T-37.98897*T*LN(T)
+       +3.824891E-04*T**2-1.125315E-07*T**3+79565.75*T**(-1);
+      2100.00  Y  +61807.369-219.344991*T-8.183614*T*LN(T)
+       -0.008666065*T**2+3.90366833E-07*T**3-11184485*T**(-1);
+      4300.00  Y  -203404.069+619.894219*T-109.6234*T*LN(T)
+       +0.008605745*T**2-1.61313517E-07*T**3+1.1921565E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+ PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$ 
+ PAR  G(ION,CA+2:VA),,                  +GLIQCA;                 3000 N 91Din !
+$
+ PAR  G(GAS,CA;0),,                     +F2131T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,CA2;0),,                    +F2293T+RTLNP;,,              N 92SUB !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ Ca(g) :
+ FUNCTION F2131T    298.15  +173087.021-15.5575325*T-20.786112*T*LN(T);
+      1300.00  Y  +172997.956+5588.5688*T**(-1)-13.9593335*T
+       -21.0345161*T*LN(T)+2.38213948E-04*T**2-3.64413151E-08*T**3;
+      2000.00  Y  +134081.53+9296659.72*T**(-1)+218.694199*T
+       -51.8849472*T*LN(T)+0.0111923674*T**2-7.70260453E-07*T**3;
+      3600.00  Y  +672690.384-2.35270504E+08*T**(-1)-1610.06137*T
+       +171.348607*T*LN(T)-0.0300833784*T**2+6.66115115E-07*T**3;
+      4800.00  Y  +672623.642-2.1604084E+08*T**(-1)-1685.46289*T
+       +181.445018*T*LN(T)-0.032908206*T**2+7.77184973E-07*T**3;
+      6000.00  N !
+$ Ca2(g) :
+ FUNCTION F2293T    298.15  +331036.623+118736.69*T**(-1)+92.462223*T
+       -54.080292*T*LN(T)+0.0271296836*T**2-5.73392096E-06*T**3;
+       600.00  Y  +340712.213-633424.128*T**(-1)-59.9992293*T
+       -30.2654661*T*LN(T)+5.18998004E-04*T**2-4.10068261E-08*T**3;
+      2200.00  Y  +343774.134-1755137.79*T**(-1)-73.0668827*T
+       -28.6059243*T*LN(T)+6.54369232E-05*T**2-1.34699696E-08*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L.-I. Staffansson, D. Sichen, Scand. J. Metall., 21, 165-71(1992).
+$
+$ Checked against paper.
+$
+$ In the paper data for pure Ca were taken from the SGTE substance database,
+$ not from the unary database. Here data for Ca are taken from the unary
+$ database. No data for Br are included in the paper. There are no data for Br
+$ in the unary database. Data for Br are taken from SGSUB.
+$
+$ Liquid Br2 behaves badly at high T and was removed. It was not included in
+$ in the paper anyway.
+$
+ PAR  G(ION,CA+2:BR-1),,                +F3310T
+             +29100-28.66995074*T;,,                                  N 97SUB !
+ PAR  L(ION,CA+2:BR-1,VA;0),,           +231120-110.65*T;,,           N 92Sta !
+ PAR  L(ION,CA+2:BR-1,VA;1),,           -128884+81.969*T;,,           N 92Sta !
+$
+ PAR  G(CABR2_C18,CA+2:BR-1),,          +F3310T;,,                    N 97SUB !
+$
+ PAR  G(GAS,CABR),,                     +F2998T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CABR2),,                    +F3314T+RTLNP;,,              N 97SUB !
+$
+$ CaBr2(s)
+ FUNCTION F3310T    298.15  -707169.543+369.348005*T-73.77178*T*LN(T)
+       -0.006594635*T**2-3.53280167E-10*T**3+117508.1*T**(-1);
+      1015.00  Y  -726764.946+563.642591*T-100*T*LN(T)
+       +9.47483E-17*T**2-4.774195E-21*T**3+7.776755E-08*T**(-1);
+      3800.00  N !
+$ CaBr(g)
+ FUNCTION F2998T    298.15  -36576.7358+1.02510826*T-37.84577*T*LN(T)
+       +1.1820105E-04*T**2-6.47110333E-08*T**3+64414.8*T**(-1);
+      2700.00  Y  +42111.7774-290.458684*T-1.92764*T*LN(T)
+       -0.006875775*T**2+1.74588333E-07*T**3-31357360*T**(-1);
+      6000.00  N !
+$ CaBr2(g)
+ FUNCTION F3314T    298.15  -406388.341+108.268205*T-62.31568*T*LN(T)
+       -1.071234E-05*T**2+4.27444833E-10*T**3+91083.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Sta  'L.-I. Staffansson, D. Sichen,
+          Scand. J. Metall., 21, 165-71(1992); Ca-Br'
+  92SUB  'SGTE substance database, version 1992'
+  97SUB  'SGTE substance database, version 1997'
+  00SUB  'SGTE substance database, version 2000'
+!

@@ -1,0 +1,280 @@
+$
+$ Database for Al-Ti from N. Saunders (included in LB Vol. 1)
+$
+$ N. Saunders, COST 507, Final report round 2, 1998.
+$
+$ Dataset created 2009.10.03 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ There is an inverse miscibility gap with a minimum at 4700 K and x(Ti)=0.25.
+$
+$ The table of invariant equilibria (but not the phase diagram) in the
+$ COST report is calculated with stoichiometric Al3Ti and a slightly
+$ different parameter for AlTi3. A difference in the Liq+fcc+Al3Ti equilibrium
+$ (934.2 K (COST) instead of 938.0 K (LB)) is still uncounted for.
+$ The printed parameters in the COST report, the COST database and
+$ the LB database appear to be identical (except for small shifts in
+$ G(ALTI_L10,AL:AL) and G(ALM3_D019,TI:TI)).
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL TI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL TI% : VA : !
+$
+$ Prototype Al3Ti (tI8, I4/mmm)
+$
+ PHASE AL3M_D022 % 2 3 1 !
+ CONST AL3M_D022 : AL TI : TI : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE ALM3_D019 % 2 1 3 !
+ CONST ALM3_D019 : AL% TI : AL TI% : !
+$
+$ Prototype Al3Zr (tI16, I4/mmm, also called delta)
+$
+ PHASE AL11TI5_D023 % 2 17 8 !
+ CONST AL11TI5_D023 : AL : TI : !
+$
+$ Prototype Ga2Hf (tI24, I4_1/amd)
+$
+ PHASE AL2TI % 2 2 1 !
+ CONST AL2TI : AL : TI : !
+$
+$ Prototype AuCu (tP4, P4/mmm)
+$
+ PHASE ALTI_L10 % 2 1 1 !
+ CONST ALTI_L10 : AL% TI : AL TI% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+$PAR  G(A2_BCC,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+$PAR  L(A2_BCC,AL,VA:VA;0),,            +B2ALVA+LB2ALVA-LB2VA;,,      N 99Dup1 !
+$PAR  G(B2_BCC,VA:AL:VA),,              +0.5*B2ALVA-0.5*LB2ALVA;,,    N 99Dup1 !
+$PAR  G(B2_BCC,AL:VA:VA),,              +0.5*B2ALVA-0.5*LB2ALVA;,,    N 99Dup1 !
+$
+ PAR  G(ALM3_D019,AL:AL),,              +4*GHCPAL;,,                  N 98Sau6 !
+$ Parameter below from LBall-v6
+ PAR  G(ALTI_L10,AL:AL),,               +2*GHSERAL+4;,,               N 98Sau6 !
+$ Parameter below from COST report
+$PAR  G(ALTI_L10,AL:AL),,               +2*GHSERAL;,,                 N 98Sau6 !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+ FUNCTION GHCPAL    298.15  +GHSERAL+5481-1.8*T;                       2900 N !
+$
+ FUNCTION B2ALVA    298.15  +10000-T;                                  6000 N !
+ FUNCTION LB2ALVA   298.15  +150000;                                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+$PAR  G(A2_BCC,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+$PAR  L(A2_BCC,TI,VA:VA;0),,            +150000;,,                    N 01Dav !
+$PAR  G(B2_BCC,TI:VA:VA),,              +75000;,,                     N 01Dav !
+$PAR  G(B2_BCC,VA:TI:VA),,              +75000;,,                     N 01Dav !
+$
+ PAR  G(AL3M_D022,TI:TI),,              +4*GFCCTI;,,                  N 98Sau6 !
+$ Parameter below from LBall-v6
+ PAR  G(ALM3_D019,TI:TI),,              +4*GHSERTI+4;,,               N 98Sau6 !
+$ Parameter below from COST report
+$PAR  G(ALM3_D019,TI:TI),,              +4*GHSERTI;,,                 N 98Sau6 !
+ PAR  G(ALTI_L10,TI:TI),,               +2*GFCCTI;,,                  N 98Sau6 !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCTI    298.15  +GHSERTI+6000-0.1*T;                       4000 N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+$PAR  G(A2_BCC,VA:VA),,                 +ZERO;,,                      N 01Sun !
+$PAR  L(A2_BCC,VA,*:VA;0),,             +LB2VA;,,                     N 01Sun !
+$
+ FUNCTION LB2VA     298.15  +100*T;                                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From N. Saunders (included in LB Vol. 1)
+$
+$ N. Saunders, COST 507, Final report round 2, 1998.
+$
+$ Checked against LB and COST report. Checked at 6000 K.
+$
+$ There is an inverse miscibility gap with a minimum at 4700 K and x(Ti)=0.25.
+$
+$ The table of invariant equilibria (but not the phase diagram) in the
+$ COST report is calculated with stoichiometric Al3Ti and a slightly
+$ different parameter for AlTi3. A difference in the Liq+fcc+Al3Ti equilibrium
+$ (934.2 K (COST) instead of 938.0 K (LB)) is still uncounted for.
+$ The printed parameters in the COST report, the COST database and
+$ the LB database appear to be identical (except for small shifts in
+$ G(ALTI_L10,AL:AL) and G(ALM3_D019,TI:TI)).
+$
+ PAR  L(LIQUID,AL,TI;0),,               -108250+38*T;,,               N 98Sau6 !
+ PAR  L(LIQUID,AL,TI;1),,               -6000+5*T;,,                  N 98Sau6 !
+ PAR  L(LIQUID,AL,TI;2),,               +15000;,,                     N 98Sau6 !
+$
+ PAR  L(FCC_A1,AL,TI:VA;0),,            -128970+39*T;,,               N 98Sau6 !
+ PAR  L(FCC_A1,AL,TI:VA;1),,            -5000;,,                      N 98Sau6 !
+ PAR  L(FCC_A1,AL,TI:VA;2),,            +20000;,,                     N 98Sau6 !
+$
+ PAR  L(BCC_A2,AL,TI:VA;0),,            -128500+39*T;,,               N 98Sau6 !
+ PAR  L(BCC_A2,AL,TI:VA;1),,            +6000;,,                      N 98Sau6 !
+ PAR  L(BCC_A2,AL,TI:VA;2),,            +21200;,,                     N 98Sau6 !
+$
+$PAR  L(A2_BCC,AL,TI:VA;0),,            -128500+39*T;,,               N 98Sau6 !
+$PAR  L(A2_BCC,AL,TI:VA;1),,            +6000;,,                      N 98Sau6 !
+$PAR  L(A2_BCC,AL,TI:VA;2),,            +21200;,,                     N 98Sau6 !
+$
+$PAR  G(B2_BCC,AL:TI:VA),,              -17500+2.5*T;,,               N 98Sau6 !
+$PAR  G(B2_BCC,TI:AL:VA),,              -17500+2.5*T;,,               N 98Sau6 !
+$
+ PAR  L(HCP_A3,AL,TI:VA;0),,            -133500+39*T;,,               N 98Sau6 !
+ PAR  L(HCP_A3,AL,TI:VA;1),,            +750;,,                       N 98Sau6 !
+ PAR  L(HCP_A3,AL,TI:VA;2),,            +17500;,,                     N 98Sau6 !
+$
+$ Al3Ti is modelled as stoichiometric in SGSOL V3.0 (1992) but not in V4.1
+ PAR  G(AL3M_D022,AL:TI),,              +3*GHSERAL+GHSERTI
+             -144592+37.024*T;,,                                      N 98Sau6 !
+ PAR  L(AL3M_D022,AL,TI:TI;0),,         -60000;,,                     N 98Sau6 !
+$
+ PAR  G(ALM3_D019,AL:TI),,              +GHSERAL+3*GHSERTI
+             -110080+23.88*T;,,                                       N 98Sau6 !
+ PAR  G(ALM3_D019,TI:AL),,              +GHSERTI+3*GHSERAL
+             -99120+32.28*T;,,                                        N 98Sau6 !
+ PAR  L(ALM3_D019,AL,TI:AL;0),,         -98968+33.3*T;,,              N 98Sau6 !
+ PAR  L(ALM3_D019,AL,TI:TI;0),,         +10656-1.332*T;,,             N 98Sau6 !
+$ Parameter below from LB and COST
+ PAR  L(ALM3_D019,AL:AL,TI;0),,         -298200+100*T;,,              N 98Sau6 !
+$ Parameter below from SGSOL V3.0 (1992) and V4.1 (2006)
+$PAR  L(ALM3_D019,AL:AL,TI;0),,         -297200+100*T;,,              N 98Sau6 !
+ PAR  L(ALM3_D019,TI:AL,TI;0),,         +32000-4*T;,,                 N 98Sau6 !
+$
+ PAR  G(AL11TI5_D023,AL:TI),,           +17*GHSERAL+8*GHSERTI
+             -971125+236.4*T;,,                                       N 98Sau6 !
+$
+ PAR  G(AL2TI,AL:TI),,                  +2*GHSERAL+GHSERTI
+             -121500+31.2*T;,,                                        N 98Sau6 !
+$
+ PAR  G(ALTI_L10,AL:TI),,               +GHSERAL+GHSERTI
+             -79644+19.2*T;,,                                         N 98Sau6 !
+ PAR  G(ALTI_L10,TI:AL),,               +GHSERTI+GHSERAL
+             -79644+19.2*T;,,                                         N 98Sau6 !
+ PAR  L(ALTI_L10,AL,TI:AL;0),,          -89892+44*T;,,                N 98Sau6 !
+ PAR  L(ALTI_L10,AL,TI:AL;1),,          +30000;,,                     N 98Sau6 !
+ PAR  L(ALTI_L10,AL,TI:AL;2),,          +20000;,,                     N 98Sau6 !
+ PAR  L(ALTI_L10,AL:AL,TI;0),,          -89892+44*T;,,                N 98Sau6 !
+ PAR  L(ALTI_L10,AL:AL,TI;1),,          +30000;,,                     N 98Sau6 !
+ PAR  L(ALTI_L10,AL:AL,TI;2),,          +20000;,,                     N 98Sau6 !
+ PAR  L(ALTI_L10,AL,TI:TI;0),,          -15134-2.36*T;,,              N 98Sau6 !
+ PAR  L(ALTI_L10,TI:AL,TI;0),,          -15134-2.36*T;,,              N 98Sau6 !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-TI(TDB -* +LIQ +AL11TI5 +AL2TI +AL3M_D022 +ALM3_D019
+  +ALTI_L10 +BCC_A2 +FCC_A1 +HCP_A3 ;P3 TMM:300/2500 STP:.4/1800) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97Ans  'I. Ansara, N. Dupin, H.L. Lukas, B. Sundman,
+          J. Alloys Compd., 247, 20-30(1997); Al-Ni'
+  98Sau6 'N. Saunders, COST 507, Final report round 2, 1998; Al-Ti'
+  99Dup1 'N. Dupin, I. Ansara, Z. Metallkd., 90, 76-85(1999); Al-Ni'
+  99Dup2 'N. Dupin, unpublished, 1999; Cr-Ni-Ti, Al-Cr-Ni-Ti'
+  01Dav  'A.V. Davydov et al,
+          Metall. Mater. Trans. A, 32A, 2175-86(2001); Co-Ti'
+  01Sun  'B. Sundman, fix to avoid BCC with just Va (in LB1-v2).'
+!

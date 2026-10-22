@@ -1,0 +1,349 @@
+$
+$ Database for Pu-O from C. Gueneau et al. 2011.
+$
+$ C. Gueneau, N. Dupin, B. Sundman, C. Martial, J.-C. Dumas, S. Gosse,
+$ S. Chatain, F. De Bruycker, D. Manara, R.J.M. Konings,
+$ J. Nucl. Mater., 419, 145-67(2011).
+$
+$ Dataset created 2024.04.19 by Bengt Hallstedt.
+$
+$ Update of 08Gue with a higher melting temperature of PuO2 and other minor
+$ changes due to new experimental data. Extended model for PuO2 to be
+$ compatible with UO2.
+$
+$ PuO with NaCl structure has been observed, but is considered metastable, and
+$ is not modelled here.
+$
+$ PuO1.52 and PuO1.61 are both decsribed to be bcc. In the review by Wriedt
+$ (JPE 1990) they are listed with the same crystal structure.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT PU   ALPHA_PU                  244.        6902.0     54.4610 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  PU+3                               PU/+3 !
+ SPECIE  PU+4                               PU/+4 !
+ SPECIE  PUO                                PU1O1 !
+ SPECIE  PUO2                               PU1O2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : PU+3 : O-2 VA O PUO2 : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m), delta-Pu, PuC and PuC2 (C11_a)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PU : O VA% : !
+$
+$ Bcc (cI2, Im-3m), epsilon-Pu
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PU : VA : !
+$
+$ Prototype In (tI2, I4/mmm), delta-prime-Pu
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : PU : !
+$
+$ Prototype alpha-Pu (mP16, P2_1/m)
+$
+ PHASE ALPHA_PU % 1 1 !
+ CONST ALPHA_PU : PU : !
+$
+$ Prototype beta-Pu (mC34, C2/m)
+$
+ PHASE BETA_PU % 1 1 !
+ CONST BETA_PU : PU : !
+$
+$ Prototype gamma-Pu (oF8, Fddd)
+$
+ PHASE GAMMA_PU % 1 1 !
+ CONST GAMMA_PU : PU : !
+$
+$ Prototype A-La2O3 (hP5, P-3m1)
+$
+ PHASE PU2O3_D52:I % 2 2 3 !
+ CONST PU2O3_D52:I : PU+3 : O-2 : !
+$
+$ Prototype Mn2O3 (cI80, Ia-3)
+$
+ PHASE PUO152_D53 % 2 1 1.52 !
+ CONST PUO152_D53 : PU : O : !
+$
+$ Prototype Mn2O3 (cI80, Ia-3)
+$
+ PHASE PUO161_D53:I % 3 2 3 1 !
+ CONST PUO161_D53:I : PU+3 PU+4 : O-2 : O-2 VA : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE PUO2_C1:I % 3 1 2 1 !
+ CONST PUO2_C1:I : PU+3 PU+4 : O-2% VA : O-2 VA% : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : O O2 O3 PU PUO PUO2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+ FUNCTION THREE     298.15  +3;                                        6000 N !
+ FUNCTION THIRD     298.15  +THREE**(-1);                              6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F13349T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F14021T+RTLNP;,,             N 97SUB !
+$
+ PAR  G(ION,O),,                        +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F13349T    298.15  +243206.494-20.8612582*T-21.01555*T*LN(T)
+       +1.2687055E-04*T**2-1.23131283E-08*T**3-42897.09*T**(-1);
+      2950.00  Y  +252301.423-52.0847281*T-17.21188*T*LN(T)
+       -5.413565E-04*T**2+7.64520667E-09*T**3-3973170.5*T**(-1);
+      6000.00  N !
+$ O3(g)
+ FUNCTION F14021T    298.15  +130696.944-37.9096643*T-27.58118*T*LN(T)
+       -0.02763076*T**2+4.60539333E-06*T**3+99530.45*T**(-1);
+       700.00  Y  +114760.623+176.626737*T-60.10286*T*LN(T)
+       +0.00206456*T**2-5.17486667E-07*T**3+1572175*T**(-1);
+      1300.00  Y  +49468.3956+710.09482*T-134.3696*T*LN(T)
+       +0.039707355*T**2-4.10457667E-06*T**3+12362250*T**(-1);
+      2100.00  Y  +866367.075-3566.80563*T+421.2001*T*LN(T)
+       -0.1284109*T**2+5.44768833E-06*T**3-2.1304835E+08*T**(-1);
+      2800.00  Y  +409416.383-1950.70834*T+223.4437*T*LN(T)
+       -0.0922361*T**2+4.306855E-06*T**3-21589870*T**(-1);
+      3500.00  Y  -1866338.6+6101.13383*T-764.8435*T*LN(T)
+       +0.09852775*T**2-2.59784667E-06*T**3+9.610855E+08*T**(-1);
+      4900.00  Y  +97590.043+890.798361*T-149.9608*T*LN(T)
+       +0.01283575*T**2-3.555105E-07*T**3-2.1699975E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Pu
+$
+ PAR  G(ALPHA_PU,PU),,                  +GHSERPU;                3000 N 91Din !
+ PAR  G(BCC_A2,PU:VA),,                 +GBCCPU;                 3000 N 91Din !
+ PAR  G(BETA_PU,PU),,                   +GBETPU;                 3000 N 91Din !
+ PAR  G(FCC_A1,PU:VA),,                 +GFCCPU;                 3000 N 91Din !
+ PAR  G(GAMMA_PU,PU),,                  +GGAMPU;                 3000 N 91Din !
+ PAR  G(TETRAGONAL_A6,PU),,             +GTETPU;                 3000 N 91Din !
+ PAR  G(LIQUID,PU),,                    +GHSERPU
+             +6608.1-12.5133*T;                                  3000 N 91Din !
+$
+ PAR  G(ION,PU+3:VA),,                  +GHSERPU
+             +6608.1-12.5133*T;                                  3000 N 91Din !
+ PAR  G(GAS,PU),,                       +F14687T+RTLNP;,,             N 97SUB !
+$
+ PAR  G(PUO2_C1,PU+3:VA:VA),,           +0.5*GPU2O3-1.5*GHSEROO
+             +3817.7+1.12467*R*T;,,                                   N 11Gue !
+ PAR  G(PUO2_C1,PU+4:VA:VA),,           +GPUO2-2*GHSEROO;,,           N 11Gue !
+ PAR  L(PUO2_C1,PU+3,PU+4:VA:VA;0),,    +9781.9+3.06205*T;,,          N 11Gue !
+ PAR  L(PUO2_C1,PU+3,PU+4:VA:VA;1),,    -17507.47+5.46573*T;,,        N 11Gue !
+$
+ FUNCTION GHSERPU   298.15  -7396.309+80.301382*T-18.1258*T*LN(T)
+       -0.02241*T**2;
+       400.00  Y  -16605.962+236.786603*T-42.4187*T*LN(T)
+       -0.00134493*T**2+2.63443E-07*T**3+579325*T**(-1);
+       944.00  Y  -14462.156+232.961553*T-42.248*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCPU    298.15  -1358.984+116.603882*T-27.094*T*LN(T)
+       -0.009105*T**2+2.061667E-06*T**3+20863*T**(-1);
+       745.00  Y  -2890.817+156.878957*T-33.72*T*LN(T);
+       956.00  Y  +29313.619-132.788248*T+6.921*T*LN(T)
+       -0.02023305*T**2+1.426922E-06*T**3-4469245*T**(-1);
+      2071.00  Y  -938.429-5.539698*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GBETPU    298.15  -4873.654+123.249151*T-27.416*T*LN(T)
+       -0.00653*T**2;
+       679.50  Y  +2435.094+43.566585*T-15.7351*T*LN(T)
+       -0.0154772*T**2+1.524942E-06*T**3-864940*T**(-1);
+      1464.00  Y  +503.094-4.739938*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GFCCPU    298.15  -3920.781+127.586536*T-28.4781*T*LN(T)
+       -0.0054035*T**2;
+       990.00  Y  +3528.208+41.52572*T-15.7351*T*LN(T)
+       -0.0154772*T**2+1.524942E-06*T**3-864940*T**(-1);
+      1464.00  Y  +1596.208-6.780803*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GGAMPU    298.15  -16766.303+419.402655*T-77.5802*T*LN(T)
+       +0.0816415*T**2-2.8103833E-05*T**3+574825*T**(-1);
+       487.90  Y  -2942.77+88.325069*T-22.0233*T*LN(T)-0.0114795*T**2;
+       593.90  Y  -9336.967+160.314641*T-32.3405*T*LN(T)
+       -0.0070383*T**2+6.92887E-07*T**3+630600*T**(-1);
+      1179.00  Y  +2026.406-6.829936*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GTETPU    298.15  -496.178+54.586547*T-16.43*T*LN(T)
+       -0.024006*T**2+5.166667E-06*T**3-158470*T**(-1);
+       736.00  Y  -6122.307+173.35008*T-35.56*T*LN(T);
+       757.00  Y  +3982.078+63.890352*T-19.756*T*LN(T)
+       -0.00937295*T**2+6.59882E-07*T**3-1112565*T**(-1);
+      2157.00  Y  -738.383-4.905143*T+GHSERPU;
+      3000.00  N !
+$ Pu(g)
+ FUNCTION F14687T   298.15  +342384.474-43.117293*T-20.30369*T*LN(T)
+       +0.004361944*T**2-4.196665E-06*T**3-40656.38*T**(-1);
+       500.00  Y  +348176.952-149.678011*T-3.216571*T*LN(T)
+       -0.017818755*T**2+1.14424717E-06*T**3-405372.75*T**(-1);
+      1000.00  Y  +358979.665-233.202672*T+8.216251*T*LN(T)
+       -0.0225555*T**2+1.4126845E-06*T**3-2190253.5*T**(-1);
+      2000.00  Y  +251181.98+397.043295*T-75.00843*T*LN(T)
+       +0.00595168*T**2-4.15198333E-07*T**3+23940665*T**(-1);
+      3200.00  Y  +538268.521-759.796803*T+69.56718*T*LN(T)
+       -0.026257465*T**2+9.247795E-07*T**3-82378450*T**(-1);
+      4700.00  Y  -455390.692+1948.02049*T-251.164*T*LN(T)
+       +0.01987852*T**2-3.22796833E-07*T**3+4.9645555E+08*T**(-1);
+      7600.00  Y  +430311.346+352.921981*T-72.15296*T*LN(T)
+       +0.0037501715*T**2-4.95895E-08*T**3-3.278732E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Gueneau, N. Dupin, B. Sundman, C. Martial, J.-C. Dumas, S. Gosse,
+$ S. Chatain, F. De Bruycker, D. Manara, R.J.M. Konings,
+$ J. Nucl. Mater., 419, 145-67(2011).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Update of 08Gue with a higher melting temperature of PuO2 and other minor
+$ changes due to new experimental data. Extended model for PuO2 to be
+$ compatible with UO2.
+$
+$ PuO with NaCl structure has been observed, but is considered metastable, and
+$ is not modelled here.
+$
+$ PuO1.52 and PuO1.61 are both decsribed to be bcc. In the review by Wriedt
+$ (JPE 1990) they are listed with the same crystal structure.
+$
+ PAR  G(ION,PU+3:O-2),,                 +GPU2O3+113000
+             -47.921967*T;,,                                          N 08Gue !
+ PAR  G(ION,PUO2),,                     +GPUO2+67000-22.2*T;,,        N 11Gue !
+ PAR  L(ION,PU+3:O-2,VA;0),,            +77451.8+23.4798*T;,,         N 11Gue !
+ PAR  L(ION,PU+3:O-2,VA;1),,            -20231.6;,,                   N 11Gue !
+ PAR  L(ION,PU+3:O-2,PUO2;0),,          +60000;,,                     N 11Gue !
+ PAR  L(ION,PU+3:O-2,PUO2;1),,          -20000;,,                     N 11Gue !
+$
+ PAR  G(FCC_A1,PU:O),,                  +THIRD*GFCCPU+THIRD*GPU2O3
+             +10000;,,                                                N 11Gue !
+ PAR  L(FCC_A1,PU:O,VA;0),,             +100000;,,                    N 11Gue !
+$
+ PAR  G(PU2O3_D52,PU+3:O-2),,           +GPU2O3;,,                    N 11Gue !
+ PAR  G(PUO152_D53,PU:O),,              -861515.83+345.42685*T
+             -62.351*T*LN(T)-0.007085*T**2-1.6625E-11*T**3
+             +396830*T**(-1);,,                                       N 11Gue !
+$
+ PAR  G(PUO161_D53,PU+3:O-2:O-2),,      +GPU2O3+GHSEROO
+             -584.6+6.35403*T;,,                                      N 11Gue !
+ PAR  G(PUO161_D53,PU+4:O-2:O-2),,      +2*GPUO2+18772-6*T;,,         N 11Gue !
+ PAR  G(PUO161_D53,PU+3:O-2:VA),,       +GPU2O3-584.6+6.35403*T;,,    N 11Gue !
+ PAR  G(PUO161_D53,PU+4:O-2:VA),,       +2*GPUO2-GHSEROO
+             +18772-6*T;,,                                            N 11Gue !
+ PAR  L(PUO161_D53,PU+3,PU+4:O-2:O-2;0),, -725.5+15.8*T;,,            N 11Gue !
+ PAR  L(PUO161_D53,PU+3,PU+4:O-2:VA;0),,  -725.5+15.8*T;,,            N 11Gue !
+$
+ PAR  G(PUO2_C1,PU+3:O-2:O-2),,         +0.5*GPU2O3+1.5*GHSEROO
+             +3817.7+1.12467*R*T+80*T;,,                              N 11Gue !
+ PAR  G(PUO2_C1,PU+3:O-2:VA),,          +0.5*GPU2O3+0.5*GHSEROO
+             +3817.7+1.12467*R*T;,,                                   N 11Gue !
+ PAR  G(PUO2_C1,PU+3:VA:O-2),,          +0.5*GPU2O3-0.5*GHSEROO
+             +3817.7+1.12467*R*T+80*T;,,                              N 11Gue !
+ PAR  G(PUO2_C1,PU+4:O-2:O-2),,         +GPUO2+GHSEROO+80*T;,,        N 11Gue !
+ PAR  G(PUO2_C1,PU+4:O-2:VA),,          +GPUO2;,,                     N 11Gue !
+ PAR  G(PUO2_C1,PU+4:VA:O-2),,          +GPUO2-GHSEROO+80*T;,,        N 11Gue !
+ PAR  L(PUO2_C1,PU+3,PU+4:O-2:VA;0),,   +9781.9+3.06205*T;,,          N 11Gue !
+ PAR  L(PUO2_C1,PU+3,PU+4:O-2:VA;1),,   -17507.47+5.46573*T;,,        N 11Gue !
+$
+ PAR  G(GAS,PUO),,                      +F13404T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,PUO2),,                     +F13769T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GPU2O3    298.15  -1658471.43-295.555729*T+38.63916*T*LN(T)
+       -0.2750007*T**2+7.79827167E-05*T**3-1479357.5*T**(-1);
+       400.00  Y  -1702523.72+677.000904*T-122.9535*T*LN(T)
+       -0.014273645*T**2-3.27260333E-11*T**3+750595*T**(-1);
+      2358.00  Y  -1804198.06+1284.90727*T-200*T*LN(T)
+       +4.1974775E-16*T**2-1.3924665E-20*T**3+2.016497E-06*T**(-1);
+      5500.00  N !
+ FUNCTION GPUO2     298.15  -1099562.8+505.428856*T-83.31922*T*LN(T)
+       -0.00584178*T**2-2.29241167E-11*T**3+913506*T**(-1);
+      6000.00  N !
+ FUNCTION GPUO15    298.15  +0.5*GPU2O3+5045.18;                       6000 N !
+$ PuO(g)
+ FUNCTION F13404T   298.15  -81162.9184+84.1696968*T-47.48987*T*LN(T)
+       -0.015822525*T**2+8.07580833E-06*T**3+611710*T**(-1);
+       500.00  Y  -91376.0436+303.962443*T-83.63347*T*LN(T)
+       +0.03789824*T**2-6.28436167E-06*T**3+1107078.5*T**(-1);
+       900.00  Y  -47108.7524-191.469738*T-10.96509*T*LN(T)
+       -0.015103325*T**2+9.614135E-07*T**3-3947626*T**(-1);
+      2100.00  Y  -115058.704+228.613287*T-66.82868*T*LN(T)
+       +0.004912038*T**2-3.63050333E-07*T**3+11143440*T**(-1);
+      3800.00  Y  +121688.998-675.810691*T+45.15148*T*LN(T)
+       -0.018010055*T**2+4.99610333E-07*T**3-79194500*T**(-1);
+      5900.00  Y  -680904.18+1217.5518*T-174.7726*T*LN(T)
+       +0.008701535*T**2-1.0718605E-07*T**3+4.683995E+08*T**(-1);
+     10000.00  N !
+$ PuO2(g)
+ FUNCTION F13769T   298.15  -425666.047-6.46777282*T-38.18547*T*LN(T)
+       -0.02954761*T**2+4.77444167E-06*T**3-70282.85*T**(-1);
+       800.00  Y  -444201.953+230.692788*T-73.77683*T*LN(T)
+       +6.714505E-04*T**2-1.33627967E-08*T**3+1729839*T**(-1);
+      6000.00  Y  -453866.82+239.96684*T-74.63718*T*LN(T)
+       +5.42008E-04*T**2-4.87475833E-09*T**3+12258850*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE Substance Database, version 1997'
+  08Gue  'E. Gueneau, C. Chatillon, B. Sundman,
+          J. Nucl. Mater., 378, 257-72(2008); Pu-O'
+  11Gue  'C. Gueneau, N. Dupin, B. Sundman, C. Martial, J.-C. Dumas, S. Gosse,
+          S. Chatain, F. De Bruycker, D. Manara, R.J.M. Konings,
+          J. Nucl. Mater., 419, 145-67(2011); Pu-O'
+!

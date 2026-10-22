@@ -1,0 +1,317 @@
+$
+$ Database for Mo-Re from R. Mathieu et al. 2013.
+$
+$ R. Mathieu, N. Dupin, J.-C. Crivello, K. Yaqoob, A. Breidi, J.-M. Fiorani,
+$ N. David, J.-M. Joubert, Calphad, 43, 18-31(2013).
+$
+$ Dataset created 2018.12.09 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$
+$ This dataset includes a 5sl (SIGMA_5SL), 2-sl (SIGMA-2SL) and a
+$ 10:4:16 (SIGMA_D8B) model for the sigma phase. The paper includes further
+$ models.
+$
+$ This dataset includes the functions used in the author's tdb.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+ ELEMENT RE   HCP_A3                    186.207     5333.      36.4820 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MO RE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MO RE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MO% RE : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MO RE% : VA : !
+$
+$ Disordered contribution to CHI_A12
+$
+ PHASE DIS_CHI % 1 1 !
+ CONST DIS_CHI : MO RE : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CHI_A12 %R 4 2 8 24 24 !
+ CONST CHI_A12 : MO RE : MO RE : MO RE : MO RE : !
+$
+$ Disordered contribution to SIGMA_5SL
+$
+ PHASE DIS_SIGMA % 1 1 !
+ CONST DIS_SIGMA : MO RE : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_D8B %Q 3 10 4 16 !
+ CONST SIGMA_D8B : MO RE : MO RE : MO RE : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_5SL %P 5 2 4 8 8 8 !
+ CONST SIGMA_5SL : MO RE : MO RE : MO RE : MO RE : MO RE : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_2SL %O 2 10 20 !
+ CONST SIGMA_2SL : MO RE : MO RE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE SIGMA_5SL SIGMA_2SL !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION SIGMA_2SL NEVER_DIS_PAR DIS_SIGMA !
+ TYPE-DEF P GES AMEND_PHASE_DESCRIPTION SIGMA_5SL NEVER_DIS_PAR DIS_SIGMA !
+ TYPE-DEF Q GES AMEND_PHASE_DESCRIPTION SIGMA_D8B NEVER_DIS_PAR DIS_SIGMA !
+ TYPE-DEF R GES AMEND_PHASE_DESCRIPTION CHI_A12 NEVER_DIS_PAR DIS_CHI !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION EVTOJ     298.15  +96485.5547;                               6000 N !
+ FUNCTION CINQ8     298.15  +58;                                       6000 N !
+ FUNCTION UNS58     298.15  +CINQ8**(-1);                              6000 N !
+ FUNCTION TRENTE    298.15  +30;                                       6000 N !
+ FUNCTION UNS30     298.15  +TRENTE**(-1);                             6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ PAR  G(DIS_CHI,MO),,                   +GCHIMO-GSERMO+GHSERMO
+             -0.5596*T;,,                                             N 13Mat !
+ PAR  G(DIS_SIG,MO),,                   +GSIGMO-GSERMO+GHSERMO
+             +1.251*T;,,                                              N 13Mat !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+ FUNCTION GSERMO    298.15  -10.949432*EVTOJ;                          6000 N !
+ FUNCTION G58CHIMO  298.15  -619.36214*EVTOJ;                          6000 N !
+ FUNCTION GCHIMO    298.15  +G58CHIMO*UNS58;                           6000 N !
+ FUNCTION G30SIGMO  298.15  -323.477558*EVTOJ;                         6000 N !
+ FUNCTION GSIGMO    298.15  +G30SIGMO*UNS30;                           6000 N !
+$ ------------------------------------------------------------------------------
+$ Re
+$
+$ HCP_A3 and LIQUID revised in unary 3.0
+$ BCC_A2 revised in unary 4.4
+$
+ PAR  G(HCP_A3,RE:VA),,                 +GHSERRE;,,                   N 96Arb !
+ PAR  G(FCC_A1,RE:VA),,                 +GHSERRE+11000-1.5*T;,,       N 91Din !
+ PAR  G(BCC_A2,RE:VA),,                 +GHSERRE+17000-3.7*T;,,       N 01SGUN !
+$PAR  G(BCC_A2,RE:VA),,                 +GHSERRE+29200-6*T;,,         N 91Din !
+ PAR  G(LIQUID,RE),,                    +GLIQRE;,,                    N 96Arb !
+$
+ PAR  G(DIS_CHI,RE),,                   +GCHIRE-GSERRE+GHSERRE
+             +0.0905*T;,,                                             N 13Mat !
+ PAR  G(DIS_SIG,RE),,                   +GSIGRE-GSERRE+GHSERRE
+             -1.205*T;,,                                              N 13Mat !
+$
+ FUNCTION GHSERRE   298.15  -7695.279+128.421589*T-24.348*T*LN(T)
+       -0.00253505*T**2+1.92818E-07*T**3+32915*T**(-1);
+      1200.00  Y  -15775.998+194.667426*T-33.586*T*LN(T)
+       +0.00224565*T**2-2.81835E-07*T**3+1376270*T**(-1);
+      2400.00  Y  -70882.739+462.110749*T-67.956*T*LN(T)
+       +0.01184945*T**2-7.88955E-07*T**3+18075200*T**(-1);
+      3458.00  Y  +346325.888-1211.37186*T+140.831655*T*LN(T)
+       -0.033764567*T**2+1.053726E-06*T**3-1.34548866E+08*T**(-1);
+      5000.00  Y  -78564.296+346.997842*T-49.519*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQRE    298.15  +23820.883-6.34538*T+GHSERRE;
+      2000.00  Y  +568842.665-2527.83846*T+314.178898*T*LN(T)
+       -0.08939817*T**2+3.92854E-06*T**3-1.63100987E+08*T**(-1);
+      3458.00  Y  -39044.888+335.723691*T-49.519*T*LN(T);
+      5000.00  Y  +39519.408-11.274151*T+GHSERRE;
+      6000.00  N !
+ FUNCTION GFCCRE    298.15  +GHSERRE+11000-1.5*T;                      6000 N !
+ FUNCTION GBCCRE    298.15  +GHSERRE+17000-3.7*T;                      6000 N !
+ FUNCTION GSERRE    298.15  -12.4224915*EVTOJ;                         6000 N !
+ FUNCTION G58CHIRE  298.15  -717.557146*EVTOJ;                         6000 N !
+ FUNCTION GCHIRE    298.15  +G58CHIRE*UNS58;                           6000 N !
+ FUNCTION G30SIGRE  298.15  -369.773611*EVTOJ;                         6000 N !
+ FUNCTION GSIGRE    298.15  +G30SIGRE*UNS30;                           6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Mathieu, N. Dupin, J.-C. Crivello, K. Yaqoob, A. Breidi, J.-M. Fiorani,
+$ N. David, J.-M. Joubert, Calphad, 43, 18-31(2013).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ This dataset includes a 5sl (SIGMA_5SL), 2-sl (SIGMA-2SL) and a
+$ 10:4:16 (SIGMA_D8B) model for the sigma phase. The paper includes further
+$ models.
+$
+$ This dataset includes the functions used in the author's tdb.
+$
+ PAR  L(LIQUID,MO,RE;0),,               -17635+11.404*T;,,            N 13Mat !
+ PAR  L(LIQUID,MO,RE;1),,               -7790+8.07*T;,,               N 13Mat !
+$
+ PAR  L(BCC_A2,MO,RE:VA;0),,            -15025+11.404*T;,,            N 13Mat !
+ PAR  L(BCC_A2,MO,RE:VA;1),,            +8.07*T;,,                    N 13Mat !
+$
+ PAR  L(HCP_A3,MO,RE:VA;0),,            +12740+1.951*T;,,             N 13Mat !
+$
+ PAR  G(CHI,MO:MO:MO:RE),,              -667.0576*EVTOJ
+             -2*GCHIMO-8*GCHIMO-24*GCHIMO-24*GCHIRE;,,                N 13Mat !
+ PAR  G(CHI,MO:MO:RE:MO),,              -662.013824*EVTOJ
+             -2*GCHIMO-8*GCHIMO-24*GCHIRE-24*GCHIMO;,,                N 13Mat !
+ PAR  G(CHI,MO:MO:RE:RE),,              -706.53129*EVTOJ
+             -2*GCHIMO-8*GCHIMO-24*GCHIRE-24*GCHIRE;,,                N 13Mat !
+ PAR  G(CHI,MO:RE:MO:MO),,              -630.436204*EVTOJ
+             -2*GCHIMO-8*GCHIRE-24*GCHIMO-24*GCHIMO;,,                N 13Mat !
+ PAR  G(CHI,MO:RE:MO:RE),,              -676.652914*EVTOJ
+             -2*GCHIMO-8*GCHIRE-24*GCHIMO-24*GCHIRE;,,                N 13Mat !
+ PAR  G(CHI,MO:RE:RE:MO),,              -672.07236*EVTOJ
+             -2*GCHIMO-8*GCHIRE-24*GCHIRE-24*GCHIMO;,,                N 13Mat !
+ PAR  G(CHI,MO:RE:RE:RE),,              -715.47601*EVTOJ
+             -2*GCHIMO-8*GCHIRE-24*GCHIRE-24*GCHIRE;,,                N 13Mat !
+ PAR  G(CHI,RE:MO:MO:MO),,              -621.992644*EVTOJ
+             -2*GCHIRE-8*GCHIMO-24*GCHIMO-24*GCHIMO;,,                N 13Mat !
+ PAR  G(CHI,RE:MO:MO:RE),,              -669.426922*EVTOJ
+             -2*GCHIRE-8*GCHIMO-24*GCHIMO-24*GCHIRE;,,                N 13Mat !
+ PAR  G(CHI,RE:MO:RE:MO),,              -664.700708*EVTOJ
+             -2*GCHIRE-8*GCHIMO-24*GCHIRE-24*GCHIMO;,,                N 13Mat !
+ PAR  G(CHI,RE:MO:RE:RE),,              -708.864342*EVTOJ
+             -2*GCHIRE-8*GCHIMO-24*GCHIRE-24*GCHIRE;,,                N 13Mat !
+ PAR  G(CHI,RE:RE:MO:MO),,              -632.902352*EVTOJ
+             -2*GCHIRE-8*GCHIRE-24*GCHIMO-24*GCHIMO;,,                N 13Mat !
+ PAR  G(CHI,RE:RE:MO:RE),,              -678.636738*EVTOJ
+             -2*GCHIRE-8*GCHIRE-24*GCHIMO-24*GCHIRE;,,                N 13Mat !
+ PAR  G(CHI,RE:RE:RE:MO),,              -674.442674*EVTOJ
+             -2*GCHIRE-8*GCHIRE-24*GCHIRE-24*GCHIMO;,,                N 13Mat !
+$
+ PAR  G(SIGMA_D8B,MO:MO:RE),,           -348.274113*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGRE-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_D8B,MO:RE:MO),,           -329.386161*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGMO-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_D8B,MO:RE:RE),,           -353.543856*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGRE-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_D8B,RE:MO:MO),,           -342.644194*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGMO-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_D8B,RE:MO:RE),,           -365.120645*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGRE-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_D8B,RE:RE:MO),,           -347.970121*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGMO-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  L(SIGMA_D8B,MO,RE:*:*;0),,        +ZERO;,,                      N 13Mat !
+ PAR  L(SIGMA_D8B,*:*:MO,RE;0),,        -130000-1.1*T;,,              N 13Mat !
+$
+ PAR  G(SIGMA_5SL,MO:MO:MO:MO:RE),,     -336.420911*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGMO-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:MO:MO:RE:MO),,     -338.810302*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGMO-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:MO:MO:RE:RE),,     -350.940389*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGMO-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:MO:RE:MO:MO),,     -336.272469*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGRE-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:MO:RE:MO:RE),,     -348.274113*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGRE-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:MO:RE:RE:MO),,     -350.877403*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGRE-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:MO:RE:RE:RE),,     -361.705173*EVTOJ
+             -2*GSIGMO-4*GSIGMO-8*GSIGRE-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:MO:MO:MO),,     -329.386161*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGMO-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:MO:MO:RE),,     -341.899815*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGMO-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:MO:RE:MO),,     -344.381107*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGMO-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:MO:RE:RE),,     -355.892909*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGMO-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:RE:MO:MO),,     -342.251670*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGRE-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:RE:MO:RE),,     -353.543856*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGRE-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:RE:RE:MO),,     -356.308695*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGRE-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,MO:RE:RE:RE:RE),,     -366.476720*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGRE-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:MO:MO:MO),,     -327.229897*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGMO-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:MO:MO:RE),,     -340.042158*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGMO-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:MO:RE:MO),,     -342.644194*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGMO-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:MO:RE:RE),,     -354.494334*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGMO-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:RE:MO:MO),,     -340.103152*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGRE-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:RE:MO:RE),,     -351.792339*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGRE-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:RE:RE:MO),,     -354.690887*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGRE-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:MO:RE:RE:RE),,     -365.120645*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGRE-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:RE:MO:MO:MO),,     -332.951430*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGMO-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:RE:MO:MO:RE),,     -345.245205*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGMO-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:RE:MO:RE:MO),,     -347.970121*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGMO-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:RE:MO:RE:RE),,     -359.220781*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGMO-8*GSIGRE-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:RE:RE:MO:MO),,     -345.809448*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGRE-8*GSIGMO-8*GSIGMO;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:RE:RE:MO:RE),,     -356.822818*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGRE-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_5SL,RE:RE:RE:RE:MO),,     -359.887484*EVTOJ
+             -2*GSIGRE-4*GSIGRE-8*GSIGRE-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+$
+ PAR  G(SIGMA_2SL,MO:RE),,              -353.543856*EVTOJ
+             -2*GSIGMO-4*GSIGRE-8*GSIGRE-8*GSIGMO-8*GSIGRE;,,         N 13Mat !
+ PAR  G(SIGMA_2SL,RE:MO),,              -342.644194*EVTOJ
+             -2*GSIGRE-4*GSIGMO-8*GSIGMO-8*GSIGRE-8*GSIGMO;,,         N 13Mat !
+ PAR  L(SIGMA_2SL,MO,RE:*;0),,          +ZERO;,,                      N 13Mat !
+ PAR  L(SIGMA_2SL,*:MO,RE;0),,          -242810+11.4*T;,,             N 13Mat !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,MO,RE:VA;0),,            +12740+1.951*T;,,             N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Arb  'J.W. Arblaster, Calphad, 20, 343-52(1996),
+          SGTE unary database V.3.0, 1996; Re'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  10Yan  'Y. Yang, C. Zhang, S. Chen, D. Morgan, Y.A. Chang,
+          Intermetallics, 18, 574-81(2010); Mo-Re'
+  13Mat  'R. Mathieu, N. Dupin, J.-C. Crivello, K. Yaqoob, A. Breidi,
+          J.-M. Fiorani, N. David, J.-M. Joubert,
+          Calphad, 43, 18-31(2013); Mo-Re'
+!

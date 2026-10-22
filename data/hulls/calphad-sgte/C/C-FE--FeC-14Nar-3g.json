@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "C",
+    "FE"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "C": {
+          "energy": -1712.0723732922315,
+          "phase": "GRAPHITE_A9"
+        },
+        "FE": {
+          "energy": -8248.160209055946,
+          "phase": "BCC_A2"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -1059000.3320837934
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -2908.148883141559
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "GRAPHITE_A9",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -191935.74257513753,
+          "right": {
+            "phase": "BCT_Z1",
+            "x": 0.499999999999995
+          },
+          "slope": -191935.74257513753,
+          "x_hi": 0.499999999999995,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -1059000.3320837724,
+            "slope": 1059000.3320837724
+          },
+          "entropy": {
+            "intercept": -2908.148883141501,
+            "slope": 2908.148883141501
+          },
+          "intercept": -191935.74257513369,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BCT_Z1",
+            "x": 0.499999999999995
+          },
+          "mu_a_rel": -191935.74257513369,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "BCC_A2",
+            "x": 1.0
+          },
+          "slope": 191935.74257513369,
+          "x_hi": 1.0,
+          "x_lo": 0.499999999999995
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "GRAPHITE_A9",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -95967.8712875678,
+          "energy_per_atom": -95967.8712875678,
+          "enthalpy": -529500.1660418914,
+          "entries_at_x": 1,
+          "entropy": -1454.074441570765,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCT_Z1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.499999999999995
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "FeC-14Nar-3g",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:34:53Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/FeC-14Nar-3g.tdb",
+    "source_sha256": "2ac51900c8c0ad3b5fc7f08239c645d392ac6bf5d41da971300b780ce0f6e6b9"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "C-FE",
+  "x_element": "FE"
+}

@@ -1,0 +1,168 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 2,
+    "intervals": 1,
+    "vertices": 2
+  },
+  "elements": [
+    "AG",
+    "AU"
+  ],
+  "flags": [
+    "no_intermediate_phases",
+    "solution_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "AG": {
+          "energy": -12686.282492211461,
+          "phase": "FCC_A1"
+        },
+        "AU": {
+          "energy": -14158.666974328342,
+          "phase": "FCC_A1"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                0.0,
+                -15598.998502494602,
+                15598.998502492293,
+                2.308297553099692e-09
+              ]
+            ],
+            "knots": [
+              0.0,
+              1.0
+            ],
+            "max_abs_error": 0.00035877704567610635
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                0.0,
+                0.00020095925316068188,
+                -0.00020003082888696346,
+                -9.284242737184277e-07
+              ]
+            ],
+            "knots": [
+              0.0,
+              1.0
+            ],
+            "max_abs_error": 2.4625362849843856e-05
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              0.0,
+              -15599.058418496123,
+              15599.058141684129,
+              0.0002768119938991731
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.0,
+            1.0
+          ],
+          "max_abs_error": 0.006983274930917105,
+          "phase": "FCC_A1",
+          "x_hi": 1.0,
+          "x_lo": 0.0
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "AgAu-88Has-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-02T23:59:43Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/AgAu-88Has-LB.tdb",
+    "source_sha256": "f4ba1567c5750502886b1c903cae4800a7061000122b36697eef86fc3ecf81d6"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "AG-AU",
+  "x_element": "AU"
+}

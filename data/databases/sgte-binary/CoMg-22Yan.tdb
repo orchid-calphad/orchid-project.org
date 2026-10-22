@@ -1,0 +1,140 @@
+$
+$ Database for Co-Mg from L.-F. Yang et al. 2022.
+$
+$ L.-F. Yang, X.-D. Si, H.-Q. Zhang, F.-Y. Gao, Y.-P. Zheng, Y.-L. Liu,
+$ Y.-R. Wang, Y. Du, J. Min. Metall. B, 58, 109-15(2022).
+$
+$ Dataset created 2022.02.05 by Bengt Hallstedt.
+$
+$ The fcc interaction is missing in the paper, probably because no Mg
+$ solubility in fcc-Co was considered.
+$
+$ The Co2Mg parameters were adjusted to get the correct peritectic
+$ temperature. The liquid composition is at x(Mg)=0.72 instead of x(Mg)=0.65.
+$ The eutectic temperature changed from 908 to 909 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO MG : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% MG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO MG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% MG% : VA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE CO2MG_C14 % 2 2 1 !
+ CONST CO2MG_C14 : CO : MG : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BMAG(HCP_A3,CO:VA),,                  1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BMAG(FCC_A1,CO:VA),,                  1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BMAG(BCC_A2,CO:VA),,                  1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L.-F. Yang, X.-D. Si, H.-Q. Zhang, F.-Y. Gao, Y.-P. Zheng, Y.-L. Liu,
+$ Y.-R. Wang, Y. Du, J. Min. Metall. B, 58, 109-15(2022).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The fcc interaction is missing in the paper, probably because no Mg
+$ solubility in fcc-Co was considered.
+$
+$ The Co2Mg parameters were adjusted to get the correct peritectic
+$ temperature. The liquid composition is at x(Mg)=0.72 instead of x(Mg)=0.65.
+$ The eutectic temperature changed from 908 to 909 K.
+$
+ PAR  L(LIQUID,CO,MG;0),,               +24444.11-7.199*T;,,          N 22Yan !
+$
+ PAR  L(FCC_A1,CO,MG:VA;0),,            +50000;,,                     N Same !
+ PAR  L(HCP_A3,CO,MG:VA;0),,            +48632.53;,,                  N 22Yan !
+$
+$PAR  G(CO2MG_C14,CO:MG),,              +2*GHSERCO+GHSERMG
+$            -24000+14.313*T;,,                                       N 22Yan !
+$ Co2Mg parameter adjusted to get the correct peritectic temperature
+ PAR  G(CO2MG_C14,CO:MG),,              +2*GHSERCO+GHSERMG
+             -25300+14.313*T;,,                                       N 22Yan !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,CO,MG:VA;0),,            +50000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  22Yan  'L.-F. Yang, X.-D. Si, H.-Q. Zhang, F.-Y. Gao, Y.-P. Zheng, Y.-L. Liu,
+          Y.-R. Wang, Y. Du, J. Min. Metall. B, 58, 109-15(2022); Co-Mg'
+!

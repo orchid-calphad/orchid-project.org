@@ -1,0 +1,121 @@
+$
+$ Database for Al-K from Y. Du et al. 2009.
+$
+$ Y. Du, X. Yuan, W. Sun, B. Hu, J. Mining Metall B, 45, 89-93(2009).
+$
+$ Dataset created 2018.03.24 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT K    BCC_A2                     39.0983    7088.      64.68   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL K : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% K : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL K% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL K : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$ ------------------------------------------------------------------------------
+$ K
+$
+ PAR  G(BCC_A2,K:VA)            200.00  +GHSERKK;                2200 N 91Din !
+ PAR  G(HCP_A3,K:VA)            200.00  +GHSERKK+50+2*T;         2200 N 91Din !
+ PAR  G(FCC_A1,K:VA)            200.00  +GHSERKK+50+1.3*T;       2200 N 91Din !
+ PAR  G(LIQUID,K)               200.00  +GLIQKK;                 2200 N 91Din !
+$
+ FUNCTION GHSERKK   200.00  -16112.929+389.624197*T-77.0571464*T*LN(T)
+       +0.146211135*T**2-8.4949147E-05*T**3+243385*T**(-1);
+       336.53  Y  -11122.441+192.586544*T-39.2885968*T*LN(T)
+       +0.012167386*T**2-2.64387E-06*T**3+43251*T**(-1)+1.19223E+22*T**(-9);
+      2200.00  N !
+ FUNCTION GLIQKK    200.00  +2318.096-6.886859*T+GHSERKK-9.44E-19*T**7;
+       336.53  Y  +2323.019-6.902217*T+GHSERKK-1.19223E+22*T**(-9);
+      2200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Du, X. Yuan, W. Sun, B. Hu, J. Mining Metall B, 45, 89-93(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,AL,K;0),,                +31615.7+8.70845*T;,,         N 09Du !
+$
+ PAR  L(FCC_A1,AL,K:VA;0),,             +58179.1;,,                   N 09Du !
+ PAR  L(BCC_A2,AL,K:VA;0),,             +14835.3;,,                   N 09Du !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,AL,K:VA;0),,             +58179.1;,,                   N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09Du   'Y. Du, X. Yuan, W. Sun, B. Hu,
+          J. Mining Metall B, 45, 89-93(2009); Al-K'
+!

@@ -1,0 +1,180 @@
+$
+$ Database for Ni-Yb from S. Kardellass et al. 2016.
+$
+$ S. Kardellass, C. Servant, N. Selhaoui,
+$ J. Thermal Anal. Calorim., 125, 255-69(2016).
+$
+$ Dataset created 2021.07.16 by Bengt Hallstedt.
+$
+$ The fcc and bcc interactions seem too large.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT YB   FCC_A1                    173.04      6711.136   59.8312 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI YB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI YB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI YB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI YB : VA : !
+$
+$ Prototype Ni17Th2 (hP38, P6_3/mmc)
+$
+ PHASE NI17YB2 % 2 17 2 !
+ CONST NI17YB2 : NI : YB : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE NI5YB_D2D % 2 5 1 !
+ CONST NI5YB_D2D : NI : YB : !
+$
+$ Prototype Ni3Pu (hR12, R-3m)
+$
+ PHASE NI3YB % 2 3 1 !
+ CONST NI3YB : NI : YB : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE NI2YB_C15 % 2 2 1 !
+ CONST NI2YB_C15 : NI : YB : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE NIYB_B27 % 2 1 1 !
+ CONST NIYB_B27 : NI : YB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Yb
+$
+$ HCP_A3 added in unary 5.0
+$
+ PAR  G(FCC_A1,YB:VA),,                 +GHSERYB;                2000 N 91Din !
+ PAR  G(BCC_A2,YB:VA),,                 +GBCCYB;                 2000 N 91Din !
+ PAR  G(HCP_A3,YB:VA),,                 +GHSERYB+5000;           2000 N 06Guo !
+ PAR  G(LIQUID,YB),,                    +GLIQYB;                 2000 N 91Din !
+$
+ FUNCTION GHSERYB   298.15  -9370.941+189.327664*T-40.0791*T*LN(T)
+       +0.04227115*T**2-2.2242E-05*T**3;
+       553.00  Y  -8192.154+121.065655*T-26.7591*T*LN(T)-0.00256065*T**2;
+      1033.00  Y  +16034.89-89.478241*T+2.7623966*T*LN(T)
+       -0.017961331*T**2+1.421719E-06*T**3-3631462*T**(-1);
+      2000.00  N !
+ FUNCTION GBCCYB    298.15  -965.99-21.293677*T-3.8534432*T*LN(T)
+       -0.030009694*T**2+4.743871E-06*T**3-334650*T**(-1);
+      1033.00  Y  -13368.113+188.313864*T-36.1079*T*LN(T);
+      1097.00  Y  -3911.847+113.174165*T-25.7402233*T*LN(T)
+       -0.004743348*T**2+3.63044E-07*T**3-1553668*T**(-1);
+      2000.00  N !
+ FUNCTION GLIQYB    298.15  +7030.788-40.615571*T-1.8061816*T*LN(T)
+       -0.03250938*T**2+5.136665E-06*T**3-370554*T**(-1);
+      1033.00  Y  -6445.835+186.690398*T-36.7774*T*LN(T);
+      2000.00  N !
+ FUNCTION GHCPYB    298.15  +GHSERYB+5000;                             2000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Kardellass, C. Servant, N. Selhaoui,
+$ J. Thermal Anal. Calorim., 125, 255-69(2016).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ The fcc and bcc interactions seem too large.
+$
+ PAR  L(LIQUID,NI,YB;0),,               -28520+1.85*T;,,              N 16Kar !
+ PAR  L(LIQUID,NI,YB;1),,               -56380+3.66*T;,,              N 16Kar !
+ PAR  L(LIQUID,NI,YB;2),,               -34790+2.26*T;,,              N 16Kar !
+ PAR  L(LIQUID,NI,YB;3),,               -13028.9+0.96*T;,,            N 16Kar !
+ PAR  L(LIQUID,NI,YB;4),,               -7.85-0.52*T;,,               N 16Kar !
+$
+ PAR  L(FCC_A1,NI,YB:VA;0),,            +200000;,,                    N 16Kar !
+ PAR  L(BCC_A2,NI,YB:VA;0),,            +50000;,,                     N 16Kar !
+$
+ PAR  G(NI17YB2,NI:YB),,                +17*GHSERNI+2*GHSERYB
+             -281200+47.5*T;,,                                        N 16Kar !
+ PAR  G(NI5YB_D2D,NI:YB),,              +5*GHSERNI+GHSERYB
+             -133200+24*T;,,                                          N 16Kar !
+ PAR  G(NI3YB,NI:YB),,                  +3*GHSERNI+GHSERYB
+             -99200+22.96*T;,,                                        N 16Kar !
+ PAR  G(NI2YB_C15,NI:YB),,              +2*GHSERNI+GHSERYB
+             -69900+16.44*T;,,                                        N 16Kar !
+ PAR  G(NIYB_B27,NI:YB),,               +GHSERNI+GHSERYB
+             -36400+8*T;,,                                            N 16Kar !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,NI,YB:VA;0),,            +50000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  06Guo  'C. Guo, Z. Du, J. Alloys Compd., 422, 102-8(2006),
+          SGTE unary database V.5.0, 2009; Yb'
+  16Kar  'S. Kardellass, C. Servant, N. Selhaoui,
+          J. Thermal Anal. Calorim., 125, 255-69(2016); Ni-Yb'
+!

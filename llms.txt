@@ -1,0 +1,21 @@
+# ORCHID
+
+> Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery (Texas A&M University). Openly licensed CALPHAD
+> thermodynamic databases (TDB), binary convex hulls (DFT and CALPHAD) and, as they pass review, evaluated
+> phase-equilibrium and thermochemical data. Every value carries its source, licence and evidence class.
+
+Evidence classes are never mixed: experimental | model (linked to the exact TDB file by SHA-256) | dft | assessed_phase_diagram.
+
+## Data
+- [Catalog (JSON)](https://orchid-project.org/data/catalog.json): one record per database: name, elements, phases, tier, licence, source URL.
+- [Catalog (CSV)](https://orchid-project.org/data/catalog.csv)
+- [Bundled TDB files](https://github.com/orchid-calphad/orchid-project.org/tree/main/data/databases): redistributable databases; licences in data/NOTICE.md.
+- [DFT hulls, Materials Project v2026.04.13](https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/dft-mp): one JSON per binary system, interval schema.
+- [DFT hulls, OQMD v1.8](https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/dft-oqmd): same schema; fitted elemental references (not comparable in energy to MP).
+- [CALPHAD hulls, SGTE](https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/calphad-sgte)
+- [Croissant metadata](https://orchid-project.org/data/croissant.json)
+
+## Notes
+- DFT layers carry formation enthalpy only; reference kinds differ between sources and must not be averaged.
+- Files we may not redistribute are listed in the catalog with links to their original sources only.
+- Cite releases by their Zenodo DOI; see CITATION.cff.

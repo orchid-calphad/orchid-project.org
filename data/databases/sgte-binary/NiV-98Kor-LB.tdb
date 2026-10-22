@@ -1,0 +1,207 @@
+$
+$ Database for Ni-V from J. Korb and K. Hack 1998 (included in LB Vol. 4)
+$
+$ J. Korb, K. Hack, COST 507, Final report round 2, 1998.
+$
+$ Dataset created 2010.02.16 by Bengt Hallstedt.
+$ 2020.12.07: Modified for use with GES6.
+$
+$ The model change for the sigma phase in LB leads to quite large shifts of
+$ the phase boundaries, in particular on the V-rich side.
+$ Invariant equilibria listed in COST are reproduced when SIGMA_OLD is used.
+$
+$ NI3V_D022 is not stable below 386 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT V    BCC_A2                     50.9415    4507.0     30.89   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI V : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% V : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI V% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI V : VA : !
+$
+$ Prototype Al3Ti (tI8, I4/mmm)
+$
+ PHASE NI3V_D022 % 2 3 1 !
+ CONST NI3V_D022 : NI : V : !
+$
+$ Prototype MoPt2 (oI6, Immm)
+$
+ PHASE NI2V % 2 2 1 !
+ CONST NI2V : NI : V : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE NI2V7_A15 % 2 2 7 !
+ CONST NI2V7_A15 : NI : V : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_OLD % 3 8 4 18 !
+ CONST SIGMA_OLD : NI : V : NI V : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_D8B % 3 10 4 16 !
+ CONST SIGMA_D8B : NI V : V : NI V : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE SIGMA_OLD !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ V
+$
+ PAR  G(BCC_A2,V:VA),,                  +GHSERVV;                4000 N 91Din !
+ PAR  G(FCC_A1,V:VA),,                  +GHSERVV+7500+1.7*T;     4000 N 91Din !
+ PAR  G(HCP_A3,V:VA),,                  +GHSERVV+4000+2.4*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,V:VA),,                +GHSERVV+9000;           4000 N 91Din !
+$PAR  G(CUB_A13,V:VA),,                 +GHSERVV+10000;          4000 N 91Din !
+ PAR  G(LIQUID,V),,                     +GLIQVV;                 4000 N 91Din !
+$
+ PAR  G(SIGMA_D8B,V:V:V),,              +30*GHSERVV+100000;,,         N 02Sun !
+$
+ FUNCTION GHSERVV   298.15  -7930.43+133.346053*T-24.134*T*LN(T)
+       -0.003098*T**2+1.2175E-07*T**3+69460*T**(-1);
+       790.00  Y  -7967.842+143.291093*T-25.9*T*LN(T)
+       +6.25E-05*T**2-6.8E-07*T**3;
+      2183.00  Y  -41689.864+321.140783*T-47.43*T*LN(T)+6.44389E+31*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQVV    298.15  +20764.117-9.455552*T+GHSERVV-5.19136E-22*T**7;
+      2183.00  Y  -19617.51+311.055983*T-47.43*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From J. Korb and K. Hack 1998 (included in LB Vol. 4)
+$
+$ J. Korb, K. Hack, COST 507, Final report round 2, 1998.
+$
+$ Checked against LB and COST. Checked at 6000 K.
+$
+$ The model change for the sigma phase in LB leads to quite large shifts of
+$ the phase boundaries, in particular on the V-rich side.
+$ Invariant equilibria listed in COST are reproduced when SIGMA_OLD is used.
+$
+$ NI3V_D022 is not stable below 386 K.
+$
+ PAR  L(LIQUID,NI,V;0),,                -51927+14.99*T;,,             N 98Kor !
+$
+ PAR  L(BCC_A2,NI,V:VA;0),,             -30513.8+12.6138*T;,,         N 98Kor !
+$
+ PAR  L(FCC_A1,NI,V:VA;0),,             -36365.6+3.75677*T;,,         N 98Kor !
+ PAR  L(FCC_A1,NI,V:VA;1),,             +11860.7-9.0302*T;,,          N 98Kor !
+ PAR  L(FCC_A1,NI,V:VA;2),,             -10647.5+7.00954*T;,,         N 98Kor !
+$
+ PAR  G(NI3V_D022,NI:V),,               -45524.96+529.01852*T
+             -99.74166*T*LOG(T)-0.00824*T**2-13753.332*T**(-1);,,     N 98Kor !
+ PAR  G(NI2V,NI:V),,                    -38032.065+337.2614*T
+             -64.6973*T*LOG(T)-0.01512*T**2-13.75326*T**(-1);,,       N 98Kor !
+ PAR  G(NI2V7_A15,NI:V),,               -190634.14+1333.90548*T
+             -233.55668*T*LOG(T)-0.00482*T**2-5.196308E-06*T**3
+             +844557.21*T**(-1);,,                                    N 98Kor !
+$
+ PAR  G(SIGMA_OLD,NI:V:NI),,             +26*GHSERNI+4*GHSERVV
+             +4734.82-64.7436*T;,,                                    N 98Kor !
+ PAR  G(SIGMA_OLD,NI:V:V),,              +8*GHSERNI+22*GHSERVV
+             -447428+136.3269*T;,,                                    N 98Kor !
+$
+$PAR  G(SIGMA_OLD,NI:V:NI),,             -161645.05+3532.8443*T
+$            -671.032*T*LN(T)-0.1382502*T**2+4.87E-07*T**3
+$            +277840*T**(-1); 790.00 Y -161794.7+3572.6245*T
+$            -678.096*T*LN(T)-0.1256082*T**2-2.72E-06*T**3;      1728 N 98Kor !
+$PAR  G(SIGMA_OLD,NI:V:V),,              -663330.65+4012.7719*T
+$            -707.716*T*LN(T)-0.1068816*T**2+2.6785E-06*T**3
+$            +1528120*T**(-1); 790.00 Y -664153.72+4231.5628*T
+$            -746.568*T*LN(T)-0.0373506*T**2-1.496E-05*T**3;     1728 N 98Kor !
+$
+ PAR  G(SIGMA_D8B,NI:V:NI),,            +26*GHSERNI+4*GHSERVV
+             +79717-127.17*T;,,                                       N 02Sun !
+ PAR  G(SIGMA_D8B,NI:V:V),,             +10*GHSERNI+20*GHSERVV
+             -450217+137.12*T;,,                                      N 02Sun !
+ PAR  G(SIGMA_D8B,V:V:NI),,             +16*GHSERNI+14*GHSERVV
+             +100000;,,                                               N 02Sun !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,NI,V:VA;0),,             -36365.6+3.75677*T;,,         N Same !
+ PAR  L(HCP_A3,NI,V:VA;1),,             +11860.7-9.0302*T;,,          N Same !
+ PAR  L(HCP_A3,NI,V:VA;2),,             -10647.5+7.00954*T;,,         N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-V(TDB -* +LIQUID +FCC_A1 +BCC_A2 +NI2V +NI2V7_A15 +NI3V_D022 +SIGMA_D8B 
+  ;P3 TMM:300/2500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Kor  'J. Korb, K. Hack, COST 507, Final report round 2, 1998; Ni-V'
+  99Dup  'N. Dupin, I. Ansara, Z. Metallkd., 90, 76-85(1999); Al-Ni'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  02Sun  'B. Sundman, modified sigma parameters, 2002'
+!

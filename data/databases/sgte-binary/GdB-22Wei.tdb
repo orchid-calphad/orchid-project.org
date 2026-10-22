@@ -1,0 +1,235 @@
+$
+$ Database for Gd-B from Q. Wei et al. 2022.
+$
+$ Q. Wei, M.H. Rong, S. Li, D. Su, Q.R. Yao, J. Wang, Q. Chen, G.H. Rao,
+$ H.Y. Zhou, Int. J. Mater. Res., 113, 400-418(2022).
+$
+$ Dataset created 2021.05.20 by Bengt Hallstedt.
+$
+$ The eutectic (hcp-Gd + Gd2B5) is at 1447 K instead of 1453 K. This is
+$ probably because the old expressions for Gd from 91Din were used, although
+$ it is written in the paper that the updated expressions from 95She were used.
+$
+$ The GdB2 = L + Gd2B5 equilibrium is at 1531 K instead of 1552 K.
+$ L + GdB4 = GdB6 is at 2772 K instead of 2783 K. These are most probably
+$ due to rounding errors.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT GD   HCP_A3                    157.25      9087.648   68.0894 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B GD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GD : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GD : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : GD : VA : !
+$
+$ Prototype alpha-B (hR12, R-3m)
+$
+ PHASE ALPHA_RHOMBO_B % 1 1 !
+ CONST ALPHA_RHOMBO_B : B : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 1 1 !
+ CONST BETA_RHOMBO_B : B : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE GDB2_C32 % 2 1 2 !
+ CONST GDB2_C32 : GD : B : !
+$
+$ Prototype Gd2B5 (mP28, P2_1/c)
+$
+ PHASE GD2B5 % 2 2 5 !
+ CONST GD2B5 : GD : B : !
+$
+$ Prototype UB4 (tP20, P4/mbm)
+$
+ PHASE GDB4_D1E % 2 1 4 !
+ CONST GDB4_D1E : GD : B : !
+$
+$ Prototype CaB6 (cP7, Pm-3m)
+$
+ PHASE GDB6_D21 % 2 1 6 !
+ CONST GDB6_D21 : GD : B : !
+$
+$ Prototype YB66 (cF1936, Fm-3c)
+$
+ PHASE GDB66 % 2 1 66 !
+ CONST GDB66 : GD : B : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+ PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+ PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+$PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+$PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Gd
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ Small correction made to top two temperature ranges of bcc_A2 to ensure 
+$ continuity in Gibbs energy, AD, Dec 2002
+$ FCC_A1 added in unary 4.4
+$
+$ FCC_A1 from 03Cac not included in unary
+$
+ PAR  G(HCP_A3,GD:VA)           200.00  +GHSERGD;                3600 N 95She2 !
+ PAR  TC(HCP_A3,GD:VA)          200.00    293.4;                 3600 N 95She2 !
+ PAR  BM(HCP_A3,GD:VA)          200.00      3.0;                 3600 N 95She2 !
+$PAR  TC(HCP_A3,GD:VA)          200.00    291.8;                 3600 N 91Din !
+$PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 91Din !
+ PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+500;            3600 N 00Zin !
+$PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD
+$            +1800-0.831451*T;                                   3600 N 03Cac !
+ PAR  G(BCC_A2,GD:VA)           200.00  +GBCCGD;                 3600 N 95She2 !
+ PAR  G(LIQUID,GD)              200.00  +GLIQGD;                 3600 N 95She2 !
+$
+ FUNCTION GHSERGD   200.00  -6834.5855+97.13101*T-24.7214131*T*LN(T)
+       -0.00285240521*T**2-3.14674076E-07*T**3-8665.73348*T**(-1);
+      1000.00  Y  -6483.25362+95.6919924*T-24.6598297*T*LN(T)
+       -0.00185225011*T**2-6.61211607E-07*T**3;
+      1508.15  Y  -123124.992+699.125537*T-101.800197*T*LN(T)
+       +0.0150644246*T**2-6.39165948E-07*T**3+29356890.3*T**(-1);
+      3600.00  N !
+ FUNCTION GBCCGD    200.00  +3233.80866-2.11184585*T+GHSERGD;
+      1000.00  Y  +152792.743-1349.58873*T+180.097094*T*LN(T)
+       -0.119550229*T**2+1.17915728E-05*T**3-22038836*T**(-1);
+      1508.15  Y  -15783.7618+202.222183*T-38.960425*T*LN(T);
+      1586.15  Y  -19850.5562+224.818035*T-41.904333*T*LN(T)
+       +8.58222759E-04*T**2-3.77570269E-08*T**3+995428.573*T**(-1);
+      3600.00  N !
+ FUNCTION GLIQGD    200.00  +13060.0262-8.32179974*T+GHSERGD;
+      1000.00  Y  +146262.037-1208.70685*T+159.352082*T*LN(T)
+       -0.108247135*T**2+1.06945505E-05*T**3-19678357*T**(-1);
+      1508.15  Y  -5397.314+192.336215*T-38.5075*T*LN(T);
+      3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Q. Wei, M.H. Rong, S. Li, D. Su, Q.R. Yao, J. Wang, Q. Chen, G.H. Rao,
+$ H.Y. Zhou, Int. J. Mater. Res., 113, 400-418(2022).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The eutectic (hcp-Gd + Gd2B5) is at 1447 K instead of 1453 K. This is
+$ probably because the old expressions for Gd from 91Din were used, although
+$ it is written in the paper that the updated expressions from 95She were used.
+$
+$ The GdB2 = L + Gd2B5 equilibrium is at 1531 K instead of 1552 K.
+$ L + GdB4 = GdB6 is at 2772 K instead of 2783 K. These are most probably
+$ due to rounding errors.
+$
+ PAR  L(LIQUID,B,GD;0),,                -66929.622-11.9967*T;,,       N 22Wei !
+ PAR  L(LIQUID,B,GD;1),,                -51040.424+2.7998*T;,,        N 22Wei !
+ PAR  L(LIQUID,B,GD;2),,                -30000-3*T;,,                 N 22Wei !
+ PAR  L(LIQUID,B,GD;3),,                -10000;,,                     N 22Wei !
+$
+ PAR  G(GDB2_C32,GD:B),,                +GHSERGD+2*GHSERBB
+             -146454+4.821*T;,,                                       N 22Wei !
+ PAR  G(GD2B5,GD:B),,                   +2*GHSERGD+5*GHSERBB
+             -389437.16+27.6563*T;,,                                  N 22Wei !
+ PAR  G(GDB4_D1E,GD:B),,                +GHSERGD+4*GHSERBB
+             -269402.1+11.7025*T;,,                                   N 22Wei !
+ PAR  G(GDB6_D21,GD:B),,                +GHSERGD+6*GHSERBB
+             -313072.921+16.3835*T;,,                                 N 22Wei !
+ PAR  G(GDB66,GD:B),,                   +GHSERGD+66*GHSERBB
+             -1675000+493.79*T;,,                                     N 22Wei !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  95She2 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-02,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Gd'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Zin  'M. Zinkevich, N. Mattern, H. J Seifert,
+          J. Phase Equilib., 21, 385-94(2000),
+          SGTE unary database V.4.4, 2001; Gd'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Gd'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  22Wei  'Q. Wei, M.H. Rong, S. Li, D. Su, Q.R. Yao, J. Wang, Q. Chen, G.H. Rao,
+          H.Y. Zhou, Int. J. Mater. Res., 113, 400-418(2022); Gd-B'
+!

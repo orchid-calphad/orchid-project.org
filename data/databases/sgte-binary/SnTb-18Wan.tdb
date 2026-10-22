@@ -1,0 +1,236 @@
+$
+$ Database for Sn-Tb from S.L. Wang et al. 2018.
+$
+$ S.L. Wang, X.H. Su, S.S. Li, C.Y. Fu, Y.H. Guo, Y.X. Huang, D.X. Xiang,
+$ C.P. Wang, X.J. Liu, Calphad, 60, 214-21(2018).
+$
+$ Dataset created 2018.12.24 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ Invariant equilibria differ by up to 2 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+ ELEMENT TB   HCP_A3                    158.9254    9426.552   73.3037 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SN TB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SN TB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SN TB% : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SN : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SN : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m) and GdSn2.75 (oC16, Amm2)
+$
+ PHASE SN3TB % 2 3 1 !
+ CONST SN3TB : SN : TB : !
+$
+$ Prototype Sn7Tb3-lt (oC28, Cmmm)
+$
+ PHASE SN7TB3_LT % 2 7 3 !
+ CONST SN7TB3_LT : SN : TB : !
+$
+$ Prototype Sn7Tb3-ht (oP24, Pmmm)
+$
+ PHASE SN7TB3_HT % 2 7 3 !
+ CONST SN7TB3_HT : SN : TB : !
+$
+$ Prototype Si2Zr (oC12, Cmcm)
+$
+ PHASE SN2TB_C49 % 2 2 1 !
+ CONST SN2TB_C49 : SN : TB : !
+$
+$ Prototype Ge10Ho11 (tI84, I4/mmm)
+$
+ PHASE SN10TB11 % 2 10 11 !
+ CONST SN10TB11 : SN : TB : !
+$
+$ Prototype Ge4Sm5 (oP36, Pnma)
+$
+ PHASE SN4TB5 % 2 4 5 !
+ CONST SN4TB5 : SN : TB : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE SN3TB5_D88 % 2 3 5 !
+ CONST SN3TB5_D88 : SN : TB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ DHCP from 18Wan not included in unary
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+5000;           3000 N 18Wan !
+$PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                         3000 N !
+$ ------------------------------------------------------------------------------
+$ Tb
+$
+$ RHOMBOHEDRAL_A7 from 11Wan not included in unary
+$ FCC_A1 from 09Wan6 not included in unary
+$
+ PAR  G(HCP_A3,TB:VA),,                 +GHSERTB;                3000 N 91Din !
+ PAR  G(BCC_A2,TB:VA),,                 +GBCCTB;                 3000 N 91Din !
+$PAR  G(FCC_A1,TB:VA),,                 +GHSERTB+5000;           3000 N 09Wan6 !
+$PAR  G(RHOMBOHEDRAL_A7,TB),,           +GHSERTB+5000;           3000 N 11Wan !
+ PAR  G(LIQUID,TB),,                    +GLIQTB;                 3000 N 91Din !
+$
+ FUNCTION GHSERTB   298.15  -20842.158+409.309555*T-77.5006*T*LN(T)
+       +0.0832265*T**2-2.5672833E-05*T**3+562430*T**(-1);
+       600.00  Y  -8772.606+102.61162*T-25.8659*T*LN(T)
+       -0.002757005*T**2-8.05838E-07*T**3+172355*T**(-1);
+      1200.00  Y  -7944.942+101.7776*T-25.9584*T*LN(T)
+       -0.001676335*T**2-1.067632E-06*T**3;
+      1562.00  Y  -265240.309+1456.04268*T-200.215695*T*LN(T)
+       +0.041615159*T**2-2.044697E-06*T**3+65043790*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCTB    298.15  +4167.835-2.652707*T+GHSERTB;
+      1200.00  Y  +633060.245-5157.77779*T+706.580596*T*LN(T)
+       -0.373763517*T**2+3.4100235E-05*T**3-1.03233571E+08*T**(-1);
+      1562.00  Y  -23398.029+257.388486*T-46.4842*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQTB    298.15  +3945.831+29.867521*T-14.252646*T*LN(T)
+       -0.020466105*T**2+2.17475E-06*T**3-160724*T**(-1);
+      1562.00  Y  -13247.649+251.16889*T-46.4842*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S.L. Wang, X.H. Su, S.S. Li, C.Y. Fu, Y.H. Guo, Y.X. Huang, D.X. Xiang,
+$ C.P. Wang, X.J. Liu, Calphad, 60, 214-21(2018).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant equilibria differ by up to 2 K.
+$
+ PAR  L(LIQUID,SN,TB;0),,               -200200+29.573*T;,,           N 18Wan !
+ PAR  L(LIQUID,SN,TB;1),,               +39600-9.5*T;,,               N 18Wan !
+ PAR  L(LIQUID,SN,TB;2),,               +40000;,,                     N 18Wan !
+ PAR  L(LIQUID,SN,TB;3),,               -29300+2.1*T;,,               N 18Wan !
+$
+ PAR  L(BCC_A2,SN,TB:VA;0),,            +UN_ASS;,,                    N 18Wan !
+ PAR  L(HCP_A3,SN,TB:VA;0),,            +UN_ASS;,,                    N 18Wan !
+$
+ PAR  G(SN3TB,SN:TB),,                  +3*GHSERSN+GHSERTB
+             -172280+16.02*T;,,                                       N 18Wan !
+ PAR  G(SN7TB3_LT,SN:TB),,              +7*GHSERSN+3*GHSERTB
+             -511700+49.55*T;,,                                       N 18Wan !
+ PAR  G(SN7TB3_HT,SN:TB),,              +7*GHSERSN+3*GHSERTB
+             -507100+45.03*T;,,                                       N 18Wan !
+ PAR  G(SN2TB_C49,SN:TB),,              +2*GHSERSN+GHSERTB
+             -167340+16.512*T;,,                                      N 18Wan !
+ PAR  G(SN10TB11,SN:TB),,               +10*GHSERSN+11*GHSERTB
+             -1482600+139.188*T;,,                                    N 18Wan !
+ PAR  G(SN4TB5,SN:TB),,                 +4*GHSERSN+5*GHSERTB
+             -646650+63.675*T;,,                                      N 18Wan !
+ PAR  G(SN3TB5_D88,SN:TB),,             +3*GHSERSN+5*GHSERTB
+             -584800+66.4*T;,,                                        N 18Wan !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  09Wan6 'S.L. Wang, C.P. Wang, X.J. Liu, A.T. Tang, F.S. Pan, K. Ishida,
+          J. Alloys Compd., 484, 102-7(2009); Ho, Tb'
+  11Wan  'S.L. Wang, Z.B. Hu, F. Gao, C.P. Wang, X.J. Liu,
+          J. Phase Equilib. Diffus., 32, 441-46(2011); Tb'
+  18Wan  'S.L. Wang, X.H. Su, S.S. Li, C.Y. Fu, Y.H. Guo, Y.X. Huang,
+          D.X. Xiang, C.P. Wang, X.J. Liu, Calphad, 60, 214-21(2018); Sn, Sn-Tb'
+!

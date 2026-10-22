@@ -1,0 +1,236 @@
+$
+$ Database for Gd-Zn from J. Groebner et al. 2015.
+$
+$ J. Groebner, A. Kozlov, X.-Y. Fang, S. Zhu, J.-F. Nie, M.A. Gibson,
+$ R. Schmid-Fetzer, Acta Mater., 90, 400-16(2015).
+$
+$ Dataset created 2018.07.27 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ Invariant equilibria differ by up to 9 K, less for Zn-rich equilibria.
+$ Probably old Gd used in the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GD   HCP_A3                    157.25      9087.648   68.0894 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GD ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GD ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GD% ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GD% ZN% : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE GDZN_B2 % 2 1 1 !
+ CONST GDZN_B2 : GD : ZN : !
+$
+$ Prototype Hg2K (oI12, Imma)
+$
+ PHASE GDZN2 % 2 1 2 !
+ CONST GDZN2 : GD : ZN : !
+$
+$ Prototype YZn3 (oP16, Pnma)
+$
+ PHASE GDZN3 % 2 1 3 !
+ CONST GDZN3 : GD : ZN : !
+$
+$ Prototype Al11La3 (oI28, Immm)
+$
+ PHASE GD3ZN11 % 2 3 11 !
+ CONST GD3ZN11 : GD : ZN : !
+$
+$ Prototype Gd13Zn58 (hP142, P6_3/mmc)
+$
+ PHASE GD13ZN58 % 2 13 58 !
+ CONST GD13ZN58 : GD : ZN : !
+$
+$ Prototype Ce3Zn22 (tI100, I4_1/amd)
+$
+ PHASE GD3ZN22 % 2 3 22 !
+ CONST GD3ZN22 : GD : ZN : !
+$
+$ Prototype Ni17Th2 (hP38, P6_3/mmc) low T and Th2Zn17 (hR19, R-3m) high T
+$
+ PHASE GD2ZN17 % 2 2 17 !
+ CONST GD2ZN17 : GD : ZN : !
+$
+$ Prototype Mn12Th (tI26, I4/mmm)
+$
+ PHASE GDZN12_D2B % 2 1 12 !
+ CONST GDZN12_D2B : GD : ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Gd
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ Small correction made to top two temperature ranges of bcc_A2 to ensure 
+$ continuity in Gibbs energy, AD, Dec 2002
+$ FCC_A1 added in unary 4.4
+$
+$ FCC_A1 from 03Cac not included in unary
+$
+ PAR  G(HCP_A3,GD:VA)           200.00  +GHSERGD;                3600 N 95She2 !
+ PAR  TC(HCP_A3,GD:VA)          200.00    293.4;                 3600 N 95She2 !
+ PAR  BM(HCP_A3,GD:VA)          200.00      3.0;                 3600 N 95She2 !
+$PAR  TC(HCP_A3,GD:VA)          200.00    291.8;                 3600 N 91Din !
+$PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 91Din !
+ PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+500;            3600 N 00Zin !
+$PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD
+$            +1800-0.831451*T;                                   3600 N 03Cac !
+ PAR  G(BCC_A2,GD:VA)           200.00  +GBCCGD;                 3600 N 95She2 !
+ PAR  G(LIQUID,GD)              200.00  +GLIQGD;                 3600 N 95She2 !
+$
+ FUNCTION GHSERGD   200.00  -6834.5855+97.13101*T-24.7214131*T*LN(T)
+       -0.00285240521*T**2-3.14674076E-07*T**3-8665.73348*T**(-1);
+      1000.00  Y  -6483.25362+95.6919924*T-24.6598297*T*LN(T)
+       -0.00185225011*T**2-6.61211607E-07*T**3;
+      1508.15  Y  -123124.992+699.125537*T-101.800197*T*LN(T)
+       +0.0150644246*T**2-6.39165948E-07*T**3+29356890.3*T**(-1);
+      3600.00  N !
+ FUNCTION GBCCGD    200.00  +3233.80866-2.11184585*T+GHSERGD;
+      1000.00  Y  +152792.743-1349.58873*T+180.097094*T*LN(T)
+       -0.119550229*T**2+1.17915728E-05*T**3-22038836*T**(-1);
+      1508.15  Y  -15783.7618+202.222183*T-38.960425*T*LN(T);
+      1586.15  Y  -19850.5562+224.818035*T-41.904333*T*LN(T)
+       +8.58222759E-04*T**2-3.77570269E-08*T**3+995428.573*T**(-1);
+      3600.00  N !
+ FUNCTION GLIQGD    200.00  +13060.0262-8.32179974*T+GHSERGD;
+      1000.00  Y  +146262.037-1208.70685*T+159.352082*T*LN(T)
+       -0.108247135*T**2+1.06945505E-05*T**3-19678357*T**(-1);
+      1508.15  Y  -5397.314+192.336215*T-38.5075*T*LN(T);
+      3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Groebner, A. Kozlov, X.-Y. Fang, S. Zhu, J.-F. Nie, M.A. Gibson,
+$ R. Schmid-Fetzer, Acta Mater., 90, 400-16(2015).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant equilibria differ by up to 9 K, less for Zn-rich equilibria.
+$ Probably old Gd used in the paper.
+$
+ PAR  L(LIQUID,GD,ZN;0),,               -135251+6.19877*T;,,          N 15Gro !
+ PAR  L(LIQUID,GD,ZN;1),,               +58314.6;,,                   N 15Gro !
+$
+ PAR  L(BCC_A2,GD,ZN:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,GD,ZN:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(GDZN_B2,GD:ZN),,                +GHSERGD+GHSERZN
+             -96000+10.36*T;,,                                        N 15Gro !
+ PAR  G(GDZN2,GD:ZN),,                  +GHSERGD+2*GHSERZN
+             -130000+1.225*T;,,                                       N 15Gro !
+ PAR  G(GDZN3,GD:ZN),,                  +GHSERGD+3*GHSERZN
+             -156000+3.37*T;,,                                        N 15Gro !
+ PAR  G(GD3ZN11,GD:ZN),,                +3*GHSERGD+11*GHSERZN
+             -519500+19.63*T;,,                                       N 15Gro !
+ PAR  G(GD13ZN58,GD:ZN),,               +13*GHSERGD+58*GHSERZN
+             -2519000+145.44*T;,,                                     N 15Gro !
+ PAR  G(GD3ZN22,GD:ZN),,                +3*GHSERGD+22*GHSERZN
+             -742500+75.88*T;,,                                       N 15Gro !
+ PAR  G(GD2ZN17,GD:ZN),,                +2*GHSERGD+17*GHSERZN
+             -533200+58.92*T;,,                                       N 15Gro !
+ PAR  G(GDZN12_D2B,GD:ZN),,             +GHSERGD+12*GHSERZN
+             -264500+17.34*T;,,                                       N 15Gro !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  95She2 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-02,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Gd'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Zin  'M. Zinkevich, N. Mattern, H. J Seifert,
+          J. Phase Equilib., 21, 385-94(2000),
+          SGTE unary database V.4.4, 2001; Gd'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Gd'
+  15Gro  'J. Groebner, A. Kozlov, X.-Y. Fang, S. Zhu, J.-F. Nie, M.A. Gibson,
+          R. Schmid-Fetzer, Acta Mater., 90, 400-16(2015); Gd-Zn'
+!

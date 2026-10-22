@@ -1,0 +1,225 @@
+$
+$ Database for Co-Ta from C. Wang et al. 2022.
+$
+$ C. Wang, X. Chen, P. Yang, Q. Zhang, S. Yang, Y. Lu, Y. Guo, X. Liu,
+$ J. Alloys Compd., 925, 166723(2022).
+$
+$ Dataset created 2023.05.28 by Bengt Hallstedt.
+$
+$ Modified from 14Shi. New model for MU_D85; 1:4:2:6 instead of 6:4:3.
+$
+$ Co7Ta2 parameter misprinted in the paper.
+$
+$ Invariant equilibria differ by up to 3 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT TA   BCC_A2                    180.9479    5681.872   41.4718 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO TA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% TA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO TA% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% TA : VA : !
+$
+$ Prototype BaPb3 (hR12, R-3m)
+$
+ PHASE CO7TA2 % 2 7 2  !
+ CONST CO7TA2 : CO : TA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE CO2TA_C14 % 2 2 1  !
+ CONST CO2TA_C14 : CO% TA : CO TA% : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE CO2TA_C15 % 2 2 1  !
+ CONST CO2TA_C15 : CO% TA : CO TA% : !
+$
+$ Prototype MgNi2 (hP24, P6_3/mmc)
+$
+ PHASE CO2TA_C36 % 2 2 1  !
+ CONST CO2TA_C36 : CO% TA : CO TA% : !
+$
+$ Prototype Fe7W6 (hR13, R-3m)
+$
+ PHASE MU_D85 % 4 1 4 2 6 !
+ CONST MU_D85 : TA : TA : CO TA : CO TA : !
+$
+$ Prototype Al2Cu (tI12, I4/mcm)
+$
+ PHASE COTA2_C16 % 2 1 2  !
+ CONST COTA2_C16 : CO% TA : CO TA% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  G(CO2TA_C14,CO:CO),,              +3*GHSERCO+15000;,,           N REFLAV !
+ PAR  G(CO2TA_C15,CO:CO),,              +3*GHSERCO+15000;,,           N REFLAV !
+ PAR  G(CO2TA_C36,CO:CO),,              +3*GHSERCO+15000;,,           N REFLAV !
+ PAR  G(COTA2_C16,CO:CO),,              +3*GHSERCO+15000;,,           N REFLAV !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Ta
+$
+ PAR  G(BCC_A2,TA:VA),,                 +GHSERTA;,,                   N 91Din !
+ PAR  G(FCC_A1,TA:VA),,                 +GHSERTA+16000+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,TA:VA),,                 +GHSERTA+12000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,TA),,                    +GLIQTA;,,                    N 91Din !
+$
+ PAR  G(CO2TA_C14,TA:TA),,              +3*GHSERTA+15000;,,           N REFLAV !
+ PAR  G(CO2TA_C15,TA:TA),,              +3*GHSERTA+15000;,,           N REFLAV !
+ PAR  G(CO2TA_C36,TA:TA),,              +3*GHSERTA+15000;,,           N REFLAV !
+ PAR  G(COTA2_C16,TA:TA),,              +3*GHSERTA+152640;,,          N 22Wan !
+ PAR  G(MU_D85,TA:TA:TA:TA),,           +13*GHSERTA
+             +333636.654+11.8989*T;,,                                 N 22Wan !
+$
+ FUNCTION GHSERTA   298.15  -7285.889+119.139857*T-23.7592624*T*LN(T)
+       -0.002623033*T**2+1.70109E-07*T**3-3293*T**(-1);
+      1300.00  Y  -22389.955+243.88676*T-41.137088*T*LN(T)
+       +0.006167572*T**2-6.55136E-07*T**3+2429586*T**(-1);
+      2500.00  Y  +229382.886-722.59722*T+78.5244752*T*LN(T)
+       -0.017983376*T**2+1.95033E-07*T**3-93813648*T**(-1);
+      3290.00  Y  -1042384.01+2985.49125*T-362.159132*T*LN(T)
+       +0.043117795*T**2-1.055148E-06*T**3+5.54714342E+08*T**(-1);
+      6000.00  N !
+ FUNCTION GLIQTA    298.15  +29160.975-7.578729*T+GHSERTA;
+      1000.00  Y  +43884.339-61.981795*T+0.0279523*T*LN(T)
+       -0.012330066*T**2+6.14599E-07*T**3-3523338*T**(-1);
+      3290.00  Y  -6314.543+258.110873*T-41.84*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCTA    298.15  +GHSERTA+16000+1.7*T;                      6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Wang, X. Chen, P. Yang, Q. Zhang, S. Yang, Y. Lu, Y. Guo, X. Liu,
+$ J. Alloys Compd., 925, 166723(2022).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 14Shi. New model for MU_D85; 1:4:2:6 instead of 6:4:3.
+$
+$ Co7Ta2 parameter misprinted in the paper.
+$
+$ Invariant equilibria differ by up to 3 K.
+$
+ PAR  L(LIQUID,CO,TA;0),,               -201148.7+44.1468*T;,,        N 22Wan !
+ PAR  L(LIQUID,CO,TA;1),,               -11451.5+0.4*T;,,             N 22Wan !
+ PAR  L(LIQUID,CO,TA;2),,               +38099;,,                     N 22Wan !
+$
+ PAR  L(FCC_A1,CO,TA:VA;0),,            -116349.4;,,                  N 14Shi !
+ PAR  L(FCC_A1,CO,TA:VA;1),,            +18595.2;,,                   N 14Shi !
+ PAR  TC(FCC_A1,CO,TA:VA;0),,           -2200;,,                      N 14Shi !
+ PAR  TC(FCC_A1,CO,TA:VA;1),,            -804;,,                      N 14Shi !
+$
+ PAR  L(BCC_A2,CO,TA:VA;0),,            -95196.5+18.5567*T;,,         N 14Shi !
+ PAR  L(BCC_A2,CO,TA:VA;1),,            -3489.72;,,                   N 14Shi !
+ PAR  L(BCC_A2,CO,TA:VA;2),,            +35362;,,                     N 14Shi !
+$
+ PAR  L(HCP_A3,CO,TA:VA;0),,            -102000+15*T;,,               N 14Shi !
+$
+ PAR  G(CO7TA2,CO:TA),,                 +7*GHSERCO+2*GHSERTA
+             -295891.4079+44.16*T;,,                                  N 22Wan !
+$
+ PAR  G(CO2TA_C14,CO:TA),,              +2*GHSERCO+GHSERTA
+             -145050.2+25.6752*T;,,                                   N 22Wan !
+ PAR  G(CO2TA_C14,TA:CO),,              +2*GHSERTA+GHSERCO;,,         N 14Shi !
+ PAR  L(CO2TA_C14,CO,TA:TA;0),,         -35050.6-5.9*T;,,             N 22Wan !
+ PAR  L(CO2TA_C14,CO,TA:TA;1),,         +8500-12*T;,,                 N 22Wan !
+$
+ PAR  G(CO2TA_C15,CO:TA),,              +2*GHSERCO+GHSERTA
+             -146030+25.5657*T;,,                                     N 22Wan !
+ PAR  G(CO2TA_C15,TA:CO),,              +2*GHSERTA+GHSERCO;,,         N 14Shi !
+ PAR  L(CO2TA_C15,CO:CO,TA;0),,         -9930;,,                      N 22Wan !
+$
+ PAR  G(CO2TA_C36,CO:TA),,              +2*GHSERCO+GHSERTA
+             -144573+24.8349*T;,,                                     N 22Wan !
+ PAR  G(CO2TA_C36,TA:CO),,              +2*GHSERTA+GHSERCO;,,         N 14Shi !
+ PAR  L(CO2TA_C36,CO:CO,TA;0),,         -15604.86+2.68*T;,,           N 22Wan !
+$
+ PAR  G(MU_D85,TA:TA:CO:CO),,           +8*GHSERCO+5*GHSERTA
+             -460701+46*T;,,                                          N 22Wan !
+ PAR  G(MU_D85,TA:TA:CO:TA),,           +2*GHSERCO+11*GHSERTA;,,      N 22Wan !
+ PAR  G(MU_D85,TA:TA:TA:CO),,           +6*GHSERCO+7*GHSERTA
+             -435067+T;,,                                             N 22Wan !
+ PAR  L(MU_D85,TA:TA:CO,TA:CO;0),,      -408383.664+164.9934*T;,,     N 22Wan !
+ PAR  L(MU_D85,TA:TA:CO,TA:CO;1),,      -34998.6-16*T;,,              N 22Wan !
+$
+ PAR  G(COTA2_C16,CO:TA),,              +GHSERCO+2*GHSERTA
+             -75955.3;,,                                              N 22Wan !
+ PAR  G(COTA2_C16,TA:CO),,              +GHSERTA+2*GHSERCO;,,         N 14Shi !
+ PAR  L(COTA2_C16,CO,TA:TA;0),,         -110774.6-5*T;,,              N 22Wan !
+ PAR  L(COTA2_C16,CO:CO,TA;0),,         -147589.6+7.5*T;,,            N 22Wan !
+ PAR  L(COTA2_C16,CO:CO,TA;1),,         +11000-2.3*T;,,               N 22Wan !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CO-TA(TDB -* +LIQUID +BCC_A2 +FCC_A1 +HCP_A3 +CO7TA2 +COTA2_C16 
+  +CO2TA_C14 +CO2TA_C15 +CO2TA_C36 +MU_D85 ;P3 TMM:500/3500 STP:.1/1600/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  14Shi  'K. Shinagawa, H. Chinen, T. Omori, K. Oikawa, I. Ohnuma, K. Ishida,
+          R. Kainuma, Intermetallics, 49, 87-97(2014); Co-Ta'
+  22Wan  'C. Wang, X. Chen, P. Yang, Q. Zhang, S. Yang, Y. Lu, Y. Guo, X. Liu,
+          J. Alloys Compd., 925, 166723(2022); Co-Ta'
+!

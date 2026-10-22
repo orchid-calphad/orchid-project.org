@@ -1,0 +1,218 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "SC",
+    "SI"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "SC": {
+          "energy": -10328.958414079243,
+          "phase": "HCP_A3"
+        },
+        "SI": {
+          "energy": -5608.21185533972,
+          "phase": "DIAMOND_A4"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -14333.333024296226
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 36.473332531829165
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -25207.85711866109,
+          "right": {
+            "phase": "SC5SI3_D88",
+            "x": 0.375
+          },
+          "slope": -25207.85711866109,
+          "x_hi": 0.375,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -10986.499856641272,
+            "slope": 14963.999926747169
+          },
+          "entropy": {
+            "intercept": 9.85999979356075,
+            "slope": 10.179999749000501
+          },
+          "intercept": -13926.258795091397,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SC5SI3_D88",
+            "x": 0.375
+          },
+          "mu_a_rel": -13926.258795091397,
+          "mu_b_rel": -1997.4257935087608,
+          "right": {
+            "phase": "SCSI_B33",
+            "x": 0.5
+          },
+          "slope": 11928.833001582636,
+          "x_hi": 0.5,
+          "x_lo": 0.375
+        },
+        {
+          "enthalpy": {
+            "intercept": -7008.999786535377,
+            "slope": 7008.999786535377
+          },
+          "entropy": {
+            "intercept": 29.899999336122,
+            "slope": -29.899999336122
+          },
+          "intercept": -15923.684588600157,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SCSI_B33",
+            "x": 0.5
+          },
+          "mu_a_rel": -15923.684588600157,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "DIAMOND_A4",
+            "x": 1.0
+          },
+          "slope": 15923.684588600157,
+          "x_hi": 1.0,
+          "x_lo": 0.5
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -9452.946419497908,
+          "energy_per_atom": -9452.946419497908,
+          "enthalpy": -5374.999884111085,
+          "entries_at_x": 1,
+          "entropy": 13.677499699435938,
+          "formula": "",
+          "nsites": null,
+          "phase": "SC5SI3_D88",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.375
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -7961.842294300079,
+          "energy_per_atom": -7961.842294300079,
+          "enthalpy": -3504.4998932676885,
+          "entries_at_x": 1,
+          "entropy": 14.949999668061,
+          "formula": "",
+          "nsites": null,
+          "phase": "SCSI_B33",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "DIAMOND_A4",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "ScSi-08GTT",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:00:44Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/ScSi-08GTT.tdb",
+    "source_sha256": "39f96fbdf0474901452e7df8d5a86068f56bdd6b52445e3951fdf7b4da5d9f33"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "SC-SI",
+  "x_element": "SI"
+}

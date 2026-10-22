@@ -1,0 +1,165 @@
+$
+$ Database for Cu-Er from L.G. Zhang et al. 2008
+$
+$ L.G. Zhang, L.B. Liu, G.X. Huang, H.Y. Qi, B.R. Jia, Z.P. Jin,
+$ Calphad, 32, 527-34(2008).
+$
+$ Dataset created 2011.10.08 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ Up to 1 K differences for invariant equilibria due to rounding errors when
+$ changing from fractional compositions for the compounds.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT ER   HCP_A3                    167.26      7392.2912  73.17816! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU ER : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% ER : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU ER : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU ER% : VA : !
+$
+$ Prototype AuBe5 (cF24, F-43m)
+$
+ PHASE CU5ER_C15B % 2 5 1 !
+ CONST CU5ER_C15B : CU : ER : !
+$
+$ Unknown structure
+$
+ PHASE CU9ER2 % 2 9 2 !
+ CONST CU9ER2 : CU : ER : !
+$
+$ Unknown structure
+$
+ PHASE CU7ER2 % 2 7 2 !
+ CONST CU7ER2 : CU : ER : !
+$
+$ Prototype Hg2K (oI12, Imma), prototype CeCu2 in paper
+$
+ PHASE CU2ER % 2 2 1 !
+ CONST CU2ER : CU : ER : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE CUER_B2 % 2 1 1 !
+ CONST CUER_B2 : CU : ER : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Er
+$
+$ BCC_A2 added in unary 4.4
+$
+$ FCC_A1 from 02Cac not included in unary (but it should be)
+$
+ PAR  G(HCP_A3,ER:VA),,                 +GHSERER;                3200 N 91Din !
+ PAR  G(FCC_A1,ER:VA),,                 +GHSERER
+             +1950-0.831451*T;                                   3200 N 02Cac !
+ PAR  G(BCC_A2,ER:VA),,                 +GHSERER
+             +4600-2.494353*T;                                   3200 N 00Nor1 !
+ PAR  G(LIQUID,ER),,                    +GLIQER;                 3200 N 91Din !
+$
+ FUNCTION GHSERER   298.15  -8489.136+116.698964*T-28.3846744*T*LN(T)
+       +9.95792E-04*T**2-9.52557E-07*T**3+9581*T**(-1);
+      1802.00  Y  -445688.206+2233.10212*T-298.135131*T*LN(T)
+       +0.065950553*T**2-3.041405E-06*T**3+1.23973199E+08*T**(-1);
+      3200.00  N !
+ FUNCTION GLIQER    298.15  +19382.102-10.241846*T+GHSERER;
+       500.00  Y  +17912.678+0.355564*T-12.0761776*T*LN(T)
+       -0.014414687*T**2+1.316517E-06*T**3-528122*T**(-1);
+      1802.00  Y  +747.131+187.623024*T-38.702*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L.G. Zhang, L.B. Liu, G.X. Huang, H.Y. Qi, B.R. Jia, Z.P. Jin,
+$ Calphad, 32, 527-34(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Up to 1 K differences for invariant equilibria due to rounding errors when
+$ changing from fractional compositions for the compounds.
+$
+ PAR  L(LIQUID,CU,ER;0),,               -78882.6324+2.842*T;,,        N 08Zha !
+ PAR  L(LIQUID,CU,ER;1),,               -23265.2445+0.15*T;,,         N 08Zha !
+ PAR  L(LIQUID,CU,ER;2),,               -16190.5543+7.698*T;,,        N 08Zha !
+$
+ PAR  L(HCP_A3,CU,ER:VA;0),,            +15000;,,                     N 08Zha !
+$
+ PAR  G(CU5ER_C15B,CU:ER),,             +5*GHSERCU+GHSERER
+             -98356.9746+1.524*T;,,                                   N 08Zha !
+ PAR  G(CU9ER2,CU:ER),,                 +9*GHSERCU+2*GHSERER
+             -184727.2097-2.453*T;,,                                  N 08Zha !
+ PAR  G(CU7ER2,CU:ER),,                 +7*GHSERCU+2*GHSERER
+             -128699.91-31.5*T;,,                                     N 08Zha !
+ PAR  G(CU2ER,CU:ER),,                  +2*GHSERCU+GHSERER
+             -64030.494+0.03*T;,,                                     N 08Zha !
+ PAR  G(CUER_B2,CU:ER),,                +GHSERCU+GHSERER
+             -52204.6424+4*T;,,                                       N 08Zha !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,CU,ER:VA;0),,            +15000;,,                     N Same !
+ PAR  L(BCC_A2,CU,ER:VA;0),,            +15000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  00Nor1 'S. Norgren, J. Phase Equilib., 21, 148-56(2000),
+          SGTE unary database V.4.4, 2001; Er, Ho'
+  02Cac  'G. Cacciamani, A. Saccone, S. De Negri, R. Ferro,
+          J. Phase Equilib., 23, 38-50(2002); Er, Al-Er'
+  08Zha  'L.G. Zhang, L.B. Liu, G.X. Huang, H.Y. Qi, B.R. Jia, Z.P. Jin,
+          Calphad, 32, 527-34(2008); Cu-Er'
+!

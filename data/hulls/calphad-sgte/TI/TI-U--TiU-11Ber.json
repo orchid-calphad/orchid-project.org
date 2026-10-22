@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "TI",
+    "U"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "TI": {
+          "energy": -9159.168133026253,
+          "phase": "HCP_A3"
+        },
+        "U": {
+          "energy": -14967.130391003397,
+          "phase": "ORTHORHOMBIC_A20"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -29499.99995678646
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -18.960000047351475
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -23847.075942668624,
+          "right": {
+            "phase": "TIU2",
+            "x": 0.6666666666666666
+          },
+          "slope": -23847.075942668624,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -58999.999913572916,
+            "slope": 58999.999913572916
+          },
+          "entropy": {
+            "intercept": -37.92000009470294,
+            "slope": 37.92000009470294
+          },
+          "intercept": -47694.15188533724,
+          "kind": "two_phase",
+          "left": {
+            "phase": "TIU2",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -47694.15188533724,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "ORTHORHOMBIC_A20",
+            "x": 1.0
+          },
+          "slope": 47694.15188533724,
+          "x_hi": 1.0,
+          "x_lo": 0.6666666666666666
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -15898.050628445748,
+          "energy_per_atom": -15898.050628445748,
+          "enthalpy": -19666.66663785764,
+          "entries_at_x": 1,
+          "entropy": -12.640000031567649,
+          "formula": "",
+          "nsites": null,
+          "phase": "TIU2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ORTHORHOMBIC_A20",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "TiU-11Ber",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:03:26Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/TiU-11Ber.tdb",
+    "source_sha256": "305bf96c635dc687ba4dff85745fb700ce5dbbf627938fc6ed8e35b4da5088c7"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "TI-U",
+  "x_element": "U"
+}

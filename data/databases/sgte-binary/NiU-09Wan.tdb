@@ -1,0 +1,214 @@
+$
+$ Database for Ni-U from C.P. Wang et al. 2009
+$
+$ C.P. Wang, Y. He, H.L. Zhang, X.J. Liu, J. Alloys Compd., 487, 126-31(2009).
+$
+$ Dataset created 2017.05.25 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ Compositions changed from fractional to integer. This required an adjustment
+$ of the Ni7Th2 parameters. Invariant equilibria differ by up to 4 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI U : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI U% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI U : VA : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : NI U% : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : NI U% : !
+$
+$ Prototype AuBe5 (cF24, F-43m)
+$
+ PHASE NI5U_C15B % 2 5 1 !
+ CONST NI5U_C15B : NI : U : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm), epsilon
+$
+ PHASE NI7U2_D2D % 2 0.78 0.22 !
+ CONST NI7U2_D2D : NI : U : !
+$
+$ unknown structure, delta
+$
+ PHASE NI3U % 2 0.77 0.23 !
+ CONST NI3U : NI : U : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE NI2U_C14 % 2 2 1 !
+ CONST NI2U_C14 : NI : U : !
+$
+$ Prototype Ni7U5 (hR54, R-3)
+$
+ PHASE NI7U5 % 2 7 5 !
+ CONST NI7U5 : NI : U : !
+$
+$ Prototype Ni9U7 (mC46, C2/m)
+$
+ PHASE NI9U7 % 2 9 7 !
+ CONST NI9U7 : NI : U : !
+$
+$ Prototype MnU6 (tI28, I4/mcm)
+$
+ PHASE NIU6_D2C % 2 1 6 !
+ CONST NIU6_D2C : NI : U : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+$ ORTHORHOMBIC_A20 and TETRAGONAL_U from 09Wan not included in unary.
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(ORTHORHOMBIC_A20,NI),,          +GHSERNI+2000;           3000 N 09Wan5 !
+ PAR  G(TETRAGONAL_U,NI),,              +GHSERNI+5000;           3000 N 09Wan5 !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not in unary
+$ FCC_A1 from 09Wan not in unary
+$
+$ Note! Non-SGTE value used for fcc-U.
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+$PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(FCC_A1,U:VA),,                  +GHSERUU+40000;          3000 N 09Wan5 !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQUU    298.15  +GHSERUU+12355.5-10.3239*T;                3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C.P. Wang, Y. He, H.L. Zhang, X.J. Liu, J. Alloys Compd., 487, 126-31(2009).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Compositions changed from fractional to integer. Invariant equilibria differ
+$ by up to 3 K.
+$
+ PAR  L(LIQUID,NI,U;0),,                -132013+45.6482*T
+             -4*T*LN(T);,,                                            N 09Wan5 !
+ PAR  L(LIQUID,NI,U;1),,                -116379+33*T;,,               N 09Wan5 !
+ PAR  L(LIQUID,NI,U;2),,                -34983+11*T;,,                N 09Wan5 !
+ PAR  L(LIQUID,NI,U;3),,                +10200-10*T;,,                N 09Wan5 !
+$
+ PAR  L(FCC_A1,NI,U:VA;0),,             -165000;,,                    N 09Wan5 !
+ PAR  L(BCC_A2,NI,U:VA;0),,             -53000+12*T;,,                N 09Wan5 !
+ PAR  L(ORTHORHOMBIC_A20,NI,U;0),,      +ZERO;,,                      N 09Wan5 !
+ PAR  L(TETRAGONAL_U,NI,U;0),,          -14500-20*T;,,                N 09Wan5 !
+$
+ PAR  G(NI5U_C15B,NI:U),,               +5*GHSERNI+GHSERUU
+             -227280+39.6*T;,,                                        N 09Wan5 !
+ PAR  G(NI7U2_D2D,NI:U),,               +0.78*GHSERNI+0.22*GHSERUU
+             -45460+8.5*T;,,                                          N 09Wan5 !
+ PAR  G(NI3U,NI:U),,                    +0.77*GHSERNI+0.23*GHSERUU
+             -46420+8.8*T;,,                                          N 09Wan5 !
+ PAR  G(NI2U_C14,NI:U),,                +2*GHSERNI+GHSERUU
+             -173202+54*T;,,                                          N 09Wan5 !
+ PAR  G(NI7U5,NI:U),,                   +7*GHSERNI+5*GHSERUU
+             -721284+280.8*T;,,                                       N 09Wan5 !
+ PAR  G(NI9U7,NI:U),,                   +9*GHSERNI+7*GHSERUU
+             -927600+358.4*T;,,                                       N 09Wan5 !
+ PAR  G(NIU6_D2C,NI:U),,                +GHSERNI+6*GHSERUU
+             -103411+31.5*T;,,                                        N 09Wan5 !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr'
+  09Wan5 'C.P. Wang, Y. He, H.L. Zhang, X.J. Liu,
+          J. Alloys Compd., 487, 126-31(2009); Ni, U, Ni-U'
+!

@@ -1,0 +1,213 @@
+$
+$ Database for Ca-Cl from L.-I. Staffansson and D. Sichen 1992.
+$
+$ L.-I. Staffansson, D. Sichen, Scand. J. Metall., 21, 165-71(1992).
+$
+$ Dataset created 2018.05.03 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ In the paper data for pure Ca were taken from the SGTE substance database,
+$ not from the unary database. Here data for Ca are taken from the unary
+$ database. No data for Cl are included in the paper. There are no data for Cl
+$ in the unary database. Data for Cl are taken from SGSUB.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+ ELEMENT CL   1/2_MOLE_CL2(G)            35.453     4590.0    111.48   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CA+2                               CA1/+2 !
+ SPECIE  CA2                                CA2 !
+ SPECIE  CACL                               CA1CL1 !
+ SPECIE  CACL2                              CA1CL2 !
+ SPECIE  CL-1                               CL1/-1 !
+ SPECIE  CL2                                CL2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : CA+2 : CL-1 VA : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CA : VA : !
+$
+$ Prototype FeS2 (oP6, Pnnm)
+$
+ PHASE CACL2_C18:I % 2 1 2 !
+ CONST CACL2_C18:I : CA+2 : CL-1 : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : CA CA2 CACL CACL2 CL CL2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+ PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$ 
+ PAR  G(ION,CA+2:VA),,                  +GLIQCA;                 3000 N 91Din !
+$
+ PAR  G(GAS,CA;0),,                     +F2131T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,CA2;0),,                    +F2293T+RTLNP;,,              N 92SUB !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ Ca(g) :
+ FUNCTION F2131T    298.15  +173087.021-15.5575325*T-20.786112*T*LN(T);
+      1300.00  Y  +172997.956+5588.5688*T**(-1)-13.9593335*T
+       -21.0345161*T*LN(T)+2.38213948E-04*T**2-3.64413151E-08*T**3;
+      2000.00  Y  +134081.53+9296659.72*T**(-1)+218.694199*T
+       -51.8849472*T*LN(T)+0.0111923674*T**2-7.70260453E-07*T**3;
+      3600.00  Y  +672690.384-2.35270504E+08*T**(-1)-1610.06137*T
+       +171.348607*T*LN(T)-0.0300833784*T**2+6.66115115E-07*T**3;
+      4800.00  Y  +672623.642-2.1604084E+08*T**(-1)-1685.46289*T
+       +181.445018*T*LN(T)-0.032908206*T**2+7.77184973E-07*T**3;
+      6000.00  N !
+$ Ca2(g) :
+ FUNCTION F2293T    298.15  +331036.623+118736.69*T**(-1)+92.462223*T
+       -54.080292*T*LN(T)+0.0271296836*T**2-5.73392096E-06*T**3;
+       600.00  Y  +340712.213-633424.128*T**(-1)-59.9992293*T
+       -30.2654661*T*LN(T)+5.18998004E-04*T**2-4.10068261E-08*T**3;
+      2200.00  Y  +343774.134-1755137.79*T**(-1)-73.0668827*T
+       -28.6059243*T*LN(T)+6.54369232E-05*T**2-1.34699696E-08*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Cl
+$
+ PAR  G(GAS,CL;0),,                     +F5863T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CL2;0),,                    +F6320T+RTLNP;,,              N 97SUB !
+$
+$ Cl(g)
+ FUNCTION F5863T    298.15  +113735.574-5.74454343*T-23.68581*T*LN(T)
+       -5.00078E-06*T**2+2.35320333E-07*T**3+77001.85*T**(-1);
+       800.00  Y  +115299.255-14.5412992*T-22.63307*T*LN(T)
+       +4.844305E-04*T**2-2.35785167E-08*T**3-192344.3*T**(-1);
+      3400.00  Y  +118260.106-28.5900451*T-20.83511*T*LN(T)
+       +4.1547685E-06*T**2-6.70175833E-11*T**3-1130035*T**(-1);
+     10000.00  N !
+$ Cl2(g)
+ FUNCTION F6320T    298.15  -11735.239+21.6544578*T-36.24619*T*LN(T)
+       -9.56635E-04*T**2+7.72473833E-08*T**3+126340.1*T**(-1);
+      1500.00  Y  -14830.9343+52.8425144*T-40.69302*T*LN(T)
+       +0.0016038575*T**2-1.834645E-07*T**3+446405.05*T**(-1);
+      3300.00  Y  +12605.9759-161.881178*T-12.22677*T*LN(T)
+       -0.00734027*T**2+2.74869167E-07*T**3+3816431.5*T**(-1);
+      5600.00  Y  -277134.238+658.109036*T-109.5523*T*LN(T)
+       +0.00665615*T**2-9.27583833E-08*T**3+1.564792E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L.-I. Staffansson, D. Sichen, Scand. J. Metall., 21, 165-71(1992).
+$
+$ Checked against paper.
+$
+$ In the paper data for pure Ca were taken from the SGTE substance database,
+$ not from the unary database. Here data for Ca are taken from the unary
+$ database. No data for Cl are included in the paper. There are no data for Cl
+$ in the unary database. Data for Cl are taken from SGSUB.
+$
+ PAR  G(ION,CA+2:CL-1),,                +F5377T
+             +28547-27.31770335*T;,,                                  N 97SUB !
+ PAR  L(ION,CA+2:CL-1,VA;0),,           +469024-260.81*T;,,           N 92Sta !
+ PAR  L(ION,CA+2:CL-1,VA;1),,           -373171+237.82*T;,,           N 92Sta !
+$
+ PAR  G(CACL2_C18,CA+2:CL-1),,          +F5377T;,,                    N 97SUB !
+$
+ PAR  G(GAS,CACL),,                     +F5364T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CACL2),,                    +F5381T+RTLNP;,,              N 97SUB !
+$
+$ CaCl2(s)
+ FUNCTION F5377T    298.15  -822448.773+462.766958*T-85.545*T*LN(T)
+       +0.01138865*T**2-3.80821667E-06*T**3+352420*T**(-1);
+       700.00  Y  -808047.012+301.243094*T-61.961*T*LN(T)
+       -0.00462615*T**2-2.01255E-06*T**3-1225515*T**(-1);
+      1045.00  Y  -843145.056+608.722717*T-102.533*T*LN(T);
+      2600.00  N !
+$ CaCl(g)
+ FUNCTION F5364T    298.15  -115602.618+11.5813171*T-37.65526*T*LN(T)
+       +1.16143E-05*T**2-4.51644E-08*T**3+89644.8*T**(-1);
+      2700.00  Y  -54902.3338-198.367009*T-12.09576*T*LN(T)
+       -0.0043626615*T**2+7.128345E-08*T**3-25552280*T**(-1);
+      5400.00  Y  +44793.741-474.482632*T+20.66722*T*LN(T)
+       -0.00912846*T**2+2.004995E-07*T**3-82395150*T**(-1);
+      6000.00  N !
+$ CaCl2(g)
+ FUNCTION F5381T    298.15  -490898.881+126.982506*T-62.07341*T*LN(T)
+       -1.463806E-04*T**2+1.28844183E-08*T**3+125605.35*T**(-1);
+      2200.00  Y  -491189.497+129.246411*T-62.38721*T*LN(T)
+       +5.278115E-06*T**2-1.69103333E-10*T**3+187531.25*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Sta  'L.-I. Staffansson, D. Sichen,
+          Scand. J. Metall., 21, 165-71(1992); Ca-Cl'
+  92SUB  'SGTE substance database, version 1992'
+  97SUB  'SGTE substance database, version 1997'
+  00SUB  'SGTE substance database, version 2000'
+!

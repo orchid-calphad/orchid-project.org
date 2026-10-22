@@ -1,0 +1,134 @@
+$
+$ Database for Lu-O from M. Zinkevich 2007.
+$
+$ M. Zinkevich, Prog. Mater. Sci., 52, 597-647(2007).
+$
+$ Dataset created 2024.10.15 by Bengt Hallstedt.
+$
+$ This dataset contains the Lu2O3 data from 07Zin. The O solubility in solid
+$ Lu can be expected to be low. The liquid interaction was set similar to
+$ Pr-O from 23Nak.
+$
+$ Gas phase (except O2) is not included.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT LU   HCP_A3                    174.967     6388.968   50.9611 ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  LU+3                               LU/+3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : LU+3 : O-2 VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : LU : VA : !
+$
+$ Prototype Mn2O3 (cI80, Ia-3)
+$
+ PHASE C_R2O3_D53:I % 2 2 3 !
+ CONST C_R2O3_D53:I : LU+3 : O-2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Lu
+$
+ PAR  G(HCP_A3,LU:VA),,                 +GHSERLU;                3700 N 91Din !
+$PAR  G(LIQUID,LU),,                    +GLIQLU;                 3700 N 91Din !
+$
+ PAR  G(ION,LU+3:VA),,                  +GLIQLU;                 3700 N 91Din !
+$
+ FUNCTION GHSERLU   298.15  -8788.329+146.536283*T-29.812*T*LN(T)
+       +0.00519165*T**2-1.790717E-06*T**3+39723*T**(-1);
+       700.00  Y  -9043.057+142.327643*T-29.0095*T*LN(T)
+       +0.00371416*T**2-1.50147E-06*T**3+141549*T**(-1);
+      1700.00  Y  +6940.092-46.91844*T-1.83986*T*LN(T)-0.0119001*T**2;
+      1936.00  Y  -404023.691+1829.37943*T-239.019502*T*LN(T)
+       +0.041800748*T**2-1.661174E-06*T**3+1.24825465E+08*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQLU    298.15  +12772.12-4.998883*T+GHSERLU;
+       600.00  Y  +30389.863-198.378793*T+20.9392663*T*LN(T)
+       -0.034238743*T**2+2.890636E-06*T**3-2398650*T**(-1);
+      1936.00  Y  -18994.687+292.091104*T-47.9068*T*LN(T);
+      3700.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Zinkevich, Prog. Mater. Sci., 52, 597-647(2007).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ This dataset contains the Lu2O3 data from 07Zin. The O solubility in solid
+$ Lu can be expected to be low. The liquid interaction was set similar to
+$ Pr-O from 23Nak.
+$
+$ Gas phase (except O2) is not included.
+$
+ PAR  G(ION,LU+3:O-2),,                 +GLU2O3L;,,                   N 07Zin !
+ PAR  L(ION,LU+3:O-2,VA;0),,            +50000;,,                     N Same !
+ PAR  L(ION,LU+3:O-2,VA;1),,            -25000;,,                     N Same !
+$
+ PAR  G(C_R2O3_D53,LU+3:O-2),,          +GLU2O3C;,,                   N 07Zin !
+$
+ FUNCTION GLU2O3C   298.15  -1920290+710.2224*T-120.356*T*LN(T)
+       -0.004579*T**2+1144000*T**(-1)-2.0E+07*T**(-2);
+      6000.00  N !
+ FUNCTION GLU2O3A   298.15  +GLU2O3C+27106-5.270*T;                    6000 N !
+ FUNCTION GLU2O3B   298.15  +GLU2O3C+16598-3.659*T;                    6000 N !
+ FUNCTION GLU2O3H   298.15  +GLU2O3C+27000-9.654*T;                    6000 N !
+ FUNCTION GLU2O3X   298.15  +GLU2O3C+39899-14.223*T;                   6000 N !
+ FUNCTION GLU2O3L   298.15  +GLU2O3C+80566-29.159*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Similar interaction as with other R elements'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  07Zin  'M. Zinkevich, Prog. Mater. Sci., 52, 597-647(2007); Lu-O'
+!

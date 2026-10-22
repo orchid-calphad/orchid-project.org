@@ -1,0 +1,159 @@
+$
+$ Database for Ba-Ga from X. Li et al. 2013.
+$
+$ X. Li, K. Cheng, X. Yuan, D. Zhao, J. Xin, W. Wang, C. Zhang, Y. Du,
+$ Calphad, 43, 52-60(2013).
+$
+$ Dataset created 2018.03.31 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BA   BCC_A2                    137.33      6910.0     62.50   ! 
+ ELEMENT GA   ORTHORHOMBIC_A11           69.72      5572.0     40.7271 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : BA GA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : BA GA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : BA% GA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : BA GA : VA : !
+$
+$ alpha-Ga (oC8, Cmce)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Prototype Al10V (cF176, Fd-3m)
+$
+ PHASE BA10GA % 2 10 1 !
+ CONST BA10GA : BA : GA : !
+$
+$ Prototype Ba8Ga7 (cP60, P2_13)
+$
+ PHASE BA8GA7 % 2 8 7 !
+ CONST BA8GA7 : BA : GA : !
+$
+$ Prototype Ba5Ga6 (hP24, P-6c2, 188)
+$
+ PHASE BA5GA6 % 2 5 6 !
+ CONST BA5GA6 : BA : GA : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE BAGA2_C32 % 2 1 2 !
+ CONST BAGA2_C32 : BA : GA : !
+$
+$ Prototype Al4Ba (tI10, I4/mmm)
+$
+ PHASE BAGA4_D13 % 2 1 4 !
+ CONST BAGA4_D13 : BA : GA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ba
+$
+ PAR  G(BCC_A2,BA:VA),,                 +GHSERBA;                4000 N 91Din !
+ PAR  G(HCP_A3,BA:VA),,                 +GHSERBA+2000+1.3*T;     4000 N 91Din !
+ PAR  G(FCC_A1,BA:VA),,                 +GHSERBA+1800+0.6*T;     4000 N 91Din !
+ PAR  G(LIQUID,BA),,                    +GLIQBA;                 4000 N 91Din !
+$
+ FUNCTION GHSERBA   298.15  -17685.226+233.78606*T-42.889*T*LN(T)
+       -0.0018314*T**2-9.5E-11*T**3+705880*T**(-1);
+      1000.00  Y  -64873.614+608.188389*T-94.2824199*T*LN(T)
+       +0.019504772*T**2-1.051353E-06*T**3+8220192*T**(-1);
+      2995.00  Y  +8083.889+136.780042*T-32.2*T*LN(T);
+      4000.00  N !
+ FUNCTION GLIQBA    298.15  -9738.988+229.540143*T-43.4961089*T*LN(T)
+       -0.002346416*T**2+9.91223E-07*T**3+723016*T**(-1);
+      1000.00  Y  -7381.093+235.49642*T-45.103*T*LN(T)
+       +0.002154*T**2+2.7E-11*T**3-365*T**(-1);
+      2995.00  Y  +3856.393-4.568042*T+GHSERBA;
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X. Li, K. Cheng, X. Yuan, D. Zhao, J. Xin, W. Wang, C. Zhang, Y. Du,
+$ Calphad, 43, 52-60(2013).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+ PAR  L(LIQUID,BA,GA;0),,               -96908-9.8*T;,,               N 13Li !
+ PAR  L(LIQUID,BA,GA;1),,               +53901-18.2*T;,,              N 13Li !
+$
+ PAR  L(BCC_A2,BA,GA:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(BA10GA,BA:GA),,                 +10*GHSERBA+GHSERGA-78683;,,  N 13Li !
+ PAR  G(BA8GA7,BA:GA),,                 +8*GHSERBA+7*GHSERGA
+             -516690;,,                                               N 13Li !
+ PAR  G(BA5GA6,BA:GA),,                 +5*GHSERBA+6*GHSERGA
+             -421179;,,                                               N 13Li !
+ PAR  G(BAGA2_C32,BA:GA),,              +GHSERBA+2*GHSERGA-130626;,,  N 13Li !
+ PAR  G(BAGA4_D13,BA:GA),,              +GHSERBA+4*GHSERGA
+             -234600+22.5*T;,,                                        N 13Li !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  13Li   'X. Li, K. Cheng, X. Yuan, D. Zhao, J. Xin, W. Wang, C. Zhang, Y. Du,
+          Calphad, 43, 52-60(2013); Ba-Ga'
+!

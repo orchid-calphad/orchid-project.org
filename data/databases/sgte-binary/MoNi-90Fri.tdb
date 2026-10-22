@@ -1,0 +1,282 @@
+$
+$ Database for Mo-Ni from K. Frisk, 1990
+$
+$ K. Frisk, Calphad, 14, 371-380(1990).
+$
+$ Dataset created 2010.02.13 by Bengt Hallstedt.
+$ 2017.06.05: New parameters for SIGMA_D8B, MU_D85, C14_LAVES (metastable).
+$ 2021.01.31: Modified for use with GES6.
+$
+$ Presently calculated invariant equilibria are up to 3 K higher than in
+$ the paper.
+$
+$ D1A_NI4X is not stable below 317 K.
+$
+$ MONI changes to Mo-rich at low T without any apparent reason.
+$ The parameters for MONI seem strange.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MO NI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MO NI% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MO% NI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MO NI : VA : !
+$
+$ Prototype beta-Cu3Ti (oP8, Pmmn)
+$
+ PHASE NI3X_D0A % 2 3 1 !
+ CONST NI3X_D0A : NI : MO : !
+$
+$ Prototype MoNi4 (tI10, I4/m)
+$
+ PHASE NI4X_D1A % 2 4 1 !
+ CONST NI4X_D1A : NI : MO : !
+$
+$ Prototype MoNi (oP56, P2_12_12_1)
+$
+ PHASE MONI % 3 6 5 3 !
+ CONST MONI : NI : MO NI : MO : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+$PAR  G(B2_BCC,MO:MO),,                 +2*GHSERMO+100;,,             N 98Hua !
+$PAR  G(B2_BCC,MO:VA),,                 +GHSERMO+20000;,,             N 98Hua !
+$PAR  G(B2_BCC,VA:MO),,                 +GHSERMO+20000;,,             N 98Hua !
+$PAR  L(B2_BCC,MO:MO,VA;0),,            +200000;,,                    N 98Hua !
+$PAR  L(B2_BCC,MO,VA:MO;0),,            +200000;,,                    N 98Hua !
+$PAR  L(B2_BCC,VA:MO,VA;0),,            +200000;,,                    N 98Hua !
+$PAR  L(B2_BCC,MO,VA:VA;0),,            +200000;,,                    N 98Hua !
+$PAR  G(CRNI2,MO:MO),,                  +ZERO;,,                      N 05Tur !
+$PAR  G(C14_LAVES,MO:MO),,              +3*GHSERMO+109200;,,          N 06Slu !
+$PAR  G(SIGMA_D8B,MO:MO:MO),,           +30*GHSERMO+552000;,,         N 06Slu !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+$PAR  G(B2_BCC,NI:NI),,                 +2*GBCCNI;,,                  N 97Ans !
+$PAR  G(B2_BCC,NI:VA),,                 +GBCCNI
+$            +162397.3-27.40575*T;,,                                  N 97Ans !
+$PAR  G(B2_BCC,VA:NI),,                 +GBCCNI
+$            +162397.3-27.40575*T;,,                                  N 97Ans !
+$PAR  L(B2_BCC,NI,VA:NI;0),,            -64024.38+26.49419*T;,,       N 97Ans !
+$PAR  L(B2_BCC,NI:NI,VA;0),,            -64024.38+26.49419*T;,,       N 97Ans !
+$PAR  L(B2_BCC,VA:NI,VA;0),,            +100000;,,                    N 97Ans !
+$PAR  L(B2_BCC,NI,VA:VA;0),,            +100000;,,                    N 97Ans !
+$
+$PAR  G(C14_LAVES,NI:NI),,              +3*GHSERNI+15000;,,           N REFLAV !
+$PAR  G(C14_LAVES,NI:NI),,              +3*GHSERNI+56700;,,           N 06Slu !
+$PAR  G(C36_LAVES,NI:NI),,              +ZERO;,,                      N 98Jac2 !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+ FUNCTION GHCPNI    298.15  +GHSERNI+1046+1.255*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Frisk, Calphad, 14, 371-380(1990).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Presently calculated invariant equilibria are up to 3 K higher than in
+$ the paper.
+$
+$ D1A_NI4X is not stable below 317 K.
+$
+$ MONI changes to Mo-rich at low T without any apparent reason.
+$ The parameters for MONI seem strange.
+$
+ PAR  L(LIQUID,MO,NI;0),,               -46540+19.53*T;,,             N 90Fri2 !
+ PAR  L(LIQUID,MO,NI;1),,               +2915;,,                      N 90Fri2 !
+$
+ PAR  L(FCC_A1,MO,NI:VA;0),,            +4803.7-5.96*T;,,             N 90Fri2 !
+ PAR  L(FCC_A1,MO,NI:VA;1),,            +10880;,,                     N 90Fri2 !
+$
+ PAR  L(BCC_A2,MO,NI:VA;0),,            +46422;,,                     N 90Fri2 !
+$
+ PAR  G(NI3X_D0A,NI:MO),,               +GHSERMO+3*GHSERNI
+             -4199-7.00*T;,,                                          N 90Fri2 !
+$
+ PAR  G(NI4X_D1A,NI:MO),,               +GHSERMO+4*GHSERNI
+             -4330-9.21*T;,,                                          N 90Fri2 !
+$
+ PAR  G(MONI,NI:NI:MO),,                +6*GHSERNI+5*GBCCNI+3*GHSERMO
+             -257.5-23.375*T+3.375*T*LN(T);,,                         N 90Fri2 !
+ PAR  G(MONI,NI:MO:MO),,                +6*GHSERNI+8*GHSERMO
+             -53025+272.25*T-35.5*T*LN(T);,,                          N 90Fri2 !
+$
+$ Metastable
+$
+$ Same as fcc (zero in TCFE 1999)
+ PAR  L(HCP_A3,MO,NI:VA;0),,            +4803.7-5.96*T;,,             N NIST !
+ PAR  L(HCP_A3,MO,NI:VA;1),,            +10880;,,                     N NIST !
+$
+$PAR  G(B2_BCC,NI:MO),,                 +GBCCNI+GHSERMO+50000;,,      N 98Hua !
+$PAR  G(B2_BCC,MO:NI),,                 +GBCCNI+GHSERMO+50000;,,      N 98Hua !
+$PAR  L(B2_BCC,MO,NI:MO;0),,            +10000;,,                     N 98Hua !
+$PAR  L(B2_BCC,MO:MO,NI;0),,            +10000;,,                     N 98Hua !
+$PAR  L(B2_BCC,NI:MO,NI;0),,            +10000;,,                     N 98Hua !
+$PAR  L(B2_BCC,MO,NI:NI;0),,            +10000;,,                     N 98Hua !
+$PAR  L(B2_BCC,NI:MO,VA;0),,            +200000;,,                    N 98Hua !
+$PAR  L(B2_BCC,MO,VA:NI;0),,            +200000;,,                    N 98Hua !
+$PAR  L(B2_BCC,MO:NI,VA;0),,            -64024.38+26.49419*T;,,       N 98Hua !
+$PAR  L(B2_BCC,NI,VA:MO;0),,            -64024.38+26.49419*T;,,       N 98Hua !
+$PAR  L(B2_BCC,MO,NI:VA;0),,            +10000;,,                     N 98Hua !
+$PAR  L(B2_BCC,VA:MO,NI;0),,            +10000;,,                     N 98Hua !
+$
+$PAR  G(CHI_A12,NI:MO:MO),,             +24*GHSERNI+10*GHSERMO
+$            +24*GFCCMO;,,                                            N Lin !
+$PAR  G(CHI_A12,NI:MO:NI),,             +48*GHSERNI+10*GHSERMO;,,     N Lin !
+$
+$PAR  G(CRNI2,MO:NI),,                  +GHSERMO+2*GHSERNI
+$            +1000;,,                                                 N 05Tur !
+$
+$PAR  G(C14_LAVES,MO:NI),,              +2*GHSERMO+GHSERNI+91700;,,   N 17Hal8 !
+$PAR  G(C14_LAVES,NI:MO),,              +2*GHSERNI+GHSERMO;,,         N Lin !
+$
+$PAR  G(MU_D85,NI:MO:NI:NI),,           +7*GHSERNI+4*GHSERMO
+$            +2*GBCCNI;,,                                             N Lin !
+$PAR  G(MU_D85,NI:MO:NI:MO),,           +3*GBCCNI+10*GHSERMO
+$            +200000;,,                                               N 17Hal8 !
+$PAR  G(MU_D85,NI:MO:MO:NI),,           +7*GHSERNI+6*GHSERMO
+$            -20000;,,                                                N 17Hal8 !
+$PAR  G(MU_D85,NI:MO:MO:MO),,           +GBCCNI+12*GHSERMO
+$            +200000;,,                                               N 17Hal8 !
+$
+$ The mu-phase becomes stable above 3900 K at x(ni)=0.82
+$PAR  G(MU_OLD,NI:MO:NI),,              +7*GHSERNI+4*GBCCNI+2*GHSERMO
+$            +398566-200*T;,,                                         N 92Fri1 !
+$PAR  G(MU_OLD,NI:MO:MO),,              +7*GHSERNI+6*GHSERMO
+$            +28506-47.3*T;,,                                         N 92Fri1 !
+$PAR  G(MU_OLD,MO:MO:NI),,              +7*GFCCMO+4*GBCCNI+2*GHSERMO
+$            +3900000;,,                                              N NIST !
+$PAR  L(MU_OLD,MO,NI:MO:NI;0),,         +200000;,,                    N NIST !
+$PAR  L(MU_OLD,MO,NI:MO:MO;0),,         +200000;,,                    N NIST !
+$
+$PAR  G(SIGMA_D8B,NI:MO:MO),,           +10*GHSERNI+20*GHSERMO
+$            +64295-65*T;,,                                           N 17Hal8 !
+$PAR  G(SIGMA_D8B,NI:MO:NI),,           +10*GHSERNI+4*GHSERMO
+$            +16*GBCCNI+150000;,,                                     N 17Hal8 !
+$PAR  G(SIGMA_D8B,MO:MO:NI),,           +10*GFCCMO+4*GHSERMO
+$            +16*GBCCNI+150000;,,                                     N 17Hal8 !
+$ Parameters below from LBall-v7+fun.tdb
+$PAR  G(SIGMA_D8B,NI:MO:MO),,           +10*GHSERNI+20*GHSERMO
+$            +50000;,,                                                N 02Sun !
+$PAR  G(SIGMA_D8B,NI:MO:NI),,           +26*GHSERNI+4*GHSERMO
+$            +300000;,,                                               N 02Sun !
+$
+$PAR  G(SIGMA_OLD,NI:MO:NI),,           +8*GHSERNI+4*GHSERMO+18*GBCCNI
+$            -16385;,,                                                N 90Fri3 !
+$PAR  G(SIGMA_OLD,NI:MO:MO),,           +8*GHSERNI+22*GHSERMO
+$            +85622;,,                                                N 90Fri3 !
+$
+$PAR  G(P_PHASE,NI:NI:MO;0),,           +24*GHSERNI+20*GBCCNI+12*GHSERMO
+$            +208845-100*T;,,                                         N 92Fri1 !
+$PAR  G(P_PHASE,NI:MO:MO;0),,           +24*GHSERNI+32*GHSERMO
+$            +26739-100*T;,,                                          N 92Fri1 !
+$
+$PAR  G(R_PHASE,NI:MO:NI;0),,           +27*GHSERNI+12*GBCCNI+14*GHSERMO
+$            +100000;,,                                               N 92Fri1 !
+$PAR  G(R_PHASE,NI:MO:MO;0),,           +27*GHSERNI+26*GHSERMO
+$            -18000;,,                                                N 92Fri1 !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  MO-NI(TDB -* +LIQUID +BCC_A2 +FCC_A1 +NI3X_D0A +NI4X_D1A +MONI
+  ;P3 TMM:300/3000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Lin    'Linear combination of lattice stabilities'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  NIST   'NIST-Ni0209 Database, Ursula Kattner, 2002'
+  90Fri2 'K. Frisk, Calphad, 14, 371-380(1990); Mo-Ni'
+  90Fri3 'K. Frisk, TRITA-MAC 429, Stockholm 1990; Cr-Mo-Ni'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Fri1 'K. Frisk, Metall. Trans. A, 23A, 639-49(1992); Fe-Mo-Ni'
+  97Ans  'I. Ansara, N.Dupin, H.L. Lukas, B. Sundman,
+          J. Alloys Compd. 247, 20-30(1997); Al-Ni'
+  98Hua  'W. Huang, UWM, unpublished research, 1998; Al-Mo-Ni'
+  98Jac2 'M.H.G. Jacobs, P.J. Spencer, COST 507,
+          Final report round 2, 1998; Mg-Ni'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  02Sun  'B. Sundman, modified sigma parameters for various ternaries, 2002'
+  05Tur  'P.E.A. Turchi, L. Kaufman, Z.-K. Liu,
+          Calphad, 30, 70-87(2006); Cr-Mo-Ni'
+  06Slu  'M.H.F. Sluiter, Calphad, 30, 357-66(2006); Endmember values'
+  17Hal8 'B. Hallstedt, new parameters for SIGMA_D8B, MU_D85, C14_LAVES,
+          2017; Fe-Mo-Ni'
+!

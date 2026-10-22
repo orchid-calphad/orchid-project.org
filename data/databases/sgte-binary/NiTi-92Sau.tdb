@@ -1,0 +1,259 @@
+$
+$ Database for Ni-Ti from N. Saunders 1992
+$
+$ N. Saunders, communication to N. Dupin, 1992.
+$
+$ Dataset created 2011.03.13 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ Dataset received from U.R. Kattner (included in Calphad 2009 presentation).
+$ The phase diagram in the presentation is reproduced.
+$
+$ BCC_B2 modelled as a separate phase. The vacant B2_BCC phase appears to
+$ be stable at high T, but the calculation does not converge.
+$
+$ There is an inverse miscibility gap with a minimum at 5333 K and x(Ti)=0.65.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI TI% : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %B 3 1 1 6 !
+ CONST B2_BCC : NI% TI VA : NI TI% VA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI TI% : VA : !
+$
+$ Prototype Ni3Ti (hP16, P6_3/mmc)
+$
+ PHASE NI3TI_D024 % 2 3 1 !
+ CONST NI3TI_D024 : NI% TI : NI TI% : !
+$
+$ Prototype NiTi2 (cF96, Fd-3m)
+$
+ PHASE NITI2 % 2 1 2 !
+ CONST NITI2 : NI : TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(B2_BCC,NI:NI:VA),,              +2*GBCCNI;,,                  N 97Ans !
+ PAR  G(B2_BCC,VA:NI:VA),,              +GBCCNI
+             +162397.3-27.40575*T;,,                                  N 97Ans !
+ PAR  G(B2_BCC,NI:VA:VA),,              +GBCCNI
+             +162397.3-27.40575*T;,,                                  N 97Ans !
+ PAR  L(B2_BCC,NI,VA:NI:VA;0),,         -64024.38+26.49419*T;,,       N 97Ans !
+ PAR  L(B2_BCC,NI:NI,VA:VA;0),,         -64024.38+26.49419*T;,,       N 97Ans !
+ PAR  L(B2_BCC,NI,VA:VA:VA;0),,         +100000;,,                    N 97Ans !
+ PAR  L(B2_BCC,VA:NI,VA:VA;0),,         +100000;,,                    N 97Ans !
+$PAR  G(C14_LAVES,NI:NI),,              +3*GHSERNI+15000;,,           N REFLAV !
+$PAR  G(C15_LAVES,NI:NI),,              +3*GHSERNI+15000;,,           N REFLAV !
+ PAR  G(NI3TI_D024,NI:NI),,             +4*GHCPNI;,,                  N 92Sau !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+ FUNCTION GHCPNI    298.15  +GHSERNI+1046+1.255*T;                     3000 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ PAR  G(B2_BCC,TI:TI:VA),,              +2*GBCCTI+100;,,              N 92Sau !
+ PAR  G(B2_BCC,TI:VA:VA),,              +GBCCTI-GTITRS+60000;,,       N 92Sau !
+ PAR  G(B2_BCC,VA:TI:VA),,              +GBCCTI-GTITRS+60000;,,       N 92Sau !
+ PAR  L(B2_BCC,TI,VA:TI:VA;0),,         +100000;,,                    N 92Sau !
+ PAR  L(B2_BCC,TI:TI,VA:VA;0),,         +100000;,,                    N 92Sau !
+ PAR  L(B2_BCC,TI,VA:VA:VA;0),,         +100000;,,                    N 92Sau !
+ PAR  L(B2_BCC,VA:TI,VA:VA;0),,         +100000;,,                    N 92Sau !
+$PAR  G(C14_LAVES,TI:TI),,              +3*GHSERTI+15000;,,           N REFLAV !
+$PAR  G(C15_LAVES,TI:TI),,              +3*GHSERTI+15000;,,           N REFLAV !
+ PAR  G(NI3TI_D024,TI:TI),,             +4*GHSERTI;,,                 N 92Sau !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+ FUNCTION GTITRS    298.15  +12980.85-73.33392*T+8.99998*T*LN(T)
+       -0.00118746*T**2;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(B2_BCC,VA:VA:VA),,              +ZERO;,,                      N 92Sau !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ N. Saunders, communication to N. Dupin, 1992.
+$
+$ Checked at 6000 K.
+$
+$ Dataset received from U.R. Kattner (included in Calphad 2009 presentation).
+$ The phase diagram in the presentation is reproduced.
+$
+$ BCC_B2 modelled as a separate phase. The vacant B2_BCC phase appears to
+$ be stable at high T, but the calculation does not converge.
+$
+$ There is an inverse miscibility gap with a minimum at 5333 K and x(Ti)=0.65.
+$
+ PAR  L(LIQUID,NI,TI;0),,               -152500+43*T;,,               N 92Sau !
+ PAR  L(LIQUID,NI,TI;1),,               -52000+5.5*T;,,               N 92Sau !
+ PAR  L(LIQUID,NI,TI;2),,               -22500+4.125*T;,,             N 92Sau !
+$
+ PAR  L(FCC_A1,NI,TI:VA;0),,            -123085+30*T;,,               N 92Sau !
+ PAR  L(FCC_A1,NI,TI:VA;1),,            -66000;,,                     N 92Sau !
+ PAR  L(FCC_A1,NI,TI:VA;2),,            +22500-9.5*T;,,               N 92Sau !
+$
+ PAR  L(BCC_A2,NI,TI:VA;0),,            -118500+30*T;,,               N 92Sau !
+ PAR  L(BCC_A2,NI,TI:VA;1),,            -40000;,,                     N 92Sau !
+$
+ PAR  G(B2_BCC,NI:TI:VA;0),,            +GBCCNI+GBCCTI-GTITRS
+             -67800+6.46*T-8715.084+3.566*T;,,                        N 92Sau !
+ PAR  G(B2_BCC,TI:NI:VA;0),,            +GBCCNI+GBCCTI-GTITRS
+             -67800+6.46*T-8715.084+3.566*T;,,                        N 92Sau !
+ PAR  L(B2_BCC,NI,TI:NI:VA;0),,         -103000+32*T;,,               N 92Sau !
+ PAR  L(B2_BCC,NI,TI:NI:VA;2),,         +23000;,,                     N 92Sau !
+ PAR  L(B2_BCC,NI:NI,TI:VA;0),,         -103000+32*T;,,               N 92Sau !
+ PAR  L(B2_BCC,NI:NI,TI:VA;2),,         +23000;,,                     N 92Sau !
+ PAR  L(B2_BCC,NI,TI:TI:VA;0),,         +100000;,,                    N 92Sau !
+ PAR  L(B2_BCC,TI:NI,TI:VA;0),,         +100000;,,                    N 92Sau !
+ PAR  L(B2_BCC,NI,TI:VA:VA;0),,         +100000;,,                    N 92Sau !
+ PAR  L(B2_BCC,VA:NI,TI:VA;0),,         +100000;,,                    N 92Sau !
+ PAR  L(B2_BCC,NI,VA:TI:VA;0),,         -58640+16*T;,,                N 92Sau !
+ PAR  L(B2_BCC,TI:NI,VA:VA;0),,         -58640+16*T;,,                N 92Sau !
+ PAR  L(B2_BCC,TI,VA:NI:VA;0),,         +ZERO;,,                      N 92Sau !
+ PAR  L(B2_BCC,NI:TI,VA:VA;0),,         +ZERO;,,                      N 92Sau !
+$
+ PAR  L(HCP_A3,NI,TI:VA;0),,            -26300+10*T;,,                N 92Sau !
+$
+ PAR  G(NI3TI_D024,NI:TI),,             +3*GHCPNI+GHSERTI
+             -171938+32.8344*T;,,                                     N 92Sau !
+ PAR  G(NI3TI_D024,TI:NI),,             +3*GHSERTI+GHCPNI
+             -81046+18.7448*T;,,                                      N 92Sau !
+ PAR  L(NI3TI_D024,NI,TI:NI;0),,        +80000;,,                     N 92Sau !
+ PAR  L(NI3TI_D024,NI,TI:TI;0),,        +160000-68*T;,,               N 92Sau !
+ PAR  L(NI3TI_D024,NI,TI:TI;1),,        -40000;,,                     N 92Sau !
+ PAR  L(NI3TI_D024,NI:NI,TI;0),,        +58600-51*T;,,                N 92Sau !
+ PAR  L(NI3TI_D024,NI:NI,TI;2),,        -24000+18*T;,,                N 92Sau !
+ PAR  L(NI3TI_D024,TI:NI,TI;0),,        +80000;,,                     N 92Sau !
+$
+ PAR  G(NITI2,NI:TI),,                  +2*GHSERNI+GHSERTI
+             -87900+17.4*T;,,                                         N 92Sau !
+$
+$ Metastable
+$
+$PAR  G(C14_LAVES,NI:TI),,              +2*GHSERNI+GHSERTI
+$            +109820-17.4*T;,,                                        N 95Dup !
+$PAR  G(C14_LAVES,TI:NI),,              +2*GHSERTI+GHSERNI
+$            -79820+17.4*T;,,                                         N 95Dup !
+$
+$PAR  G(C15_LAVES,NI:TI),,              +2*GHSERNI+GHSERTI+15000;,,   N 95Dup !
+$PAR  G(C15_LAVES,TI:NI),,              +2*GHSERTI+GHSERNI+15000;,,   N 95Dup !
+$
+ FUNCTION GNITI2    298.15  +0.333333*GHSERNI+0.666667*GHSERTI
+       -27514.2+2.85345*T;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-TI(TDB -* +LIQUID +FCC_A1 +BCC_A2 +B2_BCC +HCP_A3 +NI3TI_D024 +NITI2 
+  ;G5 C_S:BCC_B2/NI:TI:VA MAJ:BCC_B2/TI:TI:VA
+  ;P3 TMM:300/3000 STP:.51/1000/1 ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Sau  'N. Saunders, communication to N. Dupin, 1992; Ni-Ti'
+  95Dup  'N. Dupin, Ph.D. Thesis, LTPCM Grenoble, 1995; Cr-Ni-Ti'
+  97Ans  'I. Ansara, N. Dupin, H.L. Lukas, B. Sundman,
+          J. Alloys Compd., 247, 20-30(1997); Al-Ni'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+!

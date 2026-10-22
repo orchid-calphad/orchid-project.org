@@ -1,0 +1,233 @@
+$
+$ Database for Sb-Sn from V.A. Lysenko 2019.
+$
+$ V.A. Lysenko, J. Alloys Compd., 776, 850-57(2019).
+$
+$ Dataset created 2024.04.30 by Bengt Hallstedt.
+$
+$ Modified from 07Kro.
+$
+$ Both Sb3Sn4 and Sb2Sn3 are included, with a small temperature gap between
+$ them. This does not seem reasonable.
+$
+$ SbSn has been found to have a distorted NaCl structure (C. Schmetterer et al.,
+$ J. Alloys Compd., 743, 523-36(2017)). Sb2Sn3/Sb3Sn4 has a related structure
+$ and is either part of the SbSn structure or an ordering variant of it.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SB SN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : SB SN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : SB SN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : SB SN : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SN : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SB SN% : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB% SN : !
+$
+$ Prototype SbSn (hR1, R-3m)
+$
+ PHASE SBSN % 2 1 1 !
+ CONST SBSN : SB% SN : SB SN% : !
+$
+$ Prototype Sb3Sn4 (hR7, R-3m)
+$
+ PHASE SB3SN4 % 2 3 4 !
+ CONST SB3SN4 : SB : SN : !
+$
+$ unknown structure
+$
+ PHASE SB2SN3 % 2 2 3 !
+ CONST SB2SN3 : SB : SN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+ PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(SBSN,SB:SB),,                   +2*GHSERSB+6227.48;,,         N 96Oh !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+ PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ PAR  G(SBSN,SN:SN),,                   +2*GHSERSN+7463.66;,,         N 96Oh !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                     3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ V.A. Lysenko, J. Alloys Compd., 776, 850-57(2019).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 07Kro.
+$
+$ Both Sb3Sn4 and Sb2Sn3 are included, with a small temperature gap between
+$ them. This does not seem reasonable.
+$
+$ SbSn has been found to have a distorted NaCl structure (C. Schmetterer et al.,
+$ J. Alloys Compd., 743, 523-36(2017)). Sb2Sn3/Sb3Sn4 has a related structure
+$ and is either part of the SbSn structure or an ordering variant of it.
+$
+ PAR  L(LIQUID,SB,SN;0),,               -5695.14-1.709*T;,,           N 86Jon !
+ PAR  L(LIQUID,SB,SN;1),,               +782.595;,,                   N 86Jon !
+ PAR  L(LIQUID,SB,SN;2),,               +1840.91;,,                   N 86Jon !
+$
+ PAR  L(BCT_A5,SB,SN;0),,               +3659.116-21.38*T;,,          N 07Kro !
+ PAR  L(BCT_A5,SB,SN;1),,               -21860.53+44.487*T;,,         N 07Kro !
+$
+ PAR  L(RHOMBOHEDRAL_A7,SB,SN;0),,      +4000-5.7323*T;,,             N 07Kro !
+$
+ PAR  G(SBSN,SB:SN),,                   +GHSERSB+GHSERSN
+             -6035.69-2.478*T;,,                                      N 07Kro !
+ PAR  G(SBSN,SN:SB),,                   +GHSERSB+GHSERSN
+             -6035.69-2.478*T;,,                                      N 07Kro !
+ PAR  L(SBSN,SB,SN:SB;0),,              -4300.502+6.638*T;,,          N 07Kro !
+ PAR  L(SBSN,SB:SB,SN;0),,              -4300.502+6.638*T;,,          N 07Kro !
+ PAR  L(SBSN,SB,SN:SN;0),,              -1600.725+6.599*T;,,          N 07Kro !
+ PAR  L(SBSN,SN:SB,SN;0),,              -1600.725+6.599*T;,,          N 07Kro !
+$
+ PAR  G(SB3SN4,SB:SN),,                 +3*GHSERSB+4*GHSERSN
+             -24031.7;,,                                              N 19Lys !
+ PAR  G(SB2SN3,SB:SN),,                 +2*GHSERSB+3*GHSERSN
+             -108.5-31.235*T;,,                                       N 19Lys !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,SB,SN:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(BCC_A2,SB,SN:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,SB,SN:VA;0),,            +UN_ASS;,,                    N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  SB-SN(TDB -* +LIQUID +BCT_A5 +RHOMBO_A7 +SBSN +SB3SN4 +SB2SN3
+  ;P3 TMM:300/1000 STP:0.6/400/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  86Jon  'B. Jonsson, J. Agren, Mater. Sci. Technol., 2, 913-16 (1986); Sb-Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Oh   'C.-S. Oh, J.-H. Shim, B.-J. Lee, D.N. Lee,
+          J. Alloys Compd., 238, 155-66(1996); Sb-Sn'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  07Kro  'A. Kroupa, J. Vizdal, Defect Diffus. Forum, 263, 99-104(2007); Sb-Sn'
+  19Lys  'V.A. Lysenko, J. Alloys Compd., 776, 850-57(2019); Sb-Sn'
+!

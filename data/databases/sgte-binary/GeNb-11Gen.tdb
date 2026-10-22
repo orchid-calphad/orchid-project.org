@@ -1,0 +1,225 @@
+$
+$ Database for Ge-Nb from T. Geng et al. 2011.
+$
+$ T. Geng, C. Li, Z. Du, C. Guo, X. Zhao, H. Xu,
+$ J. Alloys Compd., 509, 3080-88(2011).
+$
+$ Dataset created 2018.07.29 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ The modelling is not convincing.
+$
+$ The L+Ge3Nb5=Ge2Nb3 peritectic is 22 K too low. Other invariants differ by
+$ less than 2 K.
+$
+$ There is an inverse miscibility gap with a minimum at 5571 K and x(Nb)=0.91.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GE NB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GE NB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GE NB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : GE NB : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE% NB : !
+$
+$ Prototype CrSi2 (hP9, P6_222)
+$
+ PHASE GE2NB_C40 % 2 2 1 !
+ CONST GE2NB_C40 : GE% NB : GE NB% : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE GE2NB3_D88 % 4 2 3 3 1 !
+ CONST GE2NB3_D88 : GE NB% : GE% NB : NB : GE VA : !
+$
+$ Prototype Si3W5 (tI32, I4/mcm)
+$
+ PHASE GE3NB5_D8M % 3 4 1 3 !
+ CONST GE3NB5_D8M : NB : GE NB% : GE% VA : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE GENB3_A15 % 2 1 3 !
+ CONST GENB3_A15 : GE% NB VA : NB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ PAR  G(GE2NB_C40,GE:GE),,              +3*GHSERGE
+             +55871.12826+14.5011*T;,,                                N 11Gen !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+$ DIAMOND_A4 from 11Gen not included in unary
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(DIAMOND_A4,NB),,                +GHSERNB+3000;,,              N 11Gen !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(GE2NB_C40,NB:NB),,              +3*GHSERNB
+             +88407.27468-23.85798*T;,,                               N 11Gen !
+ PAR  G(GE2NB3_D88,NB:NB:NB:VA),,       +8*GHSERNB
+             +308454.36183+71.37828*T;,,                              N 11Gen !
+ PAR  G(GE3NB5_D8M,NB:NB:VA),,          +5*GHSERNB
+             +364441.82528-56.65688*T;,,                              N 11Gen !
+ PAR  G(GENB3_A15,NB:NB),,              +4*GHSERNB
+             +162612.4764-7.4738*T;,,                                 N 11Gen !
+ PAR  G(GENB3_A15,VA:NB),,              +3*GHSERNB
+             +245809.5692-5.56672*T;,,                                N 11Gen !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ T. Geng, C. Li, Z. Du, C. Guo, X. Zhao, H. Xu,
+$ J. Alloys Compd., 509, 3080-88(2011).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The modelling is not convincing.
+$
+$ The L+Ge3Nb5=Ge2Nb3 peritectic is 22 K too low. Other invariants differ by
+$ less than 2 K.
+$
+$ There is an inverse miscibility gap with a minimum at 5571 K and x(Nb)=0.91.
+$
+ PAR  L(LIQUID,GE,NB;0),,               -171008.9129+3.41895*T;,,     N 11Gen !
+ PAR  L(LIQUID,GE,NB;1),,               +46134.81563-14.19642*T;,,    N 11Gen !
+ PAR  L(LIQUID,GE,NB;2),,               +20671.04339+12.31747*T;,,    N 11Gen !
+ PAR  L(LIQUID,GE,NB;3),,               +4118.70195-5.60056*T;,,      N 11Gen !
+$
+ PAR  L(BCC_A2,GE,NB:VA;0),,            -121000-2.5*T;,,              N 11Gen !
+ PAR  L(BCC_A2,GE,NB:VA;1),,            +30000+6*T;,,                 N 11Gen !
+ PAR  L(BCC_A2,GE,NB:VA;2),,            -22000+38.019*T;,,            N 11Gen !
+$
+ PAR  L(DIAMOND_A4,GE,NB;0),,           -85000-2*T;,,                 N 11Gen !
+$
+ PAR  G(GE2NB_C40,GE:NB),,              +2*GHSERGE+GHSERNB
+             -96189.618-37.635*T;,,                                   N 11Gen !
+ PAR  G(GE2NB_C40,NB:GE),,              +2*GHSERNB+GHSERGE
+             -16127.82546+9.15348*T;,,                                N 11Gen !
+ PAR  L(GE2NB_C40,GE,NB:GE;0),,         -244200+75*T;,,               N 11Gen !
+ PAR  L(GE2NB_C40,GE,NB:NB;0),,         -244200+75*T;,,               N 11Gen !
+ PAR  L(GE2NB_C40,GE:GE,NB;0),,         -57600+21*T;,,                N 11Gen !
+ PAR  L(GE2NB_C40,NB:GE,NB;0),,         -57600+21*T;,,                N 11Gen !
+$
+ PAR  G(GE2NB3_D88,GE:GE:NB:GE),,       +6*GHSERGE+3*GHSERNB
+             +184836.51549;,,                                         N 11Gen !
+ PAR  G(GE2NB3_D88,GE:GE:NB:VA),,       +5*GHSERGE+3*GHSERNB
+             -74250+17.1*T;,,                                         N 11Gen !
+ PAR  G(GE2NB3_D88,GE:NB:NB:GE),,       +3*GHSERGE+6*GHSERNB;,,       N 11Gen !
+ PAR  G(GE2NB3_D88,GE:NB:NB:VA),,       +2*GHSERGE+6*GHSERNB
+             -202500+27*T;,,                                          N 11Gen !
+ PAR  G(GE2NB3_D88,NB:GE:NB:GE),,       +5*GHSERNB+4*GHSERGE;,,       N 11Gen !
+ PAR  G(GE2NB3_D88,NB:GE:NB:VA),,       +5*GHSERNB+3*GHSERGE;,,       N 11Gen !
+ PAR  G(GE2NB3_D88,NB:NB:NB:GE),,       +8*GHSERNB+1*GHSERGE;,,       N 11Gen !
+ PAR  L(GE2NB3_D88,GE,NB:GE:NB:VA;0),,  +37745.98848-33.38145*T;,,    N 11Gen !
+ PAR  L(GE2NB3_D88,GE,NB:NB:NB:VA;0),,  +37745.98848-33.38145*T;,,    N 11Gen !
+ PAR  L(GE2NB3_D88,GE:GE,NB:NB:VA;0),,  -669600-382.698*T;,,          N 11Gen !
+ PAR  L(GE2NB3_D88,NB:GE,NB:NB:VA;0),,  -669600-382.698*T;,,          N 11Gen !
+$
+ PAR  G(GE3NB5_D8M,NB:GE:GE),,          +4*GHSERNB+4*GHSERGE
+             -48000-118.4*T;,,                                        N 11Gen !
+ PAR  G(GE3NB5_D8M,NB:GE:VA),,          +4*GHSERNB+GHSERGE
+             -117972.24536-12.82424*T;,,                              N 11Gen !
+ PAR  G(GE3NB5_D8M,NB:NB:GE),,          +5*GHSERNB+3*GHSERGE
+             -318431.84-75.264*T;,,                                   N 11Gen !
+ PAR  L(GE3NB5_D8M,NB:GE,NB:GE;0),,     -274853.0724+4.8468*T;,,      N 11Gen !
+ PAR  L(GE3NB5_D8M,NB:GE,NB:VA;0),,     -274853.0724+4.8468*T;,,      N 11Gen !
+ PAR  L(GE3NB5_D8M,NB:GE:GE,VA;0),,     -68732.71568-8.0008*T;,,      N 11Gen !
+ PAR  L(GE3NB5_D8M,NB:NB:GE,VA;0),,     -68732.71568-8.0008*T;,,      N 11Gen !
+$
+ PAR  G(GENB3_A15,GE:NB),,              +GHSERGE+3*GHSERNB
+             -91098.9656-35.44368*T;,,                                N 11Gen !
+ PAR  L(GENB3_A15,GE,NB:NB;0),,         -294965.9532+26.03116*T;,,    N 11Gen !
+ PAR  L(GENB3_A15,GE,NB:NB;1),,         -176815.8864+149.4848*T;,,    N 11Gen !
+ PAR  L(GENB3_A15,GE,VA:NB;0),,         +7378.88864-49.76564*T;,,     N 11Gen !
+ PAR  L(GENB3_A15,GE,VA:NB;1),,         +240120-68*T;,,               N 11Gen !
+ PAR  L(GENB3_A15,NB,VA:NB;0),,         -80000;,,                     N 11Gen !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,GE,NB:VA;0),,            -121000-2.5*T;,,              N Same !
+ PAR  L(FCC_A1,GE,NB:VA;1),,            +30000+6*T;,,                 N Same !
+ PAR  L(FCC_A1,GE,NB:VA;2),,            -22000+38.019*T;,,            N Same !
+$
+ PAR  L(HCP_A3,GE,NB:VA;0),,            -121000-2.5*T;,,              N Same !
+ PAR  L(HCP_A3,GE,NB:VA;1),,            +30000+6*T;,,                 N Same !
+ PAR  L(HCP_A3,GE,NB:VA;2),,            -22000+38.019*T;,,            N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  11Gen  'T. Geng, C. Li, Z. Du, C. Guo, X. Zhao, H. Xu,
+          J. Alloys Compd., 509, 3080-88(2011); Nb, Ge-Nb'
+!

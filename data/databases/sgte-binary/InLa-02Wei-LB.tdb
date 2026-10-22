@@ -1,0 +1,242 @@
+$
+$ Database for In-La from Y. Wei et al. 2002 (Included in LB Vol. 5)
+$
+$ Y. Wei, X. Su, F. Yin, Z. Li, X. Wu, C. Chen,
+$ J. Alloys Compd., 333, 118-21(2002).
+$
+$ Dataset created 2016.02.16 by Bengt Hallstedt.
+$ 2021.01.17: Modified for use with GES6.
+$
+$ There is a wide fcc phases field above 2404 K, covering an
+$ inverse miscibility gap in the liquid.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT IN   TETRAGONAL_A6             114.82      6610.0     57.65   ! 
+ ELEMENT LA   DHCP                      138.9055    6665.112   56.9024 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : IN LA : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : IN LA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : IN LA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : IN : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : LA : !
+$
+$ Prototype In (tI2, I4/mmm)
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : IN : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE IN3LA_L12 % 2 3 1 !
+ CONST IN3LA_L12 : IN : LA : !
+$
+$ Prototype Hg2K (oI12, Imma)
+$
+ PHASE IN2LA % 2 2 1 !
+ CONST IN2LA : IN : LA : !
+$
+$ Prototype Pd5Pu3 (oC32, Cmcm)
+$
+ PHASE IN5LA3 % 2 5 3 !
+ CONST IN5LA3 : IN : LA : !
+$
+$ Unknown structure
+$
+ PHASE IN57LA43 % 2 0.57 0.43 !
+ CONST IN57LA43 : IN : LA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE INLA_B2 % 2 1 1 !
+ CONST INLA_B2 : IN : LA : !
+$
+$ Prototype InNi2 (hP6, P6_3/mmc)
+$
+ PHASE INLA2_B82 % 2 1 2 !
+ CONST INLA2_B82 : IN : LA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE INLA3_L12 % 2 1 3 !
+ CONST INLA3_L12 : IN : LA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ In
+$
+$ FCC_A1 and TET_ALPHA1 revised in unary 4.1
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$ TET_ALPHA1 revised in unary 5.0 (using the value from 99Ans)
+$ DHCP added in unary 5.0
+$
+$ There is quite a bit of confusion about TET_ALPHA1_A6. The structure is
+$ the same as In (TETRAGONAL_A6), but with a different (presumably) c/a ratio.
+$ TET_ALPHA1_A6 is present in Bi-In, In-Pb and In-Sn (possibly more). Between
+$ the TETRAGONAL_A6 (In-ss) and TET_ALPHA1_A6 there is a narrow two-phase
+$ region. In each system a different G(TET_ALPHA1_A6,IN) lattice stability
+$ was used.
+$ In 91Din a value from an unpublished revision of the Bi-In system by
+$ P.-Y. Chevalier 1990 is included. In SGTE Unary V 4.4 a value from 98Boa
+$ for the In-Pb system is included. 98Boa treated the TET_ALPHA1_A6
+$ phase in Bi-In and In-Pb as two different phases and used the lattice
+$ stability from 88Che0 for the Bi-In branch of this phase. Finally, SGTE
+$ unary V 5.0 uses a value from an unpublished evaluation by 99Ans of the
+$ In-Sn system. Due to the close proximity of the TETRAGONAL_A6 and
+$ TET_ALPHA1_A6 phases in these systems, any change of lattice stability
+$ will cause a distortion of the phase diagram and require reoptimisation.
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(TETRAGONAL_A6,IN),,             +GHSERIN;                3800 N 91Din !
+ PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+162.061;        3800 N 98Boa !
+$PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+123-0.1988*T;   3800 N 91Din !
+ PAR  G(BCC_A2,IN:VA),,                 +GHSERIN+800-0.8*T;      3800 N 91Din !
+ PAR  G(HCP_A3,IN:VA),,                 +GHSERIN+533-0.6868*T;   3800 N 91Din !
+$PAR  G(DHCP,IN),,                      +GHSERIN+520-0.384*T;    3800 N 92Ans !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+123-0.1988*T;   3800 N 99Ans1 !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+0.31*T;         3800 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+193-0.16479*T;  3800 N 91Din !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN-33+0.16*T;      3800 N 88Che0 !
+$PAR  G(BCT_A5,IN),,                    +GHSERIN
+$            +5040.87-3.33969*T;                                 3800 N 99Ans1 !
+$PAR  G(RHOMBOHEDRAL_A7,IN),,           +GHSERIN+4184;           3800 N 88Che0 !
+ PAR  G(LIQUID,IN),,                    +GLIQIN;                 3800 N 91Din !
+$
+ FUNCTION GHSERIN   298.15  -6978.89+92.338115*T-21.8386*T*LN(T)
+       -0.00572566*T**2-2.120321E-06*T**3-22906*T**(-1);
+       429.75  Y  -7033.516+124.476588*T-27.4562*T*LN(T)
+       +5.4607E-04*T**2-8.367E-08*T**3-211708*T**(-1)+3.53116E+22*T**(-9);
+      3800.00  N !
+ FUNCTION GLIQIN    298.15  +3282.092-7.63686*T+GHSERIN-5.59058E-20*T**7;
+       429.75  Y  +3283.706-7.640804*T+GHSERIN-3.53116E+22*T**(-9);
+      3800.00  N !
+$ ------------------------------------------------------------------------------
+$ La
+$
+ PAR  G(DHCP,LA),,                      +GHSERLA;                4000 N 91Din !
+ PAR  G(FCC_A1,LA:VA),,                 +GFCCLA;                 4000 N 91Din !
+ PAR  G(BCC_A2,LA:VA),,                 +GBCCLA;                 4000 N 91Din !
+ PAR  G(LIQUID,LA),,                    +GLIQLA;                 4000 N 91Din !
+$
+ FUNCTION GHSERLA   298.15  -7968.403+120.284604*T-26.34*T*LN(T)
+       -0.001295165*T**2;
+       550.00  Y  -3381.413+59.06113*T-17.1659411*T*LN(T)
+       -0.008371705*T**2+6.8932E-07*T**3-399448*T**(-1);
+      2000.00  Y  -15608.882+181.390071*T-34.3088*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCLA    298.15  -6109.797+89.878761*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+      1134.00  Y  -124598.976+955.878375*T-139.346741*T*LN(T)
+       +0.042032405*T**2-3.066199E-06*T**3+20994153*T**(-1);
+      2000.00  Y  +3009.496-2.846081*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GBCCLA    298.15  -3952.161+88.072353*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+       800.00  Y  +321682.673-3565.08252*T+513.440708*T*LN(T)
+       -0.387295093*T**2+4.9547989E-05*T**3-36581228*T**(-1);
+      1134.00  Y  -16377.894+218.492988*T-39.5388*T*LN(T);
+      1193.00  Y  -136609.91+1123.34397*T-163.413074*T*LN(T)
+       +0.053968535*T**2-4.056395E-06*T**3+21167204*T**(-1);
+      2000.00  Y  +7402.894-6.553756*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GLIQLA    298.15  +5332.653+18.23012*T-11.0188191*T*LN(T)
+       -0.020171603*T**2+2.93775E-06*T**3-133541*T**(-1);
+      1134.00  Y  -3942.004+171.018431*T-34.3088*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From Y. Wei et al. 2002 (Included in LB Vol. 5)
+$
+$ Y. Wei, X. Su, F. Yin, Z. Li, X. Wu, C. Chen,
+$ J. Alloys Compd., 333, 118-21(2002).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ There is a wide fcc phases field above 2404 K, covering an
+$ inverse miscibility gap in the liquid.
+$
+ PAR  L(LIQUID,IN,LA;0),,               -166490.2+45.5134*T;,,        N 02Wei !
+ PAR  L(LIQUID,IN,LA;1),,               -44871.7+1.5873*T;,,          N 02Wei !
+$
+ PAR  L(FCC_A1,IN,LA:VA;0),,            -127980.5+9.5541*T;,,         N 02Wei !
+ PAR  L(FCC_A1,IN,LA:VA;1),,            -68324.3+13.4417*T;,,         N 02Wei !
+$
+ PAR  L(BCC_A2,IN,LA:VA;0),,            -152646.8+27.9591*T;,,        N 02Wei !
+ PAR  L(BCC_A2,IN,LA:VA;1),,            -52648.1;,,                   N 02Wei !
+$
+ PAR  G(IN3LA_L12,IN:LA),,              +3*GHSERIN+GHSERLA
+             -228367.6+59.5022*T;,,                                   N 02Wei !
+ PAR  G(IN2LA,IN:LA),,                  +2*GHSERIN+GHSERLA
+             -170278.1+36.5438*T;,,                                   N 02Wei !
+ PAR  G(IN5LA3,IN:LA),,                 +5*GHSERIN+3*GHSERLA
+             -453715.8+90.989*T;,,                                    N 02Wei !
+ PAR  G(IN57LA43,IN:LA),,               +0.57*GHSERIN+0.43*GHSERLA
+             -57104.524+12.299886*T+0.0021016*T*LN(T);,,              N 02Wei !
+ PAR  G(INLA_B2,IN:LA),,                +GHSERIN+GHSERLA
+             -115213.94+27.0353*T;,,                                  N 02Wei !
+ PAR  G(INLA2_B82,IN:LA),,              +GHSERIN+2*GHSERLA
+             -113074.8+17.5289*T;,,                                   N 02Wei !
+ PAR  G(INLA3_L12,IN:LA),,              +GHSERIN+3*GHSERLA
+             -112347.5+14.2968*T;,,                                   N 02Wei !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  IN-LA(TDB -* +LIQUID +TETRA_A6 +DHCP +FCC_A1 +BCC_A2 +IN3LA +IN2LA +IN5LA3
+  +IN57LA43 +INLA +INLA2 +INLA3 ;P3 STP:.48/1200/2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che0 'P.-Y Chevalier, Calphad, 12, 383-92(1988)
+          SGTE unary database V.4.1, 1999; In'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992),
+          SGTE unary database V.5.0, 2009; In'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  99Ans1 'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  02Wei  'Y. Wei, X. Su, F. Yin, Z. Li, X. Wu, C. Chen,
+          J. Alloys Compd., 333, 118-21(2002); In-La'
+!

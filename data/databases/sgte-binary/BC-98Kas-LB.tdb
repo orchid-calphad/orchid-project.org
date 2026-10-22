@@ -1,0 +1,175 @@
+$
+$ Database for B-C from B. Kasper 1998 (included in LB Vol. 2)
+$
+$ B. Kasper, COST 507, Final report round 2, 1998.
+$
+$ Dataset created 2011.01.15 by Bengt Hallstedt.
+$ 2019.10.06: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  B2                                 B2 !
+ SPECIE  B12                                B12 !
+ SPECIE  B11C                               B11C1 !
+ SPECIE  B2C                                B2C1 !
+ SPECIE  BC2                                B1C2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B C : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 2 93 12 !
+ CONST BETA_RHOMBO_B : B : B C : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : B C% : !
+$
+$ Prototype B13C2 (hR15, R-3m)
+$
+ PHASE B4C_D1G % 2 1 1 !
+ CONST B4C_D1G : B12 B11C : B2 B2C BC2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+$PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+ PAR  G(BETA_RHOMBO_B,B:B),,            +105*GHSERBB;,,               N 91Din !
+$PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+$PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+$PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+ PAR  G(GRAPHITE_A9,B),,                +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE_A9,B),,                +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ PAR  G(B4C_D1G,B12:B2),,               +14*GHSERBB
+             +10000+22.909095*T;,,                                    N 98Kas !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+ FUNCTION GBCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From B. Kasper 1998 (included in LB Vol. 2)
+$
+$ B. Kasper, COST 507, Final report round 2, 1998.
+$
+$ Checked against LB and COST. Checked at 6000 K.
+$
+ PAR  L(LIQUID,B,C;0),,                 -67045.16+4.46969*T;,,        N 98Kas !
+ PAR  L(LIQUID,B,C;1),,                 -36682.57+2.44551*T;,,        N 98Kas !
+$
+ PAR  L(GRAPHITE_A9,B,C;0),,            +34385.95+8.6792*T;,,         N 98Kas !
+$
+ PAR  G(BETA_RHOMBO_B,B:C),,            +93*GHSERBB+12*GHSERCC
+             +1000000;,,                                              N 98Kas !
+ PAR  L(BETA_RHOMBO_B,B:B,C;0),,        -2769690.3;,,                 N 98Kas !
+$
+ PAR  G(B4C_D1G,B11C:B2),,              +13*GHSERBB+GHSERCC
+             -170978.12+22.909095*T;,,                                N 98Kas !
+ PAR  G(B4C_D1G,B11C:BC2),,             +12*GHSERBB+3*GHSERCC
+             -347121.82+22.909095*T;,,                                N 98Kas !
+ PAR  G(B4C_D1G,B12:BC2),,              +13*GHSERBB+2*GHSERCC
+             -294040.52+22.909095*T;,,                                N 98Kas !
+ PAR  G(B4C_D1G,B11C:B2C),,             +13*GHSERBB+2*GHSERCC
+             -304040.52+22.909095*T;,,                                N 98Kas !
+ PAR  G(B4C_D1G,B12:B2C),,              +14*GHSERBB+GHSERCC
+             -169978.12+22.909095*T;,,                                N 98Kas !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  B-C(TDB -* +LIQ +B4C_D1G +BETA_RHO +GRAPH ;P3 TMM:300/4500 STP:.2/2900) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Kas  'B. Kasper, COST 507, Final report round 2, 1998; B-C'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

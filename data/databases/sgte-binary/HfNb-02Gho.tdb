@@ -1,0 +1,130 @@
+$
+$ Database for Hf-Nb from G. Ghosh et al. 2002.
+$
+$ G. Ghosh, A. van de Walle, M. Asta, G.B. Olson, Calphad, 26, 491-511(2002).
+$
+$ Dataset created 2022.11.01 by Bengt Hallstedt.
+$
+$ This is assessment 1 in the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT HF   HCP_A3                    178.49      5845.0     43.56   ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : HF NB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : HF NB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : HF% NB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : HF% NB : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Hf
+$
+$ HCP_A3 and BCC_A2 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(HCP_A3,HF:VA),,                 +GHSERHF;                3001 N 91Din !
+ PAR  G(BCC_A2,HF:VA),,                 +GBCCHF;                 3001 N 91Din !
+ PAR  G(FCC_A1,HF:VA),,                 +GHSERHF+10000-2.2*T;    3001 N 91Din !
+ PAR  G(LIQUID,HF),,                    +GLIQHF;                 3001 N 91Din !
+$
+ FUNCTION GHSERHF   298.15  -6987.297+110.744026*T-22.7075*T*LN(T)
+       -0.004146145*T**2-4.77E-10*T**3-22590*T**(-1);
+      2506.00  Y  -1446776.329+6193.609991*T-787.5363829*T*LN(T)
+       +0.1735215*T**2-7.575759E-06*T**3+5.01742495E+08*T**(-1);
+      3000.00  Y  -34274.698+277.882368*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCHF    298.15  +5370.703+103.836026*T-22.8995*T*LN(T)
+       -0.004206605*T**2+8.71923E-07*T**3-22590*T**(-1)-1.446E-10*T**4;
+      2506.00  Y  +1912456.771-8624.20573*T+1087.6141247*T*LN(T)
+       -0.286857065*T**2+1.3427829E-05*T**3-6.10085091E+08*T**(-1);
+      3000.00  Y  -32498.178+276.723247*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHF    298.15  +27402.256-10.953093*T+GHSERHF;
+      1000.00  Y  +49731.499-149.91739*T+12.116812*T*LN(T)
+       -0.021262021*T**2+1.376466E-06*T**3-4449699*T**(-1);
+      2506.00  Y  -4247.217+265.470523*T-44*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Ghosh, A. van de Walle, M. Asta, G.B. Olson, Calphad, 26, 491-511(2002).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ This is assessment 1 in the paper.
+$
+ PAR  L(LIQUID,HF,NB;0),,               +20430.77;,,                  N 02Gho !
+ PAR  L(LIQUID,HF,NB;1),,               +12945.54;,,                  N 02Gho !
+$
+ PAR  L(BCC_A2,HF,NB:VA;0),,            -5835.23+16.32278*T;,,        N 02Gho !
+ PAR  L(BCC_A2,HF,NB:VA;1),,            -3660.25+6.44118*T;,,         N 02Gho !
+$
+ PAR  L(HCP_A3,HF,NB:VA;0),,            +16841.99+4.94863*T;,,        N 02Gho !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,HF,NB:VA;0),,            +3887.36+0.02358*T;,,         N 02Gho !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+   HF-NB(TDB -* +LIQUID +HCP_A3 +BCC_A2 ;P3 TMM:500/3000 STP:.1/1500/1 
+   STP:.8/2500/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  02Gho  'G. Ghosh, A. van de Walle, M. Asta, G.B. Olson,
+          Calphad, 26, 491-511(2002); Hf-Nb'
+!

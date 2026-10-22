@@ -1,0 +1,196 @@
+$
+$ Database for Ga-V from D. Ling et al. 2015.
+$
+$ D. Ling, S. Liu, X. Lu, C. Zhang, Y. Du, Calphad, 51, 125-32(2015).
+$
+$ Dataset created 2018.07.15 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_GA            69.72      5572.0     40.7271 ! 
+ ELEMENT V    BCC_A2                     50.9415    4507.0     30.89   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA V : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GA V : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GA V% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GA V : VA : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Prototype Ga41V8 (hR49, R-3)
+$
+ PHASE GA41V8 % 2 41 8 !
+ CONST GA41V8 : GA : V : !
+$
+$ Prototype Hg5Mn2 (tP14, P4/mbm)
+$
+ PHASE GA5V2 % 2 5 2 !
+ CONST GA5V2 : GA : V : !
+$
+$ Prototype Cu5Zn8 (cI52, I-43m, gamma-brass)
+$
+ PHASE GA7V6_D82 % 4 2 3 2 6 !
+ CONST GA7V6_D82 : V : V : GA V : GA% V : !
+$
+$ Prototype Sn5Ti6-beta (hP22, Sn5Ti6)
+$
+ PHASE GA5V6 % 2 5 6 !
+ CONST GA5V6 : GA% V : GA V% : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE GAV3_A15 % 2 1 3 !
+ CONST GAV3_A15 : GA% V : GA V% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ PAR  G(GA5V6,GA:GA),,                  +11*GHSERGA+55000;,,          N 15Lin !
+ PAR  G(GAV3_A15,GA:GA),,               +4*GHSERGA+20000;,,           N 15Lin !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ V
+$
+ PAR  G(BCC_A2,V:VA),,                  +GHSERVV;                4000 N 91Din !
+ PAR  G(FCC_A1,V:VA),,                  +GHSERVV+7500+1.7*T;     4000 N 91Din !
+ PAR  G(HCP_A3,V:VA),,                  +GHSERVV+4000+2.4*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,V:VA),,                +GHSERVV+9000;           4000 N 91Din !
+$PAR  G(CUB_A13,V:VA),,                 +GHSERVV+10000;          4000 N 91Din !
+ PAR  G(LIQUID,V),,                     +GLIQVV;                 4000 N 91Din !
+$
+ PAR  G(GA7V6_D82,V:V:V:V),,            +13*GHSERVV+65000;,,          N 15Lin !
+ PAR  G(GA5V6,V:V),,                    +11*GHSERVV+55000;,,          N 15Lin !
+ PAR  G(GAV3_A15,V:V),,                 +4*GHSERVV+20000;,,           N 15Lin !
+$
+ FUNCTION GHSERVV   298.15  -7930.43+133.346053*T-24.134*T*LN(T)
+       -0.003098*T**2+1.2175E-07*T**3+69460*T**(-1);
+       790.00  Y  -7967.842+143.291093*T-25.9*T*LN(T)
+       +6.25E-05*T**2-6.8E-07*T**3;
+      2183.00  Y  -41689.864+321.140783*T-47.43*T*LN(T)+6.44389E+31*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQVV    298.15  +20764.117-9.455552*T+GHSERVV-5.19136E-22*T**7;
+      2183.00  Y  -19617.51+311.055983*T-47.43*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ D. Ling, S. Liu, X. Lu, C. Zhang, Y. Du, Calphad, 51, 125-32(2015).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+ PAR  L(LIQUID,GA,V;0),,                -30125.36-2.43*T;,,           N 15Lin !
+ PAR  L(LIQUID,GA,V;1),,                +43000;,,                     N 15Lin !
+ PAR  L(LIQUID,GA,V;2),,                -4650;,,                      N 15Lin !
+$
+ PAR  L(BCC_A2,GA,V:VA;0),,             -34365-0.7*T;,,               N 15Lin !
+ PAR  L(BCC_A2,GA,V:VA;1),,             +54967.11;,,                  N 15Lin !
+$
+ PAR  G(GA41V8,GA:V),,                  +41*GHSERGA+8*GHSERVV
+             -468164.62-266.0847*T;,,                                 N 15Lin !
+ PAR  G(GA5V2,GA:V),,                   +5*GHSERGA+2*GHSERVV
+             -80793.3-53.7859*T;,,                                    N 15Lin !
+$
+ PAR  G(GA7V6_D82,V:V:GA:GA),,          +5*GHSERVV+8*GHSERGA
+             -148403.19-98.4581*T;,,                                  N 15Lin !
+ PAR  G(GA7V6_D82,V:V:GA:V),,           +11*GHSERVV+2*GHSERGA
+             +70714.878-0.4147*T;,,                                   N 15Lin !
+ PAR  G(GA7V6_D82,V:V:V:GA),,           +7*GHSERVV+6*GHSERGA
+             -154118.068-98.0434*T;,,                                 N 15Lin !
+$
+ PAR  G(GA5V6,GA:V),,                   +5*GHSERGA+6*GHSERVV
+             -187616.88-48.1382*T;,,                                  N 15Lin !
+ PAR  G(GA5V6,V:GA),,                   +5*GHSERVV+6*GHSERGA
+             +297616.88+48.1382*T;,,                                  N 15Lin !
+ PAR  L(GA5V6,GA,V:GA;0),,              -132400.95;,,                 N 15Lin !
+ PAR  L(GA5V6,GA,V:V;0),,               -132400.95;,,                 N 15Lin !
+ PAR  L(GA5V6,GA:GA,V;0),,              -55008.25;,,                  N 15Lin !
+ PAR  L(GA5V6,V:GA,V;0),,               -55008.25;,,                  N 15Lin !
+$
+ PAR  G(GAV3_A15,GA:V),,                +4*GGAV3;,,                   N 15Lin !
+ PAR  G(GAV3_A15,V:GA),,                -4*GGAV3+4*GHSERGA+4*GHSERVV
+             +40000;,,                                                N 15Lin !
+ PAR  L(GAV3_A15,GA,V:GA;0),,           -36017.88;,,                  N 15Lin !
+ PAR  L(GAV3_A15,GA,V:V;0),,            -36017.88;,,                  N 15Lin !
+ PAR  L(GAV3_A15,GA:GA,V;0),,           -59972.96+16.0072*T;,,        N 15Lin !
+ PAR  L(GAV3_A15,V:GA,V;0),,            -59972.96+16.0072*T;,,        N 15Lin !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,GA,V:VA;0),,             -34365-0.7*T;,,               N Same !
+ PAR  L(FCC_A1,GA,V:VA;1),,             +54967.11;,,                  N Same !
+$
+ PAR  L(HCP_A3,GA,V:VA;0),,             -34365-0.7*T;,,               N Same !
+ PAR  L(HCP_A3,GA,V:VA;1),,             +54967.11;,,                  N Same !
+$
+ FUNCTION GGAV3     298.15  -26227.75+128.0355*T-24.3683351*T*LN(T)
+       -0.00165723489*T**2+84639.4191*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  15Lin  'D. Ling, S. Liu, X. Lu, C. Zhang, Y. Du,
+          Calphad, 51, 125-32(2015); Ga-V'
+!

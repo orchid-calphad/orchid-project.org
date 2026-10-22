@@ -1,0 +1,276 @@
+$
+$ Database for Al-C from G. Deffrennes et al. 2019.
+$
+$ G. Deffrennes, B. Gardiola, M. Allam, D. Chaussende, A. Pisch, J. Andrieux,
+$ R. Schmid-Fetzer, O. Dezellus, Calphad, 66, 101648(2019).
+$
+$ Dataset created 2019.10.03 by Bengt Hallstedt.
+$
+$ Reasonable parameters for fcc and bcc added by Connetable et al. 2008
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  AL2                                AL2 !
+ SPECIE  ALC                                AL1C1 !
+ SPECIE  ALC2                               AL1C2 !
+ SPECIE  AL2C2                              AL2C2 !
+ SPECIE  C2                                 C2 !
+ SPECIE  C3                                 C3 !
+ SPECIE  C4                                 C4 !
+ SPECIE  C5                                 C5 !
+ SPECIE  C60                                C60 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL C : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL : VA% C : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL : VA% C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype Al4C3 (hR7, R-3m)
+$
+ PHASE AL4C3_D71 % 2 4 3 !
+ CONST AL4C3_D71 : AL : C : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : AL% AL2 ALC ALC2 AL2C2 C C2 C3 C4 C5 C60 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE GAS !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  G(GAS,AL),,                       +AL1G+RTLNP;,,                N 00SUB !
+ PAR  G(GAS,AL2),,                      +AL2G+RTLNP;,,                N 00SUB !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+ FUNCTION GHCPAL    298.15  +GHSERAL+5481-1.8*T;                       2900 N !
+$ Al(g)
+ FUNCTION AL1G      298.15  +323947.58-25.1480948*T-20.859*T*LN(T)
+       +4.5665E-05*T**2-3.942E-09*T**3-24275.5*T**(-1);
+      4000.00  Y  +342017.234-54.0526114*T-17.7891*T*LN(T)
+       +6.822E-05*T**2-1.91111667E-08*T**3-14782200*T**(-1);
+      8200.00  Y  +542396.07-411.214335*T+22.2419*T*LN(T)
+       -0.00349619*T**2+4.0491E-08*T**3-2.0366965E+08*T**(-1);
+     10000.00  N !
+$ Al2(g)
+ FUNCTION AL2G      298.15  +496408.232+35.479739*T-41.6397*T*LN(T)
+       +0.00249636*T**2-4.9050733E-07*T**3+85390.3*T**(-1);
+       900.00  Y  +497613.221+17.368131*T-38.85476*T*LN(T)
+       -2.249805E-04*T**2-9.4900316E-09*T**3-5287.23*T**(-1);
+      2800.00  N !
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+$PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ PAR  G(GAS,C),,                        +F3880T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C2),,                       +F4635T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C3),,                       +F5109T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C4),,                       +F5190T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C5),,                       +F5273T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C60),,                      +F3869T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ C(g)
+ FUNCTION F3880T    298.15  +710430.933-17.7062915*T-20.97529*T*LN(T)
+       +1.998237E-04*T**2-3.34617167E-08*T**3+1680.6515*T**(-1);
+      3400.00  Y  +698015.711+2.57175229*T-23.05071*T*LN(T)
+       -6.04604E-05*T**2+6.74291667E-10*T**3+8558245*T**(-1);
+     10000.00  Y  +736197.571-32.7975305*T-19.44529*T*LN(T)
+       -1.5396035E-04*T**2-6.15402167E-11*T**3-56188350*T**(-1);
+     20000.00  N !
+$ C2(g)
+ FUNCTION F4635T    298.15  +803005.137+419.91537*T-97.48141*T*LN(T)
+       +0.08202995*T**2-1.97357E-05*T**3+690749.5*T**(-1);
+       500.00  Y  +826732.963-2.78396986*T-30.08349*T*LN(T)
+       -0.002621389*T**2+8.30959667E-08*T**3-868501*T**(-1);
+      4300.00  Y  +850321.492-26.7776258*T-27.96957*T*LN(T)
+       -0.0019408995*T**2+3.222655E-08*T**3-22380050*T**(-1);
+     12000.00  Y  +409662.375+520.538141*T-86.66656*T*LN(T)
+       +0.0015642485*T**2-7.28093667E-09*T**3+6.04612E+08*T**(-1);
+     20000.00  N !
+$ C3(g)
+ FUNCTION F5109T    298.15  +829826.554-14.7696342*T-32.21563*T*LN(T)
+       -0.014548565*T**2+1.77806833E-06*T**3-100277.6*T**(-1);
+      1000.00  Y  +809388.443+179.252911*T-59.93982*T*LN(T)
+       +0.0025413955*T**2-2.54139667E-07*T**3+2769455*T**(-1);
+      2800.00  Y  +959399.017-367.175864*T+7.286391*T*LN(T)
+       -0.010483215*T**2+2.00694833E-07*T**3-58720050*T**(-1);
+      5100.00  Y  +645204.419+237.848567*T-60.73106*T*LN(T)
+       -0.0047721765*T**2+1.3846755E-07*T**3+1.945987E+08*T**(-1);
+      8000.00  Y  -79243.2065+1580.271*T-211.8741*T*LN(T)
+       +0.009202285*T**2-1.030498E-07*T**3+8.44019E+08*T**(-1);
+     10000.00  N !
+$ C4(g)
+ FUNCTION F5190T    298.15  +1015583.43+114.927797*T-53.39543*T*LN(T)
+       -0.01399763*T**2+8.26027167E-07*T**3+181008.25*T**(-1);
+      2500.00  Y  +937071.116+522.054722*T-106.1735*T*LN(T)
+       +0.0016641645*T**2-4.03015E-08*T**3+21906740*T**(-1);
+      7000.00  Y  +974994.002+406.652033*T-92.4518*T*LN(T)
+       -2.6888155E-04*T**2+7.07303167E-09*T**3+7587140*T**(-1);
+     10000.00  N !
+$ C5(g)
+ FUNCTION F5273T    298.15  +1028316.51+169.994577*T-62.97185*T*LN(T)
+       -0.0317015*T**2+4.09694E-06*T**3+186275.3*T**(-1);
+       900.00  Y  +999750.246+470.150389*T-106.5965*T*LN(T)
+       -0.0014783715*T**2+7.07236167E-08*T**3+3747842.5*T**(-1);
+      3500.00  Y  +990603.917+513.736613*T-112.1708*T*LN(T)
+       -6.611165E-06*T**2+1.10554567E-10*T**3+6565820*T**(-1);
+     10000.00  N !
+$ C60(g)
+ FUNCTION F3869T    298.15  +2466802.51+88.4522291*T+10.293*T*LN(T)
+       -1.15472*T**2+1.77008333E-04*T**3+4621630*T**(-1);
+       800.00  Y  +1709986.12+9262.2894*T-1356.31*T*LN(T)
+       -0.0366229*T**2+1.98371667E-06*T**3+84578000*T**(-1);
+      3300.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Deffrennes, B. Gardiola, M. Allam, D. Chaussende, A. Pisch, J. Andrieux,
+$ R. Schmid-Fetzer, O. Dezellus, Calphad, 66, 101648(2019).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Reasonable parameters for fcc and bcc added by Connetable et al. 2008
+$
+ PAR  L(LIQUID,AL,C;0),,                -48892+1.15*T;,,              N 19Def !
+ PAR  L(LIQUID,AL,C;1),,                +32543;,,                     N 19Def !
+$
+ PAR  G(FCC_A1,AL:C),,                  +GHSERAL+GHSERCC+81000;,,     N 08Con !
+ PAR  L(FCC_A1,AL:C,VA;0),,             -80000+8*T;,,                 N 08Con !
+$
+ PAR  G(AL4C3_D71,AL:C),,               +GAL4C3S;,,                   N 19Def !
+$
+ PAR  G(GAS,ALC),,                      +F201T+RTLNP;,,               N 97SUB !
+ PAR  G(GAS,ALC2),,                     +F206T+RTLNP;,,               N 97SUB !
+ PAR  G(GAS,AL2C2),,                    +F646T+RTLNP;,,               N 97SUB !
+$
+$ metastable
+$
+ PAR  G(BCC_A2,AL:C),,                  +GHSERAL+3*GHSERCC
+             +100000+80*T;,,                                          N 08Con !
+ PAR  L(BCC_A2,AL:C,VA;0),,             +130000+14*T;,,               N 08Con !
+$
+ PAR  G(HCP_A3,AL:C),,                  +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,AL:C,VA;0),,             +UN_ASS;,,                    N !
+$
+ FUNCTION GAL4C3S    18.00  -209609.2+11.74423*T-3.98514*T*LN(T)
+       +0.137076*T**2-0.00098767*T**3+139.4*T**(-1);
+        60.00  Y  -207459.8-199.2384*T+47.03837*T*LN(T)
+       -0.413864*T**2+0.000156251*T**3-17175.6*T**(-1);
+       298.15  Y  -237336.07+643.8029*T-100.6823*T*LN(T)
+       -0.0839832*T**2+0.0000158781*T**3+1133215*T**(-1);
+       800.00  Y  -240446.3+866.8532*T-139.40526*T*LN(T)
+       -0.0194607*T**2;
+      3000.00  N !
+$ AlC(g)
+ FUNCTION F201T     298.15  +670763.118+12.1456773*T-35.16726*T*LN(T)
+       -0.0018456935*T**2+2.03585167E-07*T**3+131407.35*T**(-1);
+      1200.00  Y  +670426.91+28.9055817*T-37.84337*T*LN(T)
+       +8.477725E-04*T**2-1.97864833E-07*T**3-98959*T**(-1);
+      3300.00  Y  +771689.537-377.266983*T+12.91248*T*LN(T)
+       -0.01048534*T**2+2.77028833E-07*T**3-38137085*T**(-1);
+      6000.00  N !
+$ AlC2(g)
+ FUNCTION F206T     298.15  +661526.904+40.9013712*T-42.79042*T*LN(T)
+       -0.011736955*T**2+1.398998E-06*T**3+55001.35*T**(-1);
+      1100.00  Y  +647801.595+170.700819*T-61.35004*T*LN(T)
+       -1.8259685E-04*T**2+5.89117333E-09*T**3+2025129*T**(-1);
+      6000.00  N !
+$ Al2C2(g)
+ FUNCTION F646T     298.15  +523820.352+150.500029*T-63.4871*T*LN(T)
+       -0.014413455*T**2+1.73668667E-06*T**3+156046.5*T**(-1);
+      1100.00  Y  +507258.697+308.115167*T-86.05273*T*LN(T)
+       -2.2591625E-04*T**2+7.28457E-09*T**3+2522540*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-C(TDB -* +LIQ +AL4C3_D71 +FCC_A1 +GRAPHITE_A9
+  ;P3 TMM:300/3000 STP:.1/1000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database; Al-C'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  00SUB  'SGTE substance database, version 2000'
+  08Con  'D. Connetable, J. Lacaze, P. Maugis, B. Sundman,
+          Calphad, 32, 361-70(2008); Al-Fe-C'
+  19Def  'G. Deffrennes, B. Gardiola, M. Allam, D. Chaussende, A. Pisch,
+          J. Andrieux, R. Schmid-Fetzer, O. Dezellus,
+          Calphad, 66, 101648(2019); Al-C'
+!

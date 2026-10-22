@@ -1,0 +1,262 @@
+$
+$ Database for Li-C from S.-M. Liang et al. 2017
+$
+$ S.-M. Liang, M. Drue, A. Kozlov, M. Rettenmayr, R. Schmid-Fetzer,
+$ J. Alloys Compd., 698, 743-53(2017).
+$
+$ Dataset created 2016.12.12 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$
+$ Based on the assessment from 13Koz. Changed to an associate liquid model.
+$
+$ Solubility of C in solid Li is not considered.
+$
+$ Gas phase equilibria differ by up to 12 K because different gas phase data
+$ are used.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT LI   BCC_A2                      6.941     4632.00    29.12   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  C2                                 C2 !
+ SPECIE  C3                                 C3 !
+ SPECIE  C4                                 C4 !
+ SPECIE  C5                                 C5 !
+ SPECIE  C60                                C60 !
+ SPECIE  LI2                                LI2 !
+ SPECIE  LI2C2                              LI2C2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C LI LI2C2 : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : LI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : LI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype Rb2O2 (oI8, Immm)
+$
+ PHASE LI2C2_ALPHA % 2 1 1 !
+ CONST LI2C2_ALPHA : LI : C : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE LI2C2_C1 % 2 1 1 !
+ CONST LI2C2_C1 : LI : C : !
+$
+$ Prototype LiC6 (hP7, P6/mmm)
+$
+ PHASE LIC6 % 2 1 6 !
+ CONST LIC6 : LI : C : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : C C2 C3 C4 C5 C60 LI LI2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ PAR  G(GAS,C),,                        +F3880T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C2),,                       +F4635T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C3),,                       +F5109T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C4),,                       +F5190T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C5),,                       +F5273T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C60),,                      +F3869T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ C(g)
+ FUNCTION F3880T    298.15  +710430.933-17.7062915*T-20.97529*T*LN(T)
+       +1.998237E-04*T**2-3.34617167E-08*T**3+1680.6515*T**(-1);
+      3400.00  Y  +698015.711+2.57175229*T-23.05071*T*LN(T)
+       -6.04604E-05*T**2+6.74291667E-10*T**3+8558245*T**(-1);
+     10000.00  Y  +736197.571-32.7975305*T-19.44529*T*LN(T)
+       -1.5396035E-04*T**2-6.15402167E-11*T**3-56188350*T**(-1);
+     20000.00  N !
+$ C2(g)
+ FUNCTION F4635T    298.15  +803005.137+419.91537*T-97.48141*T*LN(T)
+       +0.08202995*T**2-1.97357E-05*T**3+690749.5*T**(-1);
+       500.00  Y  +826732.963-2.78396986*T-30.08349*T*LN(T)
+       -0.002621389*T**2+8.30959667E-08*T**3-868501*T**(-1);
+      4300.00  Y  +850321.492-26.7776258*T-27.96957*T*LN(T)
+       -0.0019408995*T**2+3.222655E-08*T**3-22380050*T**(-1);
+     12000.00  Y  +409662.375+520.538141*T-86.66656*T*LN(T)
+       +0.0015642485*T**2-7.28093667E-09*T**3+6.04612E+08*T**(-1);
+     20000.00  N !
+$ C3(g)
+ FUNCTION F5109T    298.15  +829826.554-14.7696342*T-32.21563*T*LN(T)
+       -0.014548565*T**2+1.77806833E-06*T**3-100277.6*T**(-1);
+      1000.00  Y  +809388.443+179.252911*T-59.93982*T*LN(T)
+       +0.0025413955*T**2-2.54139667E-07*T**3+2769455*T**(-1);
+      2800.00  Y  +959399.017-367.175864*T+7.286391*T*LN(T)
+       -0.010483215*T**2+2.00694833E-07*T**3-58720050*T**(-1);
+      5100.00  Y  +645204.419+237.848567*T-60.73106*T*LN(T)
+       -0.0047721765*T**2+1.3846755E-07*T**3+1.945987E+08*T**(-1);
+      8000.00  Y  -79243.2065+1580.271*T-211.8741*T*LN(T)
+       +0.009202285*T**2-1.030498E-07*T**3+8.44019E+08*T**(-1);
+     10000.00  N !
+$ C4(g)
+ FUNCTION F5190T    298.15  +1015583.43+114.927797*T-53.39543*T*LN(T)
+       -0.01399763*T**2+8.26027167E-07*T**3+181008.25*T**(-1);
+      2500.00  Y  +937071.116+522.054722*T-106.1735*T*LN(T)
+       +0.0016641645*T**2-4.03015E-08*T**3+21906740*T**(-1);
+      7000.00  Y  +974994.002+406.652033*T-92.4518*T*LN(T)
+       -2.6888155E-04*T**2+7.07303167E-09*T**3+7587140*T**(-1);
+     10000.00  N !
+$ C5(g)
+ FUNCTION F5273T    298.15  +1028316.51+169.994577*T-62.97185*T*LN(T)
+       -0.0317015*T**2+4.09694E-06*T**3+186275.3*T**(-1);
+       900.00  Y  +999750.246+470.150389*T-106.5965*T*LN(T)
+       -0.0014783715*T**2+7.07236167E-08*T**3+3747842.5*T**(-1);
+      3500.00  Y  +990603.917+513.736613*T-112.1708*T*LN(T)
+       -6.611165E-06*T**2+1.10554567E-10*T**3+6565820*T**(-1);
+     10000.00  N !
+$ C60(g)
+ FUNCTION F3869T    298.15  +2466802.51+88.4522291*T+10.293*T*LN(T)
+       -1.15472*T**2+1.77008333E-04*T**3+4621630*T**(-1);
+       800.00  Y  +1709986.12+9262.2894*T-1356.31*T*LN(T)
+       -0.0366229*T**2+1.98371667E-06*T**3+84578000*T**(-1);
+      3300.00  N !
+$ ------------------------------------------------------------------------------
+$ Li
+$
+ PAR  G(BCC_A2,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(FCC_A1,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(HCP_A3,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(LIQUID,LI)              200.00  +GLIQLI;                 3000 N 91Din !
+$
+ PAR  G(GAS,LI),,                       +F12385T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,LI2),,                      +F12463T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERLI   200.00  -10583.817+217.637482*T-38.940488*T*LN(T)
+       +0.035466931*T**2-1.9869816E-05*T**3+159994*T**(-1);
+       453.60  Y  -559579.123+10547.8799*T-1702.88865*T*LN(T)
+       +2.25832944*T**2-5.71066077E-04*T**3+33885874*T**(-1);
+       500.00  Y  -9062.994+179.278285*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQLI    200.00  +2700.205-5.795621*T+GHSERLI;
+       250.00  Y  +12015.027-362.187078*T+61.6104424*T*LN(T)
+       -0.182426463*T**2+6.3955671E-05*T**3-559968*T**(-1);
+       453.60  Y  -6057.31+172.652183*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+       500.00  Y  +3005.684-6.626102*T+GHSERLI;
+      3000.00  N !
+$ Li(g)
+ FUNCTION F12385T   298.15  +152984.64+2.33568506*T-21.07772*T*LN(T)
+       +2.515552E-04*T**2-3.41354333E-08*T**3+7690.735*T**(-1);
+      2400.00  Y  +183390.413-110.69493*T-7.20516*T*LN(T)
+       -0.002217371*T**2+2.443155E-08*T**3-11648370*T**(-1);
+      4800.00  Y  +109652.446+17.2445126*T-21.24264*T*LN(T)
+       -0.0015038825*T**2+3.76717667E-08*T**3+50092500*T**(-1);
+      8800.00  Y  -72231.6406+344.035356*T-57.87689*T*LN(T)
+       +0.0017448465*T**2-1.58650733E-08*T**3+2.178053E+08*T**(-1);
+     10000.00  N !
+$ Li2(g)
+ FUNCTION F12463T   298.15  +203319.119+52.2617041*T-37.02637*T*LN(T)
+       -8.421915E-04*T**2-1.078653E-07*T**3+65874.15*T**(-1);
+      1100.00  Y  +200885.055+48.6776391*T-35.9057*T*LN(T)
+       -0.0039990175*T**2+5.08151333E-07*T**3+883657*T**(-1);
+      1900.00  Y  +137315.894+473.019388*T-93.02457*T*LN(T)
+       +0.018440525*T**2-1.12358533E-06*T**3+13866255*T**(-1);
+      3100.00  Y  +638944.289-1507.74849*T+153.9314*T*LN(T)
+       -0.035715045*T**2+1.10781833E-06*T**3-1.776338E+08*T**(-1);
+      5100.00  Y  -624845.177+1789.13827*T-234.2722*T*LN(T)
+       +0.0173718*T**2-2.55232167E-07*T**3+5.95322E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S.-M. Liang, M. Drue, A. Kozlov, M. Rettenmayr, R. Schmid-Fetzer,
+$ J. Alloys Compd., 698, 743-53(2017).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Based on the assessment from 13Koz. Changed to an associate liquid model.
+$
+$ Solubility of C in solid Li is not considered.
+$
+$ Gas phase equilibria differ by up to 12 K because different gas phase data
+$ are used.
+$
+ PAR  G(LIQUID,LI2C2),,                 -75915.567+700.3513*T
+             -114.84553*T*LN(T);,,                                    N 17Lia2 !
+ PAR  L(LIQUID,LI,LI2C2;0),,            +40300.5+6.5*T;,,             N 17Lia2 !
+$
+ PAR  G(LI2C2_ALPHA,LI:C),,             +2*GLI2C2A;,,                 N 17Lia2 !
+ PAR  G(LI2C2_C1,LI:C),,                +2*GLI2C2B;,,                 N 17Lia2 !
+ PAR  G(LIC6,LI:C),,                    +GHSERLI+6*GHSERCC
+             -15400+14*T;,,                                           N 13Koz !
+$
+ FUNCTION GLI2C2A   298.15  -27300+160.6829*T-25.44395*T*LN(T)
+       -0.0012897*T**2+3.9885E-09*T**3+370027.3*T**(-1)
+       -5.80833E-13*T**4;
+      3000.00  N !
+ FUNCTION GLI2C2B   298.15  -25212.500+157.8036*T-25.44395*T*LN(T)
+       -0.0012897*T**2+3.9885E-09*T**3+370027.3*T**(-1)
+       -5.80833E-13*T**4;
+      1420.00  Y  -26746.287+180.9586*T-28.71138*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  13Koz  'A. Kozlov, M. Seyring, M. Drue, M. Rettenmayr, R. Schmid-Fetzer,
+          Int. J. Mater. Res., 104, 1066-78(2013); Li-C'
+  17Lia2 'S.-M. Liang, M. Drue, A. Kozlov, M. Rettenmayr, R. Schmid-Fetzer,
+          J. Alloys Compd., 698, 743-53(2017); Li-C'
+!

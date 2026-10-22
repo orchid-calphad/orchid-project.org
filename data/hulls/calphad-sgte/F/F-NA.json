@@ -1,0 +1,177 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "F",
+    "NA"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "F": {
+          "energy": -30214.45538664279,
+          "phase": "GAS"
+        },
+        "NA": {
+          "energy": -15295.09501288975,
+          "phase": "BCC_A2"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -575383.7000791392
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -101.42778169692608
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "GAS",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -545143.0069662007,
+          "right": {
+            "phase": "NAF_B1",
+            "x": 0.5
+          },
+          "slope": -545143.0069662007,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -575383.7000791392,
+            "slope": 575383.7000791392
+          },
+          "entropy": {
+            "intercept": -101.42778169692608,
+            "slope": 101.42778169692608
+          },
+          "intercept": -545143.0069662007,
+          "kind": "two_phase",
+          "left": {
+            "phase": "NAF_B1",
+            "x": 0.5
+          },
+          "mu_a_rel": -545143.0069662007,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "BCC_A2",
+            "x": 1.0
+          },
+          "slope": 545143.0069662007,
+          "x_hi": 1.0,
+          "x_lo": 0.5
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -272571.5034831003,
+          "energy_per_atom": -272571.5034831003,
+          "enthalpy": -287691.8500395696,
+          "entries_at_x": 1,
+          "entropy": -50.71389084846304,
+          "formula": "",
+          "nsites": null,
+          "phase": "NAF_B1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "NaF-06Zha",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:50:30Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/NaF-06Zha.tdb",
+    "source_sha256": "33d049d9c6fd6809c49798e57c965aac35ad8d5dd6d11e633fb5366b3b2d80e9"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "F-NA",
+  "x_element": "NA"
+}

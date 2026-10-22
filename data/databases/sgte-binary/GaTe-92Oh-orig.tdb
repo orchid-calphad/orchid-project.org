@@ -1,0 +1,179 @@
+$
+$ Database for Ga-Te from C.-S. Oh and D.N. Lee 1992 (included in LB Vol. 3)
+$
+$ C.-S. Oh, D.N. Lee, Calphad, 16, 317-30(1992).
+$
+$ Dataset created 2016.02.10 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$ 2021.09.05: ION order fixed for GES6.
+$
+$ Unary Te has changed radically since 92Oh.
+$ This dataset includes Te from 91Din.
+$
+$ Ga2Te5 has zero heat capacity.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_GA            69.72      5572.0     40.7271 ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  GA+3                               GA1/+3 !
+ SPECIE  TE-2                               TE1/-2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : GA+3 : TE-2 VA TE : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA TE : !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$ The phase is named HEXAGONAL_A8 in the SGTE unary database and
+$ TRIGONAL_A8 in LB.
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Prototype SiAs (mC24, C2/m)
+$
+ PHASE GATE % 2 1 1 !
+ CONST GATE : GA : TE : !
+$
+$ Unknown structure
+$
+ PHASE GA3TE4 % 2 3 4 !
+ CONST GA3TE4 : GA : TE : !
+$
+$ Prototype ZnS (cF8, F-43m)
+$
+ PHASE GA2TE3_B3 % 2 2 3 !
+ CONST GA2TE3_B3 : GA : TE : !
+$
+$ Prototype Ga2Te5 (tI14, I4/m)
+$
+ PHASE GA2TE5 % 2 2 5 !
+ CONST GA2TE5 : GA : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+$PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+$PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+$PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ PAR  G(ION,GA+3:VA)            200.00  +GLIQGA;                 4000 N 91Din !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+$ Original 91Din for Te.
+$
+$ RHOMBOHEDRAL_A7 from 89Gho not included in unary
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                2000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,TE),,           +GHSERTE+15*T;           2000 N 89Gho !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 2000 N 91Din !
+$
+ PAR  G(ION,TE),,                       +GLIQTE;                 2000 N 91Din !
+$
+ FUNCTION GHSERTE   298.15  -6677.083+85.019049*T-19.1003366*T*LN(T)
+       -0.011050509*T**2;
+       722.62  Y  -14523.09+210.012485*T-37.656*T*LN(T)+1.115711E+27*T**(-9);  
+      2000.00  N !
+ FUNCTION GLIQTE    298.15  +10545.373+61.250493*T-19.1003366*T*LN(T)
+       -0.011050509*T**2-4.31543E-19*T**7;
+       722.62  Y  +3173.436+185.555178*T-37.656*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From C.-S. Oh and D.N. Lee 1992 (included in LB Vol. 3)
+$
+$ C.-S. Oh, D.N. Lee, Calphad, 16, 317-30(1992).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ Unary Te has changed radically since 92Oh.
+$ This dataset includes Te from 91Din.
+$
+$ Ga2Te5 has zero heat capacity.
+$
+ PAR  G(ION,GA+3:TE-2),,                +2*GLIQGA+3*GLIQTE
+             -232396.5+110.6885*T;,,                                  N 92Oh !
+ PAR  L(ION,GA+3:TE-2,VA;0),,           +136443.6-130.7635*T;,,       N 92Oh !
+ PAR  L(ION,GA+3:TE-2,VA;1),,           -10701.4-36.5602*T;,,         N 92Oh !
+ PAR  L(ION,GA+3:TE-2,TE;0),,           +66623.8-52.8159*T;,,         N 92Oh !
+ PAR  L(ION,GA+3:TE-2,TE;1),,           -3278.9-3.2009*T;,,           N 92Oh !
+$
+ PAR  G(GATE,GA:TE),,                   -94031.7+256.6211*T
+             -49.8877*T*LN(T)-0.0085909*T**2;,,                       N 92Oh !
+ PAR  G(GA3TE4,GA:TE),,                 -309927.3+758.7019*T
+             -162.1256*T*LN(T);,,                                     N 92Oh !
+ PAR  G(GA2TE3_B3,GA:TE),,              -232406.6+752.2623*T
+             -144.5327*T*LN(T);,,                                     N 92Oh !
+ PAR  G(GA2TE5,GA:TE),,                 -72190.5-540.052*T;,,         N 92Oh !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  GA-TE(TDB -* +ION +ORTHO_A11 +GATE +GA2TE3_B3 +GA2TE5 +GA3TE4 +HEXAGON_A8
+  ;G5 C_S:ION/GA+3:VA MAJ:ION/GA+3:TE-2
+  ;P3 TMM:200/1500 STP:.2/1050/1 STP:.1/1000/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  89Gho  'G. Ghosh, H.L. Lukas, L. Delaey,
+          Z. Metallkd., 80, 731-36 (1989); Sb-Te'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Oh   'C.-S. Oh, D.N. Lee, Calphad, 16, 317-30(1992); Ga-Te'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

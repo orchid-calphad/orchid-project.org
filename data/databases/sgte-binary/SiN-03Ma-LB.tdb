@@ -1,0 +1,208 @@
+$
+$ Database for Si-N from X. Ma et al. 2003 (included in LB Vol. 5)
+$
+$ X. Ma, C. Li, F. Wang, W. Zhang, Calphad, 27, 383-88(2003).
+$
+$ Dataset created 2010.07.04 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ Alpha- and beta-Si3N4 are assumed to have the same Gibbs energy.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT N    1/2_MOLE_N2(G)             14.007     4335.0     95.751  ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  N2                                 N2 !
+ SPECIE  N3                                 N3 !
+ SPECIE  SI2                                SI2 !
+ SPECIE  SI3                                SI3 !
+ SPECIE  SIN                                SI1N1 !
+ SPECIE  SI2N                               SI2N1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : N SI : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype Si3N4; alpha: (hP28, p31c), beta: (hP14, P6_3)
+$
+ PHASE SI3N4 % 2 3 4 !
+ CONST SI3N4 : SI : N : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : N N2 N3 SI SI2 SI3 SIN SI2N : !
+$
+ PHASE N2GAS % 1 1 !
+ CONST N2GAS : N2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE N2GAS !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ N
+$
+$ There is a small change in G(GAS,N) from SGSUB 1992 to 1994
+$ G(GAS,N2) has a competely different expression in SGSUB 1994 and 1997
+$ compared to the unary database.
+$ G(GAS,N3) is considerably changed from SGSUB 1992 to 1994.
+$
+ PAR  G(N2GAS,N2),,                     +2*GHSERNN+RTLNP;,,           N 91Din !
+ PAR  G(LIQUID,N),,                     +GHSERNN+29950+59.02*T;,,     N 91Din !
+$
+ PAR  G(GAS,N),,                        +F12658T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,N2),,                       +2*GHSERNN+RTLNP;,,           N 91Din !
+ PAR  G(GAS,N3),,                       +F12909T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERNN   298.15  -3750.675-9.45425*T-12.7819*T*LN(T)
+       -0.00176686*T**2+2.681E-09*T**3-32374*T**(-1);
+       950.00  Y  -7358.85+17.2003*T-16.3699*T*LN(T)
+       -6.5107E-04*T**2+3.0097E-08*T**3+563070*T**(-1);
+      3350.00  Y  -16392.8+50.26*T-20.4695*T*LN(T)
+       +2.39754E-04*T**2-8.333E-09*T**3+4596375*T**(-1);
+      6000.00  N !
+$ N(g)
+ FUNCTION F12658T   298.15  +466446.153-13.3752574*T-20.89393*T*LN(T)
+       +8.45521E-05*T**2-1.0018685E-08*T**3+2788.7865*T**(-1);
+      2950.00  Y  +481259.035-52.5441353*T-16.37613*T*LN(T)
+       -2.283738E-04*T**2-2.78997167E-08*T**3-7559105*T**(-1);
+      6000.00  N !
+$ N2(g) from SGSUB 1997
+ FUNCTION F12845T   298.15  -8000.12556-8.81620364*T-27.22332*T*LN(T)
+       -0.0012599175*T**2-5.39381E-07*T**3-38326.695*T**(-1);
+       800.00  Y  -10569.6463+2.77534156*T-28.42384*T*LN(T)
+       -0.003189275*T**2+2.06638E-07*T**3+416969.05*T**(-1);
+      2200.00  Y  -22468.6305+71.8176271*T-37.55014*T*LN(T)
+       -6.158995E-06*T**2-4.22547E-09*T**3+3427512*T**(-1);
+      6000.00  N !
+$ N3(g)
+ FUNCTION F12909T   298.15  +426260.222-44.8788468*T-24.40177*T*LN(T)
+       -0.02510581*T**2+3.41313667E-06*T**3+61652.95*T**(-1);
+       800.00  Y  +409926.892+144.323862*T-52.34995*T*LN(T)
+       -0.0035522355*T**2+2.39819667E-07*T**3+1869491.5*T**(-1);
+      2200.00  Y  +398090.062+216.588607*T-61.96494*T*LN(T)
+       -5.55378E-05*T**2+1.47712917E-09*T**3+4654831*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+$PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+$PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+$PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ PAR  G(GAS,SI),,                       +F8197T+RTLNP;,,              N 90SUB !
+ PAR  G(GAS,SI2),,                      +F8227T+RTLNP;,,              N 90SUB !
+ PAR  G(GAS,SI3),,                      +F8245T+RTLNP;,,              N 90SUB !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ Si(g)
+ FUNCTION F8197T    298.15  +444772.786-60709.2124*T**(-1)-27.6547439*T
+       -21.0681554*T*LN(T)+3.99285396E-04*T**2-9.9554096E-08*T**3;
+      2000.00  Y  +444116.957+762762.028*T**(-1)-38.3214094*T
+       -19.3609998*T*LN(T)-9.76258996E-04*T**2+4.14151845E-08*T**3;
+      4000.00  Y  +400678.285+22825602.8*T**(-1)+96.3062503*T
+       -35.5990619*T*LN(T)+0.00175586581*T**2-4.58426236E-08*T**3;
+      6000.00  N !
+$ Si2(g)
+ FUNCTION F8227T    298.15  +580605.171-8227.81508*T**(-1)-31.8482492*T
+       -28.7155033*T*LN(T)-0.0094705886*T**2+1.76928808E-07*T**3;
+       600.00  Y  +576928.698+444960.032*T**(-1)-3.54867845*T
+       -32.2831164*T*LN(T)-0.0114310436*T**2+1.75212671E-06*T**3;
+      1200.00  Y  +565230.011+1453776.82*T**(-1)+139.106857*T
+       -53.3225696*T*LN(T)+0.00393279264*T**2-2.42637831E-07*T**3;
+      2600.00  Y  +583134.867-3023002.76*T**(-1)+39.6531838*T
+       -40.3154759*T*LN(T)-1.64330156E-04*T**2-5.40281315E-09*T**3;
+      6000.00  N !
+$ Si3(g)
+ FUNCTION F8245T    298.15  +616635.909+234142.916*T**(-1)+129.920395*T
+       -58.7282976*T*LN(T)-0.00312912992*T**2+5.00836655E-07*T**3;
+      1000.00  Y  +614516.828+384664.408*T**(-1)+160.460124*T
+       -63.3670984*T*LN(T)+9.95168584E-04*T**2-1.50930827E-07*T**3;
+      2900.00  Y  +630336.932-1798745.53*T**(-1)+58.7146891*T
+       -49.9352032*T*LN(T)-0.00334104952*T**2+9.15842733E-08*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From X. Ma et al. 2003 (included in LB Vol. 5)
+$
+$ X. Ma, C. Li, F. Wang, W. Zhang, Calphad, 27, 383-88(2003).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ Alpha- and beta-Si3N4 are assumed to have the same Gibbs energy.
+$
+ PAR  L(LIQUID,N,SI;0),,                -87631.311+22.359*T;,,        N 03Ma !
+$
+ PAR  G(SI3N4,SI:N),,                   -788513.009+733.225*T
+             -121.79*T*LN(T)-0.02065*T**2+6.9938E-07*T**3
+             +1666886.4*T**(-1);,,                                    N 03Ma !
+$
+ PAR  G(GAS,SIN),,                      +F12915T+RTLNP;,,             N 00SUB !
+ PAR  G(GAS,SI2N),,                     +F12921T+RTLNP;,,             N 00SUB !
+$
+$ SiN(g)
+ FUNCTION F12915T   298.15  +373690.147-126.773849*T-11.48813*T*LN(T)
+       -0.02760032*T**2+4.14460833E-06*T**3-201121*T**(-1);
+       900.00  Y  +345651.105+184.200439*T-57.02462*T*LN(T)
+       +0.005212695*T**2-2.80815333E-07*T**3+3030993*T**(-1);
+      3000.00  Y  +401766.122-30.0990737*T-30.3733*T*LN(T)
+       -6.13755E-04*T**2-3.30314167E-08*T**3-19797170*T**(-1);
+      5800.00  Y  +397720.711-70.2315921*T-24.95975*T*LN(T)
+       -0.0020519915*T**2+1.71382167E-08*T**3-543722*T**(-1);
+      6000.00  N !
+$ Si2N(g)
+ FUNCTION F12921T   298.15  +367551.162+68.9613567*T-47.11477*T*LN(T)
+       -0.01410916*T**2+2.51869833E-06*T**3+190945.2*T**(-1);
+       800.00  Y  +360363.442+166.768467*T-61.99726*T*LN(T)
+       -8.395595E-05*T**2+2.98128167E-09*T**3+863651*T**(-1);
+      3400.00  Y  +358195.746+179.731995*T-63.68676*T*LN(T)
+       +4.0735635E-04*T**2-2.15632833E-08*T**3+1158715*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  N-SI(TDB -* +LIQUID +GAS +DIAMOND +SI3N4 ;P3 TMM:500/4000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  90SUB  'SGTE Substance Database, version 1990'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE Substance Database, version 1997'
+  00SUB  'SGTE Substance Database, version 2000'
+  03Ma   'X. Ma, C. Li, F. Wang, W. Zhang, Calphad, 27, 383-88(2003); Si-N'
+!

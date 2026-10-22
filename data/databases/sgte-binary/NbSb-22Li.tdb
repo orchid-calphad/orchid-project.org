@@ -1,0 +1,164 @@
+$
+$ Database for Nb-Sb from X. Li et al. 2022.
+$
+$ X. Li, Z. Li, S. Duan, D. Qin, Q. Wang, C. Chen, S. Li, F. Cao, J. Mao,
+$ C. Wang, J. Sui, X. Liu, Q. Zhang, Acta Mater., 228, 117736(2022).
+$
+$ Dataset created 2023.11.05 by Bengt Hallstedt.
+$
+$ The parameters are only included in the supplemental material.
+$
+$ Invariant equiliobria differ by up to 8 K, possibly due to rounding errors.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NB SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NB% SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NB SB : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : NB SB% : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE NB3SB_A15 % 2 3 1 !
+ CONST NB3SB_A15 : NB% SB : NB SB% : !
+$
+$ Prototype Ti5Te4 (tI18, I4/m)
+$
+ PHASE NB5SB4 % 2 5 4 !
+ CONST NB5SB4 : NB : SB : !
+$
+$ Prototype Ge2Os (mC12, C2/m)
+$
+ PHASE NBSB2 % 2 1 2 !
+ CONST NBSB2 : NB : SB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+$ RHOMBOHEDRAL_A7 from 22Li not included in unary
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(RHOMBOHEDRAL_A7,NB),,           +GHSERNB+57258.1+19.9863*T;,, N 22Li !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(NB3SB_A15,NB:NB),,              +4*GHSERNB+24000;,,           N 22Li !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(NB3SB_A15,SB:SB),,              +4*GHSERSB+24000;,,           N 22Li !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X. Li, Z. Li, S. Duan, D. Qin, Q. Wang, C. Chen, S. Li, F. Cao, J. Mao,
+$ C. Wang, J. Sui, X. Liu, Q. Zhang, Acta Mater., 228, 117736(2022).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ The parameters are only included in the supplemental material.
+$
+$ Invariant equiliobria differ by up to 8 K, possibly due to rounding errors.
+$
+ PAR  L(LIQUID,NB,SB;0),,               +23651.3-18.0831*T;,,         N 22Li !
+ PAR  L(LIQUID,NB,SB;1),,               +41762.8-9.4839*T;,,          N 22Li !
+ PAR  L(LIQUID,NB,SB;2),,               +15773.7;,,                   N 22Li !
+$
+ PAR  L(BCC_A2,NB,SB:VA;0),,            -20845.7+9.0169*T;,,          N 22Li !
+$
+ PAR  G(NB3SB_A15,NB:SB),,              +3*GHSERNB+GHSERSB
+             -21232.08-13.5448*T;,,                                   N 22Li !
+ PAR  G(NB3SB_A15,SB:NB),,              +3*GHSERSB+GHSERNB
+             -3861.008-12.4024*T;,,                                   N 22Li !
+$
+ PAR  G(NB5SB4,NB:SB),,                 +5*GHSERNB+4*GHSERSB
+             -77535.09-31.4172*T;,,                                   N 22Li !
+ PAR  G(NBSB2,NB:SB),,                  +GHSERNB+2*GHSERSB
+             -23280.96-11.4483*T;,,                                   N 22Li !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,NB,SB:VA;0),,            -20845.7+9.0169*T;,,          N Same !
+ PAR  L(HCP_A3,NB,SB:VA;0),,            -20845.7+9.0169*T;,,          N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  22Li   'X. Li, Z. Li, S. Duan, D. Qin, Q. Wang, C. Chen, S. Li, F. Cao,
+          J. Mao, C. Wang, J. Sui, X. Liu, Q. Zhang,
+          Acta Mater., 228, 117736(2022); Nb, Nb-Sb'
+!

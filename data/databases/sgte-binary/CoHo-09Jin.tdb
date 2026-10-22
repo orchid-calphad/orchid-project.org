@@ -1,0 +1,244 @@
+$
+$ Database for Co-Ho from S. Jin et al. 2009.
+$
+$ S. Jin, J. Wang, L.G. Zhang, H.S. Liu, L.B. Liu, F. Zheng, Z.P. Jin,
+$ J. Alloys Compd., 477, 233-38(2009).
+$
+$ Dataset created 2018.06.09 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ Bcc-Ho now becomes more stable than hcp-Ho only just above the melting
+$ instead of just below previously. In the paper the old lattice stability
+$ for bcc-Ho is used.
+$
+$ Invariant equilibria differ by up to 9 K. Differences are larger towards Ho,
+$ therefore the revised liquid Ho in unary 4.4 is a possible cause.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT HO   HCP_A3                    164.9304    7995.624   75.0191 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO HO : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% HO : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO HO : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% HO% : VA : !
+$
+$ Prototype Ni17Th2 (hP38, P6_3/mmc)
+$
+ PHASE CO17HO2 %A 2 17 2 !
+ CONST CO17HO2 : CO : HO : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE CO5HO_D2D %A 2 5.5 1 !
+ CONST CO5HO_D2D : CO : HO : !
+$
+$ Prototype Co7Gd2 (hR18, R-3m)
+$
+ PHASE CO7HO2 %A 2 7 2 !
+ CONST CO7HO2 : CO : HO : !
+$
+$ Prototype Ni3Pu (hR12, R-3m)
+$
+ PHASE CO3HO %A 2 3 1 !
+ CONST CO3HO : CO : HO : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE CO2HO_C15 %A 2 2 1 !
+ CONST CO2HO_C15 : CO : HO : !
+$
+$ Prototype Co3Ho4 (hP22, P6_3/m)
+$
+ PHASE CO3HO4 %A 2 3 4 !
+ CONST CO3HO4 : CO : HO : !
+$
+$ Prototype Co7Ho12 (mP38, P2_1/c)
+$
+ PHASE CO7HO12 % 2 7 12 !
+ CONST CO7HO12 : CO : HO : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE COHO3_D011 %A 2 1 3 !
+ CONST COHO3_D011 : CO : HO : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ho
+$
+$ BCC_A2 and LIQUID revised in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+$ FCC_A1 from 03Cac, 04Wan and 09Wan6 not included in unary
+$
+ PAR  G(HCP_A3,HO:VA),,                 +GHSERHO;                3001 N 91Din !
+$PAR  G(FCC_A1,HO:VA),,                 +GHSERHO
+$            +2000-0.831451*T;                                   3001 N 03Cac !
+ PAR  G(FCC_A1,HO:VA),,                 +GHSERHO+1180;           3001 N 04Wan !
+$PAR  G(FCC_A1,HO:VA),,                 +GHSERHO+4000;           3001 N 09Wan6 !
+ PAR  G(BCC_A2,HO:VA),,                 +GHSERHO
+             +4380-2.494353*T;                                   3001 N 00Nor1 !
+ PAR  G(LIQUID,HO),,                    +GLIQHO;                 3001 N 00Nor1 !
+$
+ FUNCTION GHSERHO   298.15  -7612.429+86.593171*T-23.4879*T*LN(T)
+       -0.00827315*T**2+2.375467E-06*T**3;
+       600.00  Y  -10917.688+182.475691*T-39.6932*T*LN(T)
+       +0.01820065*T**2-4.829733E-06*T**3;
+       900.00  Y  +46646.188-421.474473*T+48.0595*T*LN(T)
+       -0.0424634*T**2+3.233133E-06*T**3-7185900*T**(-1);
+      1200.00  Y  +27786.061-156.162846*T+8.28608*T*LN(T)
+       -0.01082725*T**2-1.112352E-06*T**3-6183850*T**(-1);
+      1703.00  Y  -825364.662+4248.379056*T-558.9506818*T*LN(T)
+       +0.139111904*T**2-6.824652E-06*T**3+2.19952973E+08*T**(-1);
+      3000.00  Y  -17149.229+235.898104*T-43.932*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHO    298.15  +17383.4216-9.992194*T+GHSERHO;
+      1000.00  Y  +124827.5326-994.683024*T+127.9577778*T*LN(T)
+       -0.088196514*T**2+8.008222E-6*T**3-15727191*T**(-1);  
+      1703.00  Y  -9688.5314+230.793918*T-43.932*T*LN(T);  
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Jin, J. Wang, L.G. Zhang, H.S. Liu, L.B. Liu, F. Zheng, Z.P. Jin,
+$ J. Alloys Compd., 477, 233-38(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ BMAG for 1 mole of atoms are given as comments.
+$
+$ Bcc-Ho now becomes more stable than hcp-Ho only just above the melting
+$ instead of just below previously. In the paper the old lattice stability
+$ for bcc-Ho is used.
+$
+$ Invariant equilibria differ by up to 9 K. Differences are larger towards Ho,
+$ therefore the revised liquid Ho in unary 4.4 is a possible cause.
+$
+ PAR  L(LIQUID,CO,HO;0),,               -89505+14.838*T;,,            N 09Jin !
+ PAR  L(LIQUID,CO,HO;1),,               +3171-14.4195*T;,,            N 09Jin !
+$
+ PAR  L(FCC_A1,CO,HO:VA;0),,            +100000;,,                    N 09Jin !
+ PAR  L(BCC_A2,CO,HO:VA;0),,            +100000;,,                    N 09Jin !
+ PAR  L(HCP_A3,CO,HO:VA;0),,            +100000;,,                    N 09Jin !
+$
+ PAR  G(CO17HO2,CO:HO),,                +17*GHSERCO+2*GHSERHO
+             -352108+76.494*T;,,                                      N 09Jin !
+ PAR  TC(CO17HO2,CO:HO),,                1177.00;,,                   N 09Jin !
+ PAR  BM(CO17HO2,CO:HO),,                 298.46;,,                   N 09Jin !
+$PAR  BM(CO17HO2,CO:HO),,                   0.35;,,                   N 09Jin !
+$
+ PAR  G(CO5HO_D2D,CO:HO),,              +5.5*GHSERCO+GHSERHO
+             -127718.5+16.58735*T;,,                                  N 09Jin !
+ PAR  TC(CO5HO_D2D,CO:HO),,              1033.00;,,                   N 09Jin !
+ PAR  BM(CO5HO_D2D,CO:HO),,                 2.84;,,                   N 09Jin !
+$PAR  BM(CO5HO_D2D,CO:HO),,                 0.23;,,                   N 09Jin !
+$
+ PAR  G(CO7HO2,CO:HO),,                 +7*GHSERCO+2*GHSERHO
+            -215622+21.7872*T;,,                                      N 09Jin !
+ PAR  TC(CO7HO2,CO:HO),,                  647.00;,,                   N 09Jin !
+ PAR  BM(CO7HO2,CO:HO),,                  100.03;,,                   N 09Jin !
+$PAR  BM(CO7HO2,CO:HO),,                    0.67;,,                   N 09Jin !
+$
+ PAR  G(CO3HO,CO:HO),,                  +3*GHSERCO+GHSERHO
+             -98000+7.0572*T;,,                                       N 09Jin !
+ PAR  TC(CO3HO,CO:HO),,                   418.00;,,                   N 09Jin !
+ PAR  BM(CO3HO,CO:HO),,                    30.02;,,                   N 09Jin !
+$PAR  BM(CO3HO,CO:HO),,                     1.36;,,                   N 09Jin !
+$
+ PAR  G(CO2HO_C15,CO:HO),,              +2*GHSERCO+GHSERHO
+             -74115+1.9683*T;,,                                       N 09Jin !
+ PAR  TC(CO2HO_C15,CO:HO),,                86.80;,,                   N 09Jin !
+ PAR  BM(CO2HO_C15,CO:HO),,                44.12;,,                   N 09Jin !
+$PAR  BM(CO2HO_C15,CO:HO),,                 2.56;,,                   N 09Jin !
+$
+ PAR  G(CO3HO4,CO:HO),,                 +3*GHSERCO+4*GHSERHO
+             -128303+5.3221*T;,,                                      N 09Jin !
+ PAR  TC(CO3HO4,CO:HO),,                   44.00;,,                   N 09Jin !
+ PAR  BM(CO3HO4,CO:HO),,               107030.55;,,                   N 09Jin !
+$PAR  BM(CO3HO4,CO:HO),,                    4.23;,,                   N 09Jin !
+$
+ PAR  G(CO7HO12,CO:HO),,                +7*GHSERCO+12*GHSERHO
+             -311600+9.0877*T;,,                                      N 09Jin !
+$
+ PAR  G(COHO3_D011,CO:HO),,             +GHSERCO+3*GHSERHO
+             -50676+1.28*T;,,                                         N 09Jin !
+ PAR  TC(COHO3_D011,CO:HO),,              -72.00;,,                   N 09Jin !
+ PAR  BM(COHO3_D011,CO:HO),,            -6042.33;,,                   N 09Jin !
+$PAR  BM(COHO3_D011,CO:HO),,                5.70;,,                   N 09Jin !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  00Nor1 'S. Norgren, J. Phase Equilib., 21, 148-56(2000),
+          SGTE unary database V.4.4, 2001; Er, Ho'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Ho'
+  04Wan  'Y. Wang, S. Curtarolo, C. Jiang, R. Arroyave, T. Wang, G. Ceder,
+          L.-Q. Chen, Z.-K. Liu, Calphad, 28, 79-90(2004); Ho'
+  09Jin  'S. Jin, J. Wang, L.G. Zhang, H.S. Liu, L.B. Liu, F. Zheng, Z.P. Jin,
+          J. Alloys Compd., 477, 233-38(2009); Co-Ho'
+  09Wan6 'S.L. Wang, C.P. Wang, X.J. Liu, A.T. Tang, F.S. Pan, K. Ishida,
+          J. Alloys Compd., 484, 102-7(2009); Ho'
+!

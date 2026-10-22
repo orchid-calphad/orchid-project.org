@@ -1,0 +1,171 @@
+$
+$ Database for Ti-N from K. Zeng and R. Schmid-Fetzer 1996
+$
+$ K. Zeng, R. Schmid-Fetzer, Z. Metallkd., 87, 540-54(1996).
+$
+$ Dataset created 2010.02.20 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT N    1/2_MOLE_N2(G)             14.007     4335.0     95.751  ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  N2                                 N2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : N TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : TI : N VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : TI% : N VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : TI% : N VA% : !
+$
+$ Prototype TiO2 (tP6, P4_2/mnm)
+$
+ PHASE TI2N_C4 % 2 2 1 !
+ CONST TI2N_C4 : TI : N : !
+$
+$ Unknown structure
+$
+ PHASE TI3N2 % 2 0.71 0.29 !
+ CONST TI3N2 : TI : N : !
+$
+$ Unknown structure
+$
+ PHASE TI4N3 % 2 0.685 0.315 !
+ CONST TI4N3 : TI : N : !
+$
+ PHASE N2GAS % 1 1 !
+ CONST N2GAS : N2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ N
+$
+ PAR  G(N2GAS,N2),,                     +2*GHSERNN+RTLNP;,,           N 91Din !
+ PAR  G(LIQUID,N),,                     +GHSERNN+29950+59.02*T;,,     N 91Din !
+$
+ FUNCTION GHSERNN   298.15  -3750.675-9.45425*T-12.7819*T*LN(T)
+       -0.00176686*T**2+2.681E-09*T**3-32374*T**(-1);
+       950.00  Y  -7358.85+17.2003*T-16.3699*T*LN(T)
+       -6.5107E-04*T**2+3.0097E-08*T**3+563070*T**(-1);
+      3350.00  Y  -16392.8+50.26*T-20.4695*T*LN(T)
+       +2.39754E-04*T**2-8.333E-09*T**3+4596375*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Zeng, R. Schmid-Fetzer, Z. Metallkd., 87, 540-54(1996).
+$
+$ Checked against paper. Checked at 6000K.
+$
+ PAR  L(LIQUID,N,TI;0),,                -376354.145;,,                N 96Zen !
+ PAR  L(LIQUID,N,TI;1),,                -98242.2945;,,                N 96Zen !
+$
+ PAR  G(FCC_A1,TI:N),,                  +GTIN;,,                      N 96Zen !
+ PAR  L(FCC_A1,TI:N,VA;0),,             -42704.41;,,                  N 96Zen !
+ PAR  L(FCC_A1,TI:N,VA;1),,             -13989.34;,,                  N 96Zen !
+$
+ PAR  G(BCC_A2,TI:N),,                  +GTIN+2*GHSERNN
+             +2604201.62+118.04*T;,,                                  N 96Zen !
+ PAR  L(BCC_A2,TI:N,VA;0),,             -3215338.17;,,                N 96Zen !
+$
+ PAR  G(HCP_A3,TI:N),,                  +0.5*GHSERTI+0.5*GTIN
+             -6046.53-2.653*T;,,                                      N 96Zen !
+ PAR  L(HCP_A3,TI:N,VA;0),,             -13501;,,                     N 96Zen !
+$
+ PAR  G(TI2N_C4,TI:N),,                 +GHSERTI+GTIN
+             -67116+26.5395534*T;,,                                   N 96Zen !
+$
+ PAR  G(TI3N2,TI:N),,                   +0.42*GHSERTI+0.29*GTIN
+             -8190.33982-1.54816366*T;,,                              N 96Zen !
+$
+ PAR  G(TI4N3,TI:N),,                   +0.37*GHSERTI+0.315*GTIN
+             -5956.86333-3.27489717*T;,,                              N 96Zen !
+$
+ FUNCTION GTIN      298.15  -357905+330.498*T-52.4587*T*LN(T)
+       -9.28E-04*T**2+1.48976561E-08*T**3+871000*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  N-TI(TDB -* +LIQUID +N2GAS +BCC_A2 +FCC_A1 +HCP_A3 +TI2N_C4
+  ;P3 TMM:300/4000 DOR:GAS STP:.99/1000/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Zen  'K. Zeng, R. Schmid-Fetzer, Z. Metallkd., 87, 540-54(1996); Ti-N'
+!

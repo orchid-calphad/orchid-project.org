@@ -1,0 +1,216 @@
+$
+$ Database for Al-Pr from J. Liao et al. 2019.
+$
+$ J. Liao, Y. Liao, H. Wang, L. Zhang, Y. Ma,
+$ Mater. Res. Express, 6, 086512(2019).
+$
+$ Dataset created 2019.07.26 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ Modified from 01Yin. Al11Pr3-beta and fcc interaction added. Dhcp interaction
+$ corrected.
+$
+$ There are misprints in the parameter table.
+$
+$ There is an inverse miscibility gap with a min at 1680 K and x(Pr)=0.86.
+$ This is below the melting temperature of Al2Pr.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT PR   DHCP                      140.9077    7418.232   73.9313 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL PR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% PR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL PR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : AL PR% : !
+$
+$ Prototype Al11La3 (oI28, Immm)
+$
+ PHASE AL11PR3_ALPHA % 2 11 3 !
+ CONST AL11PR3_ALPHA : AL : PR : !
+$
+$ unknown structure
+$
+ PHASE AL11PR3_BETA % 2 11 3 !
+ CONST AL11PR3_BETA : AL : PR : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE AL3PR_D019 % 2 3 1 !
+ CONST AL3PR_D019 : AL : PR : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE AL2PR_C15 % 2 2 1 !
+ CONST AL2PR_C15 : AL : PR : !
+$
+$ Prototype AlDy (oP16, Pbcm)
+$ Alternatively AlCe (oC16, Cmcm)
+$
+ PHASE ALPR % 2 1 1 !
+ CONST ALPR : AL : PR : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE ALPR2_C37 % 2 1 2 !
+ CONST ALPR2_C37 : AL : PR : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m), high T
+$ Prototype CdMg3 (hP8, P6_3/mmc), low T
+$
+ PHASE ALPR3 % 2 1 3 !
+ CONST ALPR3 : AL : PR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+$ DHCP from 01Yin is not included in unary
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+ PAR  G(DHCP,AL),,                      +GHSERAL+5481-1.8*T;     2900 N 01Yin !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$ ------------------------------------------------------------------------------
+$ Pr
+$
+ PAR  G(DHCP,PR),,                      +GHSERPR;                3800 N 91Din !
+ PAR  G(FCC_A1,PR:VA),,                 +GHSERPR+5000;           3800 N 99Du2 !
+ PAR  G(BCC_A2,PR:VA),,                 +GBCCPR;                 3800 N 91Din !
+ PAR  G(LIQUID,PR),,                    +GLIQPR;                 3800 N 91Din !
+$
+ FUNCTION GHSERPR   298.15  -18803.379+356.587384*T-68.9176*T*LN(T)
+       +0.072929*T**2-2.5184333E-05*T**3+507385*T**(-1);
+       500.00  Y  -7246.848+82.427384*T-22.8909*T*LN(T)
+       -0.00497126*T**2-1.22951E-06*T**3;
+       800.00  Y  +95411.023-1073.55111*T+146.764*T*LN(T)
+       -0.1288205*T**2+1.5592233E-05*T**3-11588800*T**(-1);
+      1068.00  Y  -481663.131+4234.33311*T-606.120311*T*LN(T)
+       +0.305181506*T**2-3.0994702E-05*T**3+70926840*T**(-1);
+      1204.00  Y  -20014.678+227.685155*T-42.9697*T*LN(T);
+      3800.00  N !
+ FUNCTION GBCCPR    298.15  -2863.651+28.274853*T-13.7470527*T*LN(T)
+       -0.02284377*T**2+3.542468E-06*T**3-87486*T**(-1);
+      1068.00  Y  -11985.919+188.657121*T-38.451*T*LN(T);
+      1204.00  Y  +953.224+100.826281*T-26.6824313*T*LN(T)
+       -0.004106833*T**2+1.76214E-07*T**3-2473024*T**(-1);
+      3800.00  N !
+ FUNCTION GLIQPR    298.15  +3848.961-29.099465*T-4.7344931*T*LN(T)
+       -0.035119723*T**2+5.427467E-06*T**3-207406*T**(-1);
+      1068.00  Y  -10539.574+219.508805*T-42.9697*T*LN(T);
+      3800.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Liao, Y. Liao, H. Wang, L. Zhang, Y. Ma,
+$ Mater. Res. Express, 6, 086512(2019).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 01Yin. Al11Pr3-beta and fcc interaction added. Dhcp interaction
+$ corrected.
+$
+$ There are misprints in the parameter table.
+$
+$ There is an inverse miscibility gap with a min at 1680 K and x(Pr)=0.86.
+$ This is below the melting temperature of Al2Pr.
+$
+ PAR  L(LIQUID,AL,PR;0),,               -156859+57.066*T;,,           N 01Yin !
+ PAR  L(LIQUID,AL,PR;1),,               -16083.9-23.273*T;,,          N 01Yin !
+$
+ PAR  L(FCC_A1,AL,PR:VA;0),,            -47000;,,                     N 19Lia !
+ PAR  L(FCC_A1,AL,PR:VA;1),,            -50000;,,                     N 19Lia !
+$
+ PAR  L(BCC_A2,AL,PR:VA;0),,            -164842+77.715*T;,,           N 01Yin !
+ PAR  L(BCC_A2,AL,PR:VA;1),,            -28537;,,                     N 01Yin !
+$
+ PAR  L(DHCP,AL,PR;0),,                 -93322+40.5*T;,,              N 19Lia !
+$
+ PAR  G(AL11PR3_ALPHA,AL:PR),,          +11*GHSERAL+3*GHSERPR
+             -593588+120.29*T;,,                                      N 19Lia !
+ PAR  G(AL11PR3_BETA,AL:PR),,           +11*GHSERAL+3*GHSERPR
+             -592350+119.29*T;,,                                      N 19Lia !
+ PAR  G(AL3PR_D019,AL:PR),,             +3*GHSERAL+GHSERPR
+             -189998+42.61*T;,,                                       N 01Yin !
+ PAR  G(AL2PR_C15,AL:PR),,              +2*GHSERAL+GHSERPR
+             -164648+35.911*T;,,                                      N 01Yin !
+ PAR  G(ALPR,AL:PR),,                   +GHSERAL+GHSERPR
+             -88024+19.777*T;,,                                       N 01Yin !
+ PAR  G(ALPR2_C37,AL:PR),,              +GHSERAL+2*GHSERPR
+             -100334+27.862*T;,,                                      N 01Yin !
+ PAR  G(ALPR3,AL:PR),,                  +GHSERAL+3*GHSERPR
+             -101769+27.35*T;,,                                       N 01Yin !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Du2  'Z. Du, D. Wang, W. Zhang,
+          J. Alloys Compd., 284, 206-12(1999); Ni, Pr'
+  01Yin  'F. Yin, X. Su, Z. Li, P. Zhang,
+          Z. Metallkd., 92, 447-50(2001); Al, Al-Pr'
+  04Du2  'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004); Pr'
+  19Lia  'J. Liao, Y. Liao, H. Wang, L. Zhang, Y. Ma,
+          Mater. Res. Express, 6, 086512(2019); Al-Pr'
+!

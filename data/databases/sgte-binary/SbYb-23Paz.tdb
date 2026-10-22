@@ -1,0 +1,215 @@
+$
+$ Database for Sb-Yb from J. Paz Soldan Palma et al. 2023.
+$
+$ J. Paz Soldan Palma, X. Chong, Y. Wang, S.-L. Shang, Z.-K. Liu,
+$ Calphad, 81, 102541(2023).
+$
+$ Dataset created 2024.05.01 by Bengt Hallstedt.
+$
+$ Associate liquid model with SB0.42857YB0.57143 associates.
+$
+$ There are misprints for the compound energies in the paper.
+$
+$ Sb3Yb5 (beta) with the Sb3Yb5 prototype (oP32, Pnma) has been found to be
+$ hydrogen stabilized (and not stable without hydrogen).
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+ ELEMENT YB   FCC_A1                    173.04      6711.136   59.8312 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  SB3YB4                             SB0.42857YB0.57143 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SB SB3YB4 YB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SB YB% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SB YB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SB YB : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB% YB : !
+$
+$ Prototype Si2Zr (oC12, Cmcm) 
+$
+ PHASE SB2YB_C49 % 2 2 1 !
+ CONST SB2YB_C49 : SB : YB : !
+$
+$ Prototype NaCl (cF8, Fm-3m)
+$
+ PHASE SBYB_B1 % 2 1 1 !
+ CONST SBYB_B1 : SB : YB : !
+$
+$ Prototype Ge10Ho11 (tI84, I4/mmm)
+$
+ PHASE SB10YB11 % 2 10 11 !
+ CONST SB10YB11 : SB : YB : !
+$
+$ Prototype Th3P4 (cI28, I-43d)
+$
+ PHASE SB3YB4_D73 % 2 3 4 !
+ CONST SB3YB4_D73 : SB : YB : !
+$
+$ Prototype Ca16Sb11 (tP56, P-42_1m)
+$
+ PHASE SB11YB16 % 2 11 16 !
+ CONST SB11YB16 : SB : YB : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE SB3YB5_D88 % 2 3 5 !
+ CONST SB3YB5_D88 : SB : YB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Yb
+$
+$ HCP_A3 added in unary 5.0
+$
+$ RHOMBOHEDRAL_A7 from 12Liu not included in unary
+$
+ PAR  G(FCC_A1,YB:VA),,                 +GHSERYB;                2000 N 91Din !
+ PAR  G(BCC_A2,YB:VA),,                 +GBCCYB;                 2000 N 91Din !
+ PAR  G(HCP_A3,YB:VA),,                 +GHSERYB+5000;           2000 N 06Guo !
+ PAR  G(RHOMBOHEDRAL_A7,YB),,           +GHSERYB+5000;           2000 N 12Liu !
+ PAR  G(LIQUID,YB),,                    +GLIQYB;                 2000 N 91Din !
+$
+ FUNCTION GHSERYB   298.15  -9370.941+189.327664*T-40.0791*T*LN(T)
+       +0.04227115*T**2-2.2242E-05*T**3;
+       553.00  Y  -8192.154+121.065655*T-26.7591*T*LN(T)-0.00256065*T**2;
+      1033.00  Y  +16034.89-89.478241*T+2.7623966*T*LN(T)
+       -0.017961331*T**2+1.421719E-06*T**3-3631462*T**(-1);
+      2000.00  N !
+ FUNCTION GBCCYB    298.15  -965.99-21.293677*T-3.8534432*T*LN(T)
+       -0.030009694*T**2+4.743871E-06*T**3-334650*T**(-1);
+      1033.00  Y  -13368.113+188.313864*T-36.1079*T*LN(T);
+      1097.00  Y  -3911.847+113.174165*T-25.7402233*T*LN(T)
+       -0.004743348*T**2+3.63044E-07*T**3-1553668*T**(-1);
+      2000.00  N !
+ FUNCTION GLIQYB    298.15  +7030.788-40.615571*T-1.8061816*T*LN(T)
+       -0.03250938*T**2+5.136665E-06*T**3-370554*T**(-1);
+      1033.00  Y  -6445.835+186.690398*T-36.7774*T*LN(T);
+      2000.00  N !
+ FUNCTION GHCPYB    298.15  +GHSERYB+5000;                             2000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Paz Soldan Palma, X. Chong, Y. Wang, S.-L. Shang, Z.-K. Liu,
+$ Calphad, 81, 102541(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Associate liquid model with SB0.42857YB0.57143 associates.
+$
+$ There are misprints for the compound energies in the paper.
+$
+$ Sb3Yb5 (beta) with the Sb3Yb5 prototype (oP32, Pnma) has been found to be
+$ hydrogen stabilized (and not stable without hydrogen).
+$
+ PAR  G(LIQUID,SB3YB4),,                +0.42857*GLIQSB
+             +0.57143*GLIQYB-74549.1+0.425889*T;,,                    N 23Paz !
+ PAR  L(LIQUID,SB,SB3YB4;0),,           -55000+16.75*T;,,             N 23Paz !
+ PAR  L(LIQUID,SB,SB3YB4;1),,           +25000;,,                     N 23Paz !
+ PAR  L(LIQUID,SB3YB4,YB;0),,           -9036.5+0.537445*T;,,         N 23Paz !
+ PAR  L(LIQUID,SB3YB4,YB;1),,           -18190.2+7.808194*T;,,        N 23Paz !
+ PAR  L(LIQUID,SB3YB4,YB;2),,           +4000;,,                      N 23Paz !
+$
+ PAR  L(FCC_A1,SB,YB:VA;0),,            -209550;,,                    N 23Paz !
+ PAR  L(BCC_A2,SB,YB:VA;0),,            -208000;,,                    N 23Paz !
+ PAR  L(RHOMBOHEDRAL_A7,SB,YB;0),,      -165000;,,                    N 23Paz !
+$
+ PAR  G(SB2YB_C49,SB:YB),,              -230740.99+409.888*T
+             -81.9531*T*LN(T)+0.0039484*T**2-2.17081E-06*T**3
+             +207313*T**(-1);,,                                       N 23Paz !
+ PAR  G(SBYB_B1,SB:YB),,                -216450+249.021*T
+             -50.6842*T*LN(T)-4.8215E-04*T**2-3.23376E-07*T**3
+             +79696*T**(-1);,,                                        N 23Paz !
+ PAR  G(SB10YB11,SB:YB),,               -2286010.54+2739.299*T
+             -556.2268*T*LN(T)+0.00432276*T**2-9.17927E-06*T**3
+             +1040607*T**(-1);,,                                      N 23Paz !
+ PAR  G(SB3YB4_D73,SB:YB),,             -766156.16+891.799*T
+             -184.476619*T*LN(T)+0.0016227*T**2-3.455E-06*T**3
+             +236985*T**(-1);,,                                       N 23Paz !
+ PAR  G(SB11YB16,SB:YB),,               -2960444.02+3332.706*T
+             -695.8036*T*LN(T)+0.0040891*T**2-7.77283E-06*T**3
+             +957485*T**(-1);,,                                       N 23Paz !
+ PAR  G(SB3YB5_D88,SB:YB),,             -851897.26+987.987*T
+             -205.09727*T*LN(T)-0.00311611*T**2-2.03542E-06*T**3
+             +218237*T**(-1);,,                                       N 23Paz !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,SB,YB:VA;0),,            -209550;,,                    N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  06Guo  'C. Guo, Z. Du, J. Alloys Compd., 422, 102-8(2006),
+          SGTE unary database V.5.0, 2009; Yb'
+  12Liu  'X.J. Liu, S.X. Gan, Z.S. Li, C.P. Wang, A.T. Tang, F.S. Pan,
+          Calphad, 37, 132-36(2012); Yb, Sb-Yb'
+  23Paz  'J. Paz Soldan Palma, X. Chong, Y. Wang, S.-L. Shang, Z.-K. Liu,
+          Calphad, 81, 102541(2023); Sb-Yb'
+!

@@ -1,0 +1,177 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "HO",
+    "O"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "HO": {
+          "energy": -22366.950475379963,
+          "phase": "HCP_A3"
+        },
+        "O": {
+          "energy": -30548.988486855967,
+          "phase": "O2GAS"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -627766.8127177717
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -99.75746824177565
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -598024.1235614863,
+          "right": {
+            "phase": "C_R2O3_D53",
+            "x": 0.6000000000000001
+          },
+          "slope": -598024.1235614863,
+          "x_hi": 0.6000000000000001,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -941650.2190766579,
+            "slope": 941650.2190766579
+          },
+          "entropy": {
+            "intercept": -149.63620236266354,
+            "slope": 149.63620236266354
+          },
+          "intercept": -897036.1853422297,
+          "kind": "two_phase",
+          "left": {
+            "phase": "C_R2O3_D53",
+            "x": 0.6000000000000001
+          },
+          "mu_a_rel": -897036.1853422297,
+          "mu_b_rel": 1.1641532182693481e-10,
+          "right": {
+            "phase": "O2GAS",
+            "x": 1.0
+          },
+          "slope": 897036.1853422298,
+          "x_hi": 1.0,
+          "x_lo": 0.6000000000000001
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -358814.47413689183,
+          "energy_per_atom": -358814.47413689183,
+          "enthalpy": -376660.08763066307,
+          "entries_at_x": 1,
+          "entropy": -59.854480945065404,
+          "formula": "",
+          "nsites": null,
+          "phase": "C_R2O3_D53",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6000000000000001
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "O2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "HoO-23Nak",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:43:23Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/HoO-23Nak.tdb",
+    "source_sha256": "b0048ff0f3c67c3606de039964163398ae7322c2793c699c29ccc0df99198ab5"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "HO-O",
+  "x_element": "O"
+}

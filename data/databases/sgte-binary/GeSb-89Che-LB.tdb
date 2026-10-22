@@ -1,0 +1,155 @@
+$
+$ Database for Ge-Sb from P.-Y. Chevalier 1989 (included in LB Vol. 3)
+$
+$ P.-Y. Chevalier, Thermochim. Acta, 155, 227-40 (1989).
+$
+$ Dataset created 2010.01.24 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ Liquid interaction modified by P.-Y. Chevalier 2004.
+$
+$ The original dataset does not include Ge in RHOMBOHEDRAL_A7.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GE SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : GE SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : GE SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : GE SB : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE% SB : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : GE SB% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+ PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(DIAMOND_A4,SB),,                +GHSERSB+4184;           3200 N 89Che !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From P.-Y. Chevalier 1989 (included in LB Vol. 3)
+$
+$ P.-Y. Chevalier, Thermochim. Acta, 155, 227-40 (1989).
+$
+$ Liquid interaction modified by P.-Y. Chevalier 2004.
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ The original dataset does not include Ge in RHOMBOHEDRAL_A7.
+$
+ PAR  L(LIQUID,GE,SB;0),,               +3017.94+0.21699*T;      3000 N 04Che !
+ PAR  L(LIQUID,GE,SB;1),,               +317.01-2.98672*T;       3000 N 04Che !
+$PAR  L(LIQUID,GE,SB;0),,               +2861.5;                 3000 N 89Che !
+$PAR  L(LIQUID,GE,SB;1),,               -2072.5;                 3000 N 89Che !
+$
+ PAR  L(DIAMOND_A4,GE,SB;0),,           +58000;                  3200 N 89Che !
+$
+ PAR  L(RHOMBOHEDRAL_A7,GE,SB;0),,      +30000;,,                     N 04Sun !
+$PAR  L(RHOMBOHEDRAL_A7,GE,SB;0),,      +20000;,,                     N 08Hal !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,GE,SB:VA;0),,            +20000;,,                     N Same !
+ PAR  L(BCC_A2,GE,SB:VA;0),,            +20000;,,                     N Same !
+ PAR  L(HCP_A3,GE,SB:VA;0),,            +20000;,,                     N Same !
+$PAR  L(BCT_A5,GE,SB;0),,               +20000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  GE-SB(TDB -* +LIQUID +DIAMOND +RHOMBO_A7 ;P3 TMM:300/1500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  89Che  'P.-Y. Chevalier, Thermochim. Acta, 155, 227-40 (1989); Sb, Ge-Sb'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Din  'A.T. Dinsdale, unpublished, 2001; Ge, Sb'
+  04Che  'P.-Y. Chevalier, unpublished, 2004; Ge-Sb'
+  04Sun  'B. Sundman, unpublished, 2004; Ge-Sb'
+  08Hal  'B. Hallstedt, unpublished, 2008; Ge-Sb'
+!

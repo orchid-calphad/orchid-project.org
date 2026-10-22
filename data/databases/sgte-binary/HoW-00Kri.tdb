@@ -1,0 +1,149 @@
+$
+$ Database for Ho-W from N. Krishnamurthy et al. 2000.
+$
+$ N. Krishnamurthy, T. Kundu, A. Awasthi, S.P. Garg,
+$ Z. Metallkd., 91, 234-40(2000).
+$
+$ Dataset created 2025.02.11 by Bengt Hallstedt.
+$
+$ The liquid interaction was refitted to approximately match measured
+$ liquid solubilities. The discrepancy probably originates from differences
+$ in elemental W.
+$
+$ The solid interactions were set to 1.5 times the liquid interaction. This
+$ should be revised when there are data.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT HO   HCP_A3                    164.9304    7995.624   75.0191 ! 
+ ELEMENT W    BCC_A2                    183.85      4970.0     32.6176 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : HO W : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : HO W : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : HO W : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : HO% W : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ho
+$
+$ BCC_A2 and LIQUID revised in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+$ FCC_A1 from 03Cac and 09Wan6 not included in unary
+$
+ PAR  G(HCP_A3,HO:VA),,                 +GHSERHO;                3001 N 91Din !
+ PAR  G(FCC_A1,HO:VA),,                 +GHSERHO
+             +2000-0.831451*T;                                   3001 N 03Cac !
+$PAR  G(FCC_A1,HO:VA),,                 +GHSERHO+4000;,,         3001 N 09Wan6 !
+ PAR  G(BCC_A2,HO:VA),,                 +GHSERHO
+             +4380-2.494353*T;                                   3001 N 00Nor1 !
+ PAR  G(LIQUID,HO),,                    +GLIQHO;                 3001 N 00Nor1 !
+$
+ FUNCTION GHSERHO   298.15  -7612.429+86.593171*T-23.4879*T*LN(T)
+       -0.00827315*T**2+2.375467E-06*T**3;
+       600.00  Y  -10917.688+182.475691*T-39.6932*T*LN(T)
+       +0.01820065*T**2-4.829733E-06*T**3;
+       900.00  Y  +46646.188-421.474473*T+48.0595*T*LN(T)
+       -0.0424634*T**2+3.233133E-06*T**3-7185900*T**(-1);
+      1200.00  Y  +27786.061-156.162846*T+8.28608*T*LN(T)
+       -0.01082725*T**2-1.112352E-06*T**3-6183850*T**(-1);
+      1703.00  Y  -825364.662+4248.379056*T-558.9506818*T*LN(T)
+       +0.139111904*T**2-6.824652E-06*T**3+2.19952973E+08*T**(-1);
+      3000.00  Y  -17149.229+235.898104*T-43.932*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHO    298.15  +17383.4216-9.992194*T+GHSERHO;
+      1000.00  Y  +124827.5326-994.683024*T+127.9577778*T*LN(T)
+       -0.088196514*T**2+8.008222E-6*T**3-15727191*T**(-1);  
+      1703.00  Y  -9688.5314+230.793918*T-43.932*T*LN(T);  
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ W
+$
+ PAR  G(BCC_A2,W:VA),,                  +GHSERWW;,,                   N 91Din !
+ PAR  G(FCC_A1,W:VA),,                  +GHSERWW+19300+0.63*T;,,      N 91Din !
+ PAR  G(HCP_A3,W:VA),,                  +GHSERWW+14750;,,             N 91Din !
+ PAR  G(LIQUID,W),,                     +GLIQWW;,,                    N 91Din !
+$
+ FUNCTION GHSERWW   298.15  -7646.311+130.4*T-24.1*T*LN(T)
+       -0.001936*T**2+2.07E-07*T**3+44500*T**(-1)-5.33E-11*T**4;
+      3695.00  Y  -82868.801+389.362335*T-54*T*LN(T)+1.528621E+33*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQWW    298.15  +52160.584-14.10999*T+GHSERWW-2.713468E-24*T**7;
+      3695.00  Y  -30436.051+375.175*T-54*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCWW    298.15  +GHSERWW+19300+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ N. Krishnamurthy, T. Kundu, A. Awasthi, S.P. Garg,
+$ Z. Metallkd., 91, 234-40(2000).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The liquid interaction was refitted to approximately match measured
+$ liquid solubilities. The discrepancy probably originates from differences
+$ in elemental W.
+$
+$ The solid interactions were set to 1.5 times the liquid interaction. This
+$ should be revised when there are data.
+$
+$PAR  L(LIQUID,HO,W;0),,                +73000;,,                     N 00Kri !
+ PAR  L(LIQUID,HO,W;0),,                +65500;,,                     N 00Kri !
+$
+ PAR  L(BCC_A2,HO,W:VA;0),,             +98000;,,                     N 25Hal !
+ PAR  L(HCP_A3,HO,W:VA;0),,             +98000;,,                     N 25Hal !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,HO,W:VA;0),,             +98000;,,                     N 25Hal !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  00Kri  'N. Krishnamurthy, T. Kundu, A. Awasthi, S.P. Garg,
+          Z. Metallkd., 91, 234-40(2000); Ho-W'
+  00Nor1 'S. Norgren, J. Phase Equilib., 21, 148-56(2000),
+          SGTE unary database V.4.4, 2001; Er, Ho'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Ho'
+  09Wan6 'S.L. Wang, C.P. Wang, X.J. Liu, A.T. Tang, F.S. Pan, K. Ishida,
+          J. Alloys Compd., 484, 102-7(2009); Ho'
+  25Hal  'B. Hallstedt, dummy solid interaction, 2025; Ho-W'
+!

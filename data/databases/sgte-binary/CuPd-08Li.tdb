@@ -1,0 +1,229 @@
+$
+$ Database for Cu-Pd from M. Li et al. 2008
+$
+$ M. Li, Z. Du, C. Guo, C. Li, Calphad, 32, 439-46(2008).
+$
+$ Dataset created 2009.12.13 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ Add on models for L12_FCC and the LPS phases, but not for B2_BCC.
+$
+$ The phase diagram is not easy to calculate, but correct.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU PD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% PD% : VA : !
+$
+$ Disordered part of L12_FCC, identical to FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : CU% PD% : VA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE L12_FCC %AY 3 0.75 0.25 1 !
+ CONST L12_FCC : CU% PD : CU PD% : VA :  !
+$
+$ Disoredered part of D1_LPS, identical to FCC_A1
+$
+ PHASE FCC_2 %A 2 1 1 !
+ CONST FCC_2 : CU% PD% : VA : !
+$
+$ Prototype Cu3Pd (tP28, P4/mmm), 1D-LPS
+$
+ PHASE D1_LPS %AU 3 0.75 0.25 1 !
+ CONST D1_LPS : CU% PD : CU PD% : VA :  !
+$
+$ Disordered part of D2_LPS, identical to FCC_A1
+$
+ PHASE FCC_3 %A 2 1 1 !
+ CONST FCC_3 : CU% PD% : VA : !
+$
+$ Prototype Cu3Pd (oP320, Pnnm), 2D-LPS
+$
+ PHASE D2_LPS %AV 3 0.75 0.25 1 !
+ CONST D2_LPS : CU% PD : CU PD% : VA :  !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU PD : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC % 2 1 1 !
+ CONST B2_BCC : CU% PD : CU PD% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU PD : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION L12_FCC DIS_PART A1_FCC !
+ TYPE-DEF U GES AMEND_PHASE_DESCRIPTION D1_LPS DIS_PART FCC_2 !
+ TYPE-DEF V GES AMEND_PHASE_DESCRIPTION D2_LPS DIS_PART FCC_3 !
+ DEFAULT-COM REJECT_PHASE FCC_A1 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(A1_FCC,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(FCC_2,CU:VA),,                  +GHSERCU;                3200 N 91Din !
+ PAR  G(FCC_3,CU:VA),,                  +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ PAR  G(B2_BCC,CU:CU),,                 +2*GBCCCU;               3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCCU    298.15  +GHSERCU+4017-1.255*T;                     3200 N !
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(A1_FCC,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(FCC_2,PD:VA),,                  +GHSERPD;                4000 N 91Din !
+ PAR  G(FCC_3,PD:VA),,                  +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ PAR  G(B2_BCC,PD:PD),,                 +2*GBCCPD;               4000 N 91Din !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCPD    298.15  +GHSERPD+10500-1.8*T;                      3200 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Li, Z. Du, C. Guo, C. Li, Calphad, 32, 439-46(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Add on models for L12_FCC and the LPS phases, but not for B2_BCC.
+$
+$ The phase diagram is not easy to calculate, but correct.
+$
+ PAR  L(LIQUID,CU,PD;0),,               -61313.1+24.6779*T;,,         N 08Li !
+ PAR  L(LIQUID,CU,PD;1),,               -20581.8;,,                   N 08Li !
+$
+ PAR  L(FCC_A1,CU,PD:VA;0),,            -44934.7+15.2934*T;,,         N 08Li !
+ PAR  L(FCC_A1,CU,PD:VA;1),,            -15771.2-4.4223*T;,,          N 08Li !
+$
+ PAR  L(A1_FCC,CU,PD:VA;0),,            -44934.7+15.2934*T;,,         N 08Li !
+ PAR  L(A1_FCC,CU,PD:VA;1),,            -15771.2-4.4223*T;,,          N 08Li !
+$
+ PAR  L(FCC_2,CU,PD:VA;0),,             -44934.7+15.2934*T;,,         N 08Li !
+ PAR  L(FCC_2,CU,PD:VA;1),,             -15771.2-4.4223*T;,,          N 08Li !
+$
+ PAR  L(FCC_3,CU,PD:VA;0),,             -44934.7+15.2934*T;,,         N 08Li !
+ PAR  L(FCC_3,CU,PD:VA;1),,             -15771.2-4.4223*T;,,          N 08Li !
+$
+ PAR  L(L12_FCC,CU:PD:VA),,             -5830.5;,,                    N 08Li !
+ PAR  L(L12_FCC,PD:CU:VA),,             +5830.5;,,                    N 08Li !
+ PAR  L(L12_FCC,CU,PD:CU:VA;0),,        -22286.9-5.2776*T;,,          N 08Li !
+ PAR  L(L12_FCC,CU,PD:CU:VA;1),,        +4995.3+1.4817*T;,,           N 08Li !
+ PAR  L(L12_FCC,CU,PD:PD:VA;0),,        +6865.7-5.2776*T;,,           N 08Li !
+ PAR  L(L12_FCC,CU,PD:PD:VA;1),,        +4995.3+1.4817*T;,,           N 08Li !
+ PAR  L(L12_FCC,CU:CU,PD:VA;0),,        +345.1-1.7592*T;,,            N 08Li !
+ PAR  L(L12_FCC,CU:CU,PD:VA;1),,        +1665.1+0.4939*T;,,           N 08Li !
+ PAR  L(L12_FCC,PD:CU,PD:VA;0),,        -5485.4-1.7592*T;,,           N 08Li !
+ PAR  L(L12_FCC,PD:CU,PD:VA;1),,        +1665.1+0.4939*T;,,           N 08Li !
+$
+ PAR  L(D1_LPS,CU:PD:VA),,              -3634.9;,,                    N 08Li !
+ PAR  L(D1_LPS,PD:CU:VA),,              +3634.9;,,                    N 08Li !
+ PAR  L(D1_LPS,CU,PD:CU:VA;0),,         -9692.1-4.1571*T;,,           N 08Li !
+ PAR  L(D1_LPS,CU,PD:CU:VA;1),,         +5093.4;,,                    N 08Li !
+ PAR  L(D1_LPS,CU,PD:PD:VA;0),,         +8482.4-4.1571*T;,,           N 08Li !
+ PAR  L(D1_LPS,CU,PD:PD:VA;1),,         +5093.4;,,                    N 08Li !
+ PAR  L(D1_LPS,CU:CU,PD:VA;0),,         +1615.9-1.3857*T;,,           N 08Li !
+ PAR  L(D1_LPS,CU:CU,PD:VA;1),,         +1697.8;,,                    N 08Li !
+ PAR  L(D1_LPS,PD:CU,PD:VA;0),,         -2019.1-1.3857*T;,,           N 08Li !
+ PAR  L(D1_LPS,PD:CU,PD:VA;1),,         +1697.8;,,                    N 08Li !
+$
+ PAR  L(D2_LPS,CU:PD:VA),,              -5736+5.064*T;,,              N 08Li !
+ PAR  L(D2_LPS,PD:CU:VA),,              +5736-5.064*T;,,              N 08Li !
+ PAR  L(D2_LPS,CU,PD:CU:VA;0),,         -17134.8+20.3137*T;,,         N 08Li !
+ PAR  L(D2_LPS,CU,PD:CU:VA;1),,         -3967.2+9.8025*T;,,           N 08Li !
+ PAR  L(D2_LPS,CU,PD:PD:VA;0),,         +11545-5.0061*T;,,            N 08Li !
+ PAR  L(D2_LPS,CU,PD:PD:VA;1),,         -3967.2+9.8025*T;,,           N 08Li !
+ PAR  L(D2_LPS,CU:CU,PD:VA;0),,         +1936.4+0.0193*T;,,           N 08Li !
+ PAR  L(D2_LPS,CU:CU,PD:VA;1),,         -1322.4+3.2675*T;,,           N 08Li !
+ PAR  L(D2_LPS,PD:CU,PD:VA;0),,         -3799.6+5.0833*T;,,           N 08Li !
+ PAR  L(D2_LPS,PD:CU,PD:VA;1),,         -1322.4+3.2675*T;,,           N 08Li !
+$
+ PAR  G(B2_BCC,CU:PD),,                 +GHSERCU+GHSERPD
+             -27446.3+3.7233*T;,,                                     N 08Li !
+ PAR  G(B2_BCC,PD:CU),,                 +GHSERCU+GHSERPD
+             -27446.3+3.7233*T;,,                                     N 08Li !
+ PAR  L(B2_BCC,CU,PD:CU;0),,            -41066.9+11.4026*T;,,         N 08Li !
+ PAR  L(B2_BCC,CU:CU,PD;0),,            -41066.9+11.4026*T;,,         N 08Li !
+ PAR  L(B2_BCC,CU,PD:PD;0),,            +41066.9-11.4026*T;,,         N 08Li !
+ PAR  L(B2_BCC,PD:CU,PD;0),,            +41066.9-11.4026*T;,,         N 08Li !
+$
+$ metastable
+$
+ PAR  L(BCC_A2,CU,PD:VA;0),,            -44934.7+15.2934*T;,,         N Same !
+ PAR  L(BCC_A2,CU,PD:VA;1),,            -15771.2-4.4223*T;,,          N Same !
+ PAR  L(HCP_A3,CU,PD:VA;0),,            -44934.7+15.2934*T;,,         N Same !
+ PAR  L(HCP_A3,CU,PD:VA;1),,            -15771.2-4.4223*T;,,          N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+  08Li   'M. Li, Z. Du, C. Guo, C. Li, Calphad, 32, 439-46(2008); Cu-Pd'
+!

@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "MO",
+    "ZR"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "MO": {
+          "energy": -8515.141183308748,
+          "phase": "BCC_A2"
+        },
+        "ZR": {
+          "energy": -11681.783788957448,
+          "phase": "HCP_A3"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -21734.780086780727
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -0.14417944873814434
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BCC_A2",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -21691.792984139454,
+          "right": {
+            "phase": "C15_LAVES",
+            "x": 0.3333333333333136
+          },
+          "slope": -21691.792984139454,
+          "x_hi": 0.3333333333333136,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -10867.3900433894,
+            "slope": 10867.3900433894
+          },
+          "entropy": {
+            "intercept": -0.07208972436906577,
+            "slope": 0.07208972436906577
+          },
+          "intercept": -10845.896492068765,
+          "kind": "two_phase",
+          "left": {
+            "phase": "C15_LAVES",
+            "x": 0.3333333333333136
+          },
+          "mu_a_rel": -10845.896492068765,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "HCP_A3",
+            "x": 1.0
+          },
+          "slope": 10845.896492068765,
+          "x_hi": 1.0,
+          "x_lo": 0.3333333333333136
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -7230.59766137939,
+          "energy_per_atom": -7230.59766137939,
+          "enthalpy": -7244.926695593147,
+          "entries_at_x": 1,
+          "entropy": -0.04805981624604527,
+          "formula": "",
+          "nsites": null,
+          "phase": "C15_LAVES",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333136
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "MoZr-03Jer-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:50:27Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/MoZr-03Jer-LB.tdb",
+    "source_sha256": "cc90f5904fa89fd4adaa1966470564e2fcbd0835e7a903633a0462cd9fe77012"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "MO-ZR",
+  "x_element": "ZR"
+}

@@ -1,0 +1,188 @@
+$
+$ Database for Ce-Si from J. Groebner et al. 2004
+$
+$ J. Groebner, D. Mirkovic, R. Schmid-Fetzer,
+$ Metall. Mater. Trans. A, 35A, 3349-62(2004).
+$
+$ Dataset created 2016.06.05 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ Invariant equilibria differ by up to 2 K, possibly because of rounding
+$ errors.
+$
+$ There is an inverse miscibility gap with a minimum at 2311 K and x(Si)=0.10.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CE   FCC_A1                    140.12      7280.16    69.454  ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CE SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CE% SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CE% SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CE SI : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype Cr5B3 (tI32, I4/mcm)
+$
+ PHASE CE5SI3_D8L % 2 5 3 !
+ CONST CE5SI3_D8L : CE : SI : !
+$
+$ Prototype Si2U3 (tP10, P4/mbm)
+$
+ PHASE CE3SI2_D5A % 2 3 2 !
+ CONST CE3SI2_D5A : CE : SI : !
+$
+$ Prototype Si4Zr5 (tP36, P4_12_12)
+$
+ PHASE CE5SI4 % 2 5 4 !
+ CONST CE5SI4 : CE : SI : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE CESI_B27 % 2 1 1 !
+ CONST CESI_B27 : CE : SI : !
+$
+$ Prototype GdSi1.4 (oI12, Imma)
+$
+ PHASE CE3SI5 % 2 3 5 !
+ CONST CE3SI5 : CE : SI : !
+$
+$ Prototype Si2Th (tI12, I4_1/amd)
+$
+ PHASE CESI2_CC % 2 1 2 !
+ CONST CESI2_CC : CE : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE_DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE_DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ce
+$
+$ HCP_A3 and DHCP added in unary 3.0
+$ HCP_A3 and DHCP revised in unary 4.4
+$
+ PAR  G(FCC_A1,CE:VA),,                 +GHSERCE;                4000 N 91Din !
+ PAR  G(BCC_A2,CE:VA),,                 +GBCCCE;                 4000 N 91Din !
+ PAR  G(HCP_A3,CE:VA),,                 +GHSERCE+300;            4000 N Frank !
+$PAR  G(HCP_A3,CE:VA),,                 +GHSERCE+50000;          4000 N 96SGUN !
+$PAR  G(DHCP,CE:VA),,                   +GHSERCE
+$            -122.539+0.433*T;                                   4000 N 99Gsc !
+$PAR  G(DHCP,CE),,                      +GHSERCE-190+0.56886*T;  4000 N 96SGUN !
+ PAR  G(LIQUID,CE),,                    +GLIQCE;                 4000 N 91Din !
+$
+ FUNCTION GHSERCE   298.15  -7160.519+84.23022*T-22.3664*T*LN(T)
+       -0.0067103*T**2-3.20773E-07*T**3-18117*T**(-1);
+      1000.00  Y  -79678.506+659.4604*T-101.32248*T*LN(T)
+       +0.026046487*T**2-1.930297E-06*T**3+11531707*T**(-1);
+      2000.00  Y  -14198.639+190.370192*T-37.6978*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCCE    298.15  -1354.69-5.21501*T-7.7305867*T*LN(T)
+       -0.029098402*T**2+4.784299E-06*T**3-196303*T**(-1);
+      1000.00  Y  -12101.106+187.449688*T-37.6142*T*LN(T);
+      1072.00  Y  -11950.375+186.333811*T-37.4627992*T*LN(T)
+       -5.7145E-05*T**2+2.348E-09*T**3-25897*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQCE    298.15  +4117.865-11.423898*T-7.5383948*T*LN(T)
+       -0.02936407*T**2+4.827734E-06*T**3-198834*T**(-1);
+      1000.00  Y  -6730.605+183.023193*T-37.6978*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Groebner, D. Mirkovic, R. Schmid-Fetzer,
+$ Metall. Mater. Trans. A, 35A, 3349-62(2004).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant equilibria differ by up to 2 K, possibly because of rounding
+$ errors.
+$
+$ There is an inverse miscibility gap with a minimum at 2311 K and x(Si)=0.10.
+$
+ PAR  L(LIQUID,CE,SI;0),,               -99974.63-61.61*T;,,          N 04Gro !
+ PAR  L(LIQUID,CE,SI;1),,               -63423+90.35*T;,,             N 04Gro !
+$
+ PAR  L(BCC_A2,CE,SI:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,CE,SI:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(CE5SI3_D8L,CE:SI),,             +5*GHSERCE+3*GHSERSI
+             -488000+32*T;,,                                          N 04Gro !
+ PAR  G(CE3SI2_D5A,CE:SI),,             +3*GHSERCE+2*GHSERSI
+             -325000+23.925*T;,,                                      N 04Gro !
+ PAR  G(CE5SI4,CE:SI),,                 +5*GHSERCE+4*GHSERSI
+             -621000+40.635*T;,,                                      N 04Gro !
+ PAR  G(CESI_B27,CE:SI),,               +GHSERCE+GHSERSI
+             -142200+6.61*T;,,                                        N 04Gro !
+ PAR  G(CE3SI5,CE:SI),,                 +3*GHSERCE+5*GHSERSI
+             -520000-28.24*T;,,                                       N 04Gro !
+ PAR  G(CESI2_CC,CE:SI),,               +GHSERCE+2*GHSERSI
+             -181500-18.141*T;,,                                      N 04Gro !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  Frank  'Peter Franke, unpublished, SGTE unary database V.4.4, 2001; Ce'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99Gsc  'K.A. Gschneidner, Jr., V.K. Pecharsky, J. Phase Equilib.,
+          20, 612-14(1999), SGTE unary database V.4.4, 2001; Ce'
+  04Gro  'J. Groebner, D. Mirkovic, R. Schmid-Fetzer,
+          Metall. Mater. Trans. A, 35A, 3349-62(2004); Ce-Si'
+!

@@ -1,0 +1,218 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "CE",
+    "FE"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "CE": {
+          "energy": -20707.710671673798,
+          "phase": "FCC_A1"
+        },
+        "FE": {
+          "energy": -8133.457533165987,
+          "phase": "BCC_A2"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -4263.031848001379
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 4.65716130349519
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -5651.564490638482,
+          "right": {
+            "phase": "CEFE2_C15",
+            "x": 0.6666666666666666
+          },
+          "slope": -5651.564490638482,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -6769.9692980587515,
+            "slope": 5891.922099086748
+          },
+          "entropy": {
+            "intercept": 3.6959767760106907,
+            "slope": -0.8868038605208461
+          },
+          "intercept": -7871.92477382635,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CEFE2_C15",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -7871.92477382635,
+          "mu_b_rel": -1715.6021037253067,
+          "right": {
+            "phase": "CE2FE17",
+            "x": 0.894736842105263
+          },
+          "slope": 6156.3226701010435,
+          "x_hi": 0.894736842105263,
+          "x_lo": 0.6666666666666666
+        },
+        {
+          "enthalpy": {
+            "intercept": -14233.370489320767,
+            "slope": 14233.370489320767
+          },
+          "entropy": {
+            "intercept": 27.573946557674343,
+            "slope": -27.573946557674343
+          },
+          "intercept": -22454.54265549144,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CE2FE17",
+            "x": 0.894736842105263
+          },
+          "mu_a_rel": -22454.54265549144,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "BCC_A2",
+            "x": 1.0
+          },
+          "slope": 22454.54265549144,
+          "x_hi": 1.0,
+          "x_lo": 0.894736842105263
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -3767.709660425655,
+          "energy_per_atom": -3767.709660425655,
+          "enthalpy": -2842.021232000919,
+          "entries_at_x": 1,
+          "entropy": 3.104774202330127,
+          "formula": "",
+          "nsites": null,
+          "phase": "CEFE2_C15",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -2363.6360689991016,
+          "energy_per_atom": -2363.6360689991016,
+          "enthalpy": -1498.2495251916612,
+          "entries_at_x": 1,
+          "entropy": 2.902520690281513,
+          "formula": "",
+          "nsites": null,
+          "phase": "CE2FE17",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.894736842105263
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "CeFe-06Su",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:22:02Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/CeFe-06Su.tdb",
+    "source_sha256": "a87f5d2608ea5fa66762b617ddae9ef2b0d90b727a024ed84f592eef027f853e"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "CE-FE",
+  "x_element": "FE"
+}

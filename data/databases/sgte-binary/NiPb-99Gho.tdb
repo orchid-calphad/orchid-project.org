@@ -1,0 +1,154 @@
+$
+$ Database for Ni-Pb from G. Ghosh 1999
+$
+$ G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999).
+$
+$ Dataset created 2011.01.30 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT PB   FCC_A1                    207.2       6870.      64.80   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI PB : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% PB% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI PB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI PB : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Pb
+$
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 3.0
+$ RHOMBOHEDRAL_A7, TETRAGONAL_A6 and TET_ALPHA1_A6 revised in unary 4.1
+$ RHOMBO_A10 added in unary 5.0
+$
+ PAR  G(FCC_A1,PB:VA),,                 +GHSERPB;                2100 N 91Din !
+ PAR  G(BCC_A2,PB:VA),,                 +GHSERPB+2400-1.1*T;     2100 N 91Din !
+ PAR  G(HCP_A3,PB:VA),,                 +GHSERPB+300+T;          2100 N 91Din !
+$PAR  G(BCT_A5,PB),,                    +GHSERPB+489+3.52*T;     2100 N 91Din !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+4493.235;       2100 N 98Boa !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+473.23+3.5531*T
+$            -0.0396834*T*LN(T)+2.1489E-05*T**2;                 2100 N 96SGUN !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB
+$            +1903.3-2.0602*T;                                   2100 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB+183.2+0.45314*T
+$            -0.0396834*T*LN(T)+2.149E-06*T**2;                  2100 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+300+T;          2100 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+4900+3.52*T;    2100 N 96SGUN !
+$PAR  G(RHOMBO_A10,PB),,                +GHSERPB+10;             2100 N 09SGUN !
+ PAR  G(LIQUID,PB),,                    +GLIQPB;                 2100 N 91Din !
+$
+ FUNCTION GHSERPB   298.15  -7650.085+101.700244*T-24.5242231*T*LN(T)
+       -0.00365895*T**2-2.4395E-07*T**3;
+       600.61  Y  -10531.095+154.243182*T-32.4913959*T*LN(T)
+       +0.00154613*T**2+8.05448E+25*T**(-9);
+      1200.00  Y  +4157.616+53.139072*T-18.9640637*T*LN(T)
+       -0.002882943*T**2+9.8144E-08*T**3-2696755*T**(-1)+8.05448E+25*T**(-9);
+      2100.00  N !
+ FUNCTION GLIQPB    298.15  +4672.124-7.750683*T+GHSERPB-6.019E-19*T**7;
+       600.61  Y  +4853.137-8.067136*T+GHSERPB-8.05448E+25*T**(-9);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,NI,PB;0),,               +20506.297+4.9289*T;,,        N 99Gho !
+ PAR  L(LIQUID,NI,PB;1),,               +7353.4737-1.9517*T;,,        N 99Gho !
+ PAR  L(LIQUID,NI,PB;2),,               +2966.297+0.8579*T;,,         N 99Gho !
+ PAR  L(LIQUID,NI,PB;3),,               -1792.38+0.9434*T;,,          N 99Gho !
+ PAR  L(LIQUID,NI,PB;4),,               -3781.491;,,                  N 99Gho !
+$
+ PAR  L(FCC_A1,NI,PB:VA;0),,            +15235.3889+24.1891*T;,,      N 99Gho !
+ PAR  L(FCC_A1,NI,PB:VA;1),,            -6641.6489+4.4906*T;,,        N 99Gho !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,NI,PB:VA;0),,            +15235.3889+24.1891*T;,,      N Same !
+ PAR  L(BCC_A2,NI,PB:VA;1),,            -6641.6489+4.4906*T;,,        N Same !
+$
+ PAR  L(HCP_A3,NI,PB:VA;0),,            +15235.3889+24.1891*T;,,      N Same !
+ PAR  L(HCP_A3,NI,PB:VA;1),,            -6641.6489+4.4906*T;,,        N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-PB(TDB -* +LIQUID +FCC_A1 ;G5 C_S:LIQUID/PB MAJ:LIQUID/NI 
+  C_S:FCC_A1/PB:VA MAJ:FCC_A1/NI:VA ;P3 STP:.5/1000/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni, Ni-Pb'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

@@ -1,0 +1,288 @@
+$
+$ Database for Co-Ti from G. Cacciamani et al. 2000
+$
+$ G. Cacciamani, R. Ferro, I. Ansara, N. Dupin, Intermetallics, 8, 213-22(2000).
+$
+$ Dataset created 2012.10.06 by Bengt Hallstedt.
+$ 2020.07.19: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% TI : VA : !
+$
+$ Disordered part of L12_FCC, identical to FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : CO% TI : VA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE L12_FCC %AY 3 0.75 0.25 1 !
+ CONST L12_FCC : CO% TI : CO TI% : VA :  !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO TI% : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : CO TI VA : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : CO% TI VA : CO TI% VA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% TI% : VA : !
+$
+$ Prototype MgNi2 (hP24, P6_3/mmc)
+$
+ PHASE C36_LAVES % 2 2 1 !
+ CONST C36_LAVES : CO% TI : CO TI% : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE C15_LAVES % 2 2 1 !
+ CONST C15_LAVES : CO% TI : CO TI% : !
+$
+$ Prototype NiTi2 (cF96, Fd-3m)
+$
+ PHASE COTI2 % 2 1 2 !
+ CONST COTI2 : CO : TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT_COM REJECT_PHASE FCC_A1 BCC_A2 !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION L12_FCC DIS_PART A1_FCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(A1_FCC,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(A1_FCC,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(A1_FCC,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(A2_BCC,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(A2_BCC,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(A2_BCC,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  L(A2_BCC,CO,VA:VA;0),,            +100000;,,                    N 00Cac !
+ PAR  G(B2_BCC,CO:VA:VA),,              +60000;,,                     N 00Cac !
+ PAR  G(B2_BCC,VA:CO:VA),,              +60000;,,                     N 00Cac !
+ PAR  G(C15_LAVES,CO:CO),,              +3*GHSERCO+15000;,,           N REFLAV !
+ PAR  G(C36_LAVES,CO:CO),,              +3*GHSERCO+15000;,,           N REFLAV !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCO    298.15  +GHSERCO+427.59-0.615248*T;                6000 N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(A2_BCC,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+ PAR  G(A1_FCC,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+$PAR  L(A2_BCC,TI,VA:VA;0),,            +120*T;,,                     N 02Sun !
+ PAR  L(A2_BCC,TI,VA:VA;0),,            +100000;,,                    N 00Cac !
+ PAR  G(B2_BCC,TI:VA:VA),,              +60000;,,                     N 00Cac !
+ PAR  G(B2_BCC,VA:TI:VA),,              +60000;,,                     N 00Cac !
+ PAR  G(C15_LAVES,TI:TI),,              +3*GHSERTI+15000;        4000 N REFLAV !
+ PAR  G(C36_LAVES,TI:TI),,              +3*GHSERTI+15000;        4000 N REFLAV !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(A2_BCC,VA:VA),,                 +ZERO;,,                      N 99Dup1 !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Cacciamani, R. Ferro, I. Ansara, N. Dupin, Intermetallics, 8, 213-22(2000).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,CO,TI;0),,               -135810+31.497*T;,,           N 00Cac !
+ PAR  L(LIQUID,CO,TI;1),,               -5513.8;,,                    N 00Cac !
+ PAR  L(LIQUID,CO,TI;2),,               +13624;,,                     N 00Cac !
+$
+ PAR  L(FCC_A1,CO,TI:VA;0),,            -131210+43.351*T;,,           N 00Cac !
+ PAR  L(FCC_A1,CO,TI:VA;1),,            -16240;,,                     N 00Cac !
+ PAR  TC(FCC_A1,CO,TI:VA;0),,           -1830;,,                      N 00Cac !
+ PAR  TC(FCC_A1,CO,TI:VA;1),,            +970;,,                      N 00Cac !
+ PAR  BM(FCC_A1,CO,TI:VA;0),,             -10;,,                      N 00Cac !
+$
+ PAR  L(A1_FCC,CO,TI:VA;0),,            -131210+43.351*T;,,           N 00Cac !
+ PAR  L(A1_FCC,CO,TI:VA;1),,            -16240;,,                     N 00Cac !
+ PAR  TC(A1_FCC,CO,TI:VA;0),,           -1830;,,                      N 00Cac !
+ PAR  TC(A1_FCC,CO,TI:VA;1),,            +970;,,                      N 00Cac !
+ PAR  BM(A1_FCC,CO,TI:VA;0),,             -10;,,                      N 00Cac !
+$
+ PAR  G(L12_FCC,CO:TI:VA),,             +G4CO3TI;,,                   N 00Cac !
+ PAR  G(L12_FCC,TI:CO:VA),,             +G4COTI3;,,                   N 00Cac !
+ PAR  TC(L12_FCC,CO:TI:VA),,            +TCCO3TI;,,                   N 00Cac !
+ PAR  TC(L12_FCC,TI:CO:VA),,            +TCCOTI3;,,                   N 00Cac !
+ PAR  L(L12_FCC,CO,TI:CO:VA;0),,        -1.5*G4COTI3+1.5*G4CO2TI2
+             +1.5*G4CO3TI+3*L04COTI;,,                                N 00Cac !
+ PAR  L(L12_FCC,CO,TI:TI:VA;0),,        +1.5*G4COTI3+1.5*G4CO2TI2
+             -1.5*G4CO3TI+3*L04COTI;,,                                N 00Cac !
+ PAR  L(L12_FCC,CO,TI:CO:VA;1),,        +0.5*G4COTI3-1.5*G4CO2TI2
+             +1.5*G4CO3TI+3*L14COTI;,,                                N 00Cac !
+ PAR  L(L12_FCC,CO,TI:TI:VA;1),,        -1.5*G4COTI3+1.5*G4CO2TI2
+             -0.5*G4CO3TI+3*L14COTI;,,                                N 00Cac !
+ PAR  TC(L12_FCC,CO,TI:CO:VA;0),,       -1.5*TCCOTI3+1.5*TCCO2TI2
+             +1.5*TCCO3TI;,,                                          N 00Cac !
+ PAR  TC(L12_FCC,CO,TI:TI:VA;0),,       +1.5*TCCOTI3+1.5*TCCO2TI2
+             -1.5*TCCO3TI;,,                                          N 00Cac !
+ PAR  TC(L12_FCC,CO,TI:CO:VA;1),,       +0.5*TCCOTI3-1.5*TCCO2TI2
+             +1.5*TCCO3TI;,,                                          N 00Cac !
+ PAR  TC(L12_FCC,CO,TI:TI:VA;1),,       -1.5*TCCOTI3+1.5*TCCO2TI2
+             -0.5*TCCO3TI;,,                                          N 00Cac !
+ PAR  L(L12_FCC,CO:CO,TI:VA;0),,        +L04COTI;,,                   N 00Cac !
+ PAR  L(L12_FCC,CO:CO,TI:VA;1),,        +L14COTI;,,                   N 00Cac !
+ PAR  L(L12_FCC,TI:CO,TI:VA;0),,        +L04COTI;,,                   N 00Cac !
+ PAR  L(L12_FCC,TI:CO,TI:VA;1),,        +L14COTI;,,                   N 00Cac !
+$
+ PAR  L(BCC_A2,CO,TI:VA;0),,            -115660+40.762*T;,,           N 00Cac !
+ PAR  TC(BCC_A2,CO,TI:VA;0),,           -1830;,,                      N 00Cac !
+ PAR  TC(BCC_A2,CO,TI:VA;1),,            +970;,,                      N 00Cac !
+$
+ PAR  L(A2_BCC,CO,TI:VA;0),,            -115660+40.762*T;,,           N 00Cac !
+ PAR  TC(A2_BCC,CO,TI:VA;0),,           -1830;,,                      N 00Cac !
+ PAR  TC(A2_BCC,CO,TI:VA;1),,            +970;,,                      N 00Cac !
+$
+ PAR  G(B2_BCC,CO:TI:VA),,              -21000+2*T;,,                 N 00Cac !
+ PAR  G(B2_BCC,TI:CO:VA),,              -21000+2*T;,,                 N 00Cac !
+ PAR  TC(B2_BCC,CO:TI:VA),,              -400;,,                      N 00Cac !
+ PAR  TC(B2_BCC,TI:CO:VA),,              -400;,,                      N 00Cac !
+ PAR  L(B2_BCC,CO,TI:TI:VA;0),,         +41873;,,                     N 00Cac !
+ PAR  L(B2_BCC,TI:CO,TI:VA;0),,         +41873;,,                     N 00Cac !
+$
+ PAR  L(HCP_A3,CO,TI:VA;0),,            -65952+14.242*T;,,            N 00Cac !
+$
+ PAR  G(C15_LAVES,CO:TI),,              +2*GHSERCO+GHSERTI
+             -125000+31.496*T;,,                                      N 00Cac !
+ PAR  G(C15_LAVES,TI:CO),,              +2*GHSERTI+GHSERCO
+             +155000-31.496*T;,,                                      N 00Cac !
+$
+ PAR  G(C36_LAVES,CO:TI),,              +2*GHSERCO+GHSERTI
+             -124700+31.50882*T;,,                                    N 00Cac !
+ PAR  G(C36_LAVES,TI:CO),,              +2*GHSERTI+GHSERCO
+             +154700-31.50882*T;,,                                    N 00Cac !
+ PAR  L(C36_LAVES,CO:CO,TI;0),,         -44875+25.722*T;,,            N 00Cac !
+ PAR  L(C36_LAVES,TI:CO,TI;0),,         -44875+25.722*T;,,            N 00Cac !
+$
+ PAR  G(COTI2,CO:TI),,                  +GHSERCO+2*GHSERTI
+             -113930+30.197*T;,,                                      N 00Cac !
+$
+ FUNCTION U1COTI    298.15  -12274+8.59*T;                             6000 N !
+ FUNCTION U3COTI    298.15  +621.19+7.3155*T;                          6000 N !
+ FUNCTION U4COTI    298.15  -933.4;                                    6000 N !
+ FUNCTION G4CO3TI   298.15  +3*U1COTI;                                 6000 N !
+ FUNCTION G4CO2TI2  298.15  +4*U1COTI;                                 6000 N !
+ FUNCTION G4COTI3   298.15  +3*U1COTI;                                 6000 N !
+ FUNCTION L04COTI   298.15  +U3COTI;                                   6000 N !
+ FUNCTION L14COTI   298.15  +U4COTI;                                   6000 N !
+ FUNCTION TCCOTI3   298.15  -999;                                      6000 N !
+ FUNCTION TCCO2TI2  298.15  -1332;                                     6000 N !
+ FUNCTION TCCO3TI   298.15  -999;                                      6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CO-TI(TDB -* +LIQ +HCP_A3 +A1_FCC +A2_BCC +B2_BCC +C15_LAV +C36_LAV +COTI2
+  +L12_FCC ;G5 C_S:L12_FCC/CO:TI:VA C_S:B2_BCC/CO:TI:VA MAJ:B2_BCC/TI:TI:VA
+  ;P3 TMM:300/2000 STP:0.99/1500/-1/-2 STP:.49/1400/-1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Dup1 'N. Dupin, I. Ansara, Z. Metallkd., 90, 76-85(1999); Al-Ni'
+  00Cac  'G. Cacciamani, R. Ferro, I. Ansara, N. Dupin,
+          Intermetallics, 8, 213-22(2000); Co-Ti'
+  01Dav  'A.V. Davydov, U.R. Kattner, D. Josell, J.E. Blendell,
+          R.M. Waterstrat, A.J. Shapiro, W.J. Boettinger,
+          Metall. Mater. Trans. A, 32A, 2175-86(2001); Co-Ti'
+  02Sun  'B. Sundman, default vacancy interaction in BCC, 2002'
+!

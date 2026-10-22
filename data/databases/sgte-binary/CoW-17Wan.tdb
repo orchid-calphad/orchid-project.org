@@ -1,0 +1,244 @@
+$
+$ Database for Co-W from P. Wang et al. 2017.
+$
+$ P. Wang, W. Xiong, U.R. Kattner, C.E. Campbell, E.A. Lass, O.Y. Kontsevoi,
+$ G.B. Olson, Calphad, 59, 112-30(2017).
+$
+$ Dataset created 2020.07.26 by Bengt Hallstedt.
+$
+$ The large negative ordering parameters (fcc and bcc) seem questionable
+$ in view of the small or positive binary interactions.
+$
+$ Several mu-phase parameters are misprinted in the paper.
+$ G(MU_D85,CO:CO:CO:W) is misprinted both in the paper and in the author's tdb.
+$ The latter is corrected here, but has no influence on the phase diagram.
+$ Co can be removed from the 2nd sublattice.
+$
+$ Co3W parameters misprinted in the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT W    BCC_A2                    183.85      4970.0     32.6176 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO W : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% W : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO W% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% W : VA : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE CO3W_D019 % 2 3 1 !
+ CONST CO3W_D019 : CO% W : CO W% : !
+$
+$ Prototype Fe7W6 (hR13, R-3m)
+$
+ PHASE MU_D85 % 4 1 4 2 6 !
+ CONST MU_D85 : CO W : CO W : CO W : CO W : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  G(CO3W_D019,CO:CO),,              +4*GHSERCO+73033.2;,,         N 17Wan !
+ PAR  G(MU_D85,CO:CO:CO:CO),,           +13*GHSERCO+554290.8;,,       N 17Wan !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCO    298.15  +GHSERCO+427.59-0.615248*T;                6000 N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ W
+$
+ PAR  G(BCC_A2,W:VA),,                  +GHSERWW;,,                   N 91Din !
+ PAR  G(FCC_A1,W:VA),,                  +GHSERWW+19300+0.63*T;,,      N 91Din !
+ PAR  G(HCP_A3,W:VA),,                  +GHSERWW+14750;,,             N 91Din !
+ PAR  G(LIQUID,W),,                     +GLIQWW;,,                    N 91Din !
+$
+ PAR  G(CO3W_D019,W:W),,                +4*GHSERWW+74274.8;,,         N 17Wan !
+ PAR  G(MU_D85,W:W:W:W),,               +13*GHSERWW+433470.5;,,       N 17Wan !
+$
+ FUNCTION GHSERWW   298.15  -7646.311+130.4*T-24.1*T*LN(T)
+       -0.001936*T**2+2.07E-07*T**3+44500*T**(-1)-5.33E-11*T**4;
+      3695.00  Y  -82868.801+389.362335*T-54*T*LN(T)+1.528621E+33*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQWW    298.15  +52160.584-14.10999*T+GHSERWW-2.713468E-24*T**7;
+      3695.00  Y  -30436.051+375.175*T-54*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCWW    298.15  +GHSERWW+19300+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ P. Wang, W. Xiong, U.R. Kattner, C.E. Campbell, E.A. Lass, O.Y. Kontsevoi,
+$ G.B. Olson, Calphad, 59, 112-30(2017).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The large negative ordering parameters (fcc and bcc) seem questionable
+$ in view of the small or positive binary interactions.
+$
+$ Several mu-phase parameters are misprinted in the paper.
+$ G(MU_D85,CO:CO:CO:W) is misprinted both in the paper and in the author's tdb.
+$ The latter is corrected here, but has no influence on the phase diagram.
+$ Co can be removed from the 2nd sublattice.
+$
+$ Co3W parameters misprinted in the paper.
+$
+ PAR  L(LIQUID,CO,W;0),,                -62717.5+25.5707*T;,,         N 17Wan !
+ PAR  L(LIQUID,CO,W;1),,                +4692.5;,,                    N 17Wan !
+$
+ PAR  L(FCC_A1,CO,W:VA;0),,             -12445+8.8263*T;,,            N 17Wan !
+ PAR  L(FCC_A1,CO,W:VA;1),,             -22179.2+4.1287*T;,,          N 17Wan !
+ PAR  TC(FCC_A1,CO,W:VA;0),,            -2748.60;,,                   N 17Wan !
+ PAR  TC(FCC_A1,CO,W:VA;1),,            -2749.80;,,                   N 17Wan !
+ PAR  TC(FCC_A1,CO,W:VA;2),,            +1495.80;,,                   N 17Wan !
+ PAR  BM(FCC_A1,CO,W:VA;0),,               -4.92;,,                   N 17Wan !
+$
+$PAR  G(FCC_4SL,CO:CO:CO:W:VA),,        +GFCO3W;,,                    N 17Wan !
+$PAR  G(FCC_4SL,CO:CO:W:W:VA),,         +GFCO2W2;,,                   N 17Wan !
+$PAR  G(FCC_4SL,CO:W:W:W:VA),,          +GFCOW3;,,                    N 17Wan !
+$
+ PAR  L(BCC_A2,CO,W:VA;0),,             +60000;,,                     N 17Wan !
+ PAR  TC(BCC_A2,CO,W:VA;0),,            -3379;,,                      N 89Fer1 !
+ PAR  BM(BCC_A2,CO,W:VA;0),,               -3.146;,,                  N 89Fer1 !
+$
+$PAR  G(B2_BCC,CO:W:VA),,               -11564.3;,,                   N 17Wan !
+$PAR  G(B2_BCC,W:CO:VA),,               -11564.3;,,                   N 17Wan !
+$
+ PAR  L(HCP_A3,CO,W:VA;0),,             +UN_ASS;,,                    N !
+ PAR  TC(HCP_A3,CO,W:VA;0),,            -2646.86;,,                   N 17Wan !
+ PAR  TC(HCP_A3,CO,W:VA;1),,            -1896.14;,,                   N 17Wan !
+ PAR  BM(HCP_A3,CO,W:VA;0),,               -5.10693;,,                N 17Wan !
+$
+$ Parameter from paper below
+$PAR  G(CO3W_D019,CO:W),,               +3*GHSERCO+GHSERWW
+$            -56952.4+31.62*T;,,                                      N 17Wan !
+$ Parameter from tdb below
+ PAR  G(CO3W_D019,CO:W),,               +3*GHSERCO+GHSERWW
+             -56400+31.9336*T;,,                                      N 17Wan !
+ PAR  G(CO3W_D019,W:CO),,               +3*GHSERWW+GHSERCO+83608.8;,, N 17Wan !
+$ Parameter from paper below
+$PAR  L(CO3W_D019,CO:CO,W;0),,          -62521.2-15.9668*T;,,         N 17Wan !
+$ Parameter from tdb below
+ PAR  L(CO3W_D019,CO:CO,W;0),,          -48598.4-19.9992*T;,,         N 17Wan !
+$
+$ Misprinted parameter from tdb below
+$PAR  G(MU_D85,CO:CO:CO:W),,            +11*GHSERCO+2*GHSERWW
+$            +670471.8;,,                                             N 17Wan !
+ PAR  G(MU_D85,CO:CO:CO:W),,            +7*GHSERCO+6*GHSERWW
+             +670471.8;,,                                             N 17Wan !
+ PAR  G(MU_D85,CO:CO:W:CO),,            +11*GHSERCO+2*GHSERWW
+             +326449.8;,,                                             N 17Wan !
+ PAR  G(MU_D85,CO:CO:W:W),,             +5*GHSERCO+8*GHSERWW
+             +813777.1;,,                                             N 17Wan !
+$ Parameter from paper below
+$PAR  G(MU_D85,CO:W:CO:CO),,            +9*GHSERCO+4*GHSERWW
+$            +70000-30*T;,,                                           N 17Wan !
+$ Parameter from tdb below
+ PAR  G(MU_D85,CO:W:CO:CO),,            +9*GHSERCO+4*GHSERWW
+             +47541.7-32.7802*T;,,                                    N 17Wan !
+ PAR  G(MU_D85,CO:W:CO:W),,             +3*GHSERCO+10*GHSERWW
+             +478542.4;,,                                             N 17Wan !
+$ Parameter from paper below
+$PAR  G(MU_D85,CO:W:W:CO),,             +7*GHSERCO+6*GHSERWW
+$            -110227.2+30.7421*T;,,                                   N 17Wan !
+$ Parameter from tdb below
+ PAR  G(MU_D85,CO:W:W:CO),,             +7*GHSERCO+6*GHSERWW
+             -125302.7+52.7604*T;,,                                   N 17Wan !
+ PAR  G(MU_D85,CO:W:W:W),,              +GHSERCO+12*GHSERWW
+             +363855.8;,,                                             N 17Wan !
+ PAR  G(MU_D85,W:CO:CO:CO),,            +12*GHSERCO+GHSERWW
+             +483062;,,                                               N 17Wan !
+ PAR  G(MU_D85,W:CO:CO:W),,             +6*GHSERCO+7*GHSERWW
+             +768487;,,                                               N 17Wan !
+ PAR  G(MU_D85,W:CO:W:CO),,             +10*GHSERCO+3*GHSERWW
+             +242053.4;,,                                             N 17Wan !
+ PAR  G(MU_D85,W:CO:W:W),,              +4*GHSERCO+9*GHSERWW
+             +909461.2;,,                                             N 17Wan !
+$ Parameter from paper below
+$PAR  G(MU_D85,W:W:CO:CO),,             +8*GHSERCO+5*GHSERWW
+$            +182126.9;,,                                             N 17Wan !
+$ Parameter from tdb below
+ PAR  G(MU_D85,W:W:CO:CO),,             +8*GHSERCO+5*GHSERWW
+             +218384.9715;,,                                          N 17Wan !
+ PAR  G(MU_D85,W:W:CO:W),,              +2*GHSERCO+11*GHSERWW
+             +515490.9;,,                                             N 17Wan !
+$ Parameter from paper below
+$PAR  G(MU_D85,W:W:W:CO),,              +6*GHSERCO+7*GHSERWW
+$            -58539.5+7.1052*T;,,                                     N 17Wan !
+$ Parameter from tdb below
+ PAR  G(MU_D85,W:W:W:CO),,              +6*GHSERCO+7*GHSERWW
+             -63000.0+11.8022*T;,,                                    N 17Wan !
+ PAR  L(MU_D85,CO:W:CO,W:CO;0),,        -15111.7-42.1612*T;,,         N 17Wan !
+ PAR  L(MU_D85,W:W:CO,W:CO;0),,         -347843+19.5506*T;,,          N 17Wan !
+$
+$FUNCTION U1FCOW    298.15  -4996.2;                                   6000 N !
+$FUNCTION GFCO3W    298.15  +3*U1FCOW;                                 6000 N !
+$FUNCTION GFCO2W2   298.15  +4*U1FCOW;                                 6000 N !
+$FUNCTION GFCOW3    298.15  +3*U1FCOW;                                 6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CO-W(TDB -* +LIQ +HCP_A3 +FCC_A1 +BCC_A2 +MU_D85 +CO3W_D019
+  ;G5 MAJ:HCP_A3/CO:VA MAJ:BCC_A2/W:VA ;P3 TMM:300/4000 STP:.8/3000/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  89Fer1 'A. Fernandez Guillermet, Metall. Trans. A, 20A, 935-56(1989); Co-W'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  17Wan  'P. Wang, W. Xiong, U.R. Kattner, C.E. Campbell, E.A. Lass,
+          O.Y. Kontsevoi, G.B. Olson, Calphad, 59, 112-30(2017); Co-W'
+!

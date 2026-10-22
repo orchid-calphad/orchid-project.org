@@ -1,0 +1,215 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "AG",
+    "PB"
+  ],
+  "flags": [
+    "miscibility_gap",
+    "no_intermediate_phases",
+    "solution_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "AG": {
+          "energy": -12686.282456085552,
+          "phase": "FCC_A1"
+        },
+        "PB": {
+          "energy": -19320.120393664478,
+          "phase": "FCC_A1"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                0.0,
+                0.8544516932598807,
+                0.005113720462412763,
+                -0.002545012163637006
+              ]
+            ],
+            "knots": [
+              0.0,
+              3.160446910078231e-05
+            ],
+            "max_abs_error": 0.00036508676931062967
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                0.0,
+                0.0001316673342040737,
+                3.920228689736999e-05,
+                -1.948454116643372e-05
+              ]
+            ],
+            "knots": [
+              0.0,
+              3.160446910078231e-05
+            ],
+            "max_abs_error": 2.7952411806976085e-06
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              0.0,
+              0.8151950778463964,
+              -0.006574442196703556,
+              0.003264304328630563
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.0,
+            3.160446910078231e-05
+          ],
+          "max_abs_error": 0.00046831440925443335,
+          "phase": "FCC_A1#1",
+          "x_hi": 3.160446910078231e-05,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": 0.8570474880895117,
+            "slope": -0.8570474880895117
+          },
+          "entropy": {
+            "intercept": 0.0031371759876641014,
+            "slope": -0.0031371759876641014
+          },
+          "intercept": -0.07830153263024953,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1#1",
+            "x": 3.160446910078231e-05
+          },
+          "mu_a_rel": -0.07830153263024953,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "FCC_A1#2",
+            "x": 1.0
+          },
+          "slope": 0.07830153263024953,
+          "x_hi": 1.0,
+          "x_lo": 3.160446910078231e-05
+        }
+      ],
+      "phase_instances": {
+        "FCC_A1#1": "FCC_A1",
+        "FCC_A1#2": "FCC_A1"
+      },
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1#1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.07829905795188097,
+          "energy_per_atom": -0.07829905795188097,
+          "enthalpy": 0.8570204015586564,
+          "entries_at_x": 1,
+          "entropy": 0.0031370768388825354,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1#1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 3.160446910078231e-05
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1#2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "AgPb-00Luk-SGSOL",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:00:33Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/AgPb-00Luk-SGSOL.tdb",
+    "source_sha256": "866457c00fa8f649017e2e7dc20290ecbce57351b894ef33f7dcf87ceaf6b382"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "AG-PB",
+  "x_element": "PB"
+}

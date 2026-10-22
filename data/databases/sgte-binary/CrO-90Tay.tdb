@@ -1,0 +1,297 @@
+$
+$ Database for Cr-O from J.R. Taylor and A.T. Dinsdale 1990
+$
+$ J.R. Taylor, A.T. Dinsdale, Z. Metallkd., 81, 354-66(1990).
+$
+$ Dataset created 2010.12.18 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ Invariant equilibria differ by up to 5 K. The melting point of Cr2O3 is at
+$ 2583 K instead of 2603 K.
+$
+$ The liquid behaves in a strange fashion at high temperature (above 2500 K).
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CR2                                CR2 !
+ SPECIE  CR+2                               CR/+2 !
+ SPECIE  CR+3                               CR/+3 !
+ SPECIE  CR2O                               CR2O1 !
+ SPECIE  CRO                                CR1O1 !
+ SPECIE  CRO1.5                             CR1O1.5 !
+ SPECIE  CR2O2                              CR2O2 !
+ SPECIE  CR2O3                              CR2O3 !
+ SPECIE  CRO2                               CR1O2 !
+ SPECIE  CRO3                               CR1O3 !
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CR : !
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : CR+3 : O-2 VA O : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CR : O VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CR : VA : !
+$
+$ Prototype alpha-Al2O3 (hR10, R-3c)
+$
+ PHASE CR2O3_D51:I %A 3 2 1 3 !
+ CONST CR2O3_D51:I : CR+2 CR+3% : CR+3 VA% : O-2 : !
+$
+$ Prototype Al2MgO4 (cF56, Fd-3m)
+$
+ PHASE CR3O4_H11:I % 3 2 1 4 !
+ CONST CR3O4_H11:I : CR+3 : CR+2 : O-2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : CR CR2 CR2O CRO CR2O2 CR2O3 CRO2 CRO3 O O2 O3 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT-PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+$PAR  G(CBCC_A12,CR:VA),,               +GHSERCR+11087+2.7196*T;,,    N 91Din !
+$PAR  G(CUB_A13,CR:VA),,                +GHSERCR+15899+0.6276*T;,,    N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ PAR  G(ION,CR+3:VA),,                  +GLIQCR;,,                    N 91Din !
+ PAR  G(GAS,CR),,                       +F7454T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CR2),,                      +F7735T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCR    298.15  +GHSERCR+7284+0.163*T;                     6000 N !
+$ Cr (g)
+ FUNCTION F7454T    298.15  +390765.331-31.5192154*T-21.36083*T*LN(T)
+       +7.253215E-04*T**2-1.588679E-07*T**3+10285.15*T**(-1);
+      1100.00  Y  +393886.928-44.107465*T-19.96003*T*LN(T)
+       +0.001513089*T**2-4.23648333E-07*T**3-722515*T**(-1);
+      2000.00  Y  +421372.003-231.888524*T+5.362886*T*LN(T)
+       -0.00848877*T**2+2.984635E-07*T**3-6015405*T**(-1);
+      3300.00  Y  +305164.698+251.019831*T-55.20304*T*LN(T)
+       +0.005324585*T**2-2.850405E-07*T**3+34951485*T**(-1);
+      5100.00  Y  +1069921.1-1708.93262*T+175.0508*T*LN(T)
+       -0.025574185*T**2+4.94447E-07*T**3-4.4276355E+08*T**(-1);
+      7600.00  Y  -871952.838+1686.47356*T-204.5589*T*LN(T)
+       +0.007475225*T**2-4.618745E-08*T**3+1.423504E+09*T**(-1);
+     10000.00  N !
+$ Cr2 (g)
+ FUNCTION F7735T    298.15  +598511.402+41.5353219*T-40.56798*T*LN(T)
+       +0.004961847*T**2-1.61216717E-06*T**3+154422.85*T**(-1);
+       800.00  Y  +613345.232-104.20799*T-19.7643*T*LN(T)
+       -0.007085085*T**2-4.69883E-07*T**3-1738066.5*T**(-1);
+      1400.00  Y  +642608.843-369.286259*T+17.64743*T*LN(T)
+       -0.02767321*T**2+1.605906E-06*T**3-5831655*T**(-1);
+      2300.00  Y  +553119.895+159.188556*T-52.07969*T*LN(T)
+       -0.004229401*T**2+1.5939925E-07*T**3+14793625*T**(-1);
+      3900.00  Y  +347492.339+623.137624*T-105.0428*T*LN(T)
+       +3.9699545E-04*T**2+1.51783483E-07*T**3+1.4843765E+08*T**(-1);
+      5800.00  Y  -484185.055+2598.25559*T-334.7145*T*LN(T)
+       +0.028597625*T**2-4.97520167E-07*T**3+7.135805E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(ION,O),,                        +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J.R. Taylor, A.T. Dinsdale, Z. Metallkd., 81, 354-66(1990).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant equilibria differ by up to 5 K. The melting point of Cr2O3 is at
+$ 2583 K instead of 2603 K.
+$
+$ The liquid behaves in a strange fashion at high temperature (above 2500 K).
+$
+ PAR  G(ION,CR+3:O-2),,                 +GLCR2O3;,,                   N 90Tay !
+ PAR  G(ION,CR+3:O-2,VA;0),,            +401677-162.455*T;,,          N 90Tay !
+ PAR  G(ION,CR+3:O-2,VA;1),,            -231461.2+46.207*T;,,         N 90Tay !
+ PAR  G(ION,CR+3:O-2,VA;2),,            -419258.8+180.821*T;,,        N 90Tay !
+ PAR  G(ION,CR+3:O-2,O;0),,             +100000000;,,                 N 90Tay !
+ PAR  G(ION,CR+3:VA,O;0),,              +100000000;,,                 N 90Tay !
+$
+ PAR  G(BCC,CR:O),,                     +GHSERCR+3*GHSEROO
+             +243*T;,,                                                N 06Pov1 !
+ PAR  L(BCC,CR:O,VA;0),,                -709542;,,                    N 06Pov1 !
+$
+ PAR  G(CR2O3_D51,CR+2:VA:O-2),,        +GCR2O3;,,                    N 90Tay !
+ PAR  TC(CR2O3_D51,CR+2:VA:O-2),,        -918;,,                      N 90Tay !
+ PAR  BM(CR2O3_D51,CR+2:VA:O-2),,          -5.814;,,                  N 90Tay !
+ PAR  G(CR2O3_D51,CR+3:VA:O-2),,        +GCR2O3;,,                    N 90Tay !
+ PAR  TC(CR2O3_D51,CR+3:VA:O-2),,        -918;,,                      N 90Tay !
+ PAR  BM(CR2O3_D51,CR+3:VA:O-2),,          -5.814;,,                  N 90Tay !
+ PAR  G(CR2O3_D51,CR+2:CR+3:O-2),,      +GCR2O3+665910;,,             N 90Tay !
+ PAR  TC(CR2O3_D51,CR+2:CR+3:O-2),,      -918;,,                      N 90Tay !
+ PAR  BM(CR2O3_D51,CR+2:CR+3:O-2),,        -5.814;,,                  N 90Tay !
+ PAR  G(CR2O3_D51,CR+3:CR+3:O-2),,      +GCR2O3-232227.2
+             +241.3793*T;,,                                           N 90Tay !
+ PAR  TC(CR2O3_D51,CR+3:CR+3:O-2),,      -918;,,                      N 90Tay !
+ PAR  BM(CR2O3_D51,CR+3:CR+3:O-2),,        -5.814;,,                  N 90Tay !
+$
+ PAR  G(CR3O4_H11,CR+3:CR+2:O-2),,      +GCR3O4;,,                    N 90Tay !
+$
+ PAR  G(GAS,CR2O),,                     +F7758T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CRO),,                      +F7677T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CR2O2),,                    +F7762T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CR2O3),,                    +F7772T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CRO2),,                     +F7685T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CRO3),,                     +F7693T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GCR2O3    298.15  -1177497.8+814.9138*T-132.046*T*LN(T)
+       +0.005256*T**2-1.38885E-06*T**3+1501761*T**(-1);
+      1000.00  Y  -1166947.9+701.5624*T-115.5381*T*LN(T)
+       -0.00620492*T**2+1.00698E-07*T**3+239949*T**(-1);
+      2600.00  N !
+ FUNCTION GLCR2O3   298.15  +2*GLIQCR+3*GHSEROO-1047074+260.777*T
+       -3.97112*T*LN(T);
+      6000.00  N !
+ FUNCTION GCR3O4    298.15  -1511981.4+1038.674*T-174.276*T*LN(T)
+       -0.002798521*T**2-3.3145E-07*T**3+1799238*T**(-1);
+      6000.00  N !
+$ Cr2O (g)
+ FUNCTION F7758T    298.15  +258642.869+18.9762248*T-45.67129*T*LN(T)
+     -0.01091753*T**2+1.82552667E-06*T**3+195214.55*T**(-1);
+       800.00  Y  +252339.667+100.708506*T-57.99041*T*LN(T)
+     -4.2445385E-05*T**2+1.47398017E-09*T**3+811266.5*T**(-1);
+      6000.00  N !
+$ CrO (g)
+ FUNCTION F7677T    298.15  +176483.869-31.9513653*T-30.2897*T*LN(T)
+       -0.00607059*T**2+9.229905E-07*T**3+35263.135*T**(-1);
+       900.00  Y  +170853.62+32.1684013*T-39.74749*T*LN(T)
+       +0.00119977*T**2-1.52515733E-07*T**3+682877*T**(-1);
+      4000.00  Y  +307209.502-414.237404*T+14.48744*T*LN(T)
+       -0.008463125*T**2+1.722975E-07*T**3-64209900*T**(-1);
+      8400.00  Y  -403765.709+805.224945*T-121.5329*T*LN(T)
+       +0.003139382*T**2-1.36845867E-08*T**3+6.35563E+08*T**(-1);
+     10000.00  N !
+$ Cr2O2 (g)
+ FUNCTION F7762T    298.15  -114921.511+90.7837166*T-56.43087*T*LN(T)
+       -0.024901535*T**2+4.46667667E-06*T**3+425434.7*T**(-1);
+       700.00  Y  -127421.861+262.909889*T-82.6483*T*LN(T)
+       -1.038465E-04*T**2+3.69833E-09*T**3+1558529.5*T**(-1);
+      6000.00  N !
+$ Cr2O3 (g)
+ FUNCTION F7772T    298.15  -356516.315+207.624494*T-81.21114*T*LN(T)
+       -0.02355767*T**2+3.95542E-06*T**3+458816.6*T**(-1);
+       800.00  Y  -369964.255+382.961639*T-107.662*T*LN(T)
+       -8.59286E-05*T**2+2.98778667E-09*T**3+1763567*T**(-1);
+      6000.00  N !
+$ CrO2 (g)
+ FUNCTION F7685T    298.15  -121743.409-9.35135644*T-36.29523*T*LN(T)
+       -0.01993456*T**2+3.5091E-06*T**3+193490.75*T**(-1);
+       700.00  Y  -130807.623+121.470523*T-56.35306*T*LN(T)
+       -3.3428045E-04*T**2-6.06589333E-08*T**3+956146*T**(-1);
+      3400.00  Y  -110536.942+26.3566571*T-44.22742*T*LN(T)
+       -0.003455125*T**2+8.58097667E-08*T**3-5175510*T**(-1);
+      6000.00  N !
+$ CrO3 (g)
+ FUNCTION F7693T    298.15  -342387.72+103.718925*T-52.84504*T*LN(T)
+       -0.02759153*T**2+4.86524667E-06*T**3+358400*T**(-1);
+       700.00  Y  -356869.11+299.291673*T-82.53502*T*LN(T)
+       -7.979305E-05*T**2-1.88415667E-09*T**3+1702506*T**(-1);
+      4000.00  Y  -362423.326+334.45954*T-87.10177*T*LN(T)
+       +0.001170557*T**2-5.86174E-08*T**3+1764429*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  90Tay  'J.R. Taylor, A.T. Dinsdale, Z. Metallkd., 81, 354-66(1990); Cr-O'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  97SUB  'SGTE Substance Database, version 1997'
+  06Pov1 'E. Povoden, A.N. Grundy, L.J. Gauckler,
+          J. Phase Equilib. Diffus., 27, 353-62(2006); Cr-O'
+!

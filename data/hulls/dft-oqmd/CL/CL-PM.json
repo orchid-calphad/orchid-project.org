@@ -1,0 +1,221 @@
+{
+  "counts": {
+    "above_hull": 11,
+    "entries": 65,
+    "intervals": 4,
+    "vertices": 5
+  },
+  "elements": [
+    "CL",
+    "PM"
+  ],
+  "flags": [
+    "degenerate_vertices",
+    "has_intermediate_compounds",
+    "mp_agreement_not_comparable",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1954023",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -10.432862784976493,
+          "right": {
+            "phase": "oqmd-1975110",
+            "x": 0.2
+          },
+          "slope": -10.432862784976493,
+          "x_hi": 0.2,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.19360610561912317,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1975110",
+            "x": 0.2
+          },
+          "mu_a_rel": -0.19360610561912317,
+          "mu_b_rel": -9.6584383625,
+          "right": {
+            "phase": "oqmd-1878447",
+            "x": 0.25
+          },
+          "slope": -9.464832256880877,
+          "x_hi": 0.25,
+          "x_lo": 0.2
+        },
+        {
+          "intercept": -3.370342613952457,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1878447",
+            "x": 0.25
+          },
+          "mu_a_rel": -3.370342613952457,
+          "mu_b_rel": -0.12822883749999958,
+          "right": {
+            "phase": "oqmd-1989007",
+            "x": 0.4
+          },
+          "slope": 3.2421137764524572,
+          "x_hi": 0.4,
+          "x_lo": 0.25
+        },
+        {
+          "intercept": -3.455828505619123,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1989007",
+            "x": 0.4
+          },
+          "mu_a_rel": -3.455828505619123,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "oqmd-1215449",
+            "x": 1.0
+          },
+          "slope": 3.455828505619123,
+          "x_hi": 1.0,
+          "x_lo": 0.4
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-2024748"
+            },
+            {
+              "energy": 0.0,
+              "phase": "oqmd-585140"
+            },
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Cl"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -1.82578070625,
+          "entries_at_x": 25,
+          "formula": "Cl1",
+          "nsites": 8,
+          "phase": "oqmd-1954023",
+          "phase_kind": "structure",
+          "spacegroup_number": 2,
+          "spacegroup_symbol": "P-1",
+          "theoretical": true,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -2.0865725569952986,
+          "energy_per_atom": -4.216110562,
+          "entries_at_x": 1,
+          "formula": "Cl4 Pm1",
+          "nsites": 10,
+          "phase": "oqmd-1975110",
+          "phase_kind": "structure",
+          "spacegroup_number": 12,
+          "spacegroup_symbol": "C2/m",
+          "theoretical": true,
+          "x": 0.2
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -2.5598141698393424,
+          "energy_per_atom": -4.852833255,
+          "entries_at_x": 5,
+          "formula": "Cl3 Pm1",
+          "nsites": 8,
+          "phase": "oqmd-1878447",
+          "phase_kind": "structure",
+          "spacegroup_number": 176,
+          "spacegroup_symbol": "P63/m",
+          "theoretical": true,
+          "x": 0.25
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -2.0734971033714737,
+          "energy_per_atom": -4.856959429,
+          "entries_at_x": 1,
+          "formula": "Cl3 Pm2",
+          "nsites": 10,
+          "phase": "oqmd-1989007",
+          "phase_kind": "structure",
+          "spacegroup_number": 12,
+          "spacegroup_symbol": "C2/m",
+          "theoretical": true,
+          "x": 0.4
+        },
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Pm"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -4.7452352875,
+          "entries_at_x": 19,
+          "formula": "Pm1",
+          "nsites": 4,
+          "phase": "oqmd-1215449",
+          "phase_kind": "structure",
+          "spacegroup_number": 194,
+          "spacegroup_symbol": "P63/mmc",
+          "theoretical": true,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "is_stable is derived by the extraction, not an upstream flag, so comparing it against a hull recomputed from the same energies tests the derivation rather than the data",
+    "max_abs_delta_energy_above_hull": 9.215542551288536e-09,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "derived",
+    "mp_release": "qmdb_v1_8_022026",
+    "observed_at": "2026-09-05T17:02:03Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "2a9393262c52ec35600424236c352a4cdb3291c8b25c1c6588f5e62abe8e0d8d",
+    "stability_tol": 0.0001,
+    "thermo_type": "standard"
+  },
+  "reference": {
+    "kind": "dft_fitted_elemental_reference_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "CL-PM",
+  "x_element": "PM"
+}

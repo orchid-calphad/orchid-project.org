@@ -1,0 +1,240 @@
+$
+$ Database for Se-Te from G. Ghosh et al. 1988 (included in LB Vol. 4)
+$
+$ G. Ghosh, H.L. Lukas, L. Delaey, Calphad, 12, 295-99(1988).
+$
+$ Dataset created 2016.03.24 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ No molecules of Se are included in the gas phase in LBall-v7+fun.tdb.
+$ They are included here and give an about 100 K lower boiling point for
+$ Se compared to LB and a very different Liquid + Gas two-phase region.
+$ There should probably be numerous Se-Te molecules since Se and Te can
+$ be assumed to easily exchange for eachother. The gas phase is not included
+$ in 88Gho.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SE   HEXAGONAL_A8               78.96      5514.512   41.9655 ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  SE2                                SE2 !
+ SPECIE  SE3                                SE3 !
+ SPECIE  SE4                                SE4 !
+ SPECIE  SE5                                SE5 !
+ SPECIE  SE6                                SE6 !
+ SPECIE  SE7                                SE7 !
+ SPECIE  SE8                                SE8 !
+ SPECIE  TE2                                TE2 !
+ SPECIE  TE3                                TE3 !
+ SPECIE  TE4                                TE4 !
+ SPECIE  TE5                                TE5 !
+ SPECIE  TE6                                TE6 !
+ SPECIE  TE7                                TE7 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SE TE : !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : SE TE : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : SE SE2 SE3 SE4 SE5 SE6 SE7 SE8 TE TE2 TE3 TE4 TE5 TE6 TE7 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Se
+$
+ PAR  G(HEXAGONAL_A8,SE),,              +GHSERSE;                1000 N 91Din !
+ PAR  G(LIQUID,SE),,                    +GLIQSE;                 1000 N 91Din !
+$
+ PAR  G(GAS,SE),,                       +F15139T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE2),,                      +F15179T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE3),,                      +F15186T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE4),,                      +F15188T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE5),,                      +F15190T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE6),,                      +F15192T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE7),,                      +F15194T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE7),,                      +F15196T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERSE   298.15  -9376.371+174.205877*T-33.6527*T*LN(T)
+       +0.02424314*T**2-1.5318461E-05*T**3+102249*T**(-1);
+       494.00  Y  -37546.134+507.111538*T-81.2006585*T*LN(T)
+       +0.037144892*T**2-5.611026E-06*T**3+2614263*T**(-1);
+       800.00  Y  -12193.47+197.770166*T-35.1456*T*LN(T);
+      1000.00  N !
+ FUNCTION GLIQSE    298.15  +50533.347-1178.28824*T+194.107439*T*LN(T)
+       -0.390268991*T**2+1.19219297E-04*T**3-2224398*T**(-1); 
+       494.00  Y  -5228.304+183.72559*T-35.1456*T*LN(T);
+      1000.00  N !
+$ Se(g)
+ FUNCTION F15139T   298.15  +232766.124-65.5963457*T-16.24307*T*LN(T)
+       -0.005571435*T**2+6.58265833E-07*T**3-71610.6*T**(-1);
+       800.00  Y  +225185.129+10.7157034*T-27.19696*T*LN(T)
+       +0.001124752*T**2-5.25977833E-08*T**3+878596.5*T**(-1);
+      2000.00  Y  +234611.822-36.1730681*T-21.1825*T*LN(T)
+       -4.4978065E-04*T**2+1.40450217E-08*T**3-1751022*T**(-1);
+      7000.00  Y  +214845.002+13.1902612*T-26.95059*T*LN(T)
+       +2.7852715E-04*T**2-2.74948333E-09*T**3+10695825*T**(-1);
+     10000.00  N !
+$ Se2(g)
+ FUNCTION F15179T   298.15  +129222.34+86.2984759*T-50.63634*T*LN(T)
+       +0.01244823*T**2-2.32291333E-06*T**3+119836.85*T**(-1);
+       800.00  Y  +137406.921-23.0997313*T-34.10038*T*LN(T)
+       -0.0022372185*T**2+9.96887667E-08*T**3-629665*T**(-1);
+      3600.00  Y  +132735.028-3.17188301*T-36.64234*T*LN(T)
+       -0.0015478395*T**2+6.43754667E-08*T**3+1458396*T**(-1);
+      6000.00  N !
+$ Se3(g)
+ FUNCTION F15186T   298.15  +159494.857+79.4847259*T-58.11338*T*LN(T)
+       -2.21118E-05*T**2+8.831945E-10*T**3+162301*T**(-1);
+      6000.00  N !
+$ Se4(g)
+ FUNCTION F15188T   298.15  +139091.401+214.439147*T-82.98956*T*LN(T)
+       -3.913065E-05*T**2+1.564701E-09*T**3+276514.2*T**(-1);
+      6000.00  N !
+$ Se5(g)
+ FUNCTION F15190T   298.15  +122769.294+309.584196*T-108*T*LN(T)
+       -2.2141475E-05*T**2+8.847785E-10*T**3+247104.45*T**(-1);
+      6000.00  N !
+$ Se6(g)
+ FUNCTION F15192T   298.15  +96476.825+456.85972*T-132.9572*T*LN(T)
+       -1.8633165E-05*T**2+7.45342833E-10*T**3+280912.3*T**(-1);
+      6000.00  N !
+$ Se7(g)
+ FUNCTION F15194T   298.15  +99084.1042+567.553812*T-157.8755*T*LN(T)
+       -2.493888E-05*T**2+9.973365E-10*T**3+348709*T**(-1);
+      6000.00  N !
+$ Se8(g)
+ FUNCTION F15196T   298.15  +100471.831+695.896437*T-182.7964*T*LN(T)
+       -3.059853E-05*T**2+1.2224525E-09*T**3+403660.45*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                2000 N 95Dav !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 2000 N 95Dav !
+$
+ PAR  G(GAS,TE),,                       +FTE+RTLNP;,,                 N 00SUB !
+ PAR  G(GAS,TE2),,                      +FTE2+RTLNP;,,                N 00SUB !
+ PAR  G(GAS,TE3),,                      +FTE3+RTLNP;,,                N 00SUB !
+ PAR  G(GAS,TE4),,                      +FTE4+RTLNP;,,                N 00SUB !
+ PAR  G(GAS,TE5),,                      +FTE5+RTLNP;,,                N 00SUB !
+ PAR  G(GAS,TE6),,                      +FTE6+RTLNP;,,                N 00SUB !
+ PAR  G(GAS,TE7),,                      +FTE7+RTLNP;,,                N 00SUB !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$ Te (g) :
+ FUNCTION FTE       298.15  +203077-39.3937*T-21.4658*T*LN(T)
+       +0.00106813*T**2-3.03132E-07*T**3+9080.15*T**(-1);
+      1300.00  Y  +204434-64.4228*T-17.6757*T*LN(T)
+       -0.00193648*T**2+8.01703E-08*T**3+123672*T**(-1);
+      4100.00  Y  +169215+51.7696*T-31.8142*T*LN(T)
+       +6.2125E-04*T**2-7.38245E-09*T**3+16889800*T**(-1);
+     10000.00  N !
+$ Te2 (g) :
+ FUNCTION FTE2      298.15  +155823-93.7413*T-23.3943*T*LN(T)
+       -0.0186449*T**2+2.81237E-06*T**3-164708*T**(-1);
+      1000.00  Y  +141003+90.3569*T-50.7498*T*LN(T)
+       +0.0026634*T**2-1.91725E-07*T**3+1217270*T**(-1);
+      2600.00  Y  +136052+57.9731*T-45.6215*T*LN(T)
+       -6.77045E-04*T**2+6.52445E-08*T**3+7374000*T**(-1);
+      5800.00  Y  +128152+120.993*T-53.6328*T*LN(T)
+       +0.00102992*T**2+9.34818E-09*T**3-1196190*T**(-1);
+      6000.00  N !
+$ Te3 (g) :
+ FUNCTION FTE3      298.15  +185372+54.5927*T-58.1833*T*LN(T)
+       -4.42972E-06*T**2+1.7586E-10*T**3+75006*T**(-1);
+      6000.00  N !
+$ Te4 (g) :
+ FUNCTION FTE4      298.15  +191687+179.006*T-83.1138*T*LN(T)
+       -7.69355E-06*T**2+3.07578E-10*T**3+127262*T**(-1);
+      6000.00  N !
+$ Te5 (g) :
+ FUNCTION FTE5      298.15  +187059+263.053*T-108.07*T*LN(T)
+       -4.33393E-06*T**2+1.71808E-10*T**3+111272*T**(-1);
+      6000.00  N !
+$ Te6 (g) :
+ FUNCTION FTE6      298.15  +186041+400.857*T-133.016*T*LN(T)
+       -3.74116E-06*T**2+1.49701E-10*T**3+128382*T**(-1);
+      6000.00  N !
+$ Te7 (g) :
+ FUNCTION FTE7      298.15  +206091+501.61*T-157.955*T*LN(T)
+       -4.85134E-06*T**2+1.92685E-10*T**3+156512*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From G. Ghosh et al. 1988 (included in LB Vol. 4)
+$
+$ G. Ghosh, H.L. Lukas, L. Delaey, Calphad, 12, 295-99(1988).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ No molecules of Se are included in the gas phase in LBall-v7+fun.tdb.
+$ They are included here and give an about 100 K lower boiling point for
+$ Se compared to LB and a very different Liquid + Gas two-phase region.
+$ There should probably be numerous Se-Te molecules since Se and Te can
+$ be assumed to easily exchange for eachother. The gas phase is not included
+$ in 88Gho.
+$
+ PAR  L(LIQUID,SE,TE;0),,               -8271.5+8.78843*T;,,          N 88Gho !
+ PAR  L(LIQUID,SE,TE;1),,               +467.8;,,                     N 88Gho !
+$
+ PAR  L(HEXAGONAL_A8,SE,TE;0),,         -222.6-1.2815*T;,,            N 88Gho !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  SE-TE(TDB -* +LIQUID +GAS +HEXAGONAL_A8
+  ;P3 TMM:300/1500 STP:.4/800/-2 STP:.4/800/2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Gho  'G. Ghosh, H.L. Lukas, L. Delaey, Calphad, 12, 295-99(1988); Se-Te'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  97SUB  'SGTE Substance Database, version 1997'
+  00SUB  'SGTE Substance Database, version 2000'
+!

@@ -1,0 +1,241 @@
+$
+$ Database for Al-Au from M. Li et al. 2004.
+$
+$ M. Li, C. Li, F. Wang, D. Luo, W. Zhang, J. Alloys Compd., 385, 199-206(2004).
+$
+$ Dataset created 2019.04.22 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ The high temperature AlAu4 (beta) has bcc-A2 structure, but is not modelled
+$ as such.
+$
+$ There is an inverse miscibility gap with a min at 5760 K and x(Au)=0.32.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT AU   FCC_A1                    196.9665    6016.592   47.4884 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL AU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% AU% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL AU : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL AU : VA : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE AL2AU_C1 % 2 2 1 !
+ CONST AL2AU_C1 : AL% AU : AL AU% : !
+$
+$ Prototype AlAu (mP8, P2_1/m)
+$
+ PHASE ALAU % 2 1 1 !
+ CONST ALAU : AL : AU : !
+$
+$ Prototype AlAu2 (oP12, Pnma), (Au-rich)
+$
+ PHASE ALAU2_ALPHA % 2 1 2 !
+ CONST ALAU2_ALPHA : AL : AL AU% : !
+$
+$ Prototype AlAu2 (oP30, Pnnm), (Au-poor)
+$
+ PHASE ALAU2_BETA % 2 1 2 !
+ CONST ALAU2_BETA : AL : AL AU% : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm), gamma-AlAu2 (high T)
+$
+ PHASE ALAU2_C11B % 2 1 2 !
+ CONST ALAU2_C11B : AL% AU : AL AU% : !
+$
+$ Prototype In3Yb8 (hR44, R-3c)
+$
+ PHASE AL3AU8 % 2 3 8 !
+ CONST AL3AU8 : AL : AU : !
+$
+$ Prototype AlAu4 (cP20, P2_13), low T
+$
+ PHASE ALAU4_ALPHA % 2 1 4 !
+ CONST ALAU4_ALPHA : AL : AU : !
+$
+$ Prototype W (cI2, Im-3m), high T
+$
+ PHASE ALAU4_A2 % 2 1 4 !
+ CONST ALAU4_A2 : AL% AU : AU : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  G(AL2AU_C1,AL:AL),,               +3*GHSERAL+23478.7;,,         N 04Li !
+ PAR  G(ALAU2_ALPHA,AL:AL),,            +3*GHSERAL+64753.58-4.31*T;,, N 04Li !
+ PAR  G(ALAU2_BETA,AL:AL),,             +3*GHSERAL+36694.67-1.2*T;,,  N 04Li !
+ PAR  G(ALAU2_C11B,AL:AL),,             +3*GHSERAL+46077.6;,,         N 04Li !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+$ ------------------------------------------------------------------------------
+$ Au
+$
+$ DHCP added in unary 5.0
+$
+$ DHCP replaced by the value from 92Ans in SGSOL 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems. The value for DHCP from 92Ans was used to model these systems,
+$ thus this value must be included in the unary database and not the 04Du
+$ value.
+$
+ PAR  G(FCC_A1,AU:VA),,                 +GHSERAU;                3200 N 91Din !
+ PAR  G(HCP_A3,AU:VA),,                 +GHSERAU+240.75+1.6*T;   3200 N 91Din !
+ PAR  G(BCC_A2,AU:VA),,                 +GHSERAU+4250-1.1*T;     3200 N 91Din !
+$PAR  G(DHCP,AU),,                      +GHSERAU+125+0.79*T;     3200 N 92Ans !
+$PAR  G(DHCP,AU),,                      +GHSERAU+5000;           3200 N 04Du !
+ PAR  G(LIQUID,AU),,                    +GHSERAU
+             +12552-9.385866*T;                                  3200 N 91Din !
+$
+ PAR  G(AL2AU_C1,AU:AU),,               +3*GHSERAU+30266.05;,,        N 04Li !
+ PAR  G(ALAU2_C11B,AU:AU),,             +3*GHSERAU+12106.8;,,         N 04Li !
+ PAR  G(ALAU4_A2,AU:AU),,               +5*GHSERAU+25018.07;,,        N 04Li !
+$
+ FUNCTION GHSERAU   298.15  -6938.856+106.830098*T-22.75455*T*LN(T)
+       -0.00385924*T**2+3.79625E-07*T**3-25097*T**(-1);
+       929.40  Y  -93586.481+1021.69543*T-155.706745*T*LN(T)
+       +0.08756015*T**2-1.1518713E-05*T**3+10637210*T**(-1);
+      1337.33  Y  +314067.829-2016.37825*T+263.252259*T*LN(T)
+       -0.118216828*T**2+8.923844E-06*T**3-67999832*T**(-1);
+      1735.80  Y  -12133.783+165.272524*T-30.9616*T*LN(T);
+      3200.00  N !
+ FUNCTION GLIQAU    298.15  +GHSERAU+12552-9.385866*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Li, C. Li, F. Wang, D. Luo, W. Zhang, J. Alloys Compd., 385, 199-206(2004).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The high temperature AlAu4 (beta) has bcc-A2 structure, but is not modelled
+$ as such.
+$
+$ There is an inverse miscibility gap with a min at 5760 K and x(Au)=0.32.
+$
+ PAR  L(LIQUID,AL,AU;0),,               -131996.19+36.42*T;,,         N 04Li !
+ PAR  L(LIQUID,AL,AU;1),,               +40781.83-1.896*T;,,          N 04Li !
+$
+ PAR  L(FCC_A1,AL,AU:VA;0),,            -102335.39+34.18*T;,,         N 04Li !
+ PAR  L(FCC_A1,AL,AU:VA;1),,            +48202.11-12.63*T;,,          N 04Li !
+ PAR  L(FCC_A1,AL,AU:VA;2),,            -339.93;,,                    N 04Li !
+$
+ PAR  G(AL2AU_C1,AL:AU),,               +2*GHSERAL+GHSERAU
+             -109468.39+24.15*T;,,                                    N 04Li !
+ PAR  G(AL2AU_C1,AU:AL),,               +2*GHSERAU+GHSERAL
+             -34736.68+29.36*T;,,                                     N 04Li !
+ PAR  L(AL2AU_C1,AL,AU:AL;0),,          -127363.65+101.8*T;,,         N 04Li !
+ PAR  L(AL2AU_C1,AL,AU:AU;0),,          -127363.65+101.8*T;,,         N 04Li !
+ PAR  L(AL2AU_C1,AL:AL,AU;0),,          -24092.22+37.21*T;,,          N 04Li !
+ PAR  L(AL2AU_C1,AU:AL,AU;0),,          -24092.22+37.21*T;,,          N 04Li !
+$
+ PAR  G(ALAU,AL:AU),,                   +GHSERAL+GHSERAU
+             -70626.8+15.04*T;,,                                      N 04Li !
+$
+ PAR  G(ALAU2_ALPHA,AL:AU),,            +GHSERAL+2*GHSERAU
+             -93373.11+14.82*T;,,                                     N 04Li !
+ PAR  L(ALAU2_ALPHA,AL:AL,AU;0),,       -212222.01+135.52*T;,,        N 04Li !
+$
+ PAR  G(ALAU2_BETA,AL:AU),,             +GHSERAL+2*GHSERAU
+             -93373.11+14.83*T;,,                                     N 04Li !
+ PAR  L(ALAU2_BETA,AL:AL,AU;0),,        -184104.01+126.06*T;,,        N 04Li !
+$
+ PAR  G(ALAU2_C11B,AL:AU),,             +GHSERAL+2*GHSERAU
+             -88701+9.25*T;,,                                         N 04Li !
+ PAR  G(ALAU2_C11B,AU:AL),,             +GHSERAU+2*GHSERAL
+             -15023.6+3.99*T;,,                                       N 04Li !
+ PAR  L(ALAU2_C11B,AL,AU:AL;0),,        -11378.2;,,                   N 04Li !
+ PAR  L(ALAU2_C11B,AL,AU:AU;0),,        -11378.2;,,                   N 04Li !
+ PAR  L(ALAU2_C11B,AL:AL,AU;0),,        -197980.3+121*T;,,            N 04Li !
+ PAR  L(ALAU2_C11B,AU:AL,AU;0),,        -197980.3+121*T;,,            N 04Li !
+$
+ PAR  G(AL3AU8,AL:AU),,                 +3*GHSERAL+8*GHSERAU
+             -322472.66+67.55*T;,,                                    N 04Li !
+ PAR  G(ALAU4_ALPHA,AL:AU),,            +GHSERAL+4*GHSERAU
+             -135127.51+47.57*T;,,                                    N 04Li !
+$
+ PAR  G(ALAU4_A2,AL:AU),,               +GHSERAL+4*GHSERAU
+             -124300.01+33.86*T;,,                                    N 04Li !
+ PAR  G(ALAU4_A2,AL,AU:AU;0),,          -34.5*T;,,                    N 04Li !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,AL,AU:VA;0),,            -102335.39+34.18*T;,,         N Same !
+ PAR  L(BCC_A2,AL,AU:VA;1),,            +48202.11-12.63*T;,,          N Same !
+ PAR  L(BCC_A2,AL,AU:VA;2),,            -339.93;,,                    N Same !
+$
+ PAR  L(HCP_A3,AL,AU:VA;0),,            -102335.39+34.18*T;,,         N Same !
+ PAR  L(HCP_A3,AL,AU:VA;1),,            +48202.11-12.63*T;,,          N Same !
+ PAR  L(HCP_A3,AL,AU:VA;2),,            -339.93;,,                    N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992); Au'
+  04Du   'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004),
+          SGTE unary database V.5.0, 2009; Au'
+  04Li   'M. Li, C. Li, F. Wang, D. Luo, W. Zhang,
+          J. Alloys Compd., 385, 199-206(2004); Al-Au'
+!

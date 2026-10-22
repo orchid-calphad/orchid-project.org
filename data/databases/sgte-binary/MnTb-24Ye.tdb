@@ -1,0 +1,195 @@
+$
+$ Database for Mn-Tb from H. Ye et al. 2024.
+$
+$ H. Ye, J. Wang, Q. Chen, G. Rao, H. Zhou,
+$ Mater. Genome Eng. Adv., 2, 39(2024).
+$
+$ Dataset created 2024.07.24 by Bengt Hallstedt.
+$
+$ Invariant equilibria differ by up to 3 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+ ELEMENT TB   HCP_A3                    158.9254    9426.552   73.3037 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MN TB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN% TB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MN TB% : VA : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : MN : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN : VA : !
+$
+$ Prototype Mn12Th (tI26, I4/mmm)
+$
+ PHASE MN12TB_D2B % 2 12 1 !
+ CONST MN12TB_D2B : MN : TB : !
+$
+$ Prototype Mn23Th6 (cF116, Fm-3m)
+$
+ PHASE MN23TB6_D8A %A 2 23 6 !
+ CONST MN23TB6_D8A : MN : TB : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE MN2TB_C15 %A 2 2 1 !
+ CONST MN2TB_C15 : MN : TB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BMAG(CBCC_A12,MN:VA),,               -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BMAG(FCC_A1,MN:VA),,                 -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BMAG(BCC_A2,MN:VA),,                 -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BMAG(HCP_A3,MN:VA),,                 -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Tb
+$
+ PAR  G(HCP_A3,TB:VA),,                 +GHSERTB;                3000 N 91Din !
+ PAR  G(BCC_A2,TB:VA),,                 +GBCCTB;                 3000 N 91Din !
+ PAR  G(LIQUID,TB),,                    +GLIQTB;                 3000 N 91Din !
+$
+ FUNCTION GHSERTB   298.15  -20842.158+409.309555*T-77.5006*T*LN(T)
+       +0.0832265*T**2-2.5672833E-05*T**3+562430*T**(-1);
+       600.00  Y  -8772.606+102.61162*T-25.8659*T*LN(T)
+       -0.002757005*T**2-8.05838E-07*T**3+172355*T**(-1);
+      1200.00  Y  -7944.942+101.7776*T-25.9584*T*LN(T)
+       -0.001676335*T**2-1.067632E-06*T**3;
+      1562.00  Y  -265240.309+1456.04268*T-200.215695*T*LN(T)
+       +0.041615159*T**2-2.044697E-06*T**3+65043790*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCTB    298.15  +4167.835-2.652707*T+GHSERTB;
+      1200.00  Y  +633060.245-5157.77779*T+706.580596*T*LN(T)
+       -0.373763517*T**2+3.4100235E-05*T**3-1.03233571E+08*T**(-1);
+      1562.00  Y  -23398.029+257.388486*T-46.4842*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQTB    298.15  +3945.831+29.867521*T-14.252646*T*LN(T)
+       -0.020466105*T**2+2.17475E-06*T**3-160724*T**(-1);
+      1562.00  Y  -13247.649+251.16889*T-46.4842*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H. Ye, J. Wang, Q. Chen, G. Rao, H. Zhou,
+$ Mater. Genome Eng. Adv., 2, 39(2024).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant equilibria differ by up to 3 K.
+$
+ PAR  L(LIQUID,MN,TB;0),,               -8864.31908-5.4*T;,,          N 24Ye !
+ PAR  L(LIQUID,MN,TB;1),,               -4424.74726+4.1*T;,,          N 24Ye !
+ PAR  L(LIQUID,MN,TB;2),,               +1000;,,                      N 24Ye !
+$
+ PAR  L(BCC_A2,MN,TB:VA;0),,            +80000;,,                     N 24Ye !
+ PAR  L(HCP_A3,MN,TB:VA;0),,            +80000;,,                     N 24Ye !
+$
+ PAR  G(MN12TB_D2B,MN:TB),,             +13*GMN12TB;,,                N 24Ye !
+$
+ PAR  G(MN23TB6_D8A,MN:TB),,            +23*GHSERMN+6*GHSERTB
+             -69687-99.818*T;,,                                       N 24Ye !
+ PAR  TC(MN23TB6_D8A,MN:TB),,             455.00;,,                   N 24Ye !
+$ 1 mole of atoms below
+$PAR  BMAG(MN23TB6_D8A,MN:TB),,             0.144;,,                  N 24Ye !
+ PAR  BMAG(MN23TB6_D8A,MN:TB),,            48.471;,,                  N 24Ye !
+$
+ PAR  G(MN2TB_C15,MN:TB),,              +3*GMN2TB;,,                  N 24Ye !
+ PAR  TC(MN2TB_C15,MN:TB),,              -120.00;,,                   N 24Ye !
+$ 1 mole of atoms below
+$PAR  BMAG(MN2TB_C15,MN:TB),,              -8.000;,,                  N 24Ye !
+ PAR  BMAG(MN2TB_C15,MN:TB),,            -728.000;,,                  N 24Ye !
+$
+ FUNCTION GMN12TB   298.15  -9606-3.059*T-0.006*T**2+EGMN12TB;         6000 N !
+ FUNCTION TGMN12TB  298.15  +250;                                      6000 N !
+ FUNCTION FGMN12TB  298.15  +1-EXP(-TGMN12TB*T**(-1));                 6000 N !
+ FUNCTION EGMN12TB  298.15  +12.471765*TGMN12TB
+       +24.94353*T*LN(FGMN12TB);
+      6000.00  N !
+$
+ FUNCTION GMN2TB    298.15  -10657-8.196*T-0.0055*T**2+EGMN2TB;        6000 N !
+ FUNCTION TGMN2TB   298.15  +170;                                      6000 N !
+ FUNCTION FGMN2TB   298.15  +1-EXP(-TGMN2TB*T**(-1));                  6000 N !
+ FUNCTION EGMN2TB   298.15  +12.471765*TGMN2TB+24.94353*T*LN(FGMN2TB); 6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  24Ye   'H. Ye, J. Wang, Q. Chen, G. Rao, H. Zhou,
+          Mater. Genome Eng. Adv., 2, 39(2024); Mn-Tb'
+!

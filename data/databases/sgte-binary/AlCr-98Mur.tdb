@@ -1,0 +1,194 @@
+$
+$ Database for Al-Cr from J.L. Murray 1998.
+$
+$ J.L. Murray, J. Phase Equilib., 19, 368-75(1998).
+$
+$ Dataset created 2019.05.14 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ Pre-SGTE lattice stabilities used.
+$
+$ The Cr solubility in fcc-Al is somewhat higher than in the paper.
+$
+$ Most invariant equilibria differ by less than 10 K, but the Al8Cr5 + bcc
+$ eutectic is 60 K too high.
+$
+$ There is an inverse miscibility gap with a minimum at 3617 K and x(Cr)=0.15.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL CR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% CR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL CR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL CR : VA : !
+$
+$ Prototype Al45V7 (mC104, C2/m)
+$
+ PHASE AL13CR2 % 2 13 2 !
+ CONST AL13CR2 : AL : CR : !
+$
+$ Prototype Al5Cr (mC732, C2/c)
+$
+ PHASE AL11CR2 % 3 10 1 2 !
+ CONST AL11CR2 : AL : AL : CR :  !
+$
+$ Prototype Al4Mn-mu (hP574, P6_3/mmc)
+$
+ PHASE AL4CR % 2 4 1 !
+ CONST AL4CR : AL : CR : !
+$
+$ Prototype Al9Cr4 (cI52, I-43m ?)
+$
+ PHASE AL9CR4 % 2 9 4 !
+ CONST AL9CR4 : AL : CR : !
+$
+$ Prototype Al8Cr5 (hR26, R3m), low T
+$ Prototype Cu5Zn8 (cI52, I-43m), high T
+$
+ PHASE AL8CR5 % 2 8 5 !
+ CONST AL8CR5 : AL : CR : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE ALCR2_C11B % 2 1 2 !
+ CONST ALCR2_C11B : AL : CR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J.L. Murray, J. Phase Equilib., 19, 368-75(1998).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Pre-SGTE lattice stabilities used.
+$
+$ The Cr solubility in fcc-Al is somewhat higher than in the paper.
+$
+$ Most invariant equilibria differ by less than 10 K, but the Al8Cr5 + bcc
+$ eutectic is 60 K too high.
+$
+$ There is an inverse miscibility gap with a minimum at 3617 K and x(Cr)=0.15.
+$
+ PAR  L(LIQUID,AL,CR;0),,               -52995-15.118*T;,,            N 98Mur !
+ PAR  L(LIQUID,AL,CR;1),,               -28534+37.591*T;,,            N 98Mur !
+$
+ PAR  L(BCC_A2,AL,CR:VA;0),,            -29979-34.559*T;,,            N 98Mur !
+ PAR  L(BCC_A2,AL,CR:VA;1),,            -44370+40.25*T;,,             N 98Mur !
+$
+ PAR  L(FCC_A1,AL,CR:VA;0),,            -67996+3.91*T;,,              N 98Mur !
+$
+ PAR  G(AL13CR2,AL:CR),,                +13*GHSERAL+2*GHSERCR
+             -200835+7.185*T;,,                                       N 98Mur !
+ PAR  G(AL11CR2,AL:AL:CR),,             +11*GHSERAL+2*GHSERCR
+             -195806+6.318*T;,,                                       N 98Mur !
+ PAR  G(AL4CR,AL:CR),,                  +4*GHSERAL+GHSERCR
+             -85770-1.25*T;,,                                         N 98Mur !
+ PAR  G(AL9CR4,AL:CR),,                 +9*GHSERAL+4*GHSERCR
+             -206700-71.5*T;,,                                        N 98Mur !
+ PAR  G(AL8CR5,AL:CR),,                 +8*GHSERAL+5*GHSERCR
+             -195806-110.448*T;,,                                     N 98Mur !
+ PAR  G(ALCR2_C11B,AL:CR),,             +GHSERAL+2*GHSERCR
+             -32634-24.897*T;,,                                       N 98Mur !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,AL,CR:VA;0),,            -67996+3.91*T;,,              N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-CR(TDB -* +LIQ +AL7CR +AL11CR2 +AL4CR +AL8CR5 +AL9CR4 +ALCR2_C11B
+  +BCC_A2 +FCC_A1 ;P3 TMM:300/2500 STP:.1/1500) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database; Al-Cr'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Mur  'J.L. Murray, J. Phase Equilib., 19, 368-75(1998); Al-Cr'
+  00Sub  'N. Subasic, Licentiate Thesis, Stockholm, 2000; Al-Cr'
+  01Dup  'N. Dupin, I. Ansara, B. Sundman, Calphad, 25, 279-98(2001); Al-Cr-Ni'
+!

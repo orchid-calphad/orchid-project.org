@@ -1,0 +1,136 @@
+$
+$ Database for Ga-Hg from Y. Feng et al. 2009
+$
+$ Y. Feng, R.C. Wang, C.Q. Peng, H.S. Liu,
+$ J. Cent. South Univ. Technol., 16, 32-37(2009).
+$
+$ Dataset created 2016.05.26 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_GA            69.72      5572.0     40.7271 ! 
+ ELEMENT HG   LIQUID                    200.59      9342.      75.90   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA HG : !
+$
+$ Prototype Hg (hR1, R-3m)
+$
+ PHASE RHOMBO_A10 % 1 1 !
+ CONST RHOMBO_A10 : HG : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+$PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+$PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+$PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Hg
+$
+$ HCP_A3 and TETRAGONAL_A6 added in unary 4.1
+$ FCC_A1 added in unary 5.0
+$
+ PAR  G(LIQUID,HG)              200.00  +GHSERHG;                2000 N 91Din !
+ PAR  G(RHOMBO_A10,HG)          200.00  +GRHOHG;                 2000 N 91Din !
+$PAR  G(FCC_A1,HG:VA)           200.00  +GHSERHG+5+8.368*T;      2000 N 02Mai !
+$PAR  G(HCP_A3,HG:VA)           200.00  +GRHOHG+200+0.7*T;       2000 N 95Yan !
+$PAR  G(TETRAGONAL_A6,HG)       200.00  +GRHOHG
+$            +208.68+1.765592*T;                                 2000 N 95Yan !
+$
+ FUNCTION GHSERHG   200.00  +82356.855-3348.19466*T+618.193308*T*LN(T)
+       -2.0282337*T**2+0.00118398213*T**3-2366612*T**(-1);
+       234.32  Y  -8961.207+135.232291*T-32.257*T*LN(T)
+       +0.0097977*T**2-3.20695E-06*T**3+6670*T**(-1);
+       400.00  Y  -7970.627+112.33345*T-28.414*T*LN(T)
+       +0.00318535*T**2-1.077802E-06*T**3-41095*T**(-1);
+       700.00  Y  -7161.338+90.797305*T-24.87*T*LN(T)
+       -0.00166775*T**2+8.737E-09*T**3-27495*T**(-1);
+      2000.00  N !
+ FUNCTION GRHOHG    200.00  -10668.401+123.274598*T-28.847*T*LN(T)
+       +0.01699705*T**2-2.4555667E-05*T**3+13330*T**(-1);
+       234.32  Y  -11425.394+135.928158*T-30.2091*T*LN(T)
+       +0.00107555*T**2-2.28298E-07*T**3+35545*T**(-1);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Feng, R.C. Wang, C.Q. Peng, H.S. Liu,
+$ J. Cent. South Univ. Technol., 16, 32-37(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,GA,HG;0),,               +7661.9+2.65*T;,,             N 09Fen1 !
+ PAR  L(LIQUID,GA,HG;1),,               +120;,,                       N 09Fen1 !
+ PAR  L(LIQUID,GA,HG;2),,               +1050.2;,,                    N 09Fen1 !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,GA,HG:VA;0),,            +8012.9;,,                    N Same !
+ PAR  L(BCC_A2,GA,HG:VA;0),,            +8012.9;,,                    N Same !
+ PAR  L(HCP_A3,GA,HG:VA;0),,            +8012.9;,,                    N 10Fen !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  GA-HG(TDB -* +LIQUID +ORTHO_A11 +RHOMB_A10 ;G5 C_S:LIQ/HG:VA MAJ:LIQ/GA
+  ;P3 TMM:100/500 STP:.43/400) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Yan  'J. Yang, N.J. Silk, A. Watson, A.W. Bryant, T.G. Chart, B.B. Argent,
+          Calphad, 19, 415-30(1995), SGTE unary database V.4.1, 1999; Cd, Hg'
+  02Mai  'A. Maitre, J.M. Fiorani, M. Vilasi, J. Phase Equilib.,
+          23, 329-38(2002), SGTE unary database V.5.0, 2009; Hg'
+  09Fen1 'Y. Feng, R.C. Wang, C.Q. Peng, H.S. Liu,
+          J. Cent. South Univ. Technol., 16, 32-37(2009); Ga-Hg'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  10Fen  'Y. Feng, R. Wang, H. Liu, Z. Jin, Calphad, 34, 301-9(2010); Ga-Hg-Mg'
+!

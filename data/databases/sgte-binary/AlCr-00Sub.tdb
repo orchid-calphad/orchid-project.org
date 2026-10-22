@@ -1,0 +1,208 @@
+$
+$ Database for Al-Cr from N. Subasic 2000.
+$
+$ N. Subasic, Licentiate Thesis, Stockholm, 2000
+$
+$ Dataset created 2009.08.14 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ The use of this dataset is not recommended.
+$
+$ G(AL4CR,AL:CR) is misprinted in the Thesis.
+$ To get the miscibility gap in GAMMA_BRASS: Startpoint at 400K, x(Cr)=0.32
+$ and start conditions y(gamma,cr#3)=0.005, y(gamma#2,cr#3)=0.12 .
+$
+$ The entropy parameters and interactions for GAMMA_BRASS are very large.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL CR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% CR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL CR% : VA : !
+$
+$ The disordered part of B2_BCC, identical to BCC_A2
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : AL CR% : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %O 3 0.5 0.5 3 !
+ CONST B2_BCC : AL CR : AL% CR : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL CR : VA : !
+$
+$ Prototype Al45V7 (mC104, C2/m), also known as Al13Cr2
+$
+ PHASE AL7CR % 2 7 1 !
+ CONST AL7CR : AL : CR : !
+$
+$ Prototype Al5Cr (mP48, mC* according to Pauling file)
+$
+ PHASE AL11CR2 % 2 11 2 !
+ CONST AL11CR2 : AL : CR : !
+$
+$ Prototype Al4Cr (oC584, Cmcm, epsilon-Al4Cr)
+$
+ PHASE AL4CR % 2 4 1 !
+ CONST AL4CR : AL : CR : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE ALCR2_C11B % 2 1 2 !
+ CONST ALCR2_C11B : AL : CR : !
+$
+$ Gamma-brass; Strukturbericht D81, D82, D83 and D810
+$ Includes phases Al8Cr5 and Al9Cr4
+$
+ PHASE GAMMA_BRASS %L 4 2 2 3 6 !
+ CONST GAMMA_BRASS : CR : CR : AL CR : AL : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ TYPE-DEF L GES A_P_D GAMMA_BRASS C_S 2 CR:CR:CR:AL: !
+ TYPE-DEF L GES A_P_D GAMMA_BRASS MAJ 1 CR:CR:AL:AL: !
+ DEFAULT-COM REJECT_PHASE BCC_A2 HCP_A3 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(A2_BCC,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(A2_BCC,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(A2_BCC,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(A2_BCC,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ N. Subasic, Licentiate Thesis, Stockholm, 2000
+$
+$ The use of this dataset is not recommended.
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ G(AL4CR,AL:CR) is misprinted in the Thesis.
+$ To get the miscibility gap in GAMMA_BRASS: Startpoint at 400K, x(Cr)=0.32
+$ and start conditions y(gamma,cr#3)=0.005, y(gamma#2,cr#3)=0.12 .
+$
+$ The entropy parameters and interactions for GAMMA_BRASS are very large.
+$
+ PAR  L(LIQUID,AL,CR;0),,               -25435-23.864*T;,,            N 00Sub !
+ PAR  L(LIQUID,AL,CR;1),,               -10338;,,                     N 00Sub !
+$
+ PAR  L(FCC_A1,AL,CR:VA;0),,            -60814;,,                     N 00Sub !
+$
+ PAR  L(BCC_A2,AL,CR:VA;0),,            -51080-14.9*T;,,              N 00Sub !
+ PAR  L(A2_BCC,AL,CR:VA;0),,            -51080-14.9*T;,,              N 00Sub !
+$
+ PAR  G(B2_BCC,AL:CR:VA),,              -10481.27;,,                  N 00Sub !
+ PAR  G(B2_BCC,CR:AL:VA),,              -10481.27;,,                  N 00Sub !
+$
+ PAR  G(AL7CR,AL:CR),,                  +7*GHSERAL+GHSERCR
+             -101307+5.145*T;,,                                       N 00Sub !
+$
+ PAR  G(AL11CR2,AL:CR),,                +11*GHSERAL+2*GHSERCR
+             -191451+4.186*T;,,                                       N 00Sub !
+$
+ PAR  G(AL4CR,AL:CR),,                  +4*GHSERAL+GHSERCR
+             -87912+0.9139*T;,,                                       N 00Sub !
+$PAR  G(AL4CR,AL:CR),,                  +4*GHSERAL+GHSERCR
+$            -85712+0.9139*T;,,                                       N 00Sub !
+$
+ PAR  G(ALCR2_C11B,AL:CR),,             +GHSERAL+2*GHSERCR
+             -34499-22.1*T;,,                                         N 00Sub !
+$
+ PAR  G(GAMMA_BRASS,CR:CR:AL:AL),,      +9*GHSERAL+4*GHSERCR
+             -228934-49.767*T;,,                                      N 00Sub !
+ PAR  G(GAMMA_BRASS,CR:CR:CR:AL),,      +6*GHSERAL+7*GHSERCR
+             +156868-198.025*T;,,                                     N 00Sub !
+ PAR  L(GAMMA_BRASS,CR:CR:AL,CR:AL;0),, -600753+146.221*T;,,          N 00Sub !
+ PAR  L(GAMMA_BRASS,CR:CR:AL,CR:AL;1),, +249245;,,                    N 00Sub !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,AL,CR:VA;0),,            -35000+6*T;,,                 N COST !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database; Al-Cr'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425 (1991).'
+  00Sub  'N. Subasic, Licentiate Thesis, Stockholm, 2000; Al-Cr'
+!

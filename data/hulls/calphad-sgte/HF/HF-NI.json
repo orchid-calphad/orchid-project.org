@@ -1,0 +1,222 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "HF",
+    "NI"
+  ],
+  "flags": [
+    "has_intermediate_phases",
+    "redundant_phase_descriptions"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "HF": {
+          "energy": -12987.414235275393,
+          "phase": "HCP_A3"
+        },
+        "NI": {
+          "energy": -8883.51893836004,
+          "phase": "FCC_A1"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -102694.92662108415
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -5.138850369120263
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -101162.77838353092,
+          "right": {
+            "phase": "HFNI_B33",
+            "x": 0.5
+          },
+          "slope": -101162.77838353092,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -54252.99989729521,
+            "slope": 5811.073173506273
+          },
+          "entropy": {
+            "intercept": 2.8850000189026517,
+            "slope": -10.908850406925566
+          },
+          "intercept": -55113.16265293102,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HFNI_B33",
+            "x": 0.5
+          },
+          "mu_a_rel": -55113.16265293102,
+          "mu_b_rel": -46049.6157305999,
+          "right": {
+            "phase": "HFNI3_RT",
+            "x": 0.75
+          },
+          "slope": 9063.546922331123,
+          "x_hi": 0.75,
+          "x_lo": 0.5
+        },
+        {
+          "enthalpy": {
+            "intercept": -199578.78006866202,
+            "slope": 199578.78006866202
+          },
+          "entropy": {
+            "intercept": -21.186551145166092,
+            "slope": 21.186551145166092
+          },
+          "intercept": -193262.00984473072,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HFNI3_RT",
+            "x": 0.75
+          },
+          "mu_a_rel": -193262.00984473072,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "A1_FCC",
+            "x": 1.0
+          },
+          "slope": 193262.00984473072,
+          "x_hi": 1.0,
+          "x_lo": 0.75
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -50581.38919176546,
+          "energy_per_atom": -50581.38919176546,
+          "enthalpy": -51347.46331054207,
+          "entries_at_x": 1,
+          "entropy": -2.5694251845601315,
+          "formula": "",
+          "nsites": null,
+          "phase": "HFNI_B33",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -48315.50246118268,
+          "energy_per_atom": -48315.50246118268,
+          "enthalpy": -49894.695017165504,
+          "entries_at_x": 1,
+          "entropy": -5.296637786291523,
+          "formula": "",
+          "nsites": null,
+          "phase": "HFNI3_RT",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.75
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "A1_FCC",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "HfNi-18Ros",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:42:34Z",
+    "phase_families": {
+      "BCC_A2": "A2_BCC",
+      "FCC_A1": "A1_FCC"
+    },
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/HfNi-18Ros.tdb",
+    "source_sha256": "24edb198273bee61bfc8b65c445acb22ade2438aab084333b01f5a434c0a9d98"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "HF-NI",
+  "x_element": "NI"
+}

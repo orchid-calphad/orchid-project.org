@@ -1,0 +1,178 @@
+$
+$ Database for Co-Sb from Y. Zhang et al. 2008
+$
+$ Y. Zhang, C. Li, Z. Du, T. Geng, Calphad, 32, 56-63(2008).
+$
+$ Dataset created 2009.10.19 by Bengt Hallstedt.
+$ 2020.05.10: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% SB : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc)
+$
+ PHASE COSB_B81 % 3 0.3333 0.3333 0.3333 !
+ CONST COSB_B81 : CO% VA : CO VA% : SB : !
+$
+$ Prototype FeS2 (marcasite, oP6, Pnnm)
+$
+ PHASE COSB2_C18 % 2 0.3333 0.6667 !
+ CONST COSB2_C18 : CO : SB : !
+$
+$ Prototype CoSb2 (mP12, P2_1/c)
+$
+$PHASE COSB2_PRIME % 2 1 2 !
+$CONST COSB2_PRIME : CO : SB : !
+$
+$ Prototype CoAs3 (cI32, Im-3)
+$
+ PHASE COSB3_D02 % 2 0.25 0.75 !
+ CONST COSB3_D02 : CO : SB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(COSB_B81,VA:VA:SB),,            +0.3333*GHSERSB
+             +2010.6+14*T;,,                                          N 08Zha !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+ FUNCTION GSBLOW    298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Zhang, C. Li, Z. Du, T. Geng, Calphad, 32, 56-63(2008).
+$
+$ Checked against paper. Checked at 6000K.
+$
+ PAR  L(LIQUID,CO,SB;0),,               +8001.6-27.8*T;,,             N 08Zha !
+ PAR  L(LIQUID,CO,SB;1),,               -23400+20.6*T;,,              N 08Zha !
+ PAR  L(LIQUID,CO,SB;2),,               +13708-4.5*T;,,               N 08Zha !
+$
+ PAR  L(FCC_A1,CO,SB:VA;0),,            +21458.825-27.52*T;,,         N 08Zha !
+ PAR  L(FCC_A1,CO,SB:VA;1),,            -33494.8+13.2728*T;,,         N 08Zha !
+ PAR  L(FCC_A1,CO,SB:VA;2),,            +12842+10.19025*T;,,          N 08Zha !
+$
+ PAR  L(HCP_A3,CO,SB:VA;0),,            +5000;,,                      N 08Zha !
+$
+ PAR  G(COSB_B81,CO:CO:SB),,            +0.6667*GHSERCO+0.3333*GHSERSB
+             -12044.4+3.2*T;,,                                        N 08Zha !
+ PAR  G(COSB_B81,CO:VA:SB),,            +0.3333*GHSERCO+0.3333*GSBLOW
+             -15370-3.95*T+0.4920984*T*LN(T)+0.002260226*T**2
+             -1.0735435E-06*T**3-20074*T**(-1)+1.5E-21*T**7;,,        N 08Zha !
+ PAR  G(COSB_B81,VA:CO:SB),,            +0.3333*GHSERCO+0.3333*GHSERSB
+             -7103.3+50*T;,,                                          N 08Zha !
+ PAR  L(COSB_B81,CO,VA:VA:SB;0),,       +1064.8-15.0661*T;,,          N 08Zha !
+ PAR  L(COSB_B81,CO,VA:CO:SB;0),,       +1064.8-15.0661*T;,,          N 08Zha !
+ PAR  L(COSB_B81,CO:CO,VA:SB;0),,       -7522.5+4*T;,,                N 08Zha !
+ PAR  L(COSB_B81,VA:CO,VA:SB;0),,       -7522.5+4*T;,,                N 08Zha !
+$
+ PAR  G(COSB2_C18,CO:SB),,              +0.3333*GHSERCO+0.6667*GSBLOW
+             -25535+5.3*T+2.07785787*T*LN(T)-0.013091*T**2
+             +1.5696E-06*T**3-20142*T**(-1)+2E-21*T**7;,,             N 08Zha !
+ PAR  G(COSB3_D02,CO:SB),,              +0.25*GHSERCO+0.75*GSBLOW
+             -21890-6.7*T+3.744512*T*LN(T)-0.014*T**2
+             +2.09113187E-06*T**3-15000*T**(-1)+2E-21*T**7;,,         N 08Zha !
+$
+$ metastable
+$
+ PAR  L(BCC_A2,CO,SB:VA;0),,            +5000;,,                      N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  08Zha  'Y. Zhang, C. Li, Z. Du, T. Geng, Calphad, 32, 56-63(2008); Co-Sb'
+!

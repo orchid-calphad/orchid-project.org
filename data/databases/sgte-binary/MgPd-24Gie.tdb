@@ -1,0 +1,219 @@
+$
+$ Database for Mg-Pd from W. Gierlotka et al. 2024.
+$
+$ W. Gierlotka, S. Terlicka, W. Gasior, A. Debski, M. Peska, M. Polanski,
+$ J. Mining Metall. B., 60, 105-16(2024).
+$
+$ Dataset created 2025.02.18 by Bengt Hallstedt.
+$
+$ Temperature dependency and subregular interaction of the liquid and fcc are
+$ brutal.
+$
+$ The energies of formation of the compounds are very reasonable.
+$
+$ Invariant equilibria differ by up to 4 K due to rounding errors of compound
+$ compositions.
+$
+$ There are considerable uncertainties concerning the crystal structures of
+$ the compounds.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MG PD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MG PD% : VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MG PD : VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MG% PD : VA% : !
+$
+$ Prototype Mg6Pd (Mg85Pd14, cF396, Fm-43m)
+$
+ PHASE MG6PD % 2 6 1 !
+ CONST MG6PD : MG : PD : !
+$
+$ Prototype Mg4Pd (oC1536, Cmme), Mg306Pd77
+$
+ PHASE MG4PD % 2 0.799 0.201 !
+ CONST MG4PD : MG : PD : !
+$
+$ unknown structure
+$
+ PHASE MG79PD21 % 2 0.785 0.215 !
+ CONST MG79PD21 : MG : PD : !
+$
+$ Prototype Cu3P (hP24, P6_3cm)
+$
+ PHASE MG3PD_D021 % 2 3 1 !
+ CONST MG3PD_D021 : MG : PD : !
+$
+$ Prototype Al5Co2 (hP28, P6_3/mmc)
+$
+ PHASE MG5PD2_D811 % 2 5 2 !
+ CONST MG5PD2_D811 : MG : PD : !
+$
+$ Prototype NiTi2 (cF96, Fd-3m)
+$
+ PHASE MG2PD % 2 2 1 !
+ CONST MG2PD : MG : PD : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE MGPD_B2 % 2 1 1 !
+ CONST MGPD_B2 : MG : PD : !
+$
+$ Prototype CuTi-delta (tP2, P4/mmm)
+$
+ PHASE MG9PD11_L2A % 2 9 11 !
+ CONST MG9PD11_L2A : MG : PD : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE MGPD2_C37 % 2 1 2 !
+ CONST MGPD2_C37 : MG : PD : !
+$
+$ Prototype Al3Zr (tI16, I4/mmm)
+$
+ PHASE MGPD3_D023 % 2 1 3 !
+ CONST MGPD3_D023 : MG : PD : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+$PAR  G(CBCC_A12,MG:VA),,               +GHSERMG
+$            +4602.4-3.011*T;                                    3000 N 91Din !
+$PAR  G(CUB_A13,MG:VA),,                +GHSERMG+5000-3*T;       3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCMG    298.15  +GHSERMG+3100-2.1*T;                       3000 N !
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ W. Gierlotka, S. Terlicka, W. Gasior, A. Debski, M. Peska, M. Polanski,
+$ J. Mining Metall. B., 60, 105-16(2024).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Temperature dependency and subregular interaction of the liquid and fcc are
+$ brutal.
+$
+$ The energies of formation of the compounds are very reasonable.
+$
+$ Invariant equilibria differ by up to 4 K due to rounding errors of compound
+$ compositions.
+$
+$ There are considerable uncertainties concerning the crystal structures of
+$ the compounds.
+$
+ PAR  L(LIQUID,MG,PD;0),,               -194404.3+151.2832*T
+             -22.4077*T*LN(T);,,                                      N 24Gie !
+ PAR  L(LIQUID,MG,PD;1),,               -229382.2+329.3496*T
+             -28.187*T*LN(T);,,                                       N 24Gie !
+ PAR  L(LIQUID,MG,PD;2),,               +196138-82.0331*T;,,          N 24Gie !
+$
+ PAR  L(FCC_A1,MG,PD:VA;0),,            -157684.5-16.5046*T;,,        N 24Gie !
+ PAR  L(FCC_A1,MG,PD:VA;1),,            +152447.7-96.7427*T;,,        N 24Gie !
+$
+ PAR  G(MG6PD,MG:PD),,                  +6*GHSERMG+GHSERPD
+             -179448.5-10.2746*T;,,                                   N 24Gie !
+ PAR  G(MG4PD,MG:PD),,                  +0.799*GHSERMG+0.201*GHSERPD
+             -33590-2.9948*T;,,                                       N 24Gie !
+ PAR  G(MG79PD21,MG:PD),,               +0.785*GHSERMG+0.215*GHSERPD
+             -35500-3.1729*T;,,                                       N 24Gie !
+ PAR  G(MG3PD_D021,MG:PD),,             +3*GHSERMG+GHSERPD
+             -159600-14.474*T;,,                                      N 24Gie !
+ PAR  G(MG5PD2_D811,MG:PD),,            +5*GHSERMG+2*GHSERPD
+             -309478.4-25.1755*T;,,                                   N 24Gie !
+ PAR  G(MG2PD,MG:PD),,                  +2*GHSERMG+GHSERPD
+             -149922.9-5.0751*T;,,                                    N 24Gie !
+ PAR  G(MGPD_B2,MG:PD),,                +GHSERMG+GHSERPD
+             -139710+9.5136*T;,,                                      N 24Gie !
+ PAR  G(MG9PD11_L2A,MG:PD),,            +9*GHSERMG+11*GHSERPD
+             -1420000+77.908*T;,,                                     N 24Gie !
+$PAR  G(MGPD2_C37,MG:PD),,              +GHSERMG+2*GHSERPD
+$            -171000+11.9451*T;,,                                     N 24Gie !
+ PAR  G(MGPD2_C37,MG:PD),,              +GHSERMG+2*GHSERPD
+             -171120+11.9451*T;,,                                     N 24Gie !
+ PAR  G(MGPD3_D023,MG:PD),,             +GHSERMG+3*GHSERPD
+             -188000+15.8684*T;,,                                     N 24Gie !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,MG,PD:VA;0),,            -157684.5-16.5046*T;,,        N Same !
+ PAR  L(BCC_A2,MG,PD:VA;1),,            +152447.7-96.7427*T;,,        N Same !
+$
+ PAR  L(HCP_A3,MG,PD:VA;0),,            -157684.5-16.5046*T;,,        N Same !
+ PAR  L(HCP_A3,MG,PD:VA;1),,            +152447.7-96.7427*T;,,        N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  24Gie  'W. Gierlotka, S. Terlicka, W. Gasior, A. Debski, M. Peska,
+          M. Polanski, J. Mining Metall. B., 60, 105-16(2024); Mg-Pd'
+!

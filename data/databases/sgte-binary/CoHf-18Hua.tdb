@@ -1,0 +1,224 @@
+$
+$ Database for Co-Hf from X.M. Huang et al. 2018.
+$
+$ X.M. Huang, W.J. Zeng, J.L. Liu, G.M. Cai, S.H. Liu, H.S. Liu, Z.P. Jin,
+$ Calphad, 62, 128-40(2018).
+$
+$ Dataset created 2020.04.25 by Bengt Hallstedt.
+$
+$ Modified from 15Lu. Fcc and Co11Hf2 modified.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT HF   HCP_A3                    178.49      5845.0     43.56   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO HF : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% HF : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO HF% : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2 (except Va)
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : CO HF VA : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : CO% HF VA : CO HF% VA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% HF% : VA : !
+$
+$ Pearson oP*, Pban
+$
+ PHASE CO11HF2 % 2 11 2 !
+ CONST CO11HF2 : CO : HF : !
+$
+$ Prototype Mn23Th6 (cF116, Fm-3m)
+$
+ PHASE CO23HF6_D8A % 2 23 6 !
+ CONST CO23HF6_D8A : CO : HF : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE C15_LAVES % 2 2 1 !
+ CONST C15_LAVES : CO% HF : CO HF% : !
+$
+$ Prototype NiTi2 (cF96, Fd-3m)
+$
+ PHASE COHF2 % 2 1 2 !
+ CONST COHF2 : CO% HF : CO HF% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE BCC_A2 !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(A2_BCC,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(A2_BCC,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(A2_BCC,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  L(A2_BCC,CO,VA:VA;0),,            +146588.8;,,                  N 15Lu !
+ PAR  G(B2_BCC,CO:VA:VA),,              +73294.4;,,                   N 15Lu !
+ PAR  G(B2_BCC,VA:CO:VA),,              +73294.4;,,                   N 15Lu !
+$
+ PAR  G(C15_LAVES,CO:CO),,              +3*GHSERCO+15000;,,           N REFLAV !
+ PAR  G(COHF2,CO:CO),,                  +3*GHSERCO+15000;,,           N 15Lu !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Hf
+$
+$ HCP_A3 and BCC_A2 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(HCP_A3,HF:VA),,                 +GHSERHF;                3001 N 91Din !
+ PAR  G(BCC_A2,HF:VA),,                 +GBCCHF;                 3001 N 91Din !
+ PAR  G(A2_BCC,HF:VA),,                 +GBCCHF;                 3001 N 91Din !
+ PAR  G(FCC_A1,HF:VA),,                 +GHSERHF+10000-2.2*T;    3001 N 91Din !
+ PAR  G(LIQUID,HF),,                    +GLIQHF;                 3001 N 91Din !
+$
+ PAR  L(A2_BCC,HF,VA:VA;0),,            +150446.4;               3001 N 15Lu !
+ PAR  G(B2_BCC,HF:VA:VA),,              +75223.2;                3001 N 15Lu !
+ PAR  G(B2_BCC,VA:HF:VA),,              +75223.2;                3001 N 15Lu !
+$
+ PAR  G(C15_LAVES,HF:HF),,              +3*GHSERHF+15000;        3001 N REFLAV !
+ PAR  G(COHF2,HF:HF),,                  +3*GHSERHF+15000;        3001 N 15Lu !
+$
+ FUNCTION GHSERHF   298.15  -6987.297+110.744026*T-22.7075*T*LN(T)
+       -0.004146145*T**2-4.77E-10*T**3-22590*T**(-1);
+      2506.00  Y  -1446776.329+6193.609991*T-787.5363829*T*LN(T)
+       +0.1735215*T**2-7.575759E-06*T**3+5.01742495E+08*T**(-1);
+      3000.00  Y  -34274.698+277.882368*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCHF    298.15  +5370.703+103.836026*T-22.8995*T*LN(T)
+       -0.004206605*T**2+8.71923E-07*T**3-22590*T**(-1)-1.446E-10*T**4;
+      2506.00  Y  +1912456.771-8624.20573*T+1087.6141247*T*LN(T)
+       -0.286857065*T**2+1.3427829E-05*T**3-6.10085091E+08*T**(-1);
+      3000.00  Y  -32498.178+276.723247*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHF    298.15  +27402.256-10.953093*T+GHSERHF;
+      1000.00  Y  +49731.499-149.91739*T+12.116812*T*LN(T)
+       -0.021262021*T**2+1.376466E-06*T**3-4449699*T**(-1);
+      2506.00  Y  -4247.217+265.470523*T-44*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(A2_BCC,VA:VA),,                 +30*T;,,                      N 14Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X.M. Huang, W.J. Zeng, J.L. Liu, G.M. Cai, S.H. Liu, H.S. Liu, Z.P. Jin,
+$ Calphad, 62, 128-40(2018).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Modified from 15Lu. Fcc and Co11Hf2 modified.
+$
+ PAR  L(LIQUID,CO,HF;0),,               -166619.477+33.2126304*T;,,   N 15Lu !
+ PAR  L(LIQUID,CO,HF;1),,               +4263.9164-9.1089*T;,,        N 15Lu !
+ PAR  L(LIQUID,CO,HF;2),,               +4130.46576;,,                N 15Lu !
+$
+$PAR  L(FCC_A1,CO,HF:VA;0),,            -61205.4988;,,                N 15Lu !
+ PAR  L(FCC_A1,CO,HF:VA;0),,            -66205.4988;,,                N 18Hua !
+$
+ PAR  L(BCC_A2,CO,HF:VA;0),,            -100060+21.50645*T;,,         N 15Lu !
+ PAR  L(A2_BCC,CO,HF:VA;0),,            -100060+21.50645*T;,,         N 15Lu !
+$
+ PAR  G(B2_BCC,CO:HF:VA),,              -50898.5527+5.4982*T;,,       N 15Lu !
+ PAR  G(B2_BCC,HF:CO:VA),,              -50898.5527+5.4982*T;,,       N 15Lu !
+ PAR  L(B2_BCC,CO,HF:CO:VA;0),,         -26980.5;,,                   N 15Lu !
+ PAR  L(B2_BCC,CO:CO,HF:VA;0),,         -26980.5;,,                   N 15Lu !
+ PAR  L(B2_BCC,CO,HF:HF:VA;0),,         +29005.8;,,                   N 15Lu !
+ PAR  L(B2_BCC,HF:CO,HF:VA;0),,         +29005.8;,,                   N 15Lu !
+$
+ PAR  L(HCP_A3,CO,HF:VA;0),,            -39372.6592+4.24066589*T;,,   N 15Lu !
+$
+ PAR  G(CO11HF2,CO:HF),,                +11*GHSERCO+2*GHSERHF
+             -311572.3+43.68*T;,,                                     N 18Hua !
+ PAR  G(CO23HF6_D8A,CO:HF),,            +23*GHSERCO+6*GHSERHF
+             -981481.017+174.58*T;,,                                  N 15Lu !
+$
+ PAR  G(C15_LAVES,CO:HF),,              +2*GHSERCO+GHSERHF
+             -135448.305+19.1115*T;,,                                 N 15Lu !
+ PAR  G(C15_LAVES,HF:CO),,              +2*GHSERHF+GHSERCO
+             +135448.305-19.1115*T+30000;,,                           N 15Lu !
+ PAR  L(C15_LAVES,CO,HF:CO;0),,         -17662.81326;,,               N 15Lu !
+ PAR  L(C15_LAVES,CO,HF:HF;0),,         -17662.81326;,,               N 15Lu !
+ PAR  L(C15_LAVES,CO:CO,HF;0),,         -78801.9519+39.7017723*T;,,   N 15Lu !
+ PAR  L(C15_LAVES,HF:CO,HF;0),,         -78801.9519+39.7017723*T;,,   N 15Lu !
+$
+ PAR  G(COHF2,CO:HF),,                  +GHSERCO+2*GHSERHF
+             -99361.6212+14.3109*T;,,                                 N 15Lu !
+ PAR  G(COHF2,HF:CO),,                  +GHSERHF+2*GHSERCO
+             +99361.6212-14.3109*T+30000;,,                           N 15Lu !
+ PAR  L(COHF2,CO,HF:CO;0),,             +22505.1;,,                   N 15Lu !
+ PAR  L(COHF2,CO,HF:HF;0),,             +22505.1;,,                   N 15Lu !
+ PAR  L(COHF2,CO:CO,HF;0),,             -126907.5;,,                  N 15Lu !
+ PAR  L(COHF2,HF:CO,HF;0),,             -126907.5;,,                  N 15Lu !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  14Din  'A.T. Dinsdale, A.V. Khvan, A. Watson,
+          Mater. Sci. Technol., 30, 1715-18(2014); Va'
+  15Lu   'X. Lu, S. Liu, K. Cheng, Y. Tang, P. Ou, P. Nash, B. Sundman, Y. Du,
+          F. Zheng, Thermochim. Acta, 608, 49-58(2015); Co-Hf'
+  18Hua  'X.M. Huang, W.J. Zeng, J.L. Liu, G.M. Cai, S.H. Liu, H.S. Liu,
+          Z.P. Jin, Calphad, 62, 128-40(2018); Co-Hf'
+!

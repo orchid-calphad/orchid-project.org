@@ -1,0 +1,218 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "GE",
+    "S"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "GE": {
+          "energy": -9269.484054711369,
+          "phase": "DIAMOND_A4"
+        },
+        "S": {
+          "energy": -9561.670820359353,
+          "phase": "ORTHORHOMBIC_A16"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -75939.99977734851
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -37.18999989061361
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "DIAMOND_A4",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -64851.801309962066,
+          "right": {
+            "phase": "GES_B16",
+            "x": 0.5
+          },
+          "slope": -64851.801309962066,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -5569.999923884156,
+            "slope": -64799.9999295802
+          },
+          "entropy": {
+            "intercept": -2.379999963706151,
+            "slope": -32.42999996320131
+          },
+          "intercept": -4860.402934705162,
+          "kind": "two_phase",
+          "left": {
+            "phase": "GES_B16",
+            "x": 0.5
+          },
+          "mu_a_rel": -4860.402934705162,
+          "mu_b_rel": -59991.398375256904,
+          "right": {
+            "phase": "GES2",
+            "x": 0.6666666666666666
+          },
+          "slope": -55130.99544055174,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.5
+        },
+        {
+          "enthalpy": {
+            "intercept": -146309.99963081285,
+            "slope": 146309.99963081285
+          },
+          "entropy": {
+            "intercept": -71.99999981752106,
+            "slope": 71.99999981752106
+          },
+          "intercept": -124843.19968521895,
+          "kind": "two_phase",
+          "left": {
+            "phase": "GES2",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -124843.19968521895,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "ORTHORHOMBIC_A16",
+            "x": 1.0
+          },
+          "slope": 124843.19968521895,
+          "x_hi": 1.0,
+          "x_lo": 0.6666666666666666
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "DIAMOND_A4",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -32425.900654981033,
+          "energy_per_atom": -32425.900654981033,
+          "enthalpy": -37969.999888674254,
+          "entries_at_x": 1,
+          "entropy": -18.594999945306807,
+          "formula": "",
+          "nsites": null,
+          "phase": "GES_B16",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -41614.39989507299,
+          "energy_per_atom": -41614.39989507299,
+          "enthalpy": -48769.99987693762,
+          "entries_at_x": 1,
+          "entropy": -23.99999993917369,
+          "formula": "",
+          "nsites": null,
+          "phase": "GES2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ORTHORHOMBIC_A16",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "GeS-22Che",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:41:22Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/GeS-22Che.tdb",
+    "source_sha256": "785db495efac14d14276d4c4862c6153b577766e885d34b11e1f90d072d7fd9e"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "GE-S",
+  "x_element": "S"
+}

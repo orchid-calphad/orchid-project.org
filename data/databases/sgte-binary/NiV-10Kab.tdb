@@ -1,0 +1,188 @@
+$
+$ Database for Ni-V from E.G. Kabanova et al. 2010.
+$
+$ E.G. Kabanova, V.N. Kuznetsov, G.P. Zhmurko,
+$ Russ. J. Phys. Chem., 84, 755-59(2010).
+$
+$ Dataset created 2020.12.07 by Bengt Hallstedt.
+$
+$ Parameters for NiV3 are missing in the paper. There are misprints.
+$ The phase diagram could only be approximately reproduced.
+$ Invariant equilibria differ by up to 35 K.
+$
+$ There is an inverse miscibility gap with a minimum at 4028 K and x(V)=0.50.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT V    BCC_A2                     50.9415    4507.0     30.89   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI V : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% V : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI V% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI V : VA : !
+$
+$ Prototype Al3Ti (tI8, I4/mmm)
+$
+ PHASE NI3V_D022 % 2 3 1 !
+ CONST NI3V_D022 : NI% V : NI V% : !
+$
+$ Prototype MoPt2 (oI6, Immm)
+$
+ PHASE NI2V % 2 2 1 !
+ CONST NI2V : NI : V : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+$PHASE NIV3_A15 % 2 0.225 0.775 !
+$CONST NIV3_A15 : NI : V : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_OLD % 3 8 4 18 !
+ CONST SIGMA_OLD : NI : V : NI V : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(NI3V_D022,NI:NI),,              +4*GHSERNI+12000;,,           N 10Kab !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ V
+$
+ PAR  G(BCC_A2,V:VA),,                  +GHSERVV;                4000 N 91Din !
+ PAR  G(FCC_A1,V:VA),,                  +GHSERVV+7500+1.7*T;     4000 N 91Din !
+ PAR  G(HCP_A3,V:VA),,                  +GHSERVV+4000+2.4*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,V:VA),,                +GHSERVV+9000;           4000 N 91Din !
+$PAR  G(CUB_A13,V:VA),,                 +GHSERVV+10000;          4000 N 91Din !
+ PAR  G(LIQUID,V),,                     +GLIQVV;                 4000 N 91Din !
+$
+ PAR  G(NI3V_D022,V:V),,                +4*GHSERVV+30000+6.8*T;,,     N 10Kab !
+$
+ FUNCTION GHSERVV   298.15  -7930.43+133.346053*T-24.134*T*LN(T)
+       -0.003098*T**2+1.2175E-07*T**3+69460*T**(-1);
+       790.00  Y  -7967.842+143.291093*T-25.9*T*LN(T)
+       +6.25E-05*T**2-6.8E-07*T**3;
+      2183.00  Y  -41689.864+321.140783*T-47.43*T*LN(T)+6.44389E+31*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQVV    298.15  +20764.117-9.455552*T+GHSERVV-5.19136E-22*T**7;
+      2183.00  Y  -19617.51+311.055983*T-47.43*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ E.G. Kabanova, V.N. Kuznetsov, G.P. Zhmurko,
+$ Russ. J. Phys. Chem., 84, 755-59(2010).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Parameters for NiV3 are missing in the paper. There are misprints.
+$ The phase diagram could only be approximately reproduced.
+$ Invariant equilibria differ by up to 35 K.
+$
+$ There is an inverse miscibility gap with a minimum at 4028 K and x(V)=0.50.
+$
+ PAR  L(LIQUID,NI,V;0),,                -78472.0731+36.11*T;,,        N 10Kab !
+$
+ PAR  L(FCC_A1,NI,V:VA;0),,             -51220.3+17.02*T;,,           N 10Kab !
+ PAR  TC(FCC_A1,NI,V:VA;0),,            -1313.5;,,                    N 10Kab !
+ PAR  TC(FCC_A1,NI,V:VA;1),,            -1677.5;,,                    N 10Kab !
+ PAR  TC(FCC_A1,NI,V:VA;2),,             -996.97;,,                   N 10Kab !
+$
+ PAR  L(BCC_A2,NI,V:VA;0),,             -63371.9943+37.63*T;,,        N 10Kab !
+$
+$PAR  G(NI3V_D022,NI:V),,               +3*GHSERNI+GHSERVV
+$            -6800+9*T;,,                                             N 10Kab !
+ PAR  G(NI3V_D022,NI:V),,               +3*GHSERNI+GHSERVV
+             -46412+9*T;,,                                            N 10Kab !
+ PAR  G(NI3V_D022,V:NI),,               +3*GHSERVV+GHSERNI+30000;,,   N 10Kab !
+$
+ PAR  G(NI2V,NI:V),,                    +2*GHSERNI+GHSERVV
+             -37450+6.23*T;,,                                         N 10Kab !
+$
+$PAR  G(SIGMA_OLD,NI:V:NI),,             +26*GHSERNI+4*GHSERVV
+$            -165316.783+55.57*T;,,                                   N 10Kab !
+ PAR  G(SIGMA_OLD,NI:V:NI),,             +26*GHSERNI+4*GHSERVV
+             -16531.6783+55.57*T;,,                                   N 10Kab !
+ PAR  G(SIGMA_OLD,NI:V:V),,              +8*GHSERNI+22*GHSERVV
+             -608732.03+264.5689*T;,,                                 N 10Kab !
+ PAR  L(SIGMA_OLD,NI:V:NI,V;0),,         -382811.434+246.84*T;,,      N 10Kab !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,NI,V:VA;0),,             -51220.3+17.02*T;,,           N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-V(TDB -* +LIQUID +FCC_A1 +BCC_A2 +NI2V +NIV3_A15 +NI3V_D022 +SIGMA_OLD 
+  ;P3 TMM:300/2500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  10Kab  'E.G. Kabanova, V.N. Kuznetsov, G.P. Zhmurko,
+          Russ. J. Phys. Chem., 84, 755-59(2010); Ni-V'
+!

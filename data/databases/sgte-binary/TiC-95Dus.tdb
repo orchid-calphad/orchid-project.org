@@ -1,0 +1,170 @@
+$
+$ Database for Ti-C from H. Duschanek et al. 1995.
+$
+$ H. Duschanek, P. Rogl, H.L. Lukas, J. Phase Equilib., 16, 46-60(1995).
+$
+$ Dataset created 2024.07.31 by Bengt Hallstedt.
+$
+$ In the paper this dataset is attributed to the PhD thesis of S. Jonsson, 1992
+$ (= TRITA-MAC 487). However, this is only partially true. The same dataset
+$ was published later as 96Jon and also in the COST 507 database, but with
+$ a few modifications. The present bcc parameters are used in the thesis and
+$ the COST database, but not in the 96Jon paper. The hcp parameters are not
+$ published by Jonsson anywhere, but only in 95Dus. Thus, the attribution
+$ of this dataset.
+$
+$ In this dataset the C solubility in hcp-Ti is slightly higher than in 96Jon
+$ and the bcc + fcc = hcp equilibrium is at 1205 K instead of 1196 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : TI : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : TI% : C VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : TI% : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H. Duschanek, P. Rogl, H.L. Lukas, J. Phase Equilib., 16, 46-60(1995).
+$
+$ Checked against paper and author's tdb. Checked at 6000K.
+$
+$ In the paper this dataset is attributed to the PhD thesis of S. Jonsson, 1992
+$ (= TRITA-MAC 487). However, this is only partially true. The same dataset
+$ was published later as 96Jon and also in the COST 507 database, but with
+$ a few modifications. The present bcc parameters are used in the thesis and
+$ the COST database, but not in the 96Jon paper. The hcp parameters are not
+$ published by Jonsson anywhere, but only in 95Dus. Thus, the attribution
+$ of this dataset.
+$
+$ In this dataset the C solubility in hcp-Ti is slightly higher than in 96Jon
+$ and the bcc + fcc = hcp equilibrium is at 1205 K instead of 1196 K.
+$
+ PAR  L(LIQUID,C,TI;0),,                -214678-14.314*T;,,           N 96Jon2 !
+$
+ PAR  G(FCC_A1,TI:C),,                  +GTIC;,,                      N 96Jon2 !
+ PAR  L(FCC_A1,TI:C,VA;0),,             -85115+6.756*T;,,             N 96Jon2 !
+ PAR  L(FCC_A1,TI:C,VA;1),,             -129429+31.79*T;,,            N 96Jon2 !
+$
+ PAR  G(BCC_A2,TI:C),,                  +GTIC+2*GHSERCC+2295533;,,    N 92Jon !
+ PAR  L(BCC_A2,TI:C,VA;0),,             -2590609;,,                   N 92Jon !
+$
+ PAR  G(HCP_A3,TI:C),,                  +0.5*GHSERTI+0.5*GTIC
+             -2555-4.1242*T;,,                                        N 95Dus !
+$
+ FUNCTION GTIC      298.15  -207709+307.438*T-48.0195*T*LN(T)
+       -0.00272*T**2+819000*T**(-1)-2.03E+09*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  C-TI(TDB -* +LIQ +GRAP +FCC_A1 +BCC_A2 +HCP_A3
+  ;G5 C_S:FCC_A1/TI:C ;P3 TMM:300/5000 STP:.45/2000/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Jon  'S. Jonsson, TRITA-MAC 487, KTH, Stockholm, 1992; Ti-C'
+  95Dus  'H. Duschanek, P. Rogl, H.L. Lukas,
+          J. Phase Equilib., 16, 46-60(1995); Ti-C'
+  96Jon2 'S. Jonsson, Z. Metallkd., 87, 703-12(1996); Ti-C'
+!

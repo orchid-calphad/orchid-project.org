@@ -1,0 +1,216 @@
+$
+$ Database for Cu-Sb from W. Gierlotka and D. Jendrzejczyk-Handzlik 2009.
+$
+$ W. Gierlotka, D. Jendrzejczyk-Handzlik, J. Alloys Compd., 484, 172-76(2009).
+$
+$ Dataset created 2020.11.21 by Bengt Hallstedt.
+$
+$ Note! The associate is actually Cu2/3Sb1/3.
+$
+$ The crystal structure of some phases seems uncertain.
+$
+$ The phase diagram is only approximately reproduced. Interactions for Cu4Sb
+$ Cu3Sb-D03 are missing.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CU2SB                              CU0.666667SB0.333333 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU CU2SB SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$ In Cu-Sb it is prototype BiF3 (D0_3, cF16, Fm-3m), beta
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU SB : VA: !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB : !
+$
+$ Prototype Mg ? (hP2, P6_3/mmc), gamma
+$ According to 00Liu (and LB)
+$
+ PHASE CU17SB3_A3 % 2 17 3 !
+ CONST CU17SB3_A3 : CU : SB : !
+$
+$ Prototype Mg ? (hP2, P6_3/mmc), delta
+$ According to Pauling file
+$ Labelled D019 in LBall-v7+fun.tdb
+$
+ PHASE CU4SB % 2 4 1 !
+ CONST CU4SB : CU% SB : CU SB% : !
+$
+$ Prototype Cu10Sb3 (hP26, P6_3/m), zeta
+$ Labelled A3 in LBall-v7+fun.tdb
+$
+ PHASE CU10SB3 % 2 10 3 !
+ CONST CU10SB3 : CU : SB : !
+$
+$ Prototype BiF3 (cF16, Fm-3m), beta
+$
+ PHASE CU3SB_D03 % 2 3 1 !
+ CONST CU3SB_D03 : CU% SB : CU SB% : !
+$
+$ Prototype beta-Cu3Ti (oP8, Pmmn), epsilon
+$
+ PHASE CU3SB_D0A % 2 3 1 !
+ CONST CU3SB_D0A : CU : SB : !
+$
+$ Prototype Cu2Sb (tP6, P4/nmm), eta
+$
+ PHASE CU2SB_C38 % 2 2 1 !
+ CONST CU2SB_C38 : CU : SB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+$ BCT_A5 from 00Moo not included in unary
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+$PAR  G(BCT_A5,CU),,                    +GHSERCU+4184;           3200 N 00Moo !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ PAR  G(CU4SB,CU:CU),,                  +5*GHSERCU+60000;,,           N 09Gie !
+ PAR  G(CU3SB_D03,CU:CU),,              +4*GBCCCU;,,                  N 09Gie !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCCU    298.15  +GHSERCU+4017-1.255*T;                     3200 N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(CU4SB,SB:SB),,                  +5*GHSERSB+133389.98;,,       N 09Gie !
+ PAR  G(CU3SB_D03,SB:SB),,              +4*GBCCSB;,,                  N 09Gie !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+ FUNCTION GBCCSB    298.15  +GHSERSB+19874-15.1*T;                     3200 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ W. Gierlotka, D. Jendrzejczyk-Handzlik, J. Alloys Compd., 484, 172-76(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The crystal structure of some phases seems uncertain.
+$
+$ Note! The associate is actually Cu2/3Sb1/3.
+$
+$ The phase diagram is only approximately reproduced. Interactions for Cu4Sb
+$ Cu3Sb-D03 are missing.
+$
+ PAR  G(LIQUID,CU2SB),,                 +0.666667*GHSERCU
+             +0.333333*GHSERSB+5851.1417-11.8912*T;,,                 N 09Gie !
+ PAR  L(LIQUID,CU,CU2SB;0),,            -6044.3565+7.3117*T;,,        N 09Gie !
+ PAR  L(LIQUID,CU,CU2SB;1),,            +3442.7496+3.4963*T;,,        N 09Gie !
+ PAR  L(LIQUID,CU2SB,SB;0),,            +16370.628-7.6924*T;,,        N 09Gie !
+ PAR  L(LIQUID,CU2SB,SB;1),,            +6174.554-8.3289*T;,,         N 09Gie !
+ PAR  L(LIQUID,CU2SB,SB;2),,            +2162.7304;,,                 N 09Gie !
+$
+ PAR  L(FCC_A1,CU,SB:VA;0),,            -13550.628-6.3594*T;,,        N 09Gie !
+$
+ PAR  G(CU17SB3_A3,CU:SB),,             +17*GHSERCU+3*GHSERSB
+             -56912.502-31.01*T;,,                                    N 09Gie !
+$
+ PAR  G(CU4SB,CU:SB),,                  +4*GHSERCU+GHSERSB
+             -29161.689+5.7365*T;,,                                   N 09Gie !
+ PAR  G(CU4SB,SB:CU),,                  +ZERO;,,                      N 09Gie !
+$
+ PAR  G(CU10SB3,CU:SB),,                +10*GHSERCU+3*GHSERSB
+             -71672.2396-0.6656*T;,,                                  N 09Gie !
+$
+ PAR  G(CU3SB_D03,CU:SB),,              +3*GHSERCU+GHSERSB
+             +7199.0448-42.5976*T;,,                                  N 09Gie !
+ PAR  G(CU3SB_D03,SB:CU),,              +3*GHSERSB+GHSERCU
+             +420861.96+120.226*T*T;,,                                N 09Gie !
+$
+ PAR  G(CU3SB_D0A,CU:SB),,              +3*GHSERCU+GHSERSB
+             -21131.9544-3.3096*T;,,                                  N 09Gie !
+ PAR  G(CU2SB_C38,CU:SB),,              +2*GHSERCU+GHSERSB
+             -14261.5425-9.9402*T;,,                                  N 09Gie !
+$
+$ metastable
+$
+ PAR  L(BCC_A2,CU,SB:VA;0),,            -13550.628-6.3594*T;,,        N Same !
+ PAR  L(HCP_A3,CU,SB:VA;0),,            -13550.628-6.3594*T;,,        N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CU-SB(TDB -* +LIQUID +BCC_A2 +FCC_A1 +RHOMBO_A7 +CU10SB3 +CU17SB3_A3
+  +CU3SB_D0A +CU2SB_C38 +CU4SB ;P3 TMM:300/2000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  00Moo  'K.-W. Moon, W.J. Boettinger, U.R. Kattner, F.S. Biancaniello,
+          C.A. Handwerker, J. Electron. Mater., 29, 1122-36(2000); Cu'
+  09Gie  'W. Gierlotka, D. Jendrzejczyk-Handzlik,
+          J. Alloys Compd., 484, 172-76(2009); Cu-Sb'
+!

@@ -1,0 +1,206 @@
+$
+$ Database for Mn-Sb from M. Uemitsu et al. 2014.
+$
+$ M. Uemitsu, M. Enoki, S. Iikubo, H. Ohtani,
+$ J. Japan Inst. Met., 78, 327-36(2014).
+$
+$ Dataset created 2018.11.24 by Bengt Hallstedt.
+$ 2021.01.30: Modified for use with GES6.
+$
+$ MnSb widens at low temperature. This seems improbable.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MN SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN% SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN% SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MN SB : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : MN% SB : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN% SB : VA : !
+$
+$ Prototype Cu2Sb (tP6, P4/nmm)
+$
+ PHASE MN2SB_C38 %A 2 2 1 !
+ CONST MN2SB_C38 : MN% SB : MN SB% : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc); Pauling file says CoGe2 (= InNi2, B8_2)
+$
+ PHASE MNSB_B81 %A 2 1 1 !
+ CONST MNSB_B81 : MN : MN SB% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ PAR  G(MN2SB_C38,MN:MN),,              +3*GHSERMN+63955;,,           N 14Uem !
+ PAR  TC(MN2SB_C38,MN:MN),,             +1000.00;,,                   N 14Uem !
+ PAR  G(MNSB_B81,MN:MN),,               +ZERO;,,                      N 14Uem !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+$ CBCC_A12 and CUB_A13 from 14Uem not included in unary
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(CBCC_A12,SB:VA),,               +GHSERSB+10000-156*T
+             +30*T*LN(T);                                        2000 N 14Uem !
+ PAR  G(CUB_A13,SB:VA),,                +GHSERSB+15000-156*T
+             +29*T*LN(T);                                        2000 N 14Uem !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(MN2SB_C38,SB:SB),,              +3*GHSERSB+251387;,,          N 14Uem !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+ FUNCTION GSBLOW    298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Uemitsu, M. Enoki, S. Iikubo, H. Ohtani,
+$ J. Japan Inst. Met., 78, 327-36(2014).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ MnSb widens at low temperature. This seems improbable.
+$
+ PAR  L(LIQUID,MN,SB;0),,               -46703-15.72*T;,,             N 14Uem !
+ PAR  L(LIQUID,MN,SB;1),,               +2509.6+19.16*T;,,            N 14Uem !
+$
+ PAR  L(FCC_A1,MN,SB:VA;0),,            -23025-9.1581*T;,,            N 14Uem !
+ PAR  L(BCC_A2,MN,SB:VA;0),,            -16000-12*T;,,                N 14Uem !
+ PAR  L(CUB_A13,MN,SB:VA;0),,           -70105-25.008*T;,,            N 14Uem !
+$
+ PAR  L(CBCC_A12,MN,SB:VA;0),,          -65000-19.954*T;,,            N 14Uem !
+ PAR  L(CBCC_A12,MN,SB:VA;1),,          -9000+5*T;,,                  N 14Uem !
+$
+ PAR  G(MN2SB_C38,MN:SB),,              +2*GHSERMN+GHSERSB-78112
+             +69.935*T-8.8142*T*LN(T)+0.0083605*T**2-70519*T**(-1);,, N 14Uem !
+ PAR  TC(MN2SB_C38,MN:SB),,              +550.00;,,                   N 14Uem !
+ PAR  BM(MN2SB_C38,MN:SB),,                +1.83;,,                   N 14Uem !
+ PAR  G(MN2SB_C38,SB:MN),,              +2*GHSERSB+GHSERMN+63955;,,   N 14Uem !
+ PAR  L(MN2SB_C38,MN:MN,SB;1),,         +52960;,,                     N 14Uem !
+$
+ PAR  G(MNSB_B81,MN:SB),,               +GHSERMN+GHSERSB
+             -75000+26*T;,,                                           N 14Uem !
+ PAR  TC(MNSB_B81,MN:SB),,               +590.00;,,                   N 14Uem !
+ PAR  BM(MNSB_B81,MN:SB),,                 +1.83;,,                   N 14Uem !
+ PAR  L(MNSB_B81,MN:MN,SB;1),,          +25000;,,                     N 14Uem !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,MN,SB:VA;0),,            -23025-9.1581*T;,,            N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  14Uem  'M. Uemitsu, M. Enoki, S. Iikubo, H. Ohtani,
+          J. Japan Inst. Met., 78, 327-36(2014); Sb, Mn-Sb'
+!

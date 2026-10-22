@@ -1,0 +1,232 @@
+$
+$ Database for Nb-O from R. Jerlerud Perez and A.R. Massih 2007.
+$
+$ R. Jerlerud Perez, A.R. Massih, J. Nucl. Mater., 360, 242-54(2007).
+$
+$ Dataset created 2023.11.05 by Bengt Hallstedt.
+$
+$ Modified from 97Dup. Bcc changed.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  NB+2                               NB1/+2!
+ SPECIE  NB+4                               NB1/+4!
+ SPECIE  NBO                                NB1O1 !
+ SPECIE  NBO2                               NB1O2 !
+ SPECIE  NBO5/2                             NB1O2.5 !
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NB : !
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : NB+2 : O-2 VA NBO2 NBO5/2 : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NB : O VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$ Non-standard model!
+$
+ PHASE HCP_A3 %A 2 1 1 !
+ CONST HCP_A3 : NB : O VA : !
+$
+$ Prototype NbO (cP6, Pm-3m)
+$
+ PHASE NBO % 2 1 1 !
+ CONST NBO : NB : O : !
+$
+$ Prototype NbO2 (tI96, I4_1/a)
+$
+ PHASE NBO2 % 2 1 2 !
+ CONST NBO2 : NB : O : !
+$
+$ Prototype Nb2O5 (mP99, P2/m)
+$
+ PHASE NB2O5 % 2 2 5 !
+ CONST NB2O5 : NB : O : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : NB NBO NBO2 O O2 O3 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(ION,NB+2:VA),,                  +GLIQNB;,,                    N 91Din !
+ PAR  G(GAS,NB),,                       +F13077T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ Nb(g)
+ FUNCTION F13077T   298.15  +712766.598+48.6410598*T-35.6334*T*LN(T)
+       +0.0078268*T**2-9.99561333E-07*T**3+58000.7*T**(-1);
+      1000.00  Y  +718250.236-5.01491454*T-27.90045*T*LN(T)
+       +0.0026618495*T**2-3.10671333E-07*T**3-710928.5*T**(-1);
+      2800.00  Y  +747948.465-181.458415*T-4.752182*T*LN(T)
+       -0.004599283*T**2+9.27975E-08*T**3-6445975*T**(-1);
+      6400.00  Y  +744601.843-140.597978*T-9.951641*T*LN(T)
+       -0.0035367055*T**2+6.06727333E-08*T**3-16843960*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Jerlerud Perez, A.R. Massih, J. Nucl. Mater., 360, 242-54(2007).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 97Dup. Bcc changed.
+$
+ PAR  G(ION,NB+2:O-2),,                 +2*GSOLNBO
+             +310681.92-135.66551*T;,,                                N 97Dup !
+ PAR  G(ION,NBO2),,                     +GSOLNBO2+62301-16.9083*T;,,  N 97Dup !
+ PAR  G(ION,NBO5/2),,                   +0.5*GNB2O5+19682.659-10*T;,, N 97Dup !
+ PAR  L(ION,NB+2:O-2,VA;0),,            +56277.338;,,                 N 97Dup !
+$
+ PAR  G(BCC_A2,NB:O),,                  +GNB2O5-GSOLNBO2+250000;,,    N 97Dup !
+ PAR  L(BCC_A2,NB:O,VA;0),,             -670149+76.4*T;,,             N 07Jer !
+ PAR  L(BCC_A2,NB:O,VA;1),,             -354266;,,                    N 07Jer !
+$
+ PAR  G(HCP_A3,NB:O),,                  +GSOLNBO+100000;,,            N 97Dup !
+$
+ PAR  G(NB2O5,NB:O),,                   +GNB2O5;,,                    N 97Dup !
+ PAR  G(NBO,NB:O),,                     +GSOLNBO;,,                   N 97Dup !
+ PAR  G(NBO2,NB:O),,                    +GSOLNBO2;,,                  N 97Dup !
+$
+ PAR  G(GAS,NBO),,                      +F13097T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,NBO2),,                     +F13108T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GSOLNBO   298.15  -434220.337+246.876204*T-42.99897*T*LN(T)
+       -0.0044367135*T**2+7.613485E-10*T**3+201346.65*T**(-1);
+      2210.00  Y  -456057.083+399.171599*T-62.76*T*LN(T);
+      6000.00  N !
+ FUNCTION GSOLNBO2  298.15  -817191.531+381.593377*T-64.17126*T*LN(T)
+       -9.08246E-04*T**2-4.022435E-06*T**3+418142.7*T**(-1);
+       700.00  Y  -811038.971+277.505525*T-47.77082*T*LN(T)
+       -0.01985076*T**2;
+      1000.00  Y  -7995222.39+66544.4364*T-9449.355*T*LN(T)
+       +5.400225*T**2-5.80159E-04*T**3+1.0211785E+09*T**(-1);
+      1300.00  Y  -825146.769+515.555749*T-83.0524*T*LN(T);
+      2175.00  Y  -849262.299+611.84916*T-94.14*T*LN(T);
+      6000.00  N !
+ FUNCTION GNB2O5    298.15  -1942063.25+674.379374*T-115.742*T*LN(T)
+       -0.0547895*T**2+8.24945333E-06*T**3+534527*T**(-1);
+       700.00  Y  -1967843.43+1010.19042*T-166.3182*T*LN(T)
+       -0.010714595*T**2+1.04697633E-06*T**3+2995953*T**(-1);
+      1500.00  Y  -1970867.16+1053.49937*T-172.7281*T*LN(T)
+       -0.006198805*T**2+5.181745E-07*T**3+2995953*T**(-1);
+      1785.00  Y  -2077756.73+1625.45741*T-242.2536*T*LN(T);
+      6000.00  N !
+$ NbO(g)
+ FUNCTION F13097T   298.15  +189929.973-57.5152038*T-26.20356*T*LN(T)
+       -0.01029724*T**2+1.79974833E-06*T**3+26457.525*T**(-1);
+       800.00  Y  +183755.016+21.8170481*T-38.16645*T*LN(T)
+       +4.095299E-04*T**2-5.36172667E-08*T**3+650110*T**(-1);
+      2800.00  Y  +228848.86-135.468636*T-18.95687*T*LN(T)
+       -0.0030507635*T**2+5.403705E-08*T**3-18542860*T**(-1);
+      6000.00  N !
+$ NbO2(g)
+ FUNCTION F13108T   298.15  -211739.603-48.8330406*T-30.95742*T*LN(T)
+       -0.02867295*T**2+5.98674667E-06*T**3+42180.995*T**(-1);
+       600.00  Y  -221589.351+106.929062*T-55.30411*T*LN(T)
+       -0.001351704*T**2+1.17730783E-07*T**3+804771.5*T**(-1);
+      1800.00  Y  -224255.604+127.550357*T-58.14923*T*LN(T)
+       -7.5971E-06*T**2+2.18181667E-10*T**3+1281120*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NB-O(TDB -* +ION +GAS +BCC_A2 +NB2O5 +NBO +NBO2 
+  ;P3 TMM:500/3500 STP:0.2/3000/-2/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  97Dup  'N. Dupin, I. Ansara, unpublished, 1997; Nb-O'
+  97SUB  'SGTE Substance Database, version 1997'
+  07Jer  'R. Jerlerud Perez, A.R. Massih,
+          J. Nucl. Mater., 360, 242-54(2007); Nb-O'
+!

@@ -1,0 +1,181 @@
+{
+  "counts": {
+    "above_hull": 18,
+    "entries": 79,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "HG",
+    "P"
+  ],
+  "flags": [
+    "degenerate_vertices",
+    "has_intermediate_compounds",
+    "mp_agreement_not_comparable",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1214799",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -0.15856256019307138,
+          "right": {
+            "phase": "oqmd-1884766",
+            "x": 0.6666666666666666
+          },
+          "slope": -0.15856256019307138,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.010429809966265066,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1884766",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -0.010429809966265066,
+          "mu_b_rel": -0.15334765520993882,
+          "right": {
+            "phase": "oqmd-1822661",
+            "x": 0.8
+          },
+          "slope": -0.14291784524367376,
+          "x_hi": 0.8,
+          "x_lo": 0.6666666666666666
+        },
+        {
+          "intercept": -0.6238204308060206,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1822661",
+            "x": 0.8
+          },
+          "mu_a_rel": -0.6238204308060206,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "oqmd-24584",
+            "x": 1.0
+          },
+          "slope": 0.6238204308060206,
+          "x_hi": 1.0,
+          "x_lo": 0.8
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Hg"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -0.297553515517241,
+          "entries_at_x": 23,
+          "formula": "Hg1",
+          "nsites": 29,
+          "phase": "oqmd-1214799",
+          "phase_kind": "structure",
+          "spacegroup_number": 217,
+          "spacegroup_symbol": "I-43m",
+          "theoretical": true,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.10570837346204758,
+          "energy_per_atom": -3.6644062891666667,
+          "entries_at_x": 2,
+          "formula": "Hg1 P2",
+          "nsites": 12,
+          "phase": "oqmd-1884766",
+          "phase_kind": "structure",
+          "spacegroup_number": 33,
+          "spacegroup_symbol": "Pna21",
+          "theoretical": true,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.12476408616120409,
+          "energy_per_atom": -4.32340882,
+          "entries_at_x": 1,
+          "formula": "Hg1 P4",
+          "nsites": 10,
+          "phase": "oqmd-1822661",
+          "phase_kind": "structure",
+          "spacegroup_number": 14,
+          "spacegroup_symbol": "P21/c",
+          "theoretical": true,
+          "x": 0.8
+        },
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-P"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -5.40478869690476,
+          "entries_at_x": 28,
+          "formula": "P1",
+          "nsites": 42,
+          "phase": "oqmd-24584",
+          "phase_kind": "structure",
+          "spacegroup_number": 2,
+          "spacegroup_symbol": "P-1",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "is_stable is derived by the extraction, not an upstream flag, so comparing it against a hull recomputed from the same energies tests the derivation rather than the data",
+    "max_abs_delta_energy_above_hull": 5.545069958756699e-10,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "derived",
+    "mp_release": "qmdb_v1_8_022026",
+    "observed_at": "2026-09-05T17:02:03Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "2a9393262c52ec35600424236c352a4cdb3291c8b25c1c6588f5e62abe8e0d8d",
+    "stability_tol": 0.0001,
+    "thermo_type": "standard"
+  },
+  "reference": {
+    "kind": "dft_fitted_elemental_reference_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "HG-P",
+  "x_element": "P"
+}

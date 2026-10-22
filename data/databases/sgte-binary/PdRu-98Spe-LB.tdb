@@ -1,0 +1,130 @@
+$
+$ Database for Pd-Ru from P.J. Spencer 1998 (included in LB Vol. 4)
+$
+$ P.J. Spencer, unpublished work, 1998.
+$
+$ Dataset created 2016.03.13 by Bengt Hallstedt.
+$ 2021.02.03: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+ ELEMENT RU   HCP_A3                    101.07      4602.4     28.6144 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PD RU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PD% RU : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PD RU : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : PD RU% : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ru
+$
+$ BCC_A2 revised in unary 4.4
+$
+ PAR  G(HCP_A3,RU:VA),,                 +GHSERRU;                4500 N 91Din !
+ PAR  G(FCC_A1,RU:VA),,                 +GHSERRU+12500-2.4*T;    4500 N 91Din !
+ PAR  G(BCC_A2,RU:VA),,                 +GHSERRU+21500-5.05*T;   4500 N 01SGUN !
+$PAR  G(BCC_A2,RU:VA),,                 +GHSERRU+26500-6.2*T;    4500 N 91Din !
+ PAR  G(LIQUID,RU),,                    +GLIQRU;                 4500 N 91Din !
+$
+ FUNCTION GHSERRU   298.15  -7561.873+127.866233*T-22.9143287*T*LN(T)
+       -0.004062566*T**2+1.7641E-07*T**3+56377*T**(-1);
+      1500.00  Y  -59448.103+489.516214*T-72.3241219*T*LN(T)
+       +0.018726245*T**2-1.952433E-06*T**3+11063885*T**(-1);
+      2607.00  Y  -38588773+168610.517*T-21329.705*T*LN(T)
+       +5.221639*T**2-2.40245985E-04*T**3+1.30829926E+10*T**(-1);
+      2740.00  Y  -55768.304+364.482314*T-51.8816*T*LN(T);
+      4500.00  N !
+ FUNCTION GLIQRU    298.15  +27480.616-8.398748*T+GHSERRU;
+       800.00  Y  +50827.232-179.818561*T+19.539341*T*LN(T)
+       -0.026524167*T**2+1.667839E-06*T**3-3861125*T**(-1);
+      2607.00  Y  -17161.807+349.673561*T-51.8816*T*LN(T);
+      4500.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From from P.J. Spencer 1998 (included in LB Vol. 4)
+$
+$ P.J. Spencer, unpublished work, 1998.
+$
+$ Checked against LB. Checked at 6000 K.
+$
+ PAR  L(LIQUID,PD,RU;0),,               +23800;,,                     N 98Spe !
+$
+ PAR  L(FCC_A1,PD,RU:VA;0),,            +25046.104-0.031702387*T;,,   N 98Spe !
+ PAR  L(HCP_A3,PD,RU:VA;0),,            +33283.325-0.05642205*T;,,    N 98Spe !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,PD,RU:VA;0),,            +25046.104-0.031702387*T;,,   N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  PD-RU(TDB -* +LIQUID +FCC_A1 +HCP_A3 ;P3 TMM:300/3000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Spe  'P.J. Spencer, unpublished work, 1998; Pd-Ru'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+!

@@ -1,0 +1,294 @@
+$
+$ Database for Co-Ta from P. Wang et al. 2019.
+$
+$ P. Wang, J. Kossmann, U.R. Kattner, M. Palumbo, T. Hammerschmidt, G.B. Olson,
+$ Calphad, 64, 205-12(2019).
+$
+$ Dataset created 2020.07.12 by Bengt Hallstedt.
+$
+$ Add-on 1:4:2:6 fractional model for the mu-phase. Integer model is also
+$ possible with add-on, but the fractional model was used to avoid
+$ recalculation of the parameters.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT TA   BCC_A2                    180.9479    5681.872   41.4718 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO TA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% TA : VA : !
+$
+$ Disordered part of FCC_4SL, identical to FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : CO% TA : VA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE FCC_4SL:F %AY 5 0.25 0.25 0.25 0.25 1 !
+ CONST FCC_4SL:F : CO% TA : CO% TA : CO% TA : CO TA% : VA :  !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO TA% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% TA : VA : !
+$
+$ Prototype BaPb3 (hR12, R-3m)
+$
+ PHASE CO7TA2 % 2 7 2 !
+ CONST CO7TA2 : CO : TA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE CO2TA_C14 %A 3 2 1 3 !
+ CONST CO2TA_C14 : CO TA : CO TA : CO TA : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE CO2TA_C15 %A 2 2 1 !
+ CONST CO2TA_C15 : CO% TA : CO TA% : !
+$
+$ Prototype MgNi2 (hP24, P6_3/mmc)
+$
+ PHASE CO2TA_C36 %A 3 2 1 3 !
+ CONST CO2TA_C36 : CO TA : CO TA : CO TA : !
+$
+$ Disordered contribution to MU_D85
+$
+ PHASE DIS_MU %A 1 1 !
+ CONST DIS_MU : CO TA : !
+$
+$ Prototype Fe7W6 (hR13, R-3m)
+$
+ PHASE MU_D85 %AP 4 0.07692 0.30769 0.15385 0.46154 !
+ CONST MU_D85 : CO TA : CO TA : CO TA : CO TA : !
+$
+$ Prototype Al2Cu (tI12, I4/mcm)
+$
+ PHASE COTA2_C16 % 2 1 2 !
+ CONST COTA2_C16 : CO% TA : CO TA% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE A1_FCC FCC_4SL !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF P GES AMEND_PHASE_DESCRIPTION MU_D85 NEVER_DIS DIS_MU !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION FCC_4SL DIS_PART A1_FCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(A1_FCC,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(A1_FCC,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(A1_FCC,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  G(CO2TA_C14,CO:CO:CO),,           +6*GHSERCO+106807.8;,,        N 19Wan !
+ PAR  TC(CO2TA_C14,CO:CO:CO),,           1400.00;,,                   N 19Wan !
+$PAR  BM(CO2TA_C14,CO:CO:CO),,              1.71;,,                   N 19Wan !
+ PAR  BM(CO2TA_C14,CO:CO:CO),,            395.11;,,                   N 19Wan !
+ PAR  G(CO2TA_C15,CO:CO),,              +3*GHSERCO+63136.8;,,         N 19Wan !
+ PAR  TC(CO2TA_C15,CO:CO),,              1440.00;,,                   N 19Wan !
+$PAR  BM(CO2TA_C15,CO:CO),,                 1.73;,,                   N 19Wan !
+ PAR  BM(CO2TA_C15,CO:CO),,                19.35;,,                   N 19Wan !
+ PAR  G(CO2TA_C36,CO:CO:CO),,           +6*GHSERCO+114682.2;,,        N 19Wan !
+ PAR  TC(CO2TA_C36,CO:CO:CO),,           1420.00;,,                   N 19Wan !
+$PAR  BM(CO2TA_C36,CO:CO:CO),,              1.72;,,                   N 19Wan !
+ PAR  BM(CO2TA_C36,CO:CO:CO),,            403.96;,,                   N 19Wan !
+ PAR  G(COTA2_C16,CO:CO),,              +3*GHSERCO+121704;,,          N 19Wan !
+ PAR  G(DIS_MU,CO),,                    +GHSERCO+13322;,,             N 19Wan !
+ PAR  TC(MU_D85,CO:CO:CO:CO),,           1460.00;,,                   N 19Wan !
+ PAR  BM(MU_D85,CO:CO:CO:CO),,              1.76;,,                   N 19Wan !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Ta
+$
+ PAR  G(BCC_A2,TA:VA),,                 +GHSERTA;,,                   N 91Din !
+ PAR  G(FCC_A1,TA:VA),,                 +GHSERTA+16000+1.7*T;,,       N 91Din !
+ PAR  G(A1_FCC,TA:VA),,                 +GHSERTA+16000+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,TA:VA),,                 +GHSERTA+12000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,TA),,                    +GLIQTA;,,                    N 91Din !
+$
+ PAR  G(CO2TA_C14,TA:TA:TA),,           +6*GHSERTA+58021.8;,,         N 19Wan !
+ PAR  G(CO2TA_C15,TA:TA),,              +3*GHSERTA+33496.5;,,         N 19Wan !
+ PAR  G(CO2TA_C36,TA:TA:TA),,           +6*GHSERTA+62913;,,           N 19Wan !
+ PAR  G(COTA2_C16,TA:TA),,              +3*GHSERTA+144588;,,          N 19Wan !
+ PAR  G(DIS_MU,TA),,                    +GHSERTA+10456.5;,,           N 19Wan !
+$
+ FUNCTION GHSERTA   298.15  -7285.889+119.139857*T-23.7592624*T*LN(T)
+       -0.002623033*T**2+1.70109E-07*T**3-3293*T**(-1);
+      1300.00  Y  -22389.955+243.88676*T-41.137088*T*LN(T)
+       +0.006167572*T**2-6.55136E-07*T**3+2429586*T**(-1);
+      2500.00  Y  +229382.886-722.59722*T+78.5244752*T*LN(T)
+       -0.017983376*T**2+1.95033E-07*T**3-93813648*T**(-1);
+      3290.00  Y  -1042384.01+2985.49125*T-362.159132*T*LN(T)
+       +0.043117795*T**2-1.055148E-06*T**3+5.54714342E+08*T**(-1);
+      6000.00  N !
+ FUNCTION GLIQTA    298.15  +29160.975-7.578729*T+GHSERTA;
+      1000.00  Y  +43884.339-61.981795*T+0.0279523*T*LN(T)
+       -0.012330066*T**2+6.14599E-07*T**3-3523338*T**(-1);
+      3290.00  Y  -6314.543+258.110873*T-41.84*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCTA    298.15  +GHSERTA+16000+1.7*T;                      6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ P. Wang, J. Kossmann, U.R. Kattner, M. Palumbo, T. Hammerschmidt, G.B. Olson,
+$ Calphad, 64, 205-12(2019).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Add-on 1:4:2:6 fractional model for the mu-phase. Integer model is also
+$ possible with add-on, but the fractional model was used to avoid
+$ recalculation of the parameters.
+$
+ PAR  L(LIQUID,CO,TA;0),,               -141864.9+38.5868*T;,,        N 19Wan !
+ PAR  L(LIQUID,CO,TA;1),,               -1803.2;,,                    N 19Wan !
+ PAR  L(LIQUID,CO,TA;2),,               +11722.5;,,                   N 19Wan !
+$
+ PAR  L(FCC_A1,CO,TA:VA;0),,            -78885+10.561*T;,,            N 19Wan !
+ PAR  L(FCC_A1,CO,TA:VA;1),,            +1945.8;,,                    N 19Wan !
+ PAR  TC(FCC_A1,CO,TA:VA;0),,           -2200;,,                      N 19Wan !
+ PAR  TC(FCC_A1,CO,TA:VA;1),,            -804;,,                      N 19Wan !
+ PAR  BM(FCC_A1,CO,TA:VA;0),,              +1.35;,,                   N 19Wan !
+$
+ PAR  L(A1_FCC,CO,TA:VA;0),,            -78885+10.561*T;,,            N 19Wan !
+ PAR  L(A1_FCC,CO,TA:VA;1),,            +1945.8;,,                    N 19Wan !
+ PAR  TC(A1_FCC,CO,TA:VA;0),,           -2200;,,                      N 19Wan !
+ PAR  TC(A1_FCC,CO,TA:VA;1),,            -804;,,                      N 19Wan !
+ PAR  BM(A1_FCC,CO,TA:VA;0),,              +1.35;,,                   N 19Wan !
+$
+ PAR  G(FCC_4SL,CO:CO:CO:TA:VA),,       +GFCO3TA;,,                   N 19Wan !
+ PAR  G(FCC_4SL,CO:CO:TA:TA:VA),,       +GFCO2TA2;,,                  N 19Wan !
+ PAR  G(FCC_4SL,CO:TA:TA:TA:VA),,       +GFCOTA3;,,                   N 19Wan !
+$
+ PAR  L(BCC_A2,CO,TA:VA;0),,            -55308.6+11.8981*T;,,         N 19Wan !
+ PAR  L(BCC_A2,CO,TA:VA;1),,            -31039.5;,,                   N 19Wan !
+ PAR  TC(BCC_A2,CO,TA:VA;0),,           +1450;,,                      N 19Wan !
+$
+ PAR  L(HCP_A3,CO,TA:VA;0),,            -47726.3;,,                   N 19Wan !
+$
+ PAR  G(CO7TA2,CO:TA),,                 +7*GHSERCO+2*GHSERTA
+             -250417.8+69.5727*T;,,                                   N 19Wan !
+$
+ PAR  G(CO2TA_C14,CO:CO:TA),,           +3*GHSERCO+3*GHSERTA
+             +241326;,,                                               N 19Wan !
+ PAR  G(CO2TA_C14,CO:TA:CO),,           +5*GHSERCO+GHSERTA
+             +61958.4;,,                                              N 19Wan !
+ PAR  G(CO2TA_C14,CO:TA:TA),,           +2*GHSERCO+4*GHSERTA
+             +446838;,,                                               N 19Wan !
+ PAR  G(CO2TA_C14,TA:CO:CO),,           +4*GHSERCO+2*GHSERTA
+             -169054.8+22.1676*T;,,                                   N 19Wan !
+ PAR  G(CO2TA_C14,TA:CO:TA),,           +GHSERCO+5*GHSERTA
+             -882;,,                                                  N 19Wan !
+ PAR  G(CO2TA_C14,TA:TA:CO),,           +3*GHSERCO+3*GHSERTA
+             -158558.4+30.1194*T;,,                                   N 19Wan !
+$
+ PAR  G(CO2TA_C15,CO:TA),,              +2*GHSERCO+GHSERTA
+             -84474.9+10.6572*T;,,                                    N 19Wan !
+ PAR  G(CO2TA_C15,TA:CO),,              +2*GHSERTA+GHSERCO
+             +208296;,,                                               N 19Wan !
+ PAR  L(CO2TA_C15,CO:CO,TA;0),,         -138365.1+41.5305*T;,,        N 19Wan !
+$
+ PAR  G(CO2TA_C36,CO:CO:TA),,           +3*GHSERCO+3*GHSERTA
+             +234600;,,                                               N 19Wan !
+ PAR  G(CO2TA_C36,CO:TA:CO),,           +5*GHSERCO+GHSERTA
+             +70776;,,                                                N 19Wan !
+ PAR  G(CO2TA_C36,CO:TA:TA),,           +2*GHSERCO+4*GHSERTA
+             +426014.4;,,                                             N 19Wan !
+ PAR  G(CO2TA_C36,TA:CO:CO),,           +4*GHSERCO+2*GHSERTA
+             -166150.8+26.3628*T;,,                                   N 19Wan !
+ PAR  G(CO2TA_C36,TA:CO:TA),,           +GHSERCO+5*GHSERTA
+             +1281.6;,,                                               N 19Wan !
+ PAR  G(CO2TA_C36,TA:TA:CO),,           +3*GHSERCO+3*GHSERTA
+             -126163.2;,,                                             N 19Wan !
+ PAR  L(CO2TA_C36,CO,TA:CO:CO;0),,      -239463.6+34.851*T;,,         N 19Wan !
+$
+ PAR  L(DIS_MU,CO,TA;0),,               +20511.2;,,                   N 19Wan !
+ PAR  G(MU_D85,CO:CO:CO:TA),,           +26036;,,                     N 19Wan !
+ PAR  G(MU_D85,CO:CO:TA:CO),,           -10780;,,                     N 19Wan !
+ PAR  G(MU_D85,CO:CO:TA:TA),,           +35800;,,                     N 19Wan !
+ PAR  G(MU_D85,CO:TA:CO:CO),,           -38941.4+2.5*T;,,             N 19Wan !
+ PAR  G(MU_D85,CO:TA:CO:TA),,           +9041;,,                      N 19Wan !
+ PAR  G(MU_D85,CO:TA:TA:CO),,           -44989.6+3.0882*T;,,          N 19Wan !
+ PAR  G(MU_D85,CO:TA:TA:TA),,           -4936;,,                      N 19Wan !
+ PAR  G(MU_D85,TA:CO:CO:CO),,           -11650;,,                     N 19Wan !
+ PAR  G(MU_D85,TA:CO:CO:TA),,           +38781;,,                     N 19Wan !
+ PAR  G(MU_D85,TA:CO:TA:CO),,           -13840;,,                     N 19Wan !
+ PAR  G(MU_D85,TA:CO:TA:TA),,           +46388;,,                     N 19Wan !
+ PAR  G(MU_D85,TA:TA:CO:CO),,           -18258;,,                     N 19Wan !
+ PAR  G(MU_D85,TA:TA:CO:TA),,           +14471;,,                     N 19Wan !
+ PAR  G(MU_D85,TA:TA:TA:CO),,           -46589.3+5.0752*T;,,          N 19Wan !
+$
+ PAR  G(COTA2_C16,CO:TA),,              +GHSERCO+2*GHSERTA
+             -76500+16.4289*T;,,                                      N 19Wan !
+ PAR  G(COTA2_C16,TA:CO),,              +GHSERTA+2*GHSERCO
+             +55851;,,                                                N 19Wan !
+ PAR  L(COTA2_C16,CO,TA:TA;0),,         -55000.5-43.83*T;,,           N 19Wan !
+ PAR  L(COTA2_C16,CO:CO,TA;0),,         -189194.1;,,                  N 19Wan !
+$
+ FUNCTION U1FCOTA   298.15  -9163.2+5.9565*T;                          6000 N !
+ FUNCTION GFCO3TA   298.15  +3*U1FCOTA;                                6000 N !
+ FUNCTION GFCO2TA2  298.15  +4*U1FCOTA+25652.8;                        6000 N !
+ FUNCTION GFCOTA3   298.15  +15000;                                    6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CO-TA(TDB -* +LIQUID +BCC_A2 +FCC_A1 +HCP_A3 +CO7TA2 +COTA2_C16 +CO2TA_C14
+  +CO2TA_C15 +CO2TA_C36 +DIS_MU +MU_D85 ;P3 TMM:500/3500 STP:.1/1600/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  19Wan  'P. Wang, J. Kossmann, U.R. Kattner, M. Palumbo, T. Hammerschmidt,
+          G.B. Olson, Calphad, 64, 205-12(2019); Co-Ta'
+!

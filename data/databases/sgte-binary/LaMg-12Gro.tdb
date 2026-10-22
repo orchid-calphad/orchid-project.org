@@ -1,0 +1,205 @@
+$
+$ Database for La-Mg from J. Groebner et al. 2012.
+$
+$ J. Groebner, M. Hampl, R. Schmid-Fetzer, M.A. Easton, S. Zhu, M.A. Gibson,
+$ J.-F. Nie, Intermetallics, 28, 92-101(2012).
+$
+$ Dataset created 2023.01.22 by Bengt Hallstedt.
+$
+$ Modified from 04Guo. Hcp interaction, La2Mg17 and LaMg12.
+$
+$ There is an inverse miscibility gap with a min at 4160 K and x(Mg)=0.74.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT LA   DHCP                      138.9055    6665.112   56.9024 ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : LA MG : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LA% MG : VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : LA% MG : VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : LA MG% : VA% : !
+$
+$ Prototype alpha-La (SB A3', hP4, P6_3/mmc)
+$
+ PHASE DHCP %A 2 1 0.5 !
+ CONST DHCP : LA% MG : VA% : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE LAMG_B2 % 2 1 1 !
+ CONST LAMG_B2 : MG : LA : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE MG2M_C15 % 2 2 1 !
+ CONST MG2M_C15 : MG : LA : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE MG3M_D03 % 2 3 1 !
+ CONST MG3M_D03 : MG : LA% MG : !
+$
+$ Prototype Mn12Th (tI26, I4/mmm)
+$
+ PHASE LAMG12_D2B % 2 1 12 !
+ CONST LAMG12_D2B : LA : MG : !
+$
+$ Prototype CeMg10 (hP44, P6_3/mmc)
+$
+ PHASE MG17R2 % 2 17 2 !
+ CONST MG17R2 : MG : LA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ La
+$
+$ HCP_A3 from 04Guo and 10Guo not included in unary; 10Guo to be preferred
+$
+ PAR  G(DHCP,LA:VA),,                   +GHSERLA;                4000 N 91Din !
+ PAR  G(FCC_A1,LA:VA),,                 +GFCCLA;                 4000 N 91Din !
+ PAR  G(BCC_A2,LA:VA),,                 +GBCCLA;                 4000 N 91Din !
+ PAR  G(HCP_A3,LA:VA),,                 +GHSERLA+5000;           4000 N 04Guo !
+$PAR  G(HCP_A3,LA:VA),,                 +GHSERLA+303.4;          4000 N 10Guo !
+ PAR  G(LIQUID,LA),,                    +GLIQLA;                 4000 N 91Din !
+$
+ FUNCTION GHSERLA   298.15  -7968.403+120.284604*T-26.34*T*LN(T)
+       -0.001295165*T**2;
+       550.00  Y  -3381.413+59.06113*T-17.1659411*T*LN(T)
+       -0.008371705*T**2+6.8932E-07*T**3-399448*T**(-1);
+      2000.00  Y  -15608.882+181.390071*T-34.3088*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCLA    298.15  -6109.797+89.878761*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+      1134.00  Y  -124598.976+955.878375*T-139.346741*T*LN(T)
+       +0.042032405*T**2-3.066199E-06*T**3+20994153*T**(-1);
+      2000.00  Y  +3009.496-2.846081*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GBCCLA    298.15  -3952.161+88.072353*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+       800.00  Y  +321682.673-3565.08252*T+513.440708*T*LN(T)
+       -0.387295093*T**2+4.9547989E-05*T**3-36581228*T**(-1);
+      1134.00  Y  -16377.894+218.492988*T-39.5388*T*LN(T);
+      1193.00  Y  -136609.91+1123.34397*T-163.413074*T*LN(T)
+       +0.053968535*T**2-4.056395E-06*T**3+21167204*T**(-1);
+      2000.00  Y  +7402.894-6.553756*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GLIQLA    298.15  +5332.653+18.23012*T-11.0188191*T*LN(T)
+       -0.020171603*T**2+2.93775E-06*T**3-133541*T**(-1);
+      1134.00  Y  -3942.004+171.018431*T-34.3088*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+$ DHCP from 04Guo (included in SGSOL 5.0; this value is not particularly good)
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(DHCP,MG:VA),,                   +GHSERMG+5000;           3000 N 04Guo !
+$PAR  G(CBCC_A12,MG:VA),,               +GHSERMG
+$            +4602.4-3.011*T;                                    3000 N 91Din !
+$PAR  G(CUB_A13,MG:VA),,                +GHSERMG+5000-3*T;       3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(MG3M_D03,MG:MG),,               +4*GHSERMG+5000;,,            N 04Guo !
+$PAR  G(MG3M_D03,MG:MG),,               +4*GBCCMG;,,                  N 06Guo !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCMG    298.15  +GHSERMG+3100-2.1*T;                       3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Groebner, M. Hampl, R. Schmid-Fetzer, M.A. Easton, S. Zhu, M.A. Gibson,
+$ J.-F. Nie, Intermetallics, 28, 92-101(2012).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 04Guo. Hcp interaction, La2Mg17 and LaMg12.
+$
+$ There is an inverse miscibility gap with a min at 4160 K and x(Mg)=0.74.
+$
+ PAR  L(LIQUID,LA,MG;0),,               -32472.5+8.3674*T;,,          N 04Guo !
+ PAR  L(LIQUID,LA,MG;1),,               +35610.1-24.0118*T;,,         N 04Guo !
+ PAR  L(LIQUID,LA,MG;2),,               -13162.4;,,                   N 04Guo !
+$
+ PAR  L(FCC_A1,LA,MG:VA;0),,            -35617.9+28.0052*T;,,         N 04Guo !
+ PAR  L(FCC_A1,LA,MG:VA;1),,            +50925.1-62.183*T;,,          N 04Guo !
+$
+ PAR  L(BCC_A2,LA,MG:VA;0),,            -55915.1+34.7275*T;,,         N 04Guo !
+ PAR  L(BCC_A2,LA,MG:VA;1),,            +79339-72.9364*T;,,           N 04Guo !
+ PAR  L(BCC_A2,LA,MG:VA;2),,            -8272.1;,,                    N 04Guo !
+$
+ PAR  L(HCP_A3,LA,MG:VA;0),,            -77000+80*T;,,                N 12Gro !
+ PAR  L(HCP_A3,LA,MG:VA;1),,            +10000;,,                     N 12Gro !
+$
+ PAR  L(DHCP,LA,MG:VA;0),,              -10665.9;,,                   N 04Guo !
+$
+ PAR  G(LAMG_B2,MG:LA),,                +GHSERMG+GHSERLA
+             -33402.3+9.188*T;,,                                      N 04Guo !
+$
+ PAR  G(MG2M_C15,MG:LA),,               +2*GHSERMG+GHSERLA
+             -26814.7-10.1377*T;,,                                    N 04Guo !
+$
+ PAR  G(MG3M_D03,MG:LA),,               +3*GHSERMG+GHSERLA
+             -78791.5+29.2136*T;,,                                    N 04Guo !
+ PAR  L(MG3M_D03,MG:LA,MG;0),,          +6797.4-3.7761*T;,,           N 04Guo !
+$
+ PAR  G(MG17R2,MG:LA),,                 +17*GHSERMG+2*GHSERLA
+             -228000+106.5*T;,,                                       N 12Gro !
+ PAR  G(LAMG12_D2B,LA:MG),,             +GHSERLA+12*GHSERMG
+             -130000+69.2*T;,,                                        N 12Gro !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+   LA-MG(TDB -* +LIQUID +DHCP +FCC_A1 +BCC_A2 +HCP_A3 +LAMG_B2 +MG2M_C15
+   +MG3M_D03 +LAMG12_D2B +MG17R2 ;P3 * ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  04Guo  'C. Guo, Z. Du, J. Alloys Compd., 385, 109-13(2004); La, Mg, La-Mg'
+  06Guo  'C. Guo, Z. Du, J. Alloys Compd., 422, 102-8(2006); Mg-Tb'
+  10Guo  'C. Guo, Z. Du, C. Li, Int. J. Mater. Res., 101, 1424-31(2010); La'
+  12Gro  'J. Groebner, M. Hampl, R. Schmid-Fetzer, M.A. Easton, S. Zhu,
+          M.A. Gibson, J.-F. Nie, Intermetallics, 28, 92-101(2012); La-Mg'
+!

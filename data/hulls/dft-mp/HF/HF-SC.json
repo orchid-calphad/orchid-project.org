@@ -1,0 +1,137 @@
+{
+  "counts": {
+    "above_hull": 4,
+    "entries": 18,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "HF",
+    "SC"
+  ],
+  "flags": [
+    "has_intermediate_compounds",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaaaaadz",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -0.0546668249999982,
+          "right": {
+            "phase": "mp-aaacdnzk",
+            "x": 0.16666666666666666
+          },
+          "slope": -0.0546668249999982,
+          "x_hi": 0.16666666666666666,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.01093336499999964,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaacdnzk",
+            "x": 0.16666666666666666
+          },
+          "mu_a_rel": -0.01093336499999964,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "mp-aaaaaacp",
+            "x": 1.0
+          },
+          "slope": 0.01093336499999964,
+          "x_hi": 1.0,
+          "x_lo": 0.16666666666666666
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -9.95718903,
+          "entries_at_x": 4,
+          "formula": "Hf",
+          "nsites": 2,
+          "phase": "mp-aaaaaadz",
+          "phase_kind": "structure",
+          "spacegroup_number": 194,
+          "spacegroup_symbol": "P6_3/mmc",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.0091111374999997,
+          "energy_per_atom": -9.362180180000001,
+          "entries_at_x": 1,
+          "formula": "Hf5Sc",
+          "nsites": 6,
+          "phase": "mp-aaacdnzk",
+          "phase_kind": "structure",
+          "spacegroup_number": 189,
+          "spacegroup_symbol": "P-62m",
+          "theoretical": true,
+          "x": 0.16666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -6.332469105,
+          "entries_at_x": 11,
+          "formula": "Sc",
+          "nsites": 2,
+          "phase": "mp-aaaaaacp",
+          "phase_kind": "structure",
+          "spacegroup_number": 194,
+          "spacegroup_symbol": "P6_3/mmc",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": true,
+    "comparable_note": "",
+    "max_abs_delta_energy_above_hull": 1.7763568394002505e-15,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "upstream_flag",
+    "mp_release": "2026.04.13",
+    "observed_at": "2026-09-01T20:54:47Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "b6deba8ecf1b67211b3d89cd33a5f98a1939d4bcd92db561818195e55187492a",
+    "stability_tol": 0.0001,
+    "thermo_type": "GGA_GGA+U"
+  },
+  "reference": {
+    "kind": "dft_elemental_ground_state_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "HF-SC",
+  "x_element": "SC"
+}

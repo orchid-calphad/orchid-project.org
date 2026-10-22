@@ -1,0 +1,277 @@
+$
+$ Database for Cu-Te from S. Yu et al. 2022.
+$
+$ S. Yu, J. Wang, D. Cui, S. Chen, Q. Wu, Y. Du,
+$ J. Phase Equilib. Diffus., 43, 193-213(2022).
+$
+$ Dataset created 2022.09.25 by Bengt Hallstedt.
+$
+$ Compared to 21Hua a number of intermetallic phases near Cu2Te have been
+$ added. These phases are called Cu2Te although they have slightly higher
+$ Te content. These are the Cu2Te-theta to Cu2Te-mu phases.
+$
+$ There are misprints in the parameter list.
+$ Correction in JPED 44, 340-42(2023).
+$
+$ The phase relations among the intermediate phases is more complex,
+$ with considerable solid solution ranges.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CU2TE                              CU2TE1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU CU2TE TE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU : VA : !
+$
+$ gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ orthorhombic
+$
+ PHASE CU2TE_ALPHA % 2 2 1 !
+ CONST CU2TE_ALPHA : CU : TE : !
+$
+$ orthorhombic
+$
+ PHASE CU2TE_BETA % 2 2 1 !
+ CONST CU2TE_BETA : CU : TE : !
+$
+$ Prototype Cu2Te (hP72, P3m1)
+$
+ PHASE CU2TE_GAMMA % 2 2 1 !
+ CONST CU2TE_GAMMA : CU : TE : !
+$
+$ Prototype Cu2Te (hP6, P6/mmm, SB: C_h), weissite
+$
+ PHASE CU2TE_DELTA % 2 2 1 !
+ CONST CU2TE_DELTA : CU : TE : !
+$
+$ cubic, Fd-3m
+$
+ PHASE CU2TE_EPSILON % 2 2 1 !
+ CONST CU2TE_EPSILON : CU : TE : !
+$
+$ unknown structure
+$
+ PHASE CU2TE_ZETA % 2 2 1 !
+ CONST CU2TE_ZETA : CU : TE : !
+$
+$ orthorhombic
+$
+ PHASE CU2TE_THETA % 2 0.655 0.345 !
+ CONST CU2TE_THETA : CU : TE : !
+$
+$ unknown structure
+$
+ PHASE CU2TE_ETA % 2 0.655 0.345 !
+ CONST CU2TE_ETA : CU : TE : !
+$
+$ hexagonal
+$
+ PHASE CU2TE_LAMBDA % 2 0.646 0.354 !
+ CONST CU2TE_LAMBDA : CU : TE : !
+$
+$ monoclinic
+$
+ PHASE CU2TE_KAPPA % 2 0.643 0.357 !
+ CONST CU2TE_KAPPA : CU : TE : !
+$
+$ rhombohedral, P3m1
+$
+ PHASE CU2TE_IOTA % 2 0.643 0.357 !
+ CONST CU2TE_IOTA : CU : TE : !
+$
+$ Prototype Cu7Te4 (hP22, P-3m1), Cu2Te-mu
+$
+ PHASE CU7TE4 % 2 0.64 0.36 !
+ CONST CU7TE4 : CU : TE : !
+$
+$ Prototype Cu3Te2 (oP6, Pmmn)
+$
+ PHASE CU3TE2 % 2 0.63 0.37 !
+ CONST CU3TE2 : CU : TE : !
+$
+$ Prototype Cu2Sb (tP6, P4/nmm), ricardite
+$ (also hexagonal, orthorhombic Pmmm)
+$
+ PHASE CU4TE3_C38 % 2 4 3 !
+ CONST CU4TE3_C38 : CU : TE : !
+$
+$ Prototype Cu3Te2 (cF28, F-43m)
+$
+ PHASE CU4TE3_BETA % 2 4 3 !
+ CONST CU4TE3_BETA : CU : TE : !
+$
+$ Prototype CuTe-alpha (oP4, Pmmn), vulcanite
+$
+ PHASE CUTE_ALPHA % 2 1 1 !
+ CONST CUTE_ALPHA : CU : TE : !
+$
+$ unknown structure
+$
+ PHASE CUTE_BETA % 2 1 1 !
+ CONST CUTE_BETA : CU : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+$ BCT_A5 from 00Moo not included in unary
+$ CBCC_A12 and CUB_A13 not included in unary
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+$PAR  G(BCT_A5,CU),,                    +GHSERCU+4184;           3200 N 00Moo !
+$PAR  G(CBCC_A12,CU:VA),,               +GHSERCU+3556;           2000 N 03Mie2 !
+$PAR  G(CUB_A13,CU:VA),,                +GHSERCU+2092;           2000 N 03Mie2 !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCCU    298.15  +GHSERCU+4017-1.255*T;                     3200 N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                2000 N 95Dav !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 2000 N 95Dav !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Yu, J. Wang, D. Cui, S. Chen, Q. Wu, Y. Du,
+$ J. Phase Equilib. Diffus., 43, 193-213(2022).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Compared to 21Hua a number of intermetallic phases near Cu2Te have been
+$ added. These phases are called Cu2Te although they have slightly higher
+$ Te content. These are the Cu2Te-theta to Cu2Te-mu phases.
+$
+$ There are misprints in the parameter list.
+$ Correction in JPED 44, 340-42(2023).
+$
+$ The phase relations among the intermediate phases is more complex,
+$ with considerable solid solution ranges.
+$
+ PAR  G(LIQUID,CU2TE),,                 +2*GLIQCU+GLIQTE
+             -57046-15.325*T;,,                                       N 22Yu !
+ PAR  L(LIQUID,CU,CU2TE;0),,            +85646-43.708*T;,,            N 22Yu !
+ PAR  L(LIQUID,CU,CU2TE;1),,            -17524+19.353*T;,,            N 22Yu !
+ PAR  L(LIQUID,CU2TE,TE;0),,            -4486-28.934*T;,,             N 22Yu !
+ PAR  L(LIQUID,CU2TE,TE;1),,            +4743-2.812*T;,,              N 22Yu !
+$
+ PAR  G(CU2TE_ALPHA,CU:TE),,            +3*GCU2TEA;,,                 N 22Yu !
+ PAR  G(CU2TE_BETA,CU:TE),,             +3*GCU2TEA+219-0.477*T;,,     N 22Yu !
+ PAR  G(CU2TE_GAMMA,CU:TE),,            +3*GCU2TEA+2121-3.744*T;,,    N 22Yu !
+ PAR  G(CU2TE_DELTA,CU:TE),,            +3*GCU2TEA+3090-5.295*T;,,    N 22Yu !
+ PAR  G(CU2TE_EPSILON,CU:TE),,          +3*GCU2TEA+5541-8.097*T;,,    N 22Yu !
+ PAR  G(CU2TE_ZETA,CU:TE),,             +3*GCU2TEA+7236-9.573*T;,,    N 22Yu !
+ PAR  G(CU2TE_THETA,CU:TE),,            +0.655*GHSERCU+0.345*GHSERTE
+             -14555-10.463*T;,,                                       N 22Yu !
+ PAR  G(CU2TE_ETA,CU:TE),,              +0.655*GHSERCU+0.345*GHSERTE
+             -14347.762-10.923534*T;,,                                N 22Yu !
+ PAR  G(CU2TE_LAMBDA,CU:TE),,           +0.646*GHSERCU+0.354*GHSERTE
+             -14617-10.383394*T;,,                                    N 22Yu !
+ PAR  G(CU2TE_KAPPA,CU:TE),,            +0.643*GHSERCU+0.357*GHSERTE
+             -14570.798-10.465799*T;,,                                N 22Yu !
+ PAR  G(CU2TE_IOTA,CU:TE),,             +0.643*GHSERCU+0.357*GHSERTE
+             -14570.278-10.466799*T;,,                                N 22Yu !
+ PAR  G(CU7TE4,CU:TE),,                 +0.64*GHSERCU+0.36*GHSERTE
+             -14660-10.273439*T;,,                                    N 22Yu !
+ PAR  G(CU3TE2,CU:TE),,                 +0.63*GHSERCU+0.37*GHSERTE
+             -7574-19.399*T;,,                                        N 22Yu !
+$
+ PAR  G(CU4TE3_C38,CU:TE),,             +4*GHSERCU+3*GHSERTE
+             -105483-62.146*T;,,                                      N 22Yu !
+ PAR  G(CU4TE3_BETA,CU:TE),,            +4*GHSERCU+3*GHSERTE
+             -72835-112.371*T;,,                                      N 22Yu !
+$
+ PAR  G(CUTE_ALPHA,CU:TE),,             +2*GCUTEA;,,                  N 22Yu !
+ PAR  G(CUTE_BETA,CU:TE),,              +2*GCUTEA+3530-5.701*T;,,     N 22Yu !
+$
+ FUNCTION GCU2TEA   298.15  -21322+89.226*T-19.7664*T*LN(T)
+       -0.0095*T**2+15891.0775*T**(-1);
+       459.85  Y  -20090+48.2*T-12.5453*T*LN(T)-0.0247*T**2+5.467E-06*T**3;
+       874.55  Y  -27290+203.813*T-37.3696*T*LN(T)+0.003833*T**2;
+      1387.00  N !
+ FUNCTION GCUTEA    298.15  -24385+166.598*T-31.6961*T*LN(T)
+       -0.000492395*T**2+211778*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  00Moo  'K.-W. Moon, W.J. Boettinger, U.R. Kattner, F.S. Biancaniello,
+          C.A. Handwerker, J. Electron. Mater., 29, 1122-36(2000); Cu'
+  03Mie2 'J. Miettinen, Calphad, 27, 103-14(2003); Cu'
+  22Yu   'S. Yu, J. Wang, D. Cui, S. Chen, Q. Wu, Y. Du,
+          J. Phase Equilib. Diffus., 43, 193-213(2022); Cu-Te'
+!

@@ -1,0 +1,215 @@
+$
+$ Database for Ni-Sc from D. Zhu et al. 2015.
+$
+$ D. Zhu, C. Li, C. Guo, Z. Du, J. Li, Calphad, 48, 106-12(2015).
+$
+$ Dataset created 2023.11.22 by Bengt Hallstedt.
+$
+$ Associate liquid model with Ni0.47Sc0.53 (!!!) associates.
+$
+$ There are misprints in the parameter table.
+$
+$ Invariant equilibria differ by up to 7 K due to rounding errors.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT SC   HCP_A3                     44.9559    5217.448   34.6435 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  NISC                               NI0.47SC0.53 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI NISC SC : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% SC : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI SC% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI SC% : VA : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE NI5SC_D2D % 2 5 1 !
+ CONST NI5SC_D2D : NI : SC : !
+$
+$ Prototype Ce2Ni7 (hP36, P6_3/mmc)
+$
+ PHASE NI7SC2 % 2 7 2 !
+ CONST NI7SC2 : NI : SC : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE C15_LAVES % 2 2 1 !
+ CONST C15_LAVES : NI% SC : NI SC% : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE NISC_B2 % 2 0.47 0.53 !
+ CONST NISC_B2 : NI : SC : !
+$
+$ Prototype NiTi2 (cF96, Fd-3m)
+$
+ PHASE NISC2 % 2 7 18 !
+ CONST NISC2 : NI : SC : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(C15_LAVES,NI:NI),,              +3*GHSERNI+15000;        3000 N REFLAV !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+ FUNCTION GHCPNI    298.15  +GHSERNI+1046+1.255*T;                     3000 N !
+$ ------------------------------------------------------------------------------
+$ Sc
+$
+$ FCC_A1 and DHCP added in unary 4.4
+$
+ PAR  G(HCP_A3,SC:VA),,                 +GHSERSC;                3200 N 91Din !
+ PAR  G(BCC_A2,SC:VA),,                 +GBCCSC;                 3200 N 91Din !
+ PAR  G(FCC_A1,SC:VA),,                 +GHSERSC+5000;           3200 N 99Cac !
+$PAR  G(DHCP,SC),,                      +GHSERSC
+$            +1200+0.4157255*T;                                  3200 N 00Nor2 !
+ PAR  G(LIQUID,SC),,                    +GLIQSC;                 3200 N 91Din !
+$
+ PAR  G(C15_LAVES,SC:SC),,              +3*GHSERSC+15000;        3200 N REFLAV !
+$
+ FUNCTION GHSERSC   298.15  -8689.547+153.48097*T-28.1882*T*LN(T)
+       +0.00321892*T**2-1.64531E-06*T**3+72177*T**(-1);
+       800.00  Y  -7511.295+132.759582*T-24.9132*T*LN(T)
+       -5.73295E-04*T**2-8.59345E-07*T**3;
+      1608.00  Y  +261143.04-1817.92245*T+241.441051*T*LN(T)
+       -0.117529396*T**2+8.7398E-06*T**3-50607159*T**(-1);
+      2000.00  Y  -30515.246+286.474338*T-44.2249*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCSC    298.15  +1979.728-1.024135*T+GHSERSC;
+      1000.00  Y  +230161.408-2004.05469*T+276.76664*T*LN(T)
+       -0.167120107*T**2+1.5637371E-05*T**3-33783257*T**(-1);
+      1608.00  Y  -25928.011+283.642312*T-44.2249*T*LN(T);
+      2000.00  Y  +4587.235-2.832026*T+GHSERSC;
+      3200.00  N !
+ FUNCTION GLIQSC    298.15  +6478.66+45.427539*T-10.7967803*T*LN(T)
+       -0.020636524*T**2+2.13106E-06*T**3-158106*T**(-1);
+      1608.00  Y  -11832.111+275.871695*T-44.2249*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ D. Zhu, C. Li, C. Guo, Z. Du, J. Li, Calphad, 48, 106-12(2015).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Associate liquid model with Ni0.47Sc0.53 (!!!) associates.
+$
+$ There are misprints in the parameter table.
+$
+$ Invariant equilibria differ by up to 7 K due to rounding errors.
+$
+ PAR  G(LIQUID,NISC),,                  +0.47*GLIQNI+0.53*GLIQSC
+             -41884.428+1.1678586*T;,,                                N 15Zhu !
+ PAR  L(LIQUID,NI,NISC;0),,             -37328.324-20.999123*T;,,     N 15Zhu !
+ PAR  L(LIQUID,NI,NISC;1),,             -3913.6137+21.937184*T;,,     N 15Zhu !
+ PAR  L(LIQUID,NISC,SC;0),,             -29611.169+10.346818*T;,,     N 15Zhu !
+ PAR  L(LIQUID,NISC,SC;1),,             -9109.5345+0.31082938*T;,,    N 15Zhu !
+ PAR  L(LIQUID,NISC,SC;2),,             +11000+0.20128319*T;,,        N 15Zhu !
+$
+ PAR  L(FCC_A1,NI,SC:VA;0),,            -113083.28-7.4479178*T;,,     N 15Zhu !
+$
+ PAR  L(BCC_A2,NI,SC:VA;0),,            -96609.24-18.291157*T;,,      N 15Zhu !
+ PAR  L(BCC_A2,NI,SC:VA;1),,            -10866.503-10.636766*T;,,     N 15Zhu !
+$
+ PAR  L(HCP_A3,NI,SC:VA;0),,            -50000.231-16.66468*T;,,      N 15Zhu !
+$
+ PAR  G(NI5SC_D2D,NI:SC),,              +5*GHSERNI+GHSERSC
+             -132878.586-31.4356992*T;,,                              N 15Zhu !
+ PAR  G(NI7SC2,NI:SC),,                 +7*GHSERNI+2*GHSERSC
+             -257040.801-63.09*T;,,                                   N 15Zhu !
+$
+ PAR  G(C15_LAVES,NI:SC),,              +3*GNI2SC;,,                  N 15Zhu !
+ PAR  G(C15_LAVES,SC:NI),,              -3*GNI2SC+GHSERSC+2*GHSERNI
+             +30000;,,                                                N 15Zhu !
+ PAR  L(C15_LAVES,NI,SC:NI;0),,         -52500.879;,,                 N 15Zhu !
+ PAR  L(C15_LAVES,NI,SC:SC;0),,         -52500.879;,,                 N 15Zhu !
+ PAR  L(C15_LAVES,NI:NI,SC;0),,         -53402.784;,,                 N 15Zhu !
+ PAR  L(C15_LAVES,SC:NI,SC;0),,         -53402.784;,,                 N 15Zhu !
+$
+ PAR  G(NISC_B2,NI:SC),,                +0.47*GHSERNI+0.53*GHSERSC
+             -42000-3.0851*T;,,                                       N 15Zhu !
+ PAR  G(NISC2,NI:SC),,                  +7*GHSERNI+18*GHSERSC
+             -637262-103.9505975*T;,,                                 N 15Zhu !
+$
+ FUNCTION GNI2SC    298.15  -41000.902+120.64781*T-24.4269473*T*LN(T)
+       -0.00196098612*T**2-1.72045893E-07*T**3+64836.6583*T**(-1)
+       +9.0771641E-22*T**7-8.49084458E+18*T**(-9);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Cac  'G. Cacciamani, P. Riani, G. Borzone, N. Parodi, A. Saccone, R. Ferro,
+          A. Pisch, R. Schmid-Fetzer, Intermetallics, 7, 101-8(1999),
+          SGTE unary database V.4.4, 2001; Sc'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000; Nd, Sc'
+  13Kar  'S. Kardellass, C. Servant, N. Selhaoui, A. Iddaoudi, M. Ait Amar,
+          L. Bouirden, Calphad, 42, 59-65(2013); Ni-Sc'
+  15Zhu  'D. Zhu, C. Li, C. Guo, Z. Du, J. Li, Calphad, 48, 106-12(2015); Ni-Sc'
+!

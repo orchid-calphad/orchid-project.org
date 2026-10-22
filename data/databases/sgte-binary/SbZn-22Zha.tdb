@@ -1,0 +1,240 @@
+$
+$ Database for Sb-Zn from J. Zhang and Y. Yuan 2022.
+$
+$ J. Zhang, Y. Yuan, Thermochim. Acta, 716, 179327(2022).
+$
+$ Dataset created 2024.05.05 by Bengt Hallstedt.
+$
+$ Phase names (and compositions) are changed in the paper; alpha- and
+$ beta-Sb3Zn4 are alpha-, alpha-prime- and beta-Zn13Sb10 (alpha-prime is stable
+$ below alpha, both below RT). gamma- and gamma-prime-Sb3Zn4 are alpha- and
+$ beta-Zn9Sb7. eta- and zeta-Sb2Zn3 are alpha- and beta-Zn3Sb2. Old phase names
+$ are kept here.
+$
+$ Gibbs energies of compounds are close to 07Li.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SB ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SB ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SB ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SB ZN% : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB% ZN : !
+$
+$ Prototype CdSb (oP16, Pbca), beta
+$
+ PHASE SBZN_BE % 2 1 1 !
+ CONST SBZN_BE : SB : VA ZN% : !
+$
+$ Prototype Sb10Zn13 (aP92, P-1)
+$
+ PHASE SB3ZN4_ALPHA % 2 10 13 !
+ CONST SB3ZN4_ALPHA : SB : ZN : !
+$
+$ Unknown structure
+$
+ PHASE SB3ZN4_ALPHA_P % 2 10 13 !
+ CONST SB3ZN4_ALPHA_P : SB : ZN : !
+$
+$ Prototype Sb17Zn23 (hR22, R-3c), previously epsilon
+$
+ PHASE SB3ZN4_BETA % 2 10 13 !
+ CONST SB3ZN4_BETA : SB : VA ZN% : !
+$
+$ Unknown structure, previously delta
+$
+ PHASE SB3ZN4_GAMMA % 2 7 8.8 !
+ CONST SB3ZN4_GAMMA : SB : ZN : !
+$
+$ Unknown structure
+$
+ PHASE SB3ZN4_PRIME % 2 7 8.6 !
+ CONST SB3ZN4_PRIME : SB : ZN : !
+$
+$ Prototype Sb2Zn3-ht1 (oP30, Pmmn), eta, ht1
+$
+ PHASE SB2ZN3_ETA % 2 2 3 !
+ CONST SB2ZN3_ETA : SB : ZN : !
+$
+$ Prototype Sb2Zn3-ht2 (oP192, Pccn), zeta, ht2
+$
+ PHASE SB2ZN3_ZETA % 2 2 2.91 !
+ CONST SB2ZN3_ZETA : SB : ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(SBZN_BE,SB:VA),,                +GHSERSB+13500;,,             N 22Zha !
+ PAR  G(SB3ZN4_BETA,SB:VA),,            +10*GHSERSB+404995;,,         N 22Zha !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+ PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Zhang, Y. Yuan, Thermochim. Acta, 716, 179327(2022).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Phase names (and compositions) are changed in the paper; alpha- and
+$ beta-Sb3Zn4 are alpha-, alpha-prime- and beta-Zn13Sb10 (alpha-prime is stable
+$ below alpha, both below RT). gamma- and gamma-prime-Sb3Zn4 are alpha- and
+$ beta-Zn9Sb7. eta- and zeta-Sb2Zn3 are alpha- and beta-Zn3Sb2. Old phase names
+$ are kept here.
+$
+$ Gibbs energies of compounds are close to 07Li.
+$
+ PAR  L(LIQUID,SB,ZN;0),,               -10761-2.99*T;,,              N 22Zha !
+ PAR  L(LIQUID,SB,ZN;1),,               -6492.31+5.12*T;,,            N 22Zha !
+ PAR  L(LIQUID,SB,ZN;2),,               +25389-21.4703*T;,,           N 22Zha !
+$
+ PAR  L(HCP_A3,SB,ZN:VA;0),,            +3002.49;,,                   N 22Zha !
+ PAR  L(RHOMBOHEDRAL_A7,SB,ZN;0),,      +24280;,,                     N 22Zha !
+$
+ PAR  G(SBZN_BE,SB:ZN),,                +GHSERSB+GHSERZN
+             -22976+7.7812*T;,,                                       N 22Zha !
+ PAR  L(SBZN_BE,SB:VA,ZN;0),,           -11700.7451+14.176*T;,,       N 22Zha !
+ PAR  L(SBZN_BE,SB:VA,ZN;1),,           -12647.9;,,                   N 22Zha !
+$
+ PAR  G(SB3ZN4_ALPHA,SB:ZN),,           +10*GHSERSB+13*GHSERZN
+             -221302.2+38.133*T;,,                                    N 22Zha !
+ PAR  G(SB3ZN4_ALPHA_P,SB:ZN),,         +10*GHSERSB+13*GHSERZN
+             -229315+72.32*T;,,                                       N 22Zha !
+$
+ PAR  G(SB3ZN4_BETA,SB:ZN),,            +10*GHSERSB+13*GHSERZN
+             -221154+37.5492*T;,,                                     N 22Zha !
+ PAR  L(SB3ZN4_BETA,SB:VA,ZN;0),,       -132894+59.2067*T;,,          N 22Zha !
+$
+ PAR  G(SB3ZN4_GAMMA,SB:ZN),,           +7*GHSERSB+8.8*GHSERZN
+             -133850+1.9618*T;,,                                      N 22Zha !
+ PAR  G(SB3ZN4_PRIME,SB:ZN),,           +7*GHSERSB+8.6*GHSERZN
+             -87740.1-53.1203*T;,,                                    N 22Zha !
+ PAR  G(SB2ZN3_ETA,SB:ZN),,             +2*GHSERSB+3*GHSERZN
+             -30997.1-12.055*T;,,                                     N 22Zha !
+ PAR  G(SB2ZN3_ZETA,SB:ZN),,            +2*GHSERSB+2.91*GHSERZN
+             -30497.3-12.588*T;,,                                     N 22Zha !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  SB-ZN(TDB -* +LIQUID +HCP_A3 +RHOMBO_A7 +SBZN_BE +SB3ZN4_ALPHA +SB3ZN4_BETA
+  +SB3ZN4_GAMMA +SB3ZN4_PRIME +SB2ZN3_ZETA +SB2ZN3_ETA +SB3ZN4_ALPHA_P
+  ;P3 TMM:200/1000 STP:.2/800) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  22Zha  'J. Zhang, Y. Yuan, Thermochim. Acta, 716, 179327(2022); Sb-Zn'
+!

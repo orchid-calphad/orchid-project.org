@@ -1,0 +1,250 @@
+$
+$ Database for Co-Ge from Y. Zeng et al. 2019.
+$
+$ Y. Zeng, Y. Du, H. Li, P. Zhou, S. Liu, K. Cheng, B. Sundman,
+$ R. Schmid-Fetzer, L. Dreval, J. Alloys Compd., 793, 480-91(2019).
+$
+$ Dataset created 2020.04.19 by Bengt Hallstedt.
+$
+$ In the paper there are both substitutional and associate models for the
+$ liquid. This dataset contains the substitutional model.
+$
+$ Co3Ge is found to be AuCu3 (L1_2) structure type by Zeng et al.
+$ (JPED, 38, 843-52(2017)).
+$
+$ Invariant equilibria involving Co2Ge and Co5Ge7 differ by up to 25 K due to
+$ rounding errors.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO GE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% GE : VA : !
+$
+$ Disordered part of L12_FCC, identical to FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : CO% GE : VA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE L12_FCC %AY 3 0.75 0.25 1 !
+ CONST L12_FCC : CO% GE : CO GE% : VA :  !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO GE : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% GE : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE CO2GE_C37 % 2 2 1 !
+ CONST CO2GE_C37 : CO : GE : !
+$
+$ Prototype InNi2 (hP6, P6_3/mmc) beta
+$
+ PHASE CO5GE3_B82 % 3 1 1 1 !
+ CONST CO5GE3_B82 : CO : CO VA : GE : !
+$
+$ Prototype CoGe (mC16, C2/m)
+$
+ PHASE COGE % 2 1 1 !
+ CONST COGE : CO% GE : CO GE% : !
+$
+$ Prototype Co5Ge7 (tI24, I4mm)
+$
+ PHASE CO5GE7 % 2 5 7 !
+ CONST CO5GE7 : CO : GE : !
+$
+$ Prototype CoGe2 (oC24, Cmce)
+$
+ PHASE COGE2 % 2 1 2 !
+ CONST COGE2 : CO : GE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE FCC_A1 !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION L12_FCC DIS_PART A1_FCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(A1_FCC,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(A1_FCC,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(A1_FCC,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  G(COGE,CO:CO),,                   +2*GHSERCO+14000;,,           N 13Don !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(A1_FCC,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ PAR  G(COGE,GE:GE),,                   +2*GHSERGE+10000;,,           N 13Don !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Zeng, Y. Du, H. Li, P. Zhou, S. Liu, K. Cheng, B. Sundman,
+$ R. Schmid-Fetzer, L. Dreval, J. Alloys Compd., 793, 480-91(2019).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ In the paper there are both substitutional and associate models for the
+$ liquid. This dataset contains the substitutional model.
+$
+$ Co3Ge is found to be AuCu3 (L1_2) structure type by Zeng et al.
+$ (JPED, 38, 843-52(2017)).
+$
+$ Invariant equilibria involving Co2Ge and Co5Ge7 differ by up to 25 K due to
+$ rounding errors.
+$
+ PAR  L(LIQUID,CO,GE;0),,               -72898.15-0.498*T;,,          N 19Zen !
+ PAR  L(LIQUID,CO,GE;1),,               -11920.71-6.614*T;,,          N 19Zen !
+$
+ PAR  L(FCC_A1,CO,GE:VA;0),,            -79722.7+29.93*T;,,           N 19Zen !
+ PAR  L(FCC_A1,CO,GE:VA;1),,            -76943.5+0.06*T;,,            N 19Zen !
+ PAR  TC(FCC_A1,CO,GE:VA;0),,           -2656.00;,,                   N 13Don !
+ PAR  BM(FCC_A1,CO,GE:VA;0),,              -1.35;,,                   N 13Don !
+$
+ PAR  L(A1_FCC,CO,GE:VA;0),,            -79722.7+29.93*T;,,           N 19Zen !
+ PAR  L(A1_FCC,CO,GE:VA;1),,            -76943.5+0.06*T;,,            N 19Zen !
+ PAR  TC(A1_FCC,CO,GE:VA;0),,           -2656.00;,,                   N 13Don !
+ PAR  BM(A1_FCC,CO,GE:VA;0),,              -1.35;,,                   N 13Don !
+$
+ PAR  G(L12_FCC,CO:GE:VA),,             +3*UFCOGE;,,                  N 19Zen !
+ PAR  G(L12_FCC,GE:CO:VA),,             +3*UFCOGE;,,                  N 19Zen !
+ PAR  L(L12_FCC,CO,GE:CO:VA;0),,        +6*UFCOGE+3*L0FCOGE;,,        N 19Zen !
+ PAR  L(L12_FCC,CO,GE:GE:VA;0),,        +6*UFCOGE+3*L0FCOGE;,,        N 19Zen !
+ PAR  L(L12_FCC,CO,GE:CO:VA;1),,        +3*L1FCOGE;,,                 N 19Zen !
+ PAR  L(L12_FCC,CO,GE:GE:VA;1),,        +3*L1FCOGE;,,                 N 19Zen !
+ PAR  L(L12_FCC,CO:CO,GE:VA;0),,        +L0FCOGE;,,                   N 19Zen !
+ PAR  L(L12_FCC,GE:CO,GE:VA;0),,        +L0FCOGE;,,                   N 19Zen !
+ PAR  L(L12_FCC,CO:CO,GE:VA;1),,        +L1FCOGE;,,                   N 19Zen !
+ PAR  L(L12_FCC,GE:CO,GE:VA;1),,        +L1FCOGE;,,                   N 19Zen !
+$
+ PAR  L(HCP_A3,CO,GE:VA;0),,            -76884.7+13.35*T;,,           N 19Zen !
+ PAR  L(HCP_A3,CO,GE:VA;1),,            -75186+17.29*T;,,             N 19Zen !
+ PAR  TC(HCP_A3,CO,GE:VA;0),,           -1323.00;,,                   N 13Don !
+ PAR  BM(HCP_A3,CO,GE:VA;0),,              -2.70;,,                   N 13Don !
+$
+ PAR  G(CO2GE_C37,CO:GE),,              +2*GHSERCO+GHSERGE
+             -58350-13.35*T;,,                                        N 19Zen !
+$
+ PAR  G(CO5GE3_B82,CO:CO:GE),,          +2*GHSERCO+GHSERGE
+             -55390.66-15.595*T;,,                                    N 19Zen !
+ PAR  G(CO5GE3_B82,CO:VA:GE),,          +GHSERCO+GHSERGE
+             -51315.53+5.09*T;,,                                      N 19Zen !
+ PAR  L(CO5GE3_B82,CO:CO,VA:GE;0),,     -1242.61+1.42*T;,,            N 19Zen !
+ PAR  L(CO5GE3_B82,CO:CO,VA:GE;1),,     -101.55;,,                    N 19Zen !
+$
+ PAR  G(COGE,CO:GE),,                   +GHSERCO+GHSERGE
+             -50502.6+0.24*T;,,                                       N 13Don !
+ PAR  G(COGE,GE:CO),,                   +GHSERGE+GHSERCO
+             +74502.6-0.24*T;,,                                       N 13Don !
+ PAR  L(COGE,CO,GE:CO;0),,              +16822.8;,,                   N 19Zen !
+ PAR  L(COGE,CO,GE:GE;0),,              +16998.8-2.18*T;,,            N 13Don !
+ PAR  L(COGE,CO:CO,GE;0),,              -23416.4-18.014*T;,,          N 19Zen !
+ PAR  L(COGE,GE:CO,GE;0),,              -23828.04+9.68*T;,,           N 19Zen !
+$
+ PAR  G(CO5GE7,CO:GE),,                 +5*GHSERCO+7*GHSERGE
+             -262783.92+5.2116*T;,,                                   N 19Zen !
+ PAR  G(COGE2,CO:GE),,                  +GHSERCO+2*GHSERGE
+             -55048.89+2.424*T;,,                                     N 19Zen !
+$
+$ Metastable
+$
+$ It is necessary to destabilize bcc to avoid stable bcc.
+$
+ PAR  L(BCC_A2,CO,GE:VA;0),,            -79722.7+29.93*T+5000;,,      N Same !
+ PAR  L(BCC_A2,CO,GE:VA;1),,            -76943.5+0.06*T+5000;,,       N Same !
+$
+ FUNCTION UFCOGE    298.15  -6583-4.6473*T;                            6000 N !
+ FUNCTION L0FCOGE   298.15  +ZERO;                                     6000 N !
+ FUNCTION L1FCOGE   298.15  -4748.84;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  13Don  'S.S. Dong, S.G. Liu, X.M. Tao, F.H. Xiao, L.H. Huang, F. Yang, Y. He,
+          Q. Chen, H.S. Liu, Z.P. Jin,
+          Thermochim. Acta, 572, 94-100(2013); Co-Ge'
+  19Zen  'Y. Zeng, Y. Du, H. Li, P. Zhou, S. Liu, K. Cheng, B. Sundman,
+          R. Schmid-Fetzer, L. Dreval,
+          J. Alloys Compd., 793, 480-91(2019); Co-Ge'
+!

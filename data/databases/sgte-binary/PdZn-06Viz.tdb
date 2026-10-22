@@ -1,0 +1,241 @@
+$
+$ Database for Pd-Zn from J. Vizdal et al. 2006.
+$
+$ J. Vizdal, A. Kroupa, J. Popovic, A. Zemanova,
+$ Adv. Eng. Mater., 8, 164-76(2006).
+$
+$ Dataset created 2018.01.21 by Bengt Hallstedt.
+$ 2021.02.03: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PD ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PD% ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PD ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : PD ZN% : VA : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE PD2ZN_C37 % 2 2 1 !
+ CONST PD2ZN_C37 : PD : ZN : !
+$
+$ Prototype CuTi-delta (tP2, P4/mmm)
+$
+ PHASE PDZN_L2A % 2 1 1 !
+ CONST PDZN_L2A : PD% ZN : PD ZN% : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE PDZN_B2 % 2 1 1 !
+ CONST PDZN_B2 : PD% ZN : PD ZN% : !
+$
+$ Prototype PdZn2 (oC48, Cmmm)
+$
+ PHASE PDZN2 % 2 1 2 !
+ CONST PDZN2 : PD : ZN : !
+$
+$ Prototype Cu5Zn8 (cI52, I-43m)
+$
+ PHASE PD2ZN9_D82 % 2 2 9 !
+ CONST PD2ZN9_D82 : PD% ZN : PD ZN% : !
+$
+$ Pearson hP*, eta
+$
+ PHASE PDZN10 % 2 0.09 0.91 !
+ CONST PDZN10 : PD : ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+$ RHOMB_C19 from 00Du1 is absurd and not included in unary.
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+$PAR  G(RHOMB_C19,PD),,                 +GHSERPD+714075;         4000 N 00Du1 !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ PAR  G(PDZN_L2A,PD:PD),,               +2*GHSERPD+5000;,,            N 06Viz !
+ PAR  G(PDZN_B2,PD:PD),,                +2*GHSERPD+5000;,,            N 06Viz !
+ PAR  G(PD2ZN9_D82,PD:PD),,             +11*GHSERPD+20000;,,          N 06Viz !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+$PAR  G(HCP_IM_A3,ZN),,                 +GHSERZN+2969.82-1.56968*T;,, N 93Kow !
+ PAR  G(PDZN_L2A,ZN:ZN),,               +2*GHSERZN+5000;,,            N 06Viz !
+ PAR  G(PDZN_B2,ZN:ZN),,                +2*GHSERZN+5000;,,            N 06Viz !
+ PAR  G(PD2ZN9_D82,ZN:ZN),,             +11*GHSERZN+40000;,,          N 06Viz !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Vizdal, A. Kroupa, J. Popovic, A. Zemanova,
+$ Adv. Eng. Mater., 8, 164-76(2006).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,PD,ZN;0),,               -181731.731+24.465*T;,,       N 06Viz !
+ PAR  L(LIQUID,PD,ZN;1),,               +49050;,,                     N 06Viz !
+ PAR  L(LIQUID,PD,ZN;2),,               -5007+5*T;,,                  N 06Viz !
+$
+ PAR  L(FCC_A1,PD,ZN:VA;0),,            -205608.563+39.755*T;,,       N 06Viz !
+ PAR  L(FCC_A1,PD,ZN:VA;1),,            +5544.5+3.5*T;,,              N 06Viz !
+ PAR  L(FCC_A1,PD,ZN:VA;2),,            +47785.933-6.116*T;,,         N 06Viz !
+$
+ PAR  L(HCP_A3,PD,ZN:VA;0),,            -171200+20*T;,,               N 06Viz !
+ PAR  L(HCP_A3,PD,ZN:VA;1),,            +50000;,,                     N 06Viz !
+$
+ PAR  G(PD2ZN_C37,PD:ZN),,              +2*GHSERPD+GHSERZN
+             -142938.5+18.96*T;,,                                     N 06Viz !
+$
+ PAR  G(PDZN_L2A,PD:ZN),,               +GHSERPD+GHSERZN
+             -134320+25.87*T;,,                                       N 06Viz !
+ PAR  G(PDZN_L2A,ZN:PD),,               +GHSERPD+GHSERZN
+             -134320+25.87*T;,,                                       N 06Viz !
+ PAR  L(PDZN_L2A,PD,ZN:PD;0),,          -25705.76+5.892*T;,,          N 06Viz !
+ PAR  L(PDZN_L2A,PD,ZN:PD;1),,          +10040+20*T;,,                N 06Viz !
+ PAR  L(PDZN_L2A,PD:PD,ZN;0),,          -25705.76+5.892*T;,,          N 06Viz !
+ PAR  L(PDZN_L2A,PD:PD,ZN;1),,          +10040+20*T;,,                N 06Viz !
+ PAR  L(PDZN_L2A,PD,ZN:ZN;0),,          -129200+51.67*T;,,            N 06Viz !
+ PAR  L(PDZN_L2A,ZN:PD,ZN;0),,          -129200+51.67*T;,,            N 06Viz !
+$
+ PAR  G(PDZN_B2,PD:ZN),,                +GHSERPD+GHSERZN
+             -119876.894+16.25*T;,,                                   N 06Viz !
+ PAR  G(PDZN_B2,ZN:PD),,                +GHSERPD+GHSERZN
+             -119876.894+16.25*T;,,                                   N 06Viz !
+ PAR  L(PDZN_B2,PD,ZN:PD;0),,           -47419.5+9.756*T;,,           N 06Viz !
+ PAR  L(PDZN_B2,PD,ZN:PD;1),,           +20000;,,                     N 06Viz !
+ PAR  L(PDZN_B2,PD:PD,ZN;0),,           -47419.5+9.756*T;,,           N 06Viz !
+ PAR  L(PDZN_B2,PD:PD,ZN;1),,           +20000;,,                     N 06Viz !
+ PAR  L(PDZN_B2,PD,ZN:ZN;0),,           -156463+56.464*T;,,           N 06Viz !
+ PAR  L(PDZN_B2,ZN:PD,ZN;0),,           -156463+56.464*T;,,           N 06Viz !
+$
+ PAR  G(PDZN2,PD:ZN),,                  +GHSERPD+2*GHSERZN
+             -179184+38.725*T;,,                                      N 06Viz !
+$
+ PAR  G(PD2ZN9_D82,PD:ZN),,             +2*GHSERPD+9*GHSERZN
+             -518340.56+115.5*T;,,                                    N 06Viz !
+ PAR  G(PD2ZN9_D82,ZN:PD),,             +2*GHSERZN+9*GHSERPD+20000;,, N 06Viz !
+ PAR  L(PD2ZN9_D82,PD,ZN:ZN;0),,        -43000+26*T;,,                N 06Viz !
+ PAR  L(PD2ZN9_D82,PD:PD,ZN;0),,        -600000+100*T;,,              N 06Viz !
+ PAR  L(PD2ZN9_D82,PD:PD,ZN;1),,        +650000-100*T;,,              N 06Viz !
+$
+ PAR  G(PDZN10,PD:ZN),,                 +0.09*GHSERPD+0.91*GHSERZN
+             -22688.611+3.895*T;,,                                    N 06Viz !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,PD,ZN:VA;0),,            +7844.3-19.8*T;,,             N 06Viz !
+ PAR  L(BCC_A2,PD,ZN:VA;1),,            -58890+33.4*T;,,              N 06Viz !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Du1  'Z. Du, H. Yang, Z. Metallkd., 91, 455-59(2000); Pd, Sm'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  06Viz  'J. Vizdal, A. Kroupa, J. Popovic, A. Zemanova,
+          Adv. Eng. Mater., 8, 164-76(2006); Pd-Zn'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+!

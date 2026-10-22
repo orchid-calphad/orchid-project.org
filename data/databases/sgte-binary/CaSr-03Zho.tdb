@@ -1,0 +1,139 @@
+$
+$ Database for Ca-Sr from Y. Zhong et al. 2003
+$
+$ Y. Zhong, K. Ozturk, Z.-K. Liu, J. Phase Equilib., 24, 340-46(2003).
+$
+$ Dataset created 2016.09.25 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+ ELEMENT SR   FCC_A1                     87.62      6568.      55.694  ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA SR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA% SR% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CA% SR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CA SR : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+ PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Sr
+$
+ PAR  G(FCC_A1,SR:VA),,                 +GHSERSR;                3000 N 91Din !
+ PAR  G(BCC_A2,SR:VA),,                 +GBCCSR;                 3000 N 91Din !
+ PAR  G(HCP_A3,SR:VA),,                 +GHSERSR+250+0.7*T;      3000 N 91Din !
+ PAR  G(LIQUID,SR),,                    +GLIQSR;                 3000 N 91Din !
+$
+ FUNCTION GHSERSR   298.15  -7532.367+107.183879*T-23.905*T*LN(T)
+       -0.00461225*T**2-1.67477E-07*T**3-2055*T**(-1);
+       820.00  Y  -13380.102+153.196104*T-30.0905432*T*LN(T)
+       -0.003251266*T**2+1.84189E-07*T**3+850134*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCSR    298.15  -6779.234+116.583654*T-25.6708365*T*LN(T)
+       -0.003126762*T**2+2.2965E-07*T**3+27649*T**(-1);
+       820.00  Y  -6970.594+122.067301*T-26.57*T*LN(T)
+       -0.0019493*T**2-1.7895E-08*T**3+16495*T**(-1);
+      1050.00  Y  +8168.357+0.423037*T-9.7788593*T*LN(T)
+       -0.009539908*T**2+5.20221E-07*T**3-2414794*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQSR    298.15  +2194.997-10.118994*T-5.0668978*T*LN(T)
+       -0.031840595*T**2+4.981237E-06*T**3-265559*T**(-1);
+      1050.00  Y  -10855.29+213.406219*T-39.463*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Zhong, K. Ozturk, Z.-K. Liu, J. Phase Equilib., 24, 340-46(2003).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,CA,SR;0),,               +1682;,,                      N 03Zho !
+ PAR  L(LIQUID,CA,SR;1),,               +521;,,                       N 03Zho !
+ PAR  L(LIQUID,CA,SR;2),,               -1145;,,                      N 03Zho !
+$
+ PAR  L(FCC_A1,CA,SR:VA;0),,            +3770;,,                      N 03Zho !
+ PAR  L(FCC_A1,CA,SR:VA;1),,            +877;,,                       N 03Zho !
+ PAR  L(FCC_A1,CA,SR:VA;2),,            -1125;,,                      N 03Zho !
+$
+ PAR  L(BCC_A2,CA,SR:VA;0),,            +3770;,,                      N 03Zho !
+ PAR  L(BCC_A2,CA,SR:VA;1),,            +877;,,                       N 03Zho !
+ PAR  L(BCC_A2,CA,SR:VA;2),,            -1125;,,                      N 03Zho !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,CA,SR:VA;0),,            +3770;,,                      N 03Zho !
+ PAR  L(HCP_A3,CA,SR:VA;1),,            +877;,,                       N 03Zho !
+ PAR  L(HCP_A3,CA,SR:VA;2),,            -1125;,,                      N 03Zho !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  03Zho  'Y. Zhong, K. Ozturk, Z.-K. Liu, 
+          J. Phase Equilib., 24, 340-46(2003); Ca-Sr'
+!

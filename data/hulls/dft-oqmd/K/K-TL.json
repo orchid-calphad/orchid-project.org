@@ -1,0 +1,215 @@
+{
+  "counts": {
+    "above_hull": 46,
+    "entries": 89,
+    "intervals": 4,
+    "vertices": 5
+  },
+  "elements": [
+    "K",
+    "TL"
+  ],
+  "flags": [
+    "degenerate_vertices",
+    "has_intermediate_compounds",
+    "mp_agreement_not_comparable",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1215784",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -0.2730057410714285,
+          "right": {
+            "phase": "oqmd-2141583",
+            "x": 0.4117647058823529
+          },
+          "slope": -0.2730057410714285,
+          "x_hi": 0.4117647058823529,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.0427180887500003,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-2141583",
+            "x": 0.4117647058823529
+          },
+          "mu_a_rel": -0.0427180887500003,
+          "mu_b_rel": -0.2119798999999995,
+          "right": {
+            "phase": "oqmd-645123",
+            "x": 0.5789473684210527
+          },
+          "slope": -0.1692618112499992,
+          "x_hi": 0.5789473684210527,
+          "x_lo": 0.4117647058823529
+        },
+        {
+          "intercept": -0.25776202892857003,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-645123",
+            "x": 0.5789473684210527
+          },
+          "mu_a_rel": -0.25776202892857003,
+          "mu_b_rel": -0.05558430714285789,
+          "right": {
+            "phase": "oqmd-686484",
+            "x": 0.7391304347826086
+          },
+          "slope": 0.20217772178571214,
+          "x_hi": 0.7391304347826086,
+          "x_lo": 0.5789473684210527
+        },
+        {
+          "intercept": -0.4152508991666673,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-686484",
+            "x": 0.7391304347826086
+          },
+          "mu_a_rel": -0.4152508991666673,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "oqmd-1215381",
+            "x": 1.0
+          },
+          "slope": 0.4152508991666673,
+          "x_hi": 1.0,
+          "x_lo": 0.7391304347826086
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-K"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -1.096699335,
+          "entries_at_x": 32,
+          "formula": "K1",
+          "nsites": 2,
+          "phase": "oqmd-1215784",
+          "phase_kind": "structure",
+          "spacegroup_number": 166,
+          "spacegroup_symbol": "R-3m",
+          "theoretical": true,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.11241412867647055,
+          "energy_per_atom": -1.7290572772058823,
+          "entries_at_x": 1,
+          "formula": "K10 Tl7",
+          "nsites": 68,
+          "phase": "oqmd-2141583",
+          "phase_kind": "structure",
+          "spacegroup_number": 14,
+          "spacegroup_symbol": "P21/c",
+          "theoretical": true,
+          "x": 0.4117647058823529
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.14071176894736825,
+          "energy_per_atom": -1.968459924473684,
+          "entries_at_x": 1,
+          "formula": "K8 Tl11",
+          "nsites": 38,
+          "phase": "oqmd-645123",
+          "phase_kind": "structure",
+          "spacegroup_number": 167,
+          "spacegroup_symbol": "R-3c",
+          "theoretical": false,
+          "x": 0.5789473684210527
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.10832632152173932,
+          "energy_per_atom": -2.138340949130435,
+          "entries_at_x": 1,
+          "formula": "K6 Tl17",
+          "nsites": 92,
+          "phase": "oqmd-686484",
+          "phase_kind": "structure",
+          "spacegroup_number": 66,
+          "spacegroup_symbol": "Cccm",
+          "theoretical": false,
+          "x": 0.7391304347826086
+        },
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Tl"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -2.359420025,
+          "entries_at_x": 24,
+          "formula": "Tl1",
+          "nsites": 2,
+          "phase": "oqmd-1215381",
+          "phase_kind": "structure",
+          "spacegroup_number": 194,
+          "spacegroup_symbol": "P63/mmc",
+          "theoretical": true,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "is_stable is derived by the extraction, not an upstream flag, so comparing it against a hull recomputed from the same energies tests the derivation rather than the data",
+    "max_abs_delta_energy_above_hull": 5.27743584943785e-10,
+    "only_mp_stable": [
+      "oqmd-1215249"
+    ],
+    "only_ours_stable": [],
+    "stable_sets_match": false
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "derived",
+    "mp_release": "qmdb_v1_8_022026",
+    "observed_at": "2026-09-05T17:02:03Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "2a9393262c52ec35600424236c352a4cdb3291c8b25c1c6588f5e62abe8e0d8d",
+    "stability_tol": 0.0001,
+    "thermo_type": "standard"
+  },
+  "reference": {
+    "kind": "dft_fitted_elemental_reference_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "K-TL",
+  "x_element": "TL"
+}

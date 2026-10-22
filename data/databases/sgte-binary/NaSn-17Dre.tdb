@@ -1,0 +1,249 @@
+$
+$ Database for Na-Sn from L. Dreval et al. 2017.
+$
+$ L. Dreval, M. Zschornak, W. Muenchgesang, O. Fabrichnaya, D. Rafaja,
+$ M.L. Martine, L. Giebeler, M. Motylenko, J. Alloys Compd., 695, 1725-42(2017).
+$
+$ Dataset created 2018.11.10 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$
+$ There are no parameters in the paper. The parameters in this dataset are
+$ taken from a tdb kindly provided by the authors.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NA   BCC_A2                     22.98977   6460.      51.3000 ! 
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  NASN                               NA1SN1 !
+ SPECIE  NASN2                              NA1SN2 !
+ SPECIE  NA2SN                              NA2SN1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NA NASN NASN2 NA2SN SN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NA SN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NA% SN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NA SN : VA : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SN : !
+$
+$ Prototype Cu15Si4 (cI76, I-43d)
+$
+ PHASE NA15SN4_D86 % 2 15 4 !
+ CONST NA15SN4_D86 : NA : SN : !
+$
+$ Prototype Na3.7Sn (oP40, Pnma, 62)
+$
+ PHASE NA3SN % 2 3 1 !
+ CONST NA3SN : NA : SN : !
+$
+$ Prototype Ge4Li9 (oC52, Cmcm, 63)
+$
+ PHASE NA9SN4 % 2 9 4 !
+ CONST NA9SN4 : NA : SN : !
+$
+$ unknown structure
+$
+ PHASE NA4SN3 % 2 4 3 !
+ CONST NA4SN3 : NA : SN : !
+$
+$ Prototype NaPb (tI64, I4_1/acd, 142)
+$
+ PHASE NASN_LT % 2 1 1 !
+ CONST NASN_LT : NA : SN : !
+$
+$ unknown structure
+$
+ PHASE NASN_HT % 2 1 1 !
+ CONST NASN_HT : NA : SN : !
+$
+$ Prototype Na7Sn12 (mP78, P2/c, 13)
+$
+ PHASE NA7SN12 % 2 7 12 !
+ CONST NA7SN12 : NA : SN : !
+$
+$ Prototype NaSn2 (mC48, C2/m, 12)
+$
+ PHASE NASN2 % 2 1 2 !
+ CONST NASN2 : NA : SN : !
+$
+$ Prototype Na5Sn13 (oC288, Cmcm, 63)
+$
+ PHASE NA5SN13 % 2 5 13 !
+ CONST NA5SN13 : NA : SN : !
+$
+$ unknown structure 
+$
+ PHASE NASN4 % 2 1 4 !
+ CONST NASN4 : NA : SN : !
+$
+$ Prototype NaSn5 (tP12, P-42_1m, 113)
+$
+ PHASE NASN5 % 2 1 5 !
+ CONST NASN5 : NA : SN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Na
+$
+ PAR  G(BCC_A2,NA:VA)           200.00  +GHSERNA;                2300 N 91Din !
+ PAR  G(HCP_A3,NA:VA)           200.00  +GHSERNA-104+2*T;        2300 N 91Din !
+ PAR  G(FCC_A1,NA:VA)           200.00  +GHSERNA-50+1.3*T;       2300 N 91Din !
+ PAR  G(LIQUID,NA)              200.00  +GLIQNA;                 2300 N 91Din !
+$
+ FUNCTION GHSERNA   200.00  -11989.434+260.548732*T-51.0393608*T*LN(T)
+       +0.072306633*T**2-4.3638283E-05*T**3+132154*T**(-1);
+       370.87  Y  -11009.884+199.619999*T-38.1198801*T*LN(T)
+       +0.009745854*T**2-1.70664E-06*T**3+34342*T**(-1)+1.65071E+23*T**(-9);
+      2300.00  N !
+ FUNCTION GLIQNA    200.00  +2581.02-6.95218*T+GHSERNA-2.76132E-18*T**7;
+       370.87  Y  +2609.444-7.032656*T+GHSERNA-1.65071E+23*T**(-9);
+      2300.00  N !
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+$PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+$PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                         3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L. Dreval, M. Zschornak, W. Muenchgesang, O. Fabrichnaya, D. Rafaja,
+$ M.L. Martine, L. Giebeler, M. Motylenko, J. Alloys Compd., 695, 1725-42(2017).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There are no parameters in the paper. The parameters in this dataset are
+$ taken from a tdb kindly provided by the authors.
+$
+ PAR  G(LIQUID,NA2SN),,                 +2*GLIQNA+GLIQSN
+             -69297.961+39.087298*T;,,                                N 17Dre !
+ PAR  G(LIQUID,NASN),,                  +GLIQNA+GLIQSN
+             -44210.881+17.582784*T;,,                                N 17Dre !
+ PAR  G(LIQUID,NASN2),,                 +GLIQNA+2*GLIQSN
+             -32935.125+272.78883*T;,,                                N 17Dre !
+ PAR  L(LIQUID,NA,NA2SN;0),,            +5000;,,                      N 17Dre !
+$
+ PAR  L(BCC_A2,NA,SN:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(NA15SN4_D86,NA:SN),,            +15*GHSERNA+4*GHSERSN
+             -296652.534+69.054094*T;,,                               N 17Dre !
+ PAR  G(NA3SN,NA:SN),,                  +3*GHSERNA+GHSERSN
+             -73063.026+19.632930*T;,,                                N 17Dre !
+ PAR  G(NA9SN4,NA:SN),,                 +9*GHSERNA+4*GHSERSN
+             -278551.36+73.700165*T;,,                                N 17Dre !
+ PAR  G(NA4SN3,NA:SN),,                 +4*GHSERNA+3*GHSERSN
+             -155678+23.481059*T;,,                                   N 17Dre !
+ PAR  G(NASN_LT,NA:SN),,                +GHSERNA+GHSERSN
+             -50603.979+12.284311*T;,,                                N 17Dre !
+ PAR  G(NASN_HT,NA:SN),,                +GHSERNA+GHSERSN
+             -49163.825+10.38002*T;,,                                 N 17Dre !
+ PAR  G(NA7SN12,NA:SN),,                +7*GHSERNA+12*GHSERSN
+             -377103.74+100.66201*T;,,                                N 17Dre !
+ PAR  G(NASN2,NA:SN),,                  +GHSERNA+2*GHSERSN
+             -54049.308+13.590105*T;,,                                N 17Dre !
+ PAR  G(NA5SN13,NA:SN),,                +5*GHSERNA+13*GHSERSN
+             -266260.97+51.978841*T;,,                                N 17Dre !
+ PAR  G(NASN4,NA:SN),,                  +GHSERNA+4*GHSERSN
+             -53430.896+10.069500*T;,,                                N 17Dre !
+ PAR  G(NASN5,NA:SN),,                  +GHSERNA+5*GHSERSN
+             -53359.41+9.5595568*T;,,                                 N 17Dre !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  17Dre  'L. Dreval, M. Zschornak, W. Muenchgesang, O. Fabrichnaya, D. Rafaja,
+          M.L. Martine, L. Giebeler, M. Motylenko,
+          J. Alloys Compd., 695, 1725-42(2017); Na-Sn'
+!

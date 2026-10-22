@@ -1,0 +1,231 @@
+$
+$ Database for Ni-Y from Z. Du and D. Lu 2005.
+$
+$ Z. Du, D. Lu, Intermetallics, 13, 586-95(2005).
+$
+$ Dataset created 2023.12.01 by Bengt Hallstedt.
+$ 2024.03.12: Changed prototype for Ni17Y2 from Fe17Lu2 to Ni17Th2.
+$
+$ Modified from 96Du.
+$
+$ A common model for Ni17Y2 and Ni5Y is used.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT Y    HCP_A3                     88.9059    5983.457   44.7875 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  NI2                                NI2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI Y : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% Y : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI Y% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI Y% : VA : !
+$
+$ Prototype Ni17Th2 (hP38, P6_3/mmc), Ni17Y2
+$ Prototype CaCu5 (hP6, P6/mmm, D2_d), Ni5Y
+$
+ PHASE NI17Y2 %A 3 1 2 15 !
+ CONST NI17Y2 : NI2 Y : Y : NI : !
+$
+$ unknown structure
+$
+ PHASE NI4Y % 2 4 1 !
+ CONST NI4Y : NI : Y : !
+$
+$ Prototype Ce2Ni7 (hP36, P6_3/mmc)
+$
+ PHASE NI7Y2 %A 2 7 2 !
+ CONST NI7Y2 : NI : Y : !
+$
+$ Prototype Ni3Pu (hR12, R-3m)
+$
+ PHASE NI3Y %A 2 3 1 !
+ CONST NI3Y : NI : Y : !
+$
+$ Prototype Ni2Tm (cF192, F-43m)
+$
+ PHASE NI2Y % 2 2 1 !
+ CONST NI2Y : NI : Y : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE NIY_B27 % 2 1 1 !
+ CONST NIY_B27 : NI : Y : !
+$
+$ Prototype Ni2Y3 (tP80, P4_12_12)
+$
+ PHASE NI2Y3 % 2 2 3 !
+ CONST NI2Y3 : NI : Y : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE NIY3_D011 % 2 1 3 !
+ CONST NIY3_D011 : NI : Y : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BMAG(FCC_A1,NI:VA),,                  0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BMAG(BCC_A2,NI:VA),,                  0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BMAG(HCP_A3,NI:VA),,                  0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Y
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ FCC_A1 added in unary 4.1
+$
+$ FCC_A1 from 96Du not included in unary
+$
+ PAR  G(HCP_A3,Y:VA)            100.00  +GHSERYY;                3700 N 95She3 !
+ PAR  G(BCC_A2,Y:VA)            100.00  +GBCCYY;                 3700 N 95She3 !
+ PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+6000;           3700 N Frie2 !
+$PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+5000;           3700 N 96Du !
+ PAR  G(LIQUID,Y)               100.00  +GLIQYY;                 3700 N 95She3 !
+$
+ FUNCTION GHSERYY   100.00  -8011.09379+128.572856*T-25.6656992*T*LN(T)
+       -0.00175716414*T**2-4.17561786E-07*T**3+26911.509*T**(-1);
+      1000.00  Y  -7179.74574+114.497104*T-23.4941827*T*LN(T)
+       -0.0038211802*T**2-8.2534534E-08*T**3;
+      1795.15  Y  -67480.7761+382.124727*T-56.9527111*T*LN(T)
+       +0.00231774379*T**2-7.22513088E-08*T**3+18077162.6*T**(-1);
+      3700.00  N !
+ FUNCTION GBCCYY    100.00  -833.658863+123.667346*T-25.5832578*T*LN(T)
+       -0.00237175965*T**2+9.10372497E-09*T**3+27340.0687*T**(-1);
+      1000.00  Y  -1297.79829+134.528352*T-27.3038477*T*LN(T)
+       -5.41757644E-04*T**2-3.05012175E-07*T**3;
+      1795.15  Y  +15389.4975+0.981325399*T-8.88296647*T*LN(T)
+       -0.00904576576*T**2+4.02944768E-07*T**3-2542575.96*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQYY    100.00  +2098.50738+119.41873*T-24.6467508*T*LN(T)
+       -0.00347023463*T**2-8.12981167E-07*T**3+23713.7332*T**(-1);
+      1000.00  Y  +7386.44846+19.4520171*T-9.0681627*T*LN(T)
+       -0.0189533369*T**2+1.7595327E-06*T**3;
+      1795.15  Y  -12976.5957+257.400783*T-43.0952*T*LN(T);
+      3700.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. Du, D. Lu, Intermetallics, 13, 586-95(2005).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Modified from 96Du.
+$
+$ A common model for Ni17Y2 and Ni5Y is used.
+$
+ PAR  L(LIQUID,NI,Y;0),,                -155496+38.932*T;,,           N 96Du !
+ PAR  L(LIQUID,NI,Y;1),,                -52904+6.785*T;,,             N 96Du !
+$
+ PAR  L(FCC_A1,NI,Y:VA;0),,               -2000;,,                    N 05Du !
+ PAR  L(BCC_A2,NI,Y:VA;0),,               -2000;,,                    N 05Du !
+ PAR  L(HCP_A3,NI,Y:VA;0),,               -2000;,,                    N 05Du !
+$
+ PAR  G(NI17Y2,NI2:Y:NI),,              +17*GHSERNI+2*GHSERYY
+             -386087+61.742*T;,,                                      N 96Du !
+ PAR  TC(NI17Y2,NI2:Y:NI),,               160;,,                      N 05Du !
+ PAR  BMAG(NI17Y2,NI2:Y:NI),,              11;,,                      N 05Du !
+ PAR  G(NI17Y2,Y:Y:NI),,                +15*GHSERNI+3*GHSERYY
+             -560118+93.561*T;,,                                      N 96Du !
+ PAR  L(NI17Y2,NI2,Y:Y:NI;0),,          +100000;,,                    N 05Du !
+$
+ PAR  G(NI4Y,NI:Y),,                    +4*GHSERNI+GHSERYY
+             -160555+22.979*T;,,                                      N 96Du !
+$
+ PAR  G(NI7Y2,NI:Y),,                   +7*GHSERNI+2*GHSERYY
+             -294966+38.77*T;,,                                       N 96Du !
+ PAR  TC(NI7Y2,NI:Y),,                     58;,,                      N 05Du !
+ PAR  BMAG(NI7Y2,NI:Y),,                    0.42;,,                   N 05Du !
+$
+ PAR  G(NI3Y,NI:Y),,                    +3*GHSERNI+GHSERYY
+             -134358+16.477*T;,,                                      N 96Du !
+ PAR  TC(NI3Y,NI:Y),,                      33;,,                      N 05Du !
+ PAR  BMAG(NI3Y,NI:Y),,                     0.16;,,                   N 05Du !
+$
+ PAR  G(NI2Y,NI:Y),,                    +2*GHSERNI+GHSERYY
+             -101736+8.988*T;,,                                       N 96Du !
+ PAR  G(NIY_B27,NI:Y),,                 +GHSERNI+GHSERYY
+             -67151.8+5.5642*T;,,                                     N 05Du !
+ PAR  G(NI2Y3,NI:Y),,                   +2*GHSERNI+3*GHSERYY
+             -162837.5+32.5369*T;,,                                   N 05Du !
+ PAR  G(NIY3_D011,NI:Y),,               +GHSERNI+3*GHSERYY
+             -84446+14.1911*T;,,                                      N 05Du !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-Y(TDB -* +LIQUID +FCC_A1 +BCC_A2 +HCP_A3 +NI17Y2 +NI2Y +NI2Y3 +NI3Y
+  +NI4Y +NI7Y2 +NIY_B27 +NIY3_D011 ;G5 MAJ:BCC/Y:VA
+  ;P3 TMM:300/2300 STP:0.9/1500 ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  Frie2  'Suzana Fries and Leo Lukas, unpublished,
+          SGTE unary database V.4.1, 1999; Y'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95She3 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-03,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Y'
+  96Du   'Z. Du, W. Zhang, J. Alloys Compd., 245, 164-67(1996); Y, Ni-Y'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  05Du   'Z. Du, D. Lu, Intermetallics, 13, 586-95(2005); Ni-Y'
+!

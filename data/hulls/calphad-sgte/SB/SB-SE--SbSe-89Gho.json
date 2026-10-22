@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "SB",
+    "SE"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "SB": {
+          "energy": -13572.361101864366,
+          "phase": "RHOMBOHEDRAL_A7"
+        },
+        "SE": {
+          "energy": -12512.01866104134,
+          "phase": "HEXAGONAL_A8"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -42537.412309458734
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -1.882803368814182
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "RHOMBOHEDRAL_A7",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -41976.05448504681,
+          "right": {
+            "phase": "SB2SE3_D58",
+            "x": 0.6000000000000001
+          },
+          "slope": -41976.05448504681,
+          "x_hi": 0.6000000000000001,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -63806.11846418813,
+            "slope": 63806.11846418813
+          },
+          "entropy": {
+            "intercept": -2.824205053221274,
+            "slope": 2.824205053221274
+          },
+          "intercept": -62964.08172757023,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SB2SE3_D58",
+            "x": 0.6000000000000001
+          },
+          "mu_a_rel": -62964.08172757023,
+          "mu_b_rel": 7.275957614183426e-12,
+          "right": {
+            "phase": "HEXAGONAL_A8",
+            "x": 1.0
+          },
+          "slope": 62964.081727570236,
+          "x_hi": 1.0,
+          "x_lo": 0.6000000000000001
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "RHOMBOHEDRAL_A7",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -25185.632691028088,
+          "energy_per_atom": -25185.632691028088,
+          "enthalpy": -25522.447385675245,
+          "entries_at_x": 1,
+          "entropy": -1.1296820212885095,
+          "formula": "",
+          "nsites": null,
+          "phase": "SB2SE3_D58",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6000000000000001
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HEXAGONAL_A8",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "SbSe-89Gho",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:00:20Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/SbSe-89Gho.tdb",
+    "source_sha256": "3d9847ebb3a993766a26f726d3a6f92917f6037efb15522ce664251d4f166da0"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "SB-SE",
+  "x_element": "SE"
+}

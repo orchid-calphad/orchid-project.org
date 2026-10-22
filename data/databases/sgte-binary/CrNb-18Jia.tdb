@@ -1,0 +1,170 @@
+$
+$ Database for Cr-Nb from Y. Jiang et al. 2018.
+$
+$ Y. Jiang, S. Zomorodpoosh, I. Roslyakova, L. Zhang,
+$ Calphad, 62, 109-18(2018).
+$
+$ Dataset created 2020.08.17 by Bengt Hallstedt.
+$
+$ Note! This dataset does not use SGTE element data.
+$
+$ Partially 3rd generation using segmented regression.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CR NB : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CR% NB% : VA : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE C15_LAVES % 2 2 1 !
+ CONST C15_LAVES : CR% NB : CR NB% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.37 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 18Jia !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 18Jia !
+$
+ PAR  G(C15_LAVES,CR:CR),,              +3*GHSERCR+5000;,,            N 18Jia !
+$
+ FUNCTION GHSERCR     0.01  -13239.4963291804-0.0026915*T**2+GEINCR;
+       675.10  Y  -14523.8188182499+34.3283411202115*T
+       -5.70725443224479*T*LN(T)+0.00576243931601954*T**2
+       -2.08708322619354E-06*T**3+GEINCR;
+      1452.90  Y  -1721.84500071372-144.928814794475*T+20.72672*T*LN(T)
+       -0.0124315*T**2+GEINCR; 
+      2186.70674962108  Y  -35632.8268898087+344.478676663859*T-50*T*LN(T)
+       -2.36115386880112E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR      0.01  +19214.5603723563-0.0697661701068103*T**2
+       +3.41299758170097E-05*T**3;
+       298.15  Y  +15483.0135147752+146.059775*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1)+2.37615E-21*T**7;
+      2186.70674962108  Y  -16459.9845374816+335.616316*T-50*T*LN(T);
+      6000.00  N !
+$
+ FUNCTION ACRF        0.01  +280.8869*T**(-1);                         6000 N !
+ FUNCTION BCRF        0.01  +EXP(ACRF)-1;                              6000 N !
+ FUNCTION CCRF        0.01  +LN(BCRF);                                 6000 N !
+ FUNCTION GEINCRF     0.01  +24.942*CCRF*T;                            6000 N !
+ FUNCTION ACRS        0.01  +457.8066*T**(-1);                         6000 N !
+ FUNCTION BCRS        0.01  +EXP(ACRS)-1;                              6000 N !
+ FUNCTION CCRS        0.01  +LN(BCRS);                                 6000 N !
+ FUNCTION GEINCRS     0.01  +24.942*CCRS*T;                            6000 N !
+ FUNCTION GEINCR      0.01  +0.4987*GEINCRF+0.5005*GEINCRS;            6000 N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 18Jia !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 18Jia !
+$
+ PAR  G(C15_LAVES,NB:NB),,              +3*GHSERNB+1000;,,            N 18Jia !
+$
+ FUNCTION GHSERNB     0.01  -10500.3442222831-0.001282*T**2+GEINNB;
+       577.00  Y  -10678.5668418247+5.42807622321681*T
+       -0.926634070407041*T*LN(T)+0.000323951595159516*T**2
+       -4.63879721305464E-07*T**3+GEINNB;
+      2750.00  Y  -33865.9506377302+270.049452966987*T-41.77*T*LN(T)
+       -9.22819670594906E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB      0.01  +20825.3372633984-0.0806739649769555*T**2
+       +4.43804274193517e-05*T**3;
+       298.15  Y  +20349.6438712189+131.229057*T-26.4711*T*LN(T)
+       +0.000203475*T**2-3.5012E-07*T**3+93399*T**(-1)-3.06098E-23*T**7;
+      2750.00  Y  -8411.9452601107+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$
+ FUNCTION ANBF        0.01  +88.73871*T**(-1);                         6000 N !
+ FUNCTION BNBF        0.01  +EXP(ANBF)-1;                              6000 N !
+ FUNCTION CNBF        0.01  +LN(BNBF);                                 6000 N !
+ FUNCTION GEINNBF     0.01  +24.942*CNBF*T;                            6000 N !
+ FUNCTION ANBS        0.01  +237.83365*T**(-1);                        6000 N !
+ FUNCTION BNBS        0.01  +EXP(ANBS)-1;                              6000 N !
+ FUNCTION CNBS        0.01  +LN(BNBS);                                 6000 N !
+ FUNCTION GEINNBS     0.01  +24.942*CNBS*T;                            6000 N !
+ FUNCTION GEINNB      0.01  +0.18616*GEINNBF+0.81405*GEINNBS;          6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Jiang, S. Zomorodpoosh, I. Roslyakova, L. Zhang,
+$ Calphad, 62, 109-18(2018).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Note! This dataset does not use SGTE element data.
+$
+$ Partially 3rd generation using segmented regression.
+$
+ PAR  L(LIQUID,CR,NB;0),,               +50818.5-29.9256*T;,,         N 18Jia !
+ PAR  L(LIQUID,CR,NB;1),,               +10599.5-8.5778*T;,,          N 18Jia !
+$
+ PAR  L(BCC_A2,CR,NB:VA;0),,            +63463.0-23.2713*T;,,         N 18Jia !
+ PAR  L(BCC_A2,CR,NB:VA;1),,            +37357.6-18.6226*T;,,         N 18Jia !
+$
+ PAR  G(C15_LAVES,CR:NB),,              +3*GHSERCNA
+             -8386.1-2.9757*T;,,                                      N 18Jia !
+ PAR  G(C15_LAVES,NB:CR),,              +3*GHSERCR+3*GHSERNB
+             -3*GHSERCNA+14386.1+2.9757*T;,,                          N 18Jia !
+ PAR  L(C15_LAVES,CR,NB:*;0),,          +87535.7;,,                   N 18Jia !
+ PAR  L(C15_LAVES,*:CR,NB;0),,          +37488.5;,,                   N 18Jia !
+$
+ FUNCTION GHSERCNA    0.01  -12127.3338324889-0.001585*T**2+GEINCNT;
+        72.00  Y  -12128.7885399679+0.228914352048509*T
+       -0.060612811626607*T*LN(T)-0.000743155394074902*T**2
+       -1.94871436556736E-06*T**3+GEINCNT;
+       429.80  Y -11819.3478535089-11.7872621596179*T+2.0992803*T*LN(T)
+       -0.0057685*T**2+GEINCNT;
+      5000.00  N !
+ FUNCTION ACRNBF      0.01  +182.84981*T**(-1);                        5000 N !
+ FUNCTION BCRNBF      0.01  +EXP(ACRNBF)-1;                            5000 N !
+ FUNCTION CCRNBF      0.01  +LN(BCRNBF);                               5000 N !
+ FUNCTION GEINCNF     0.01  +24.942*CCRNBF*T;                          5000 N !
+ FUNCTION ACRNBS      0.01  +358.21129*T**(-1);                        5000 N !
+ FUNCTION BCRNBS      0.01  +EXP(ACRNBS)-1;                            5000 N !
+ FUNCTION CCRNBS      0.01  +LN(BCRNBS);                               5000 N !
+ FUNCTION GEINCNS     0.01  +24.942*CCRNBS*T;                          5000 N !
+ FUNCTION GEINCNT     0.01  +0.30267*GEINCNF+0.69891*GEINCNS;          5000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CR-NB(TDB -* +LIQ +BCC_A2 +C15_LAV ;P3 TMM:300/3000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  18Jia  'Y. Jiang, S. Zomorodpoosh, I. Roslyakova, L. Zhang,
+          Calphad, 62, 109-18(2018); Cr-Nb'
+!

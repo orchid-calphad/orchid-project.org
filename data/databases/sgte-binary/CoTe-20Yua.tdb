@@ -1,0 +1,254 @@
+$
+$ Database for Co-Te from H. Yuan et al. 2020.
+$
+$ H. Yuan, J. Wang, B. Hu, R. Zhao, Y. Du, S.-Y. Zhang,
+$ Calphad, 68, 101743(2020).
+$
+$ Dataset created 2020.04.10 by Bengt Hallstedt.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CO2                                CO2 !
+ SPECIE  COTE                               CO1TE1 !
+ SPECIE  TE2                                TE2 !
+ SPECIE  TE3                                TE3 !
+ SPECIE  TE4                                TE4 !
+ SPECIE  TE5                                TE5 !
+ SPECIE  TE6                                TE6 !
+ SPECIE  TE7                                TE7 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO TE : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO : VA : !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$ The phase is named HEXAGONAL_A8 in the SGTE unary database and
+$ TRIGONAL_A8 in LB.
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc), beta
+$
+ PHASE COTE_B81 % 3 1 1 1 !
+ CONST COTE_B81 : CO VA : CO VA : TE : !
+$
+$ Prototype alpha-FeS2 (oP6, Pnnm), gamma
+$
+ PHASE COTE2_C18 % 2 1 2 !
+ CONST COTE2_C18 : CO% TE : TE : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : CO CO2 COTE TE TE2 TE3 TE4 TE5 TE6 TE7 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE GAS !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  G(GAS,CO),,                       +F7261T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CO2),,                      +F7427T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$
+$ Co(g)
+ FUNCTION F7261T    298.15  +416729.448-35.1568065*T-20.78*T*LN(T)
+       -0.0080941*T**2+1.95473333E-06*T**3+68440*T**(-1);
+       600.00  Y  +415600.439-4.36923762*T-25.919*T*LN(T)
+       -3.217E-04*T**2+1.228E-08*T**3+69800*T**(-1);
+      1600.00  Y  +404059.607+61.0546568*T-34.475*T*LN(T)
+       +0.00226985*T**2-1.11743333E-07*T**3+2845480*T**(-1);
+      5300.00  Y  +619409.166-455.074402*T+25.674*T*LN(T)
+       -0.00531515*T**2+7.04183333E-08*T**3-1.4391985E+08*T**(-1);
+     10000.00  N !
+$ Co2(g)
+ FUNCTION F7427T    298.15  +739344.569+228.270514*T-75.86201*T*LN(T)
+       +0.02653785*T**2-3.82613167E-06*T**3+589055*T**(-1);
+       900.00  Y  +766271.805-69.2721005*T-32.277*T*LN(T)
+       -0.0051345*T**2+5.3545E-07*T**3-2559210*T**(-1);
+      2500.00  Y  +742734.91+122.487528*T-58.296*T*LN(T)
+       +0.0049326*T**2-1.22191667E-07*T**3-1487375*T**(-1);
+      5800.00  Y  +1148759.49-821.285063*T+51.18*T*LN(T)
+       -0.0082646*T**2+1.77621667E-07*T**3-2.8575475E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                1600 N 95Dav !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 1600 N 95Dav !
+$
+ PAR  G(COTE_B81,VA:VA:TE),,            +GHSERTE
+             +43470-17.145*T;,,                                       N 20Yua !
+ PAR  G(COTE2_C18,TE:TE),,              +3*GHSERTE+15000;,,           N 20Yua !
+$
+ PAR  G(GAS,TE),,                       +GTE1GAS+RTLNP;,,             N 00SUB !
+ PAR  G(GAS,TE2),,                      +GTE2GAS+RTLNP;,,             N 00SUB !
+ PAR  G(GAS,TE3),,                      +GTE3GAS+RTLNP;,,             N 00SUB !
+ PAR  G(GAS,TE4),,                      +GTE4GAS+RTLNP;,,             N 00SUB !
+ PAR  G(GAS,TE5),,                      +GTE5GAS+RTLNP;,,             N 00SUB !
+ PAR  G(GAS,TE6),,                      +GTE6GAS+RTLNP;,,             N 00SUB !
+ PAR  G(GAS,TE7),,                      +GTE7GAS+RTLNP;,,             N 00SUB !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$
+$ Te(g)
+ FUNCTION GTE1GAS   298.15  +203077-39.3937*T-21.4658*T*LN(T)
+       +0.00106813*T**2-3.03132E-07*T**3+9080.15*T**(-1);
+      1300.00  Y  +204434-64.4228*T-17.6757*T*LN(T)
+       -0.00193648*T**2+8.01703E-08*T**3+123672*T**(-1);
+      4100.00  Y  +169215+51.7696*T-31.8142*T*LN(T)
+       +6.2125E-04*T**2-7.38245E-09*T**3+16889800*T**(-1);
+     10000.00  N !
+$ Te2(g)
+ FUNCTION GTE2GAS   298.15  +155823-93.7413*T-23.3943*T*LN(T)
+       -0.0186449*T**2+2.81237E-06*T**3-164708*T**(-1);
+      1000.00  Y  +141003+90.3569*T-50.7498*T*LN(T)
+       +0.0026634*T**2-1.91725E-07*T**3+1217270*T**(-1);
+      2600.00  Y  +136052+57.9731*T-45.6215*T*LN(T)
+       -6.77045E-04*T**2+6.52445E-08*T**3+7374000*T**(-1);
+      5800.00  Y  +128152+120.993*T-53.6328*T*LN(T)
+       +0.00102992*T**2+9.34818E-09*T**3-1196190*T**(-1);
+      6000.00  N !
+$ Te3(g)
+ FUNCTION GTE3GAS   298.15  +185372+54.5927*T-58.1833*T*LN(T)
+       -4.42972E-06*T**2+1.7586E-10*T**3+75006*T**(-1);
+      6000.00  N !
+$ Te4(g)
+ FUNCTION GTE4GAS   298.15  +191687+179.006*T-83.1138*T*LN(T)
+       -7.69355E-06*T**2+3.07578E-10*T**3+127262*T**(-1);
+      6000.00  N !
+$ Te5(g)
+ FUNCTION GTE5GAS   298.15  +187059+263.053*T-108.07*T*LN(T)
+       -4.33393E-06*T**2+1.71808E-10*T**3+111272*T**(-1);
+      6000.00  N !
+$ Te6(g)
+ FUNCTION GTE6GAS   298.15  +186041+400.857*T-133.016*T*LN(T)
+       -3.74116E-06*T**2+1.49701E-10*T**3+128382*T**(-1);
+      6000.00  N !
+$ Te7(g)
+ FUNCTION GTE7GAS   298.15  +206091+501.61*T-157.955*T*LN(T)
+       -4.85134E-06*T**2+1.92685E-10*T**3+156512*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H. Yuan, J. Wang, B. Hu, R. Zhao, Y. Du, S.-Y. Zhang,
+$ Calphad, 68, 101743(2020).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+ PAR  L(LIQUID,CO,TE;0),,               -18587-27.869*T;,,            N 20Yua !
+ PAR  L(LIQUID,CO,TE;1),,               +45907;,,                     N 20Yua !
+ PAR  L(LIQUID,CO,TE;2),,               +43313;,,                     N 20Yua !
+$
+ PAR  G(COTE_B81,CO:CO:TE),,            +2*GHSERCO+GHSERTE
+             -61266+12.633*T;,,                                       N 20Yua !
+ PAR  G(COTE_B81,CO:VA:TE),,            +GHSERCO+GHSERTE
+             -38133+3.75*T;,,                                         N 20Yua !
+ PAR  G(COTE_B81,VA:CO:TE),,            +GHSERCO+GHSERTE
+             -11148-5.313*T;,,                                        N 20Yua !
+ PAR  L(COTE_B81,CO,VA:VA:TE;0),,       -167508+49.065*T;,,           N 20Yua !
+ PAR  L(COTE_B81,CO,VA:VA:TE;1),,       -32991;,,                     N 20Yua !
+ PAR  L(COTE_B81,CO:CO,VA:TE;0),,       +155040;,,                    N 20Yua !
+ PAR  L(COTE_B81,CO:CO,VA:TE;1),,       +185079;,,                    N 20Yua !
+$
+ PAR  G(COTE2_C18,CO:TE),,              +GHSERCO+2*GHSERTE
+             -88935+9.336*T;,,                                        N 20Yua !
+ PAR  L(COTE2_C18,CO,TE:TE;0),,         +24006;,,                     N 20Yua !
+ PAR  L(COTE2_C18,CO,TE:TE;1),,         -48003;,,                     N 20Yua !
+$
+ PAR  G(GAS,COTE),,                     +F8093T+RTLNP;,,              N 97SUB !
+$
+$ CoTe(g)
+ FUNCTION F8093T    298.15  +379023.751+70.3351352*T-50.45444*T*LN(T)
+       +0.009091625*T**2-1.22940567E-06*T**3+170508.45*T**(-1);
+      1100.00  Y  +387208.859-16.2968922*T-37.82106*T*LN(T)
+       +9.63142E-05*T**2-4.31917833E-09*T**3-880836.5*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87 (1995); Te'
+  97SUB  'SGTE Substance Database, version 1997'
+  00SUB  'SGTE Substance Database, version 2000'
+  20Yua  'H. Yuan, J. Wang, B. Hu, R. Zhao, Y. Du, S.-Y. Zhang,
+          Calphad, 68, 101743(2020); Co-Te'
+!

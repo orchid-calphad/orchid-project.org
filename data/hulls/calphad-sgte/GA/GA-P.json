@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "GA",
+    "P"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "GA": {
+          "energy": -12142.771094316979,
+          "phase": "ORTHORHOMBIC_A11"
+        },
+        "P": {
+          "energy": -24276.60346972217,
+          "phase": "RED_P"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -97188.01590935377
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -12.126403420145877
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "ORTHORHOMBIC_A11",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -93572.52872963727,
+          "right": {
+            "phase": "ZINCBLENDE_B3",
+            "x": 0.5
+          },
+          "slope": -93572.52872963727,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -97188.01590935377,
+            "slope": 97188.01590935377
+          },
+          "entropy": {
+            "intercept": -12.126403420145877,
+            "slope": 12.126403420145877
+          },
+          "intercept": -93572.52872963727,
+          "kind": "two_phase",
+          "left": {
+            "phase": "ZINCBLENDE_B3",
+            "x": 0.5
+          },
+          "mu_a_rel": -93572.52872963727,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "RED_P",
+            "x": 1.0
+          },
+          "slope": 93572.52872963727,
+          "x_hi": 1.0,
+          "x_lo": 0.5
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ORTHORHOMBIC_A11",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -46786.264364818635,
+          "energy_per_atom": -46786.264364818635,
+          "enthalpy": -48594.00795467688,
+          "entries_at_x": 1,
+          "entropy": -6.0632017100729385,
+          "formula": "",
+          "nsites": null,
+          "phase": "ZINCBLENDE_B3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "RED_P",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "GaP-94Ans-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:38:50Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/GaP-94Ans-LB.tdb",
+    "source_sha256": "392a70d39e558f6244091074b57c71e145fe2237670b28f9ee772788d8ab59af"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "GA-P",
+  "x_element": "P"
+}

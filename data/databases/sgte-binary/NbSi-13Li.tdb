@@ -1,0 +1,187 @@
+$
+$ Database for Nb-Si from Y. Li et al. 2013.
+$
+$ Y. Li, C. Li, Z. Du, C. Guo, Calphad, 43, 112-23(2013).
+$
+$ Dataset created 2024.06.19 by Bengt Hallstedt.
+$
+$ Modified from 10Gen. Readjusted heat capacities for the intermetallic
+$ compounds.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NB SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NB% SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NB SI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype Ti3P (tP32, P4_2/n)
+$
+ PHASE NB3SI % 2 3 1 !
+ CONST NB3SI : NB : SI : !
+$
+$ Prototype Cr5B3 (tI32, I4/mcm), alpha-Nb5Si3
+$
+ PHASE NB5SI3_D8L % 2 5 3 !
+ CONST NB5SI3_D8L : NB% SI : SI : !
+$
+$ Prototype W5Si3 (tI32, I4/mcm), beta-Nb5Si3
+$
+ PHASE NB5SI3_D8M % 3 4 1 3 !
+ CONST NB5SI3_D8M : NB : NB SI : NB SI% : !
+$
+$ Prototype CrSi2 (hP9, P6_222)
+$
+ PHASE NBSI2_C40 % 2 1 2 !
+ CONST NBSI2_C40 : NB% SI : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(NB5SI3_D8M,NB:NB:NB),,          +8*GNBCOMP+388000;,,          N 13Li !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+ FUNCTION GNBCOMP   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ PAR  G(NB5SI3_D8L,SI:SI),,             +8*GSICOMP+40000;,,           N 09Gen !
+ PAR  G(NBSI2_C40,SI:SI),,              +3*GSICOMP+15000;,,           N 09Gen !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+ FUNCTION GSICOMP   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Li, C. Li, Z. Du, C. Guo, Calphad, 43, 112-23(2013).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Modified from 10Gen. Readjusted heat capacities for the intermetallic
+$ compounds.
+$
+ PAR  L(LIQUID,NB,SI;0),,               -199000;,,                    N 09Gen !
+ PAR  L(LIQUID,NB,SI;1),,               -18800;,,                     N 09Gen !
+ PAR  L(LIQUID,NB,SI;2),,               +50000;,,                     N 09Gen !
+$
+ PAR  L(BCC_A2,NB,SI:VA;0),,            -151178;,,                    N 09Gen !
+ PAR  L(BCC_A2,NB,SI:VA;1),,            -15915;,,                     N 09Gen !
+ PAR  L(BCC_A2,NB,SI:VA;2),,            +40000;,,                     N 09Gen !
+$
+ PAR  G(NB3SI,NB:SI),,                  +3*GNBCOMP+GSICOMP
+             -133428-25.76*T;,,                                       N 13Li !
+$
+ PAR  G(NB5SI3_D8L,NB:SI),,             +5*GNBCOMP+3*GSICOMP
+             -503488-14.72*T-1.28*T*LN(T)-6.4E-04*T**2
+             +6E-07*T**3+160000*T**(-1);,,                            N 13Li !
+ PAR  L(NB5SI3_D8L,NB,SI:SI;0),,        -97808;,,                     N 09Gen !
+$
+ PAR  G(NB5SI3_D8M,NB:NB:SI),,          +5*GNBCOMP+3*GSICOMP
+             -412132-64.4*T;,,                                        N 13Li !
+ PAR  G(NB5SI3_D8M,NB:SI:NB),,          +7*GNBCOMP+GSICOMP+240000;,,  N 13Li !
+ PAR  G(NB5SI3_D8M,NB:SI:SI),,          +4*GNBCOMP+4*GSICOMP
+             -146496-122.2688*T;,,                                    N 09Gen !
+$PAR  L(NB5SI3_D8M,NB:NB,SI:NB;0),,     -194544;,,                    N 10Gen !
+ PAR  L(NB5SI3_D8M,NB:NB,SI:SI;0),,     -194544;,,                    N 09Gen !
+$PAR  L(NB5SI3_D8M,NB:NB:NB,SI;0),,     +360000;,,                    N 10Gen !
+$PAR  L(NB5SI3_D8M,NB:SI:NB,SI;0),,     +360000;,,                    N 10Gen !
+$
+ PAR  G(NBSI2_C40,NB:SI),,              +GNBCOMP+2*GSICOMP
+             -153600-39.483*T+3.27*T*LN(T)-1.5E-04*T**2
+             -4.95E-08*T**3-120000*T**(-1);,,                         N 13Li !
+ PAR  L(NBSI2_C40,NB,SI:SI;0),,         +38757+12.7986*T;,,           N 09Gen !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,NB,SI:VA;0),,            -151178;,,                    N Same !
+ PAR  L(FCC_A1,NB,SI:VA;1),,            -15915;,,                     N Same !
+ PAR  L(FCC_A1,NB,SI:VA;2),,            +40000;,,                     N Same !
+$
+ PAR  L(HCP_A3,NB,SI:VA;0),,            -151178;,,                    N Same !
+ PAR  L(HCP_A3,NB,SI:VA;1),,            -15915;,,                     N Same !
+ PAR  L(HCP_A3,NB,SI:VA;2),,            +40000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09Gen  'T. Geng, C. Li, J. Bao, X. Zhao, Z. Du, C. Guo,
+          Intermetallics, 17, 343-57(2009); Nb-Si'
+  10Gen  'T. Geng, C. Li, X. Zhao, H. Xu, Z. Du, C. Guo,
+          Calphad, 34, 363-76(2010); Nb-Si'
+  13Li   'Y. Li, C. Li, Z. Du, C. Guo, Calphad, 43, 112-23(2013); Nb-Si'
+!

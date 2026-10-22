@@ -1,0 +1,243 @@
+$
+$ Database for Sc-Sn from A. Iddaoudi et al. 2013.
+$
+$ A. Iddaoudi, N. Selhaoi, M. Ait Amar, S. Kardellass, R. Karioui, L. Bouirden,
+$ Calphad, 41, 71-75(2013).
+$
+$ Dataset created 2019.01.13 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ The enthalpy of transition between Sc5Sn3-HT and Sc5Sn3-D88 is only
+$ 23 J/mol atoms, which is far too small.
+$
+$ Old hcp-Sn used.
+$
+$ Invariant equilibria differ by up to 11 K because of incorrectly rounded
+$ fractional compositions.
+$
+$ Two inverse miscibility gaps with minima at 4335 K and x(Sn)=0.08 and
+$ 5047 K and x(Sn)=0.92.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SC   HCP_A3                     44.9559    5217.448   34.6435 ! 
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SC SN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SC SN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SC% SN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SC% SN : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SN : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SN : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE SC5SN3_D88 % 2 5 3 !
+ CONST SC5SN3_D88 : SC : SN : !
+$
+$ unknown structure
+$
+ PHASE SC5SN3_HT % 2 5 3 !
+ CONST SC5SN3_HT : SC : SN : !
+$
+$ Prototype Si5V6 (oI44, Ibam)
+$
+ PHASE SC6SN5 % 2 6 5 !
+ CONST SC6SN5 : SC : SN : !
+$
+$ unknown structure
+$
+ PHASE SC11SN10 % 2 11 10 !
+ CONST SC11SN10 : SC : SN : !
+$
+$ Prototype ScSn2 (tI24, I4_1/amd)
+$
+ PHASE SCSN2 % 2 1 2 !
+ CONST SCSN2 : SC : SN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sc
+$
+$ FCC_A1 and DHCP added in unary 4.4
+$
+ PAR  G(HCP_A3,SC:VA),,                 +GHSERSC;                3200 N 91Din !
+ PAR  G(BCC_A2,SC:VA),,                 +GBCCSC;                 3200 N 91Din !
+ PAR  G(FCC_A1,SC:VA),,                 +GHSERSC+5000;           3200 N 99Cac !
+$PAR  G(DHCP,SC),,                      +GHSERSC
+$            +1200+0.4157255*T;                                  3200 N 00Nor2 !
+ PAR  G(LIQUID,SC),,                    +GLIQSC;                 3200 N 91Din !
+$
+ FUNCTION GHSERSC   298.15  -8689.547+153.48097*T-28.1882*T*LN(T)
+       +0.00321892*T**2-1.64531E-06*T**3+72177*T**(-1);
+       800.00  Y  -7511.295+132.759582*T-24.9132*T*LN(T)
+       -5.73295E-04*T**2-8.59345E-07*T**3;
+      1608.00  Y  +261143.04-1817.92245*T+241.441051*T*LN(T)
+       -0.117529396*T**2+8.7398E-06*T**3-50607159*T**(-1);
+      2000.00  Y  -30515.246+286.474338*T-44.2249*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCSC    298.15  +1979.728-1.024135*T+GHSERSC;
+      1000.00  Y  +230161.408-2004.05469*T+276.76664*T*LN(T)
+       -0.167120107*T**2+1.5637371E-05*T**3-33783257*T**(-1);
+      1608.00  Y  -25928.011+283.642312*T-44.2249*T*LN(T);
+      2000.00  Y  +4587.235-2.832026*T+GHSERSC;
+      3200.00  N !
+ FUNCTION GLIQSC    298.15  +6478.66+45.427539*T-10.7967803*T*LN(T)
+       -0.020636524*T**2+2.13106E-06*T**3-158106*T**(-1);
+      1608.00  Y  -11832.111+275.871695*T-44.2249*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+$ Old hcp-Sn used.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+$PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                         3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A. Iddaoudi, N. Selhaoi, M. Ait Amar, S. Kardellass, R. Karioui, L. Bouirden,
+$ Calphad, 41, 71-75(2013).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The enthalpy of transition between Sc5Sn3-HT and Sc5Sn3-D88 is only
+$ 23 J/mol atoms, which is far too small.
+$
+$ Old hcp-Sn used.
+$
+$ Invariant equilibria differ by up to 11 K because of incorrectly rounded
+$ fractional compositions.
+$
+$ Two inverse miscibility gaps with minima at 4335 K and x(Sn)=0.08 and
+$ 5047 K and x(Sn)=0.92.
+$
+ PAR  L(LIQUID,SC,SN;0),,               -144436-9.409*T;,,             N 13Idd !
+ PAR  L(LIQUID,SC,SN;1),,               -24148+6.112*T;,,              N 13Idd !
+ PAR  L(LIQUID,SC,SN;2),,               +178+30.207*T;,,               N 13Idd !
+$
+ PAR  L(BCC_A2,SC,SN:VA;0),,            -131962-0.206*T;,,             N 13Idd !
+ PAR  L(HCP_A3,SC,SN:VA;0),,            -127264+0.002*T;,,             N 13Idd !
+$
+ PAR  G(SC5SN3_D88,SC:SN),,             +5*GHSERSC+3*GHSERSN
+             -448160-14.216*T;,,                                       N 13Idd !
+ PAR  G(SC5SN3_HT,SC:SN),,              +5*GHSERSC+3*GHSERSN
+             -447976-14.312*T;,,                                       N 13Idd !
+ PAR  G(SC6SN5,SC:SN),,                 +6*GHSERSC+5*GHSERSN
+             -590271-28.248*T;,,                                       N 13Idd !
+ PAR  G(SC11SN10,SC:SN),,               +11*GHSERSC+10*GHSERSN
+             -1107120-47.481*T;,,                                      N 13Idd !
+ PAR  G(SCSN2,SC:SN),,                  +GHSERSC+2*GHSERSN
+             -134766+6.318*T;,,                                        N 13Idd !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,SC,SN:VA;0),,            -127264+0.002*T;,,             N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  99Cac  'G. Cacciamani, P. Riani, G. Borzone, N. Parodi, A. Saccone, R. Ferro,
+          A. Pisch, R. Schmid-Fetzer, Intermetallics, 7, 101-8(1999),
+          SGTE unary database V.4.4, 2001; Sc'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000,
+          SGTE unary database V.4.4, 2001; Nd, Sc'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  13Idd  'A. Iddaoudi, N. Selhaoi, M. Ait Amar, S. Kardellass, R. Karioui,
+          L. Bouirden, Calphad, 41, 71-75(2013); Sc-Sn'
+!

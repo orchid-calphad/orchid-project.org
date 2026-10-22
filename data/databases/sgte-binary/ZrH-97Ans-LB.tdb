@@ -1,0 +1,212 @@
+$
+$ Database for Zr-H from I. Ansara and N. Dupin 1997 (Included LB Vol. 3)
+$
+$ I. Ansara, N. Dupin, unpublished, 1997.
+$
+$ Dataset created 2012.10.14 by Bengt Hallstedt.
+$ 2021.02.07: Modified for use with GES6.
+$ 2024.08.03: Changed name of HCP_ZR to HCP_A3.
+$
+$ A non-standard model is used for the hcp phase although the H solubility
+$ is not very large.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT H    1/2_MOLE_H2(G)              1.0079    4234.      65.285  ! 
+ ELEMENT ZR   HCP_A3                     91.22      5566.27    39.1809 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  H2                                 H2 !
+ SPECIE  ZR2                                ZR2 !
+ SPECIE  ZRH                                ZR1H1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : H ZR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : ZR : H VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : ZR% : H VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$ Non-standard hcp model used for Zr-H
+$
+ PHASE HCP_A3 %A 2 1 1 !
+ CONST HCP_A3 : ZR : H VA% : !
+$
+$ Prototype CaF2 (cF12, Fm-3m), delta
+$
+ PHASE ZRH2_C1 % 2 1 2 !
+ CONST ZRH2_C1 : ZR : H% VA : !
+$
+$ Prototype ThH2 (tI6, I4/mmm), epsilon
+$
+ PHASE ZRH2_L2B % 2 1 2 !
+ CONST ZRH2_L2B : ZR : H% VA : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : H H2 ZR ZR2 ZRH : !
+$
+ PHASE H2GAS % 1 1 !
+ CONST H2GAS : H2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ H
+$
+$ H is not included in unary
+$
+ PAR  G(LIQUID,H),,                     +GHSERHH
+             +8035+25*T+2*T*LN(T);,,                                  N 06Qiu !
+$
+ PAR  G(H2GAS,H2),,                     +GHSERH2+RTLNP;,,             N 97SUB !
+$
+ PAR  G(GAS,H),,                        +F10383T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,H2),,                       +GHSERH2+RTLNP;,,             N 97SUB !
+$
+$ H(g)
+ FUNCTION F10383T   298.15  +211801.621+24.4989821*T-20.78611*T*LN(T);
+      6000.00  N !
+$ H2(g)
+ FUNCTION GHSERH2   298.15  -9522.9741+78.5273879*T-31.35707*T*LN(T)
+       +0.0027589925*T**2-7.46390667E-07*T**3+56582.3*T**(-1);
+      1000.00  Y  +180.108664-15.6128256*T-17.84857*T*LN(T)
+       -0.00584168*T**2+3.14618667E-07*T**3-1280036*T**(-1);
+      2100.00  Y  -18840.1663+92.3120255*T-32.05082*T*LN(T)
+       -0.0010728235*T**2+1.14281783E-08*T**3+3561002.5*T**(-1);
+      6000.00  N !
+ FUNCTION GHSERHH   298.15  +0.5*GHSERH2;                              6000 N !
+$ ------------------------------------------------------------------------------
+$ Zr
+$
+$ CUB_A13, CBCC_A12, ORTHORHOMBIC_A20 and TETRAGONAL_U added in unary 4.1
+$
+ PAR  G(HCP_A3,ZR:VA)           130.00  +GHSERZR;,,                   N 91Din !
+ PAR  G(BCC_A2,ZR:VA)           130.00  +GBCCZR;,,                    N 91Din !
+$PAR  G(OMEGA,ZR)               130.00  +GOMEZR;,,                    N 91Din !
+ PAR  G(FCC_A1,ZR:VA)           130.00  +GHSERZR+7600-0.9*T;,,        N 91Din !
+$PAR  G(CBCC_A12,ZR:VA)         130.00  +GHSERZR+4602.2;,,            N 99SGUN !
+$PAR  G(CUB_A13,ZR:VA)          130.00  +GHSERZR+7531.2;,,            N 99SGUN !
+$PAR  G(ORTHORHOMBIC_A20,ZR)    130.00  +GBCCZR+5000;,,               N 99SGUN !
+$PAR  G(TETRAGONAL_U,ZR)        130.00  +GBCCZR+5000;,,               N 99SGUN !
+ PAR  G(LIQUID,ZR)              130.00  +GLIQZR;,,                    N 91Din !
+$
+ PAR  G(ZRH2_C1,ZR:VA)          130.00  +GHSERZR+7600-0.9*T;,,        N 97Ans !
+ PAR  G(ZRH2_L2B,ZR:VA)         130.00  +GHSERZR+7700-0.9*T;,,        N 97Ans !
+$
+ PAR  G(GAS,ZR),,                       +GZRGAS+RTLNP;,,              N 94SUB !
+ PAR  G(GAS,ZR2),,                      +F15702T+RTLNP;,,             N 94SUB !
+$
+ FUNCTION GHSERZR   130.00  -7827.595+125.64905*T-24.1618*T*LN(T)
+       -0.00437791*T**2+34971*T**(-1);
+      2128.00  Y  -26085.921+262.724183*T-42.144*T*LN(T)-1.342896E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GBCCZR    130.00  -525.539+124.9457*T-25.607406*T*LN(T)
+       -3.40084E-04*T**2-9.729E-09*T**3+25233*T**(-1)-7.6143E-11*T**4;
+      2128.00  Y  -4620.034+1.55998*T+GHSERZR+1.4103476E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GOMEZR    130.00  -8878.082+144.432234*T-26.8556*T*LN(T)
+       -0.002799446*T**2+38376*T**(-1);
+      2128.00  Y  -3414.603+2.566675*T+GHSERZR+8.517346E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQZR    130.00  +18147.69-9.080812*T+GHSERZR+1.6275E-22*T**7;
+      2128.00  Y  -8281.26+253.812609*T-42.144*T*LN(T);
+      6000.00  N !
+$ Zr(g):
+ FUNCTION GZRGAS    298.15  +586876.841+74.4171195*T-38.69111*T*LN(T)
+       +0.01152846*T**2-1.693255E-06*T**3+270638.8*T**(-1);
+       700.00  Y  +595990.293-26.0530509*T-24.06106*T*LN(T)
+       +0.001743641*T**2-5.94312333E-07*T**3-748947.5*T**(-1);
+      1300.00  Y  +593841.673-46.0204551*T-20.46361*T*LN(T)
+       -0.002961084*T**2+1.08391433E-07*T**3+526352.5*T**(-1);
+      2700.00  Y  +630745.052-161.965371*T-6.647343*T*LN(T)
+       -0.0046738955*T**2+1.06833583E-07*T**3-15872340*T**(-1);
+      6600.00  Y  +504260.272+131.813821*T-40.68801*T*LN(T)
+       -6.38357E-04*T**2+1.79125333E-08*T**3+71496950*T**(-1);
+     10000.00  N !
+$ Zr2(g):
+ FUNCTION F15702T   298.15  +892794.963-14.4120751*T-37.13672*T*LN(T)
+       -3.2039655E-04*T**2-4.30605167E-09*T**3+85422.15*T**(-1);
+      3600.00  Y  +874148.858+9.34917918*T-39.33356*T*LN(T)
+       -0.001019669*T**2+6.09799667E-08*T**3+14065805*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From I. Ansara and N. Dupin 1997 (Included LB Vol. 3)
+$
+$ I. Ansara, N. Dupin, unpublished, 1997.
+$
+$ Checked against LB. Checked at 6000K.
+$
+$ A non-standard model is used for the hcp phase although the H solubility
+$ is not very large.
+$
+ PAR  G(BCC_A2,ZR:H),,                  +GBCCZR+3*GHSERHH+44853;,,    N 97Ans !
+ PAR  L(BCC_A2,ZR:H,VA;0),,             -474971+359*T;,,              N 97Ans !
+ PAR  L(BCC_A2,ZR:H,VA;1),,             -267893+200*T;,,              N 97Ans !
+$
+ PAR  G(HCP_A3,ZR:H),,                  +GHSERZR+GHSERHH
+             -45965+41.6*T;,,                                         N 97Ans !
+$
+ PAR  G(ZRH2_C1,ZR:H),,                 +GHSERZR+2*GHSERHH
+             -170490+208.2*T-9.47*T*LN(T);,,                          N 97Ans !
+ PAR  L(ZRH2_C1,ZR:H,VA;0),,            +14385-6*T;,,                 N 97Ans !
+ PAR  L(ZRH2_C1,ZR:H,VA;1),,            -106445+87.3*T;,,             N 97Ans !
+$
+ PAR  G(ZRH2_L2B,ZR:H),,                +GHSERZR+2*GHSERHH
+             -168215+110.5*T+3.866*T*LN(T);,,                         N 97Ans !
+ PAR  L(ZRH2_L2B,ZR:H,VA;0),,           +19900;,,                     N 97Ans !
+$
+ PAR  G(GAS,ZRH),,                      +ZR1H1G+RTLNP;,,              N 94SUB !
+$
+ FUNCTION ZR1H1G    298.15  +508873.032-56.3652522*T-23.04183*T*LN(T)
+       -0.01071154*T**2+1.4689955E-06*T**3-46462.485*T**(-1);
+      1000.00  Y  +500139.247+39.1135322*T-37.03719*T*LN(T)
+       -3.8075865E-04*T**2+2.06460167E-09*T**3+1021210*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  H-ZR(TDB -* +HCP_A3 +GAS +BCC_A2 +ZRH2_C1 +ZRH2_L2B
+  ;P3 TMM:300/1500 STP:0.5/1000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94SUB  'SGTE Substance Database, version 1994'
+  97Ans  'I. Ansara, N. Dupin, unpublished, 1997; Zr-H'
+  97SUB  'SGTE substance database, version 1997'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  06Qiu  'C. Qiu, S.M. Opalka, G.B. Olson, D.L. Anton,
+          Int. J. Mater. Res., 97, 845-53(2006); Na-H'
+!

@@ -1,0 +1,249 @@
+$
+$ Database for Al-Ni from W. Huang and Y.A. Chang 1998.
+$
+$ W. Huang, Y.A. Chang, Intermet., 6, 487-98(1998).
+$
+$ Dataset created 2019.07.13 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ Similar to 97Ans, but with separate models for fcc (A1) and Ni3Al (L1_2).
+$
+$ The parameters in the original paper are incorrect. Parameters are taken from
+$ the corrigendum (W. Huang, Y.A. Chang, Intermet., 7, 625-26(1999)).
+$ The parameter L(A1_FCC,AL,NI:VA;0) is incomplete in the paper. The complete
+$ parameter was found in B.A. Hull, S.E. Mohney, Z.-K. Liu, J. Mater. Res.,
+$ 19, 1742-51(2004). Using this parameter a previously incorrect dataset could
+$ be corrected.
+$
+$ All invariant equilibria are correctly reproduced except L+B2=Al3Ni2, which
+$ is at 1417 K instead of 1410 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL NI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL NI : VA : !
+$
+$ Disordered part of L12_FCC, different from FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : AL NI : VA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE L12_FCC %AY 3 0.75 0.25 1 !
+ CONST L12_FCC : AL NI% : AL% NI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL NI : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %B 2 1 1 !
+ CONST B2_BCC : AL% NI : NI% VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL NI : VA : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE AL3NI_D011 % 2 3 1 !
+ CONST AL3NI_D011 : AL : NI : !
+$
+$ Prototype Al3Ni2 (hP5, P-3m1)
+$
+ PHASE AL3NI2_D513 % 3 3 2 1 !
+ CONST AL3NI2_D513 : AL : AL NI% : NI VA% : !
+$
+$ Prototype Ga3Pt5 (oC16, Cmmm)
+$
+ PHASE AL3NI5 % 2 3 5 !
+ CONST AL3NI5 : AL : NI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION L12_FCC DIS_PART A1_FCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(A1_FCC,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  G(B2_BCC,AL:VA),,                 +GBCCAL+B2ALVA;,,             N 97Ans !
+ PAR  G(AL3NI2_D513,AL:AL:VA),,         +5*GBCCAL+30000-3*T;,,        N 97Ans !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$
+ FUNCTION B2ALVA    298.15  +10000-T;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(A1_FCC,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(A1_FCC,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(A1_FCC,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(B2_BCC,NI:NI),,                 +2*GBCCNI;,,                  N 98Hua !
+ PAR  G(B2_BCC,NI:VA),,                 +GBCCNI+B2NIVA;,,             N 98Hua !
+ PAR  L(B2_BCC,NI:NI,VA;0),,            +LB2NIVA;,,                   N 98Hua !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$
+ FUNCTION B2NIVA    298.15  +162685-24.936*T;                          6000 N !
+ FUNCTION LB2NIVA   298.15  -62755+29.622*T;                           6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ W. Huang, Y.A. Chang, Intermet., 6, 487-98(1998).
+$
+$ Checked aginst paper. Checked at 6000 K.
+$
+$ Similar to 97Ans, but with separate models for fcc (A1) and Ni3Al (L1_2).
+$
+$ The parameters in the original paper are incorrect. Parameters are taken from
+$ the corrigendum (W. Huang, Y.A. Chang, Intermet., 7, 625-26(1999)).
+$ The parameter L(A1_FCC,AL,NI:VA;0) is incomplete in the paper. The complete
+$ parameter was found in B.A. Hull, S.E. Mohney, Z.-K. Liu, J. Mater. Res.,
+$ 19, 1742-51(2004). Using this parameter a previously incorrect dataset could
+$ be corrected.
+$
+$ All invariant equilibria are correctly reproduced except L+B2=Al3Ni2, which
+$ is at 1417 K instead of 1410 K.
+$
+ PAR  L(LIQUID,AL,NI;0),,               -197088+30.353*T;,,           N 98Hua !
+ PAR  L(LIQUID,AL,NI;1),,               +5450;,,                      N 98Hua !
+ PAR  L(LIQUID,AL,NI;2),,               +54624-11.383*T;,,            N 98Hua !
+$
+ PAR  L(FCC_A1,AL,NI:VA;0),,            -168343+16*T;,,               N 98Hua !
+ PAR  L(FCC_A1,AL,NI:VA;1),,            +34311;,,                     N 98Hua !
+ PAR  L(FCC_A1,AL,NI:VA;2),,            +4162+27.29*T;,,              N 98Hua !
+$
+ PAR  L(A1_FCC,AL,NI:VA;0),,            -16367+12*U1ALNI;,,           N 98Hua !
+ PAR  L(A1_FCC,AL,NI:VA;1),,            +2023+39.894*T;,,             N 98Hua !
+ PAR  L(A1_FCC,AL,NI:VA;2),,            +84175;,,                     N 98Hua !
+$
+ PAR  G(L12_FCC,NI:AL:VA),,             +3*U1ALNI;,,                  N 98Hua !
+ PAR  G(L12_FCC,AL:NI:VA),,             +3*U1ALNI;,,                  N 98Hua !
+ PAR  L(L12_FCC,AL,NI:AL:VA;0),,        +6*U1ALNI;,,                  N 98Hua !
+ PAR  L(L12_FCC,AL,NI:NI:VA;0),,        +6*U1ALNI;,,                  N 98Hua !
+$
+ PAR  G(B2_BCC,AL:NI),,                 +GBCCAL+GBCCNI+B2ALNI;,,      N 98Hua !
+ PAR  L(B2_BCC,AL,NI:NI;0),,            +LB2ALNI;,,                   N 98Hua !
+ PAR  L(B2_BCC,AL,NI:VA;0),,            +LB2ALNI;,,                   N 98Hua !
+ PAR  L(B2_BCC,AL:NI,VA;0),,            +LB2NIVA;,,                   N 98Hua !
+$
+ PAR  G(AL3NI_D011,AL:NI;0),,           +3*GHSERAL+GHSERNI
+             -161852+21.248*T;,,                                      N 98Hua !
+$
+ PAR  G(AL3NI2_D513,AL:AL:NI),,         +5*GBCCAL+GBCCNI+3*B2ALNI
+             +30000+356836-66.079*T;,,                                N 98Hua !
+ PAR  G(AL3NI2_D513,AL:NI:NI),,         +3*GBCCAL+3*GBCCNI+3*B2ALNI
+             +30000;,,                                                N 98Hua !
+ PAR  G(AL3NI2_D513,AL:NI:VA),,         +3*GBCCAL+2*GBCCNI
+             -356836+66.079*T;,,                                      N 98Hua !
+ PAR  L(AL3NI2_D513,AL:AL,NI:NI;0),,    -38157;,,                     N 98Hua !
+ PAR  L(AL3NI2_D513,AL:AL,NI:VA;0),,    -38157;,,                     N 98Hua !
+ PAR  L(AL3NI2_D513,AL:AL:NI,VA;0),,    -23319;,,                     N 98Hua !
+ PAR  L(AL3NI2_D513,AL:NI:NI,VA;0),,    -23319;,,                     N 98Hua !
+$
+ PAR  G(AL3NI5,AL:NI;0),,               +3*GHSERAL+5*GHSERNI
+             -438360+42.336*T;,,                                      N 98Hua !
+$
+$ metastable
+$
+ PAR  L(BCC_A2,AL,NI:VA;0),,            -168343+16*T;,,               N Same !
+ PAR  L(BCC_A2,AL,NI:VA;1),,            +34311;,,                     N Same !
+ PAR  L(BCC_A2,AL,NI:VA;2),,            +4162+27.29*T;,,              N Same !
+$
+ PAR  L(HCP_A3,AL,NI:VA;0),,            -168343+16*T;,,               N Same !
+ PAR  L(HCP_A3,AL,NI:VA;1),,            +34311;,,                     N Same !
+ PAR  L(HCP_A3,AL,NI:VA;2),,            +4162+27.29*T;,,              N Same !
+$
+ FUNCTION U1ALNI    298.15  -14556.4+2.945*T;                          6000 N !
+ FUNCTION B2ALNI    298.15  -152685+23.936*T;                          6000 N !
+ FUNCTION LB2ALNI   298.15  -47306+4.909*T;                            6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97Ans  'I. Ansara, N. Dupin, H.L. Lukas, B. Sundman,
+          J. Alloys Compd., 247, 20-30(1997); Al-Ni'
+  98Hua  'W. Huang, Y.A. Chang, Intermet., 6, 487-98(1998); Al-Ni'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+!

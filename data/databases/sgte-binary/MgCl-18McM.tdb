@@ -1,0 +1,201 @@
+$
+$ Database for Mg-Cl from J.W. McMurray and S.S. Raiman 2018.
+$
+$ J.W. McMurray, S.S. Raiman, Solar Energy, 170, 1039-42(2018).
+$
+$ Dataset created 2023.01.15 by Bengt Hallstedt.
+$
+$ Data for MgCl2 not included in the paper (reference to FactSage 7.1).
+$ Data for MgCl2 and Cl are taken from the substance database.
+$
+$ Something seems to wrong with the liquid interacrion in this system.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CL   1/2_MOLE_CL2(G)            35.453     4590.0    111.48   ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CL-1                               CL1/-1 !
+ SPECIE  CL2                                CL2 !
+ SPECIE  MG+2                               MG1/+2 !
+ SPECIE  MG2                                MG2 !
+ SPECIE  MGCL                               MG1CL1 !
+ SPECIE  MGCL2                              MG1CL2 !
+ SPECIE  MG2CL4                             MG2CL4 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : MG+2 : CL-1 VA : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MG MGCL2 : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MG : VA : !
+$
+$ Prototype CdCl2 (hR3, R-3m)
+$
+ PHASE MGCL2_C19 % 2 1 2 !
+ CONST MGCL2_C19 : MG : CL : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : CL CL2 MG MG2 MGCL MGCL2 MG2CL4 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cl
+$
+ PAR  G(GAS,CL;0),,                     +F5863T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CL2;0),,                    +F6320T+RTLNP;,,              N 97SUB !
+$
+$ Cl(g)
+ FUNCTION F5863T    298.15  +113735.574-5.74454343*T-23.68581*T*LN(T)
+       -5.00078E-06*T**2+2.35320333E-07*T**3+77001.85*T**(-1);
+       800.00  Y  +115299.255-14.5412992*T-22.63307*T*LN(T)
+       +4.844305E-04*T**2-2.35785167E-08*T**3-192344.3*T**(-1);
+      3400.00  Y  +118260.106-28.5900451*T-20.83511*T*LN(T)
+       +4.1547685E-06*T**2-6.70175833E-11*T**3-1130035*T**(-1);
+     10000.00  N !
+$ Cl2(g)
+ FUNCTION F6320T    298.15  -11735.239+21.6544578*T-36.24619*T*LN(T)
+       -9.56635E-04*T**2+7.72473833E-08*T**3+126340.1*T**(-1);
+      1500.00  Y  -14830.9343+52.8425144*T-40.69302*T*LN(T)
+       +0.0016038575*T**2-1.834645E-07*T**3+446405.05*T**(-1);
+      3300.00  Y  +12605.9759-161.881178*T-12.22677*T*LN(T)
+       -0.00734027*T**2+2.74869167E-07*T**3+3816431.5*T**(-1);
+      5600.00  Y  -277134.238+658.109036*T-109.5523*T*LN(T)
+       +0.00665615*T**2-9.27583833E-08*T**3+1.564792E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(ION,MG+2:VA),,                  +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(GAS,MG),,                       +F12309T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,MG2),,                      +F12397T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+$ Mg(g)
+ FUNCTION F12309T   298.15  +140825.883-8.26177982*T-20.96302*T*LN(T)
+       +1.331861E-04*T**2-1.51554617E-08*T**3+5221.91*T**(-1);
+      2900.00  Y  +141959.02+20.1923541*T-25.1271*T*LN(T)
+       +0.002179723*T**2-1.502275E-07*T**3-3744678*T**(-1);
+      5400.00  Y  +458455.469-794.05688*T+70.54811*T*LN(T)
+       -0.010649025*T**2+1.716475E-07*T**3-1.996814E+08*T**(-1);
+      9200.00  Y  -315972.848+423.179252*T-63.73726*T*LN(T)
+       -2.847232E-04*T**2+2.15099667E-08*T**3+6.39436E+08*T**(-1);
+     10000.00  N !
+$ Mg2(g)
+ FUNCTION F12397T   298.15  +281408.793-104.38489*T-20.63169*T*LN(T)
+       -6.14869E-05*T**2+4.25457833E-09*T**3-156733.25*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J.W. McMurray, S.S. Raiman, Solar Energy, 170, 1039-42(2018).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Data for MgCl2 not included in the paper (reference to FactSage 7.1).
+$ Data for MgCl2 and Cl are taken from the substance database.
+$
+$ Something seems to wrong with the liquid interacrion in this system.
+$
+ PAR  G(ION,MG+2:CL-1),,                +F6438T
+             +43100-43.66767984*T;,,                                  N 97SUB !
+ PAR  L(ION,MG+2:CL-1,VA;0),,           +338625-240*T;,,              N 18McM !
+$
+ PAR  G(LIQUID,MGCL2),,                 +F6438T
+             +43100-43.66767984*T;,,                                  N 97SUB !
+ PAR  L(LIQUID,MG,MGCL2;0),,            +169312.5-120*T;,,            N 18McM !
+$
+ PAR  G(MGCL2_C19,MG:CL),,              +F6438T;,,                    N 97SUB !
+$
+ PAR  G(GAS,MGCL),,                     +F6105T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,MGCL2),,                    +F6442T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,MG2CL4),,                   +F7021T+RTLNP;,,              N 97SUB !
+$
+$ MgCl2(s)
+ FUNCTION F6438T    298.15  -669459.156+423.669037*T-75.65277*T*LN(T)
+       -0.004990018*T**2+5.33110667E-10*T**3+321961.95*T**(-1);
+       987.00  Y  -670274.794+509.050456*T-88.14207*T*LN(T)
+       -4.6870305E-07*T**2+1.73918833E-11*T**3-2960617*T**(-1);
+      2900.00  N !
+$ MgCl(g)
+ FUNCTION F6105T    298.15  +640965.432+22.4135084*T-37.303*T*LN(T)
+       -1.888E-04*T**2-5.8765E-08*T**3+88965*T**(-1);
+      1200.00  Y  +641161.441+43.5435075*T-40.805*T*LN(T)
+       +0.00378545*T**2-6.78511667E-07*T**3-401435*T**(-1);
+      2200.00  Y  +744256.839-536.25683*T+35.288*T*LN(T)
+       -0.021047*T**2+8.34116667E-07*T**3-26435050*T**(-1);
+      3900.00  Y  +333479.253+825.267854*T-130.357*T*LN(T)
+       +0.00874615*T**2-1.73583333E-07*T**3+1.653755E+08*T**(-1);
+      6000.00  N !
+$ MgCl2(g)
+ FUNCTION F6442T    298.15  -411564.922+125.925201*T-59.69145*T*LN(T)
+       -0.002302706*T**2+3.690615E-07*T**3+167498.3*T**(-1);
+      1000.00  Y  -412923.216+143.556343*T-62.3462*T*LN(T)
+       -1.498506E-06*T**2+2.77258333E-11*T**3+300840.05*T**(-1);
+      6000.00  N !
+$ Mg2Cl4(g)
+ FUNCTION F7021T    298.15  -995816.473+459.874292*T-130.4274*T*LN(T)
+       -0.0022733555*T**2+3.66961833E-07*T**3+354278.1*T**(-1);
+      1000.00  Y  -997112.549+477.007691*T-133.0135*T*LN(T)
+       -2.9848655E-06*T**2+1.0136855E-10*T**3+477591.05*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  18McM  'J.W. McMurray, S.S. Raiman, Solar Energy, 170, 1039-42(2018); Mg-Cl'
+!

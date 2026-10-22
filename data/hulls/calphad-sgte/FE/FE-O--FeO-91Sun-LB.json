@@ -1,0 +1,219 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "FE",
+    "O"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "FE": {
+          "energy": -8133.460245222478,
+          "phase": "BCC_A2"
+        },
+        "O": {
+          "energy": -30548.98307543967,
+          "phase": "O2GAS"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -278969.0877999877
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -86.47275946916247
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BCC_A2",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -253187.2345642569,
+          "right": {
+            "phase": "SPINEL_H11",
+            "x": 0.5714285714274339
+          },
+          "slope": -253187.2345642569,
+          "x_hi": 0.5714285714274339,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -54481.34160940448,
+            "slope": -183626.73998334006
+          },
+          "entropy": {
+            "intercept": 58.77643426816731,
+            "slope": -189.33151943866002
+          },
+          "intercept": -72005.53548645899,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SPINEL_H11",
+            "x": 0.5714285714274339
+          },
+          "mu_a_rel": -72005.53548645899,
+          "mu_b_rel": -199183.08294916182,
+          "right": {
+            "phase": "CORUNDUM_D51",
+            "x": 0.6
+          },
+          "slope": -127177.54746270282,
+          "x_hi": 0.6,
+          "x_lo": 0.5714285714274339
+        },
+        {
+          "enthalpy": {
+            "intercept": -411643.4639985212,
+            "slope": 411643.4639985212
+          },
+          "entropy": {
+            "intercept": -137.05619348757173,
+            "slope": 137.05619348757173
+          },
+          "intercept": -370780.1599102017,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CORUNDUM_D51",
+            "x": 0.6
+          },
+          "mu_a_rel": -370780.1599102017,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "O2GAS",
+            "x": 1.0
+          },
+          "slope": 370780.1599102017,
+          "x_hi": 1.0,
+          "x_lo": 0.6
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -144678.41975071593,
+          "energy_per_atom": -144678.41975071593,
+          "enthalpy": -159410.90731396133,
+          "entries_at_x": 1,
+          "entropy": -49.41300541085161,
+          "formula": "",
+          "nsites": null,
+          "phase": "SPINEL_H11",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5714285714274339
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -148312.06396408068,
+          "energy_per_atom": -148312.06396408068,
+          "enthalpy": -164657.3855994085,
+          "entries_at_x": 1,
+          "entropy": -54.8224773950287,
+          "formula": "",
+          "nsites": null,
+          "phase": "CORUNDUM_D51",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "O2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "FeO-91Sun-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:36:37Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/FeO-91Sun-LB.tdb",
+    "source_sha256": "0670fd1794f0d2b7a955c6e5ecbbbdbd9a62e8c33912ce376c5ef47191527406"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "FE-O",
+  "x_element": "O"
+}

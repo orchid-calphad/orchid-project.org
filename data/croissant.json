@@ -1,0 +1,312 @@
+{
+ "@context": {
+  "@language": "en",
+  "@vocab": "https://schema.org/",
+  "cr": "http://mlcommons.org/croissant/",
+  "sc": "https://schema.org/",
+  "dct": "http://purl.org/dc/terms/",
+  "field": "cr:field",
+  "fileObject": "cr:fileObject",
+  "fileSet": "cr:fileSet",
+  "recordSet": "cr:recordSet",
+  "source": "cr:source",
+  "extract": "cr:extract",
+  "column": "cr:column",
+  "dataType": {
+   "@id": "cr:dataType",
+   "@type": "@vocab"
+  },
+  "includes": "cr:includes",
+  "encodingFormat": "cr:encodingFormat",
+  "conformsTo": "dct:conformsTo"
+ },
+ "@type": "sc:Dataset",
+ "conformsTo": "http://mlcommons.org/croissant/1.0",
+ "name": "ORCHID",
+ "description": "Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery: catalog of open CALPHAD databases, redistributable TDB files, and binary convex hulls (Materials Project, OQMD, SGTE).",
+ "url": "https://orchid-project.org",
+ "license": "https://orchid-project.org/data/LICENSES.md",
+ "creator": {
+  "@type": "sc:Person",
+  "name": "Raymundo Arróyave"
+ },
+ "distribution": [
+  {
+   "@type": "cr:FileObject",
+   "@id": "catalog.csv",
+   "name": "catalog.csv",
+   "contentUrl": "https://orchid-project.org/data/catalog.csv",
+   "encodingFormat": "text/csv",
+   "sha256": "c4d980eb75ca67d4f6d1f57be3329bd51681257d8102007bb8f1750ceeadd5b1"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "catalog.json",
+   "name": "catalog.json",
+   "contentUrl": "https://orchid-project.org/data/catalog.json",
+   "encodingFormat": "application/json",
+   "sha256": "d7000a40a0e0c875e6a9ee686d37db3d29f41ad7e609d2f469b6d451af48d2a4"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "tdb-files",
+   "name": "tdb-files",
+   "encodingFormat": "text/plain",
+   "includes": "data/databases/**/*.[tT][dD][bB]"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "hulls-dft-mp",
+   "name": "hulls-dft-mp",
+   "encodingFormat": "application/json",
+   "includes": "data/hulls/dft-mp/**/*.json"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "hulls-dft-oqmd",
+   "name": "hulls-dft-oqmd",
+   "encodingFormat": "application/json",
+   "includes": "data/hulls/dft-oqmd/**/*.json"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "hulls-calphad-sgte",
+   "name": "hulls-calphad-sgte",
+   "encodingFormat": "application/json",
+   "includes": "data/hulls/calphad-sgte/**/*.json"
+  }
+ ],
+ "recordSet": [
+  {
+   "@type": "cr:RecordSet",
+   "@id": "catalog",
+   "name": "catalog",
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/name",
+     "name": "name",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "name"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/category",
+     "name": "category",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "category"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/elements",
+     "name": "elements",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "elements"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/n_elements",
+     "name": "n_elements",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "n_elements"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/n_phases",
+     "name": "n_phases",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "n_phases"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/archived",
+     "name": "archived",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "archived"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/tier",
+     "name": "tier",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "tier"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/local_path",
+     "name": "local_path",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "local_path"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/source_repo",
+     "name": "source_repo",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "source_repo"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/source_url",
+     "name": "source_url",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "source_url"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/download_url",
+     "name": "download_url",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "download_url"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/license",
+     "name": "license",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "license"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/license_status",
+     "name": "license_status",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "license_status"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/format_compat",
+     "name": "format_compat",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "format_compat"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/size_lines",
+     "name": "size_lines",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "size_lines"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "catalog/notes",
+     "name": "notes",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "catalog.csv"
+      },
+      "extract": {
+       "column": "notes"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

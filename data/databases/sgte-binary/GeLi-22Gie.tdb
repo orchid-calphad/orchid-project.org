@@ -1,0 +1,215 @@
+$
+$ Database for Ge-Li from W. Gierlotka et al. 2022.
+$
+$ W. Gierlotka, A. Debski, M. Zabrocki, A. Goral, W. Gasior,
+$ J. Chem. Thermodyn., 175, 106883(2022).
+$
+$ Dataset created 2023.07.23 by Bengt Hallstedt.
+$
+$ Use of large Delta-cp parameters without heat capacity data.
+$
+$ There is a misprint in the Ge4Li17 parameter.
+$
+$ There is an inverse miscibility gap with a minimum at 1955 K and x(Li)=0.61.
+$
+$ Invariant equilibria differ by up to 3 K compared with the table of
+$ invariants in the paper, but that table does not quite match the equilibria
+$ shown in Fig. 8. The calculation with the present dataset matches Fig. 8.
+$ Possibly the table and the figures were calculated with different sets of
+$ parameters.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+ ELEMENT LI   BCC_A2                      6.941     4632.00    29.12   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GE LI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GE LI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GE LI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GE LI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE : !
+$
+$ Prototype Na7Sn12 (mP78, P2/c)
+$
+ PHASE GE12LI7 % 2 12 7 !
+ CONST GE12LI7 : GE : LI : !
+$
+$ Prototype GeLi (tI32, I4_1/a)
+$
+ PHASE GELI % 2 1 1 !
+ CONST GELI : GE : LI : !
+$
+$ Prototype Li12Si7 (oP152, Pnma)
+$
+ PHASE GE7LI12 % 2 7 12 !
+ CONST GE7LI12 : GE : LI : !
+$
+$ Prototype Ge4Li9 (oC52, Cmcm)
+$
+ PHASE GE4LI9 % 2 4 9 !
+ CONST GE4LI9 : GE : LI : !
+$
+$ Prototype Li5Sn2 (hR7, R-3m)
+$
+ PHASE GE3LI7 % 2 3 7 !
+ CONST GE3LI7 : GE : LI : !
+$
+$ Prototype Ge2Li7 (oC36, Cmmm)
+$
+ PHASE GE2LI7 % 2 2 7 !
+ CONST GE2LI7 : GE : LI : !
+$
+$ Prototype Cu15Si4 (cI76, I-43d)
+$
+ PHASE GE4LI15_D86 % 2 4 15 !
+ CONST GE4LI15_D86 : GE : LI : !
+$
+$ Prototype Li4Si (oC96, Cmcm)
+$
+ PHASE GELI4 % 2 1 4.096 !
+ CONST GELI4 : GE : LI : !
+$
+$ Prototype Ge4Li17 (cF436, F-43m)
+$ See also Li22Si5 (Li17Si4) and related structures
+$
+ PHASE GE4LI17 % 2 4 17 !
+ CONST GE4LI17 : GE : LI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Li
+$
+ PAR  G(BCC_A2,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(FCC_A1,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(HCP_A3,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(LIQUID,LI)              200.00  +GLIQLI;                 3000 N 91Din !
+$
+ FUNCTION GHSERLI   200.00  -10583.817+217.637482*T-38.940488*T*LN(T)
+       +0.035466931*T**2-1.9869816E-05*T**3+159994*T**(-1);
+       453.60  Y  -559579.123+10547.8799*T-1702.88865*T*LN(T)
+       +2.25832944*T**2-5.71066077E-04*T**3+33885874*T**(-1);
+       500.00  Y  -9062.994+179.278285*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQLI    200.00  +2700.205-5.795621*T+GHSERLI;
+       250.00  Y  +12015.027-362.187078*T+61.6104424*T*LN(T)
+       -0.182426463*T**2+6.3955671E-05*T**3-559968*T**(-1);
+       453.60  Y  -6057.31+172.652183*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+       500.00  Y  +3005.684-6.626102*T+GHSERLI;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ W. Gierlotka, A. Debski, M. Zabrocki, A. Goral, W. Gasior,
+$ J. Chem. Thermodyn., 175, 106883(2022).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Use of large Delta-cp parameters without heat capacity data.
+$
+$ There is a misprint in the Ge4Li17 parameter.
+$
+$ There is an inverse miscibility gap with a minimum at 1955 K and x(Li)=0.61.
+$
+$ Invariant equilibria differ by up to 3 K compared with the table of
+$ invariants in the paper, but that table does not quite match the equilibria
+$ shown in Fig. 8. The calculation with the present dataset matches Fig. 8.
+$ Possibly the table and the figures were calculated with different sets of
+$ parameters.
+$
+ PAR  L(LIQUID,GE,LI;0),,               -136090.5+56.4133*T;,,        N 22Gie !
+ PAR  L(LIQUID,GE,LI;1),,               +108413.8-61.5748*T;,,        N 22Gie !
+ PAR  L(LIQUID,GE,LI;2),,               -11220.9-12.7271*T;,,         N 22Gie !
+ PAR  L(LIQUID,GE,LI;3),,               -64019.8+57.1338*T;,,         N 22Gie !
+$
+ PAR  L(BCC_A2,GE,LI:VA;0),,            +5000;,,                      N 22Gie !
+$
+ PAR  G(GE12LI7,GE:LI),,                +12*GHSERGE+7*GHSERLI
+             -383490+174.2434*T-12.973*T*LN(T);,,                     N 22Gie !
+ PAR  G(GELI,GE:LI),,                   +GHSERGE+GHSERLI
+             -55142.5+34.3176*T-3.199*T*LN(T);,,                      N 22Gie !
+ PAR  G(GE7LI12,GE:LI),,                +7*GHSERGE+12*GHSERLI
+             -606890.4-460.6823*T+85.0265*T*LN(T);,,                  N 22Gie !
+ PAR  G(GE4LI9,GE:LI),,                 +4*GHSERGE+9*GHSERLI
+             -464727.1-70.0003*T+25.2485*T*LN(T);,,                   N 22Gie !
+ PAR  G(GE3LI7,GE:LI),,                 +3*GHSERGE+7*GHSERLI
+             -357822.2-100.6908*T+26.1802*T*LN(T);,,                  N 22Gie !
+ PAR  G(GE2LI7,GE:LI),,                 +2*GHSERGE+7*GHSERLI
+             -334796.1-311.8252*T+59.596*T*LN(T);,,                   N 22Gie !
+ PAR  G(GE4LI15_D86,GE:LI),,            +4*GHSERGE+15*GHSERLI
+             -714611.3-691.18*T+134.2363*T*LN(T);,,                   N 22Gie !
+ PAR  G(GELI4,GE:LI),,                  +GHSERGE+4.096*GHSERLI
+             -139762.5-762.2394*T+113.4805*T*LN(T);,,                 N 22Gie !
+ PAR  G(GE4LI17,GE:LI),,                +4*GHSERGE+17*GHSERLI
+             -638100.1-2914.779*T+448.2857*T*LN(T);,,                 N 22Gie !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  22Gie  'W. Gierlotka, A. Debski, M. Zabrocki, A. Goral, W. Gasior,
+          J. Chem. Thermodyn., 175, 106883(2022); Ge-Li'
+!

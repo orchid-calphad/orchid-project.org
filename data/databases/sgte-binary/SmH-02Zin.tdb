@@ -1,0 +1,235 @@
+$
+$ Database for Sm-H from M. Zinkevich et al. 2002
+$
+$ M. Zinkevich, N. Mattern, A. Handstein, O. Gutfleisch,
+$ J. Alloys Compd., 339, 118-139(2002).
+$
+$ Dataset created 2019.01.27 by Bengt Hallstedt.
+$ 2019.02.17: Changed phase name SMH3_D06 to SMH3
+$ 2021.02.05: Modified for use with GES6.
+$
+$ Non-standard models for liquid, bcc and hcp.
+$
+$ With the original parameters the hcp phase becomes stable at x(H)=0.5 at
+$ low temperatures (below 680 K). To prevent this the hcp parameters were
+$ modified. This changes the shape of the hcp (beta-Sm) field considerably.
+$ The hcp phase should be reoptimised.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT H    1/2_MOLE_H2(G)              1.0079    4234.      65.285  ! 
+ ELEMENT SM   RHOMB_C19                 150.36      7573.04    69.4962 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  H2                                 H2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 2 1 1 !
+ CONST LIQUID:L : SM : H VA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SM : H VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$ Note! not standard bcc model
+$
+ PHASE BCC_A2 %B 2 1 1 !
+ CONST BCC_A2 : SM : H VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$ Note! not standard bcc model
+$
+ PHASE HCP_A3 %A 2 1 1 !
+ CONST HCP_A3 : SM : H VA% : !
+$
+$ Prototype alpha-Sm (hR3, R-3m)
+$
+ PHASE RHOMB_C19 % 2 1 1 !
+ CONST RHOMB_C19 : SM : H VA : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE SMH2_C1 % 3 1 2 1 !
+ CONST SMH2_C1 : SM : H VA : H VA : !
+$
+$ Prototype HoH3 (hP24, P-3c1)
+$
+ PHASE SMH3 % 3 1 2 1 !
+ CONST SMH3 : SM : H : H VA : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : H H2 SM : !
+$
+ PHASE H2GAS % 1 1 !
+ CONST H2GAS : H2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT_COM REJECT_PHASE H2GAS !
+ TYPE-DEFINITION % SEQ * !
+ TYPE_DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE_DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ H
+$
+$ H is not included in unary
+$
+$PAR  G(LIQUID,H),,                     +GHSERHH
+$            +8035+25*T+2*T*LN(T);,,                                  N 04Qiu !
+$
+ PAR  G(H2GAS,H2),,                     +GHSERH2+RTLNP;,,             N 97SUB !
+$
+ PAR  G(GAS,H),,                        +F10383T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,H2),,                       +GHSERH2+RTLNP;,,             N 97SUB !
+$
+$ H(g)
+ FUNCTION F10383T   298.15  +211801.621+24.4989821*T-20.78611*T*LN(T);
+      6000.00  N !
+$ H2(g)
+ FUNCTION GHSERH2   298.15  -9522.9741+78.5273879*T-31.35707*T*LN(T)
+       +0.0027589925*T**2-7.46390667E-07*T**3+56582.3*T**(-1);
+      1000.00  Y  +180.108664-15.6128256*T-17.84857*T*LN(T)
+       -0.00584168*T**2+3.14618667E-07*T**3-1280036*T**(-1);
+      2100.00  Y  -18840.1663+92.3120255*T-32.05082*T*LN(T)
+       -0.0010728235*T**2+1.14281783E-08*T**3+3561002.5*T**(-1);
+      6000.00  N !
+ FUNCTION GHSERHH   298.15  +0.5*GHSERH2;                              6000 N !
+$ ------------------------------------------------------------------------------
+$ Sm
+$
+$ HCP_A3 added in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$
+$ FCC_A1 from 02Zin not included in unary
+$
+ PAR  G(RHOMB_C19,SM:VA),,              +GHSERSM;                2100 N 91Din !
+ PAR  G(BCC_A2,SM:VA),,                 +GBCCSM;                 2100 N 91Din !
+ PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+5000;           2100 N 98Su1 !
+ PAR  G(HCP_A3,SM:VA),,                 +GHSERSM
+             +69.977-0.069491*T;                                 2100 N 98Su2 !
+ PAR  G(LIQUID,SM:VA),,                 +GLIQSM;                 2100 N 91Din !
+$
+ PAR  G(SMH2_C1,SM:VA:VA),,             +GHSERSM+141138.908;,,        N 02Zin !
+$
+ PAR  G(GAS,SM),,                       +F15273T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERSM   298.15  -3872.013-32.10748*T-1.6485*T*LN(T)
+       -0.050254*T**2+1.010345E-05*T**3-82168*T**(-1);
+       700.00  Y  -50078.215+627.869894*T-102.665*T*LN(T)
+       +0.0474522*T**2-7.538383E-06*T**3+3861770*T**(-1);
+      1190.00  Y  +289719.819-2744.50976*T+381.41982*T*LN(T)
+       -0.254986338*T**2+2.7512152E-05*T**3-40102102*T**(-1);
+      1345.00  Y  -23056.079+282.194375*T-50.208*T*LN(T);
+      2100.00  N !
+ FUNCTION GBCCSM    298.15  -4368.72+55.972523*T-16.9298494*T*LN(T)
+       -0.025446016*T**2+3.579527E-06*T**3+94209*T**(-1);
+      1190.00  Y  -15957.862+253.121044*T-46.9445*T*LN(T);
+      1345.00  Y  +111191.653-624.680805*T+71.6856914*T*LN(T)
+       -0.047314968*T**2+3.329865E-06*T**3-24870276*T**(-1);
+      2100.00  N !
+ FUNCTION GLIQSM    298.15  +3468.783+20.117456*T-11.6968284*T*LN(T)
+       -0.032418177*T**2+4.544272E-06*T**3+23528*T**(-1);
+      1190.00  Y  -11728.229+273.487076*T-50.208*T*LN(T);
+      2100.00  N !
+$ Sm(g)
+ FUNCTION F15273T   298.15  +197389.067+1.48784782*T-27.25423*T*LN(T)
+       -0.004541758*T**2+9.66538167E-07*T**3-40312.025*T**(-1);
+      1100.00  Y  +169303.384+252.985232*T-62.81893*T*LN(T)
+       +0.01571714*T**2-1.22936017E-06*T**3+4157452*T**(-1);
+      2800.00  Y  +670735.118-1795.71893*T+193.8858*T*LN(T)
+       -0.042934865*T**2+1.295334E-06*T**3-1.80147E+08*T**(-1);
+      4400.00  Y  -295842.195+803.309978*T-113.2675*T*LN(T)
+       +2.614958E-04*T**2+1.61802217E-07*T**3+3.8803995E+08*T**(-1);
+      5900.00  Y  -658799.787+1797.39061*T-230.6297*T*LN(T)
+       +0.016324745*T**2-2.371995E-07*T**3+5.82118E+08*T**(-1);
+      9000.00  Y  +315946.24+222.042246*T-56.247*T*LN(T)
+       +0.0024534215*T**2-3.03084333E-08*T**3-4.404249E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Zinkevich, N. Mattern, A. Handstein, O. Gutfleisch,
+$ J. Alloys Compd., 339, 118-139(2002).
+$
+$ Checked against paper. Checked at 6000 K (at 1 bar).
+$
+$ Non-standard models for bcc and hcp.
+$
+$ With the original parameters the hcp phase becomes stable at x(H)=0.5 at
+$ low temperatures (below 680 K). To prevent this the hcp parameters were
+$ modified. This changes the shape of the hcp (beta-Sm) field considerably.
+$ The hcp phase should be reoptimised.
+$
+ PAR  G(LIQUID,SM:H),,                  +GLIQSM+GHSERHH
+             -18701.1193+12*T;,,                                      N 02Zin !
+ PAR  L(LIQUID,SM:H,VA;0),,             -811.476845;,,                N 02Zin !
+$
+ PAR  G(RHOMB_C19,SM:H),,               +GHSERSM+GHSERHH
+             -78732.808+53.5159713*T;,,                               N 02Zin !
+ PAR  L(RHOMB_C19,SM:H,VA;0),,          +3457.14915;,,                N 02Zin !
+$
+$PAR  G(HCP_A3,SM:H),,                  +GHSERSM+GHSERHH
+$            -104354.3426+71.7812162*T;,,                             N 02Zin !
+$PAR  L(HCP_A3,SM:H,VA;0),,             +32203.1096-21.585983*T;,,    N 02Zin !
+ PAR  G(HCP_A3,SM:H),,                  +GHSERSM+GHSERHH
+             -98000+69*T;,,                                           N 02Zin !
+ PAR  L(HCP_A3,SM:H,VA;0),,             +28500-22*T;,,                N 02Zin !
+$
+ PAR  G(BCC_A2,SM:H),,                  +GBCCSM+GHSERHH
+             -87329.5649+57.9009778*T;,,                              N 02Zin !
+ PAR  L(BCC_A2,SM:H,VA;0),,             +6061.9523;,,                 N 02Zin !
+$
+ PAR  G(SMH2_C1,SM:H:H),,               +GHSERSM+3*GHSERHH
+             -228089.27+187.223575*T;,,                               N 02Zin !
+ PAR  G(SMH2_C1,SM:H:VA),,              +GHSERSM+2*GHSERHH
+             -194994.854+131.551681*T;,,                              N 02Zin !
+ PAR  G(SMH2_C1,SM:VA:H),,              +GHSERSM+GHSERHH
+             +141138.908;,,                                           N 02Zin !
+ PAR  L(SMH2_C1,SM:H,VA:H;0),,          -167331.063;,,                N 02Zin !
+ PAR  L(SMH2_C1,SM:H,VA:VA;0),,         -167331.063;,,                N 02Zin !
+ PAR  L(SMH2_C1,SM:H:H,VA;0),,          -2671.83177-5.60912667*T;,,   N 02Zin !
+ PAR  L(SMH2_C1,SM:VA:H,VA;0),,         -2671.83177-5.60912667*T;,,   N 02Zin !
+$
+ PAR  G(SMH3,SM:H:H),,                  +GHSERSM+3*GHSERHH
+             -229287.977+185.830052*T;,,                              N 02Zin !
+ PAR  G(SMH3,SM:H:VA),,                 +GHSERSM+2*GHSERHH
+             -186090.838+126.795384*T;,,                              N 02Zin !
+ PAR  L(SMH3,SM:H:H,VA;0),,             -10297.5795;,,                N 02Zin !
+$
+$ Metastable
+$
+ PAR  G(FCC_A1,SM:H),,                  +GHSERSM+GHSERHH
+             +39000+42.7*T;,,                                         N 02Zin !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  98Su1  'X. Su, W. Zhang, G. Liu, Z. Du,
+          J. Alloys Compd., 267, 149-53(1998); Sm'
+  98Su2  'X. Su, W. Zhang, Z. Du, J. Alloys Compd., 278, 182-84(1998)
+          SGTE unary database V.4.4, 2001; Sm'
+  04Qiu  'C. Qiu, G.B. Olson, S.M. Opalka, D.L. Anton,
+          J. Phase Equilib. Diffus., 25, 520-27(2004); H'
+!

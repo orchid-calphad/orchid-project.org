@@ -1,0 +1,383 @@
+$
+$ Database for Al-C from Z. He et al. 2021.
+$
+$ Z. He, B. Kaplan, H. Mao, M. Selleby, Calphad, 72, 102250(2021).
+$
+$ Dataset created 2021.03.29 by Bengt Hallstedt.
+$
+$ Using 3rd generation element data and modelling.
+$ The gas phase is not part of the 3rd generation modelling.
+$
+$ There seems to be some bug how the theta function for pure Al is used when
+$ C is added to fcc, bcc and hcp. Therefore the theta function cannot be
+$ used for fcc, bcc and hcp Al. (Thermo-Calc 2021a)
+$
+$ The theta function does not seem to scale with number of atoms in the
+$ formula unit. I.e. the theta function cannot be used for fcc-AlC etc.
+$ (Thermo-Calc 2021a)
+$
+$ For graphite and diamond with multiple Einstein temperatures the theta
+$ function can probably not be used. (Thermo-Calc 2021a)
+$
+$ The Gibbs energy for hcp-Al0.5C is far too large. This will not be possible
+$ to use in Al-Mn-C.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 0.1 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  AL2                                AL2 !
+ SPECIE  ALC                                AL1C1 !
+ SPECIE  ALC2                               AL1C2 !
+ SPECIE  AL2C2                              AL2C2 !
+ SPECIE  C2                                 C2 !
+ SPECIE  C3                                 C3 !
+ SPECIE  C4                                 C4 !
+ SPECIE  C5                                 C5 !
+ SPECIE  C60                                C60 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL C : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL : VA% C : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL : VA% C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype Al4C3 (hR7, R-3m)
+$
+ PHASE AL4C3_D71 % 2 4 3 !
+ CONST AL4C3_D71 : AL : C : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : AL% AL2 ALC ALC2 AL2C2 C C2 C3 C4 C5 C60 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE GAS !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GESERAL+G0SERAL;,,           N 21He !
+ PAR  G(BCC_A2,AL:VA),,                 +GEBCCAL+G0SERAL+10083;,,     N 21He !
+ PAR  G(HCP_A3,AL:VA),,                 +GEHCPAL+G0SERAL+5481;,,      N 21He !
+$
+ PAR  THETA(LIQUID,AL),,                +LN(254);,,                   N 21He !
+ PAR  G(LIQUID,AL),,                    -209-3.777*T-0.00045*T**2;,,  N 21He !
+ PAR  GD(LIQUID,AL),,                   +13398-R*T-0.16597*T*LN(T);,, N 21He !
+$
+ PAR  G(GAS,AL),,                       +AL1G+RTLNP;,,                N 00SUB !
+ PAR  G(GAS,AL2),,                      +AL2G+RTLNP;,,                N 00SUB !
+$
+ FUNCTION TESERAL    0.10  +283;                                       6000 N !
+ FUNCTION GESERAL1   0.10  +1-1*EXP(-TESERAL*T**(-1));                 6000 N !
+ FUNCTION GESERAL2   0.10  +1*LN(GESERAL1);                            6000 N !
+ FUNCTION GESERAL3   0.10  +3*R*T*GESERAL2;                            6000 N !
+ FUNCTION GESERAL    0.10  +1.5*R*TESERAL+GESERAL3;                    6000 N !
+$
+ FUNCTION TEBCCAL    0.10  +233;                                       6000 N !
+ FUNCTION GEBCCAL1   0.10  +1-1*EXP(-TEBCCAL*T**(-1));                 6000 N !
+ FUNCTION GEBCCAL2   0.10  +1*LN(GEBCCAL1);                            6000 N !
+ FUNCTION GEBCCAL3   0.10  +3*R*T*GEBCCAL2;                            6000 N !
+ FUNCTION GEBCCAL    0.10  +1.5*R*TEBCCAL+GEBCCAL3;                    6000 N !
+$
+ FUNCTION TEHCPAL    0.10  +263;                                       6000 N !
+ FUNCTION GEHCPAL1   0.10  +1-1*EXP(-TEHCPAL*T**(-1));                 6000 N !
+ FUNCTION GEHCPAL2   0.10  +1*LN(GEHCPAL1);                            6000 N !
+ FUNCTION GEHCPAL3   0.10  +3*R*T*GEHCPAL2;                            6000 N !
+ FUNCTION GEHCPAL    0.10  +1.5*R*TEHCPAL+GEHCPAL3;                    6000 N !
+$
+ FUNCTION G0SERAL     0.10  -8160-0.001478307*T**2
+       -7.83339395E-07*T**3;
+      6000.00  N !
+ FUNCTION GTSERAL     0.10  -0.001478307*T**2-7.83339395E-07*T**3;     6000 N !
+$
+$ Al(g)
+ FUNCTION AL1G      298.15  +323947.58-25.1480948*T-20.859*T*LN(T)
+       +4.5665E-05*T**2-3.942E-09*T**3-24275.5*T**(-1);
+      4000.00  Y  +342017.234-54.0526114*T-17.7891*T*LN(T)
+       +6.822E-05*T**2-1.91111667E-08*T**3-14782200*T**(-1);
+      8200.00  Y  +542396.07-411.214335*T+22.2419*T*LN(T)
+       -0.00349619*T**2+4.0491E-08*T**3-2.0366965E+08*T**(-1);
+     10000.00  N !
+$ Al2(g)
+ FUNCTION AL2G      298.15  +496408.232+35.479739*T-41.6397*T*LN(T)
+       +0.00249636*T**2-4.9050733E-07*T**3+85390.3*T**(-1);
+       900.00  Y  +497613.221+17.368131*T-38.85476*T*LN(T)
+       -2.249805E-04*T**2-9.4900316E-09*T**3-5287.23*T**(-1);
+      2800.00  N !
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GESERCC+G0SERCC;,,           N 18Big !
+ PAR  G(DIAMOND_A4,C),,                 +GEDIACC+G0DIACC;,,           N 18Big !
+$
+ PAR  THETA(LIQUID,C),,                 +LN(1400);,,                  N 21He !
+ PAR  G(LIQUID,C),,                     +63887-8.2*T
+             -0.0004185*T**2;,,                                       N 21He !
+ PAR  GD(LIQUID,C),,                    +59147-49.61*T
+             +2.9806*T*LN(T);,,                                       N 21He !
+$
+ PAR  G(GAS,C),,                        +F3880T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C2),,                       +F4635T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C3),,                       +F5109T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C4),,                       +F5190T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C5),,                       +F5273T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,C60),,                      +F3869T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION TESERCC1    0.10  +1953.2502;                                6000 N !
+ FUNCTION TESERCC2    0.10  +947.01605;                                6000 N !
+ FUNCTION TESERCC3    0.10  +447.96926;                                6000 N !
+ FUNCTION TESERCC4    0.10  +192.65039;                                6000 N !
+ FUNCTION TESERCC5    0.10  +64.463356;                                6000 N !
+ FUNCTION FESERCC1    0.10  +0.484047107;                              6000 N !
+ FUNCTION FESERCC2    0.10  +0.349684332;                              6000 N !
+ FUNCTION FESERCC3    0.10  +0.121581878;                              6000 N !
+ FUNCTION FESERCC4    0.10  +0.0388463641;                             6000 N !
+ FUNCTION FESERCC5    0.10  +0.00584032345;                            6000 N !
+ FUNCTION GESERCC     0.10  +1.5*R*TESERCC+GESERC3;                    6000 N !
+ FUNCTION TESERCC     0.10  +FESERCC1*TESERCC1+FESERCC2*TESERCC2
+       +FESERCC3*TESERCC3+FESERCC4*TESERCC4+FESERCC5*TESERCC5;
+      6000.00  N !
+ FUNCTION GESERC3     0.10  +3*R*T*GESERC2;                            6000 N !
+ FUNCTION GESERC2     0.10  +FESERCC1*LN(GESERC11)
+       +FESERCC2*LN(GESERC12)+FESERCC3*LN(GESERC13)
+	   +FESERCC4*LN(GESERC14)+FESERCC5*LN(GESERC15);
+	  6000.00  N !
+ FUNCTION GESERC11    0.10  +1-1*EXP(-TESERCC1*T**(-1));               6000 N !
+ FUNCTION GESERC12    0.10  +1-1*EXP(-TESERCC2*T**(-1));               6000 N !
+ FUNCTION GESERC13    0.10  +1-1*EXP(-TESERCC3*T**(-1));               6000 N !
+ FUNCTION GESERC14    0.10  +1-1*EXP(-TESERCC4*T**(-1));               6000 N !
+ FUNCTION GESERC15    0.10  +1-1*EXP(-TESERCC5*T**(-1));               6000 N !
+ FUNCTION G0SERCC     0.10  -17752.213-2.9531332E-04*T**2
+       -3.3998492E-16*T**5;
+      6000.00  N !
+ FUNCTION GTSERCC     0.10  -2.9531332E-04*T**2-3.3998492E-16*T**5;    6000 N !
+$
+ FUNCTION TEDIACC1    0.10  +1601;                                     6000 N !
+ FUNCTION TEDIACC2    0.10  +814;                                      6000 N !
+ FUNCTION TEDIACC3    0.10  +345;                                      6000 N !
+ FUNCTION FEDIACC1    0.10  +0.76302;                                  6000 N !
+ FUNCTION FEDIACC2    0.10  +0.23186;                                  6000 N !
+ FUNCTION FEDIACC3    0.10  +0.01154;                                  6000 N !
+ FUNCTION GEDIACC     0.10  +1.5*R*TEDIACC+GEDIAC3;                    6000 N !
+ FUNCTION TEDIACC     0.10  +FEDIACC1*TEDIACC1+FEDIACC2*TEDIACC2
+       +FEDIACC3*TEDIACC3;
+      6000.00  N !
+ FUNCTION GEDIAC3     0.10  +3*R*T*GEDIAC2;                            6000 N !
+ FUNCTION GEDIAC2     0.10  +FEDIACC1*LN(GEDIAC11)
+       +FEDIACC2*LN(GEDIAC12)+FEDIACC3*LN(GEDIAC13);
+	  6000.00  N !
+ FUNCTION GEDIAC11    0.10  +1-1*EXP(-TEDIACC1*T**(-1));               6000 N !
+ FUNCTION GEDIAC12    0.10  +1-1*EXP(-TEDIACC2*T**(-1));               6000 N !
+ FUNCTION GEDIAC13    0.10  +1-1*EXP(-TEDIACC3*T**(-1));               6000 N !
+ FUNCTION G0DIACC     0.10  -16275.2024-9.12442869E-05*T**2
+       -2.16534137E-16*T**5;
+      6000.00  N !
+$
+$ C(g)
+ FUNCTION F3880T    298.15  +710430.933-17.7062915*T-20.97529*T*LN(T)
+       +1.998237E-04*T**2-3.34617167E-08*T**3+1680.6515*T**(-1);
+      3400.00  Y  +698015.711+2.57175229*T-23.05071*T*LN(T)
+       -6.04604E-05*T**2+6.74291667E-10*T**3+8558245*T**(-1);
+     10000.00  Y  +736197.571-32.7975305*T-19.44529*T*LN(T)
+       -1.5396035E-04*T**2-6.15402167E-11*T**3-56188350*T**(-1);
+     20000.00  N !
+$ C2(g)
+ FUNCTION F4635T    298.15  +803005.137+419.91537*T-97.48141*T*LN(T)
+       +0.08202995*T**2-1.97357E-05*T**3+690749.5*T**(-1);
+       500.00  Y  +826732.963-2.78396986*T-30.08349*T*LN(T)
+       -0.002621389*T**2+8.30959667E-08*T**3-868501*T**(-1);
+      4300.00  Y  +850321.492-26.7776258*T-27.96957*T*LN(T)
+       -0.0019408995*T**2+3.222655E-08*T**3-22380050*T**(-1);
+     12000.00  Y  +409662.375+520.538141*T-86.66656*T*LN(T)
+       +0.0015642485*T**2-7.28093667E-09*T**3+6.04612E+08*T**(-1);
+     20000.00  N !
+$ C3(g)
+ FUNCTION F5109T    298.15  +829826.554-14.7696342*T-32.21563*T*LN(T)
+       -0.014548565*T**2+1.77806833E-06*T**3-100277.6*T**(-1);
+      1000.00  Y  +809388.443+179.252911*T-59.93982*T*LN(T)
+       +0.0025413955*T**2-2.54139667E-07*T**3+2769455*T**(-1);
+      2800.00  Y  +959399.017-367.175864*T+7.286391*T*LN(T)
+       -0.010483215*T**2+2.00694833E-07*T**3-58720050*T**(-1);
+      5100.00  Y  +645204.419+237.848567*T-60.73106*T*LN(T)
+       -0.0047721765*T**2+1.3846755E-07*T**3+1.945987E+08*T**(-1);
+      8000.00  Y  -79243.2065+1580.271*T-211.8741*T*LN(T)
+       +0.009202285*T**2-1.030498E-07*T**3+8.44019E+08*T**(-1);
+     10000.00  N !
+$ C4(g)
+ FUNCTION F5190T    298.15  +1015583.43+114.927797*T-53.39543*T*LN(T)
+       -0.01399763*T**2+8.26027167E-07*T**3+181008.25*T**(-1);
+      2500.00  Y  +937071.116+522.054722*T-106.1735*T*LN(T)
+       +0.0016641645*T**2-4.03015E-08*T**3+21906740*T**(-1);
+      7000.00  Y  +974994.002+406.652033*T-92.4518*T*LN(T)
+       -2.6888155E-04*T**2+7.07303167E-09*T**3+7587140*T**(-1);
+     10000.00  N !
+$ C5(g)
+ FUNCTION F5273T    298.15  +1028316.51+169.994577*T-62.97185*T*LN(T)
+       -0.0317015*T**2+4.09694E-06*T**3+186275.3*T**(-1);
+       900.00  Y  +999750.246+470.150389*T-106.5965*T*LN(T)
+       -0.0014783715*T**2+7.07236167E-08*T**3+3747842.5*T**(-1);
+      3500.00  Y  +990603.917+513.736613*T-112.1708*T*LN(T)
+       -6.611165E-06*T**2+1.10554567E-10*T**3+6565820*T**(-1);
+     10000.00  N !
+$ C60(g)
+ FUNCTION F3869T    298.15  +2466802.51+88.4522291*T+10.293*T*LN(T)
+       -1.15472*T**2+1.77008333E-04*T**3+4621630*T**(-1);
+       800.00  Y  +1709986.12+9262.2894*T-1356.31*T*LN(T)
+       -0.0366229*T**2+1.98371667E-06*T**3+84578000*T**(-1);
+      3300.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. He, B. Kaplan, H. Mao, M. Selleby, Calphad, 72, 102250(2021).
+$
+$ Using 3rd generation element data and modelling.
+$ The gas phase is not part of the 3rd generation modelling.
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ There seems to be some bug how the theta function for pure Al is used when
+$ C is added to fcc, bcc and hcp. Therefore the theta function cannot be
+$ used for fcc, bcc and hcp Al. (Thermo-Calc 2021a)
+$
+$ The theta function does not seem to scale with number of atoms in the
+$ formula unit. I.e. the theta function cannot be used for fcc-AlC etc.
+$ (Thermo-Calc 2021a)
+$
+$ For graphite and diamond with multiple Einstein temperatures the theta
+$ function can probably not be used. (Thermo-Calc 2021a)
+$
+$ The Gibbs energy for hcp-Al0.5C is far too large. This will not be possible
+$ to use in Al-Mn-C.
+$
+ PAR  L(LIQUID,AL,C;0),,                +20994-22*T;,,                N 21He !
+$
+ PAR  G(FCC_A1,AL:C),,                  +2*GEFCCALC+GTSERAL+GTSERCC
+             +57338;,,                                                N 21He !
+ PAR  L(FCC_A1,AL:C,VA;0),,             -70345;,,                     N 21He !
+$
+ PAR  G(AL4C3_D71,AL:C),,               +7*GEAL4C3+G0AL4C3;,,         N 21He !
+$
+ PAR  G(GAS,ALC),,                      +F201T+RTLNP;,,               N 97SUB !
+ PAR  G(GAS,ALC2),,                     +F206T+RTLNP;,,               N 97SUB !
+ PAR  G(GAS,AL2C2),,                    +F646T+RTLNP;,,               N 97SUB !
+$
+$ metastable
+$
+ PAR  G(BCC_A2,AL:C),,                  +4*GEBCCALC+GTSERAL+3*GTSERCC
+             +1006844;,,                                              N 21He !
+ PAR  L(BCC_A2,AL:C,VA;0),,             -819896+14*T;,,               N 21He !
+$
+ PAR  G(HCP_A3,AL:C),,                  +1.5*GEHCPALC+GTSERAL
+             +0.5*GTSERCC+2176775;,,                                  N 21He !
+ PAR  L(HCP_A3,AL:C,VA;0),,             +ZERO;,,                      N 21He !
+$
+ FUNCTION TEFCCALC    0.10  +549;                                      6000 N !
+ FUNCTION GEFCALC1    0.10  +1-1*EXP(-TEFCCALC*T**(-1));               6000 N !
+ FUNCTION GEFCALC2    0.10  +1*LN(GEFCALC1);                           6000 N !
+ FUNCTION GEFCALC3    0.10  +3*R*T*GEFCALC2;                           6000 N !
+ FUNCTION GEFCCALC    0.10  +1.5*R*TEFCCALC+GEFCALC3;                  6000 N !
+$
+ FUNCTION TEBCCALC    0.10  +863;                                      6000 N !
+ FUNCTION GEALCBC1    0.10  +1-1*EXP(-TEBCCALC*T**(-1));               6000 N !
+ FUNCTION GEALCBC2    0.10  +1*LN(GEALCBC1);                           6000 N !
+ FUNCTION GEALCBC3    0.10  +3*R*T*GEALCBC2;                           6000 N !
+ FUNCTION GEBCCALC    0.10  +1.5*R*TEBCCALC+GEALCBC3;                  6000 N !
+$
+ FUNCTION TEHCPALC    0.10  +452;                                      6000 N !
+ FUNCTION GEALCHC1    0.10  +1-1*EXP(-TEHCPALC*T**(-1));               6000 N !
+ FUNCTION GEALCHC2    0.10  +1*LN(GEALCHC1);                           6000 N !
+ FUNCTION GEALCHC3    0.10  +3*R*T*GEALCHC2;                           6000 N !
+ FUNCTION GEHCPALC    0.10  +1.5*R*TEHCPALC+GEALCHC3;                  6000 N !
+$
+ FUNCTION TEAL4C1     0.10  +1077;                                     6000 N !
+ FUNCTION TEAL4C2     0.10  +401;                                      6000 N !
+ FUNCTION FEAL4C1     0.10  +0.44;                                     6000 N !
+ FUNCTION FEAL4C2     0.10  +0.56;                                     6000 N !
+ FUNCTION GEAL4C3     0.10  +1.5*R*TEAL4CT+GEAL4CT;                    6000 N !
+ FUNCTION TEAL4CT     0.10  +FEAL4C1*TEAL4C1+FEAL4C2*TEAL4C2;          6000 N !
+ FUNCTION GEAL4CT     0.10  +3*R*T*GEAL4C2;                            6000 N !
+ FUNCTION GEAL4C2     0.10  +FEAL4C1*LN(GEAL4C11)
+       +FEAL4C2*LN(GEAL4C12);
+	  6000.00  N !
+ FUNCTION GEAL4C11    0.10  +1-1*EXP(-TEAL4C1*T**(-1));                6000 N !
+ FUNCTION GEAL4C12    0.10  +1-1*EXP(-TEAL4C2*T**(-1));                6000 N !
+ FUNCTION G0AL4C3     0.10  -277339-0.005423368*T**2;                  6000 N !
+$
+$ AlC(g)
+ FUNCTION F201T     298.15  +670763.118+12.1456773*T-35.16726*T*LN(T)
+       -0.0018456935*T**2+2.03585167E-07*T**3+131407.35*T**(-1);
+      1200.00  Y  +670426.91+28.9055817*T-37.84337*T*LN(T)
+       +8.477725E-04*T**2-1.97864833E-07*T**3-98959*T**(-1);
+      3300.00  Y  +771689.537-377.266983*T+12.91248*T*LN(T)
+       -0.01048534*T**2+2.77028833E-07*T**3-38137085*T**(-1);
+      6000.00  N !
+$ AlC2(g)
+ FUNCTION F206T     298.15  +661526.904+40.9013712*T-42.79042*T*LN(T)
+       -0.011736955*T**2+1.398998E-06*T**3+55001.35*T**(-1);
+      1100.00  Y  +647801.595+170.700819*T-61.35004*T*LN(T)
+       -1.8259685E-04*T**2+5.89117333E-09*T**3+2025129*T**(-1);
+      6000.00  N !
+$ Al2C2(g)
+ FUNCTION F646T     298.15  +523820.352+150.500029*T-63.4871*T*LN(T)
+       -0.014413455*T**2+1.73668667E-06*T**3+156046.5*T**(-1);
+      1100.00  Y  +507258.697+308.115167*T-86.05273*T*LN(T)
+       -2.2591625E-04*T**2+7.28457E-09*T**3+2522540*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-C(TDB -* +LIQ +AL4C3_D71 +FCC_A1 +GRAPHITE_A9
+  ;P3 TMM:300/3000 STP:.1/1000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  97SUB  'SGTE substance database, version 1997'
+  00SUB  'SGTE substance database, version 2000'
+  18Big  'S. Bigdeli, Q. Chen, M. Selleby,
+          J. Phase Equilib. Diffus., 39, 832-40(2018); C'
+  21He   'Z. He, B. Kaplan, H. Mao, M. Selleby, Calphad, 72, 102250(2021); Al-C'
+!

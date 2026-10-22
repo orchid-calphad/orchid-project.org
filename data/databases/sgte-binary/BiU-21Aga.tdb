@@ -1,0 +1,210 @@
+$
+$ Database for Bi-U from R. Agarwal 2021.
+$
+$ R. Agarwal, Thermochim. Acta, 699, 178913(2021).
+$
+$ Dataset created 2021.06.13 by Bengt Hallstedt.
+$ 2023.02.24: Unary Bi changed from V4.4 to V5.0.
+$
+$ Modified from 11Wan. The liquid interaction is claimed to be improved, but
+$ does not make a better impression (and uses twice as many coefficients).
+$
+$ The stable miscibility gap does not close and there is an inverse miscibility
+$ gap with a minimum at 1258 K and x(U)=0.03, which is below the melting
+$ temperatures of the intermetallic compounds.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BI   RHOMBOHEDRAL_A7           208.98      6426.6     56.735  !
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : BI U : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : BI U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : BI U% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : BI U : VA: !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : BI% U : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : BI U% : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : BI U% : !
+$
+$ Prototype UAs2 (tP6, P4/nmm)
+$
+ PHASE BI2U % 2 2 1 !
+ CONST BI2U : BI : U : !
+$
+$ Prototype Th3P4 (cI28, I-43d)
+$
+ PHASE BI4U3_D73 % 2 4 3 !
+ CONST BI4U3_D73 : BI : U : !
+$
+$ Prototype NaCl (cF8, Fm-3m)
+$
+ PHASE BIU_B1 % 2 1 1 !
+ CONST BIU_B1 : BI : U : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Bi
+$
+$ RHOMBOHEDRAL_A7 and LIQUID modified in unary 5.0
+$ DIAMOND_A4 added in unary 5.0
+$
+$ ORTHORHOMBIC_A20 and TETRAGONAL_U from 21Aga not in unary
+$
+ PAR  G(RHOMBOHEDRAL_A7,BI),,           +GHSERBI;                3000 N 09SGUN !
+ PAR  G(FCC_A1,BI:VA),,                 +GHSERBI+9900-12.5*T;    3000 N 91Din !
+ PAR  G(BCC_A2,BI:VA),,                 +GHSERBI+11297-13.9*T;   3000 N 91Din !
+ PAR  G(HCP_A3,BI:VA),,                 +GHSERBI+9900-11.8*T;    3000 N 91Din !
+$PAR  G(DIAMOND_A4,BI),,                +GHSERBI
+$            +11296.8+9.253655*T;                                3200 N 88Che2 !
+$PAR  G(BCT_A5,BI),,                    +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,BI),,             +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TET_ALPHA1,BI),,                +GHSERBI+4234;           3000 N 91Din !
+ PAR  G(ORTHORHOMBIC_A20,BI),,          +GHSERBI+6500;           3000 N 21Aga !
+ PAR  G(TETRAGONAL_U,BI),,              +GHSERBI+5000;           3000 N 21Aga !
+ PAR  G(LIQUID,BI),,                    +GLIQBI;                 3000 N 09SGUN ! 
+$
+ FUNCTION GHSERBI   298.15  -7817.776+128.418925*T-28.4096529*T*LN(T)
+       +0.012338888*T**2-8.381598E-6*T**3;
+       544.55  Y  +29293.369-379.605174*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1)+1.66309E+25*T**(-9);
+       800.00  Y  -11085.609+182.955328*T-36.041*T*LN(T)
+       +7.4641E-3*T**2-1.05047E-6*T**3+5175*T**(-1)+1.66309E+25*T**(-9);
+      1200.00  Y  -7580.864+124.770814*T-27.196*T*LN(T)+1.66309E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQBI    298.15  +11246.017-20.636399*T+GHSERBI-5.9608E-19*T**7;
+       544.55  Y  +40629.667-400.415652*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1);
+       800.00  Y  +250.689+162.14485*T-36.041*T*LN(T)
+       +0.0074641*T**2-1.05047E-6*T**3+5175*T**(-1);
+      1200.00  Y  +3755.434+103.960336*T-27.196*T*LN(T);
+      3000.00 N !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not in unary
+$ RHOMBOHEDRAL_A7 not in unary
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+ PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+ PAR  G(RHOMBOHEDRAL_A7,U),,            +GHSERUU+5000;           3000 N Null !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQUU    298.15  +GHSERUU+12355.5-10.3239*T;                3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Agarwal, Thermochim. Acta, 699, 178913(2021).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 11Wan. The liquid interaction is claimed to be improved, but
+$ does not make a better impression (and uses twice as many coefficients).
+$
+$ The stable miscibility gap does not close and there is an inverse miscibility
+$ gap with a minimum at 1258 K and x(U)=0.03, which is below the melting
+$ temperatures of the intermetallic compounds.
+$
+ PAR  L(LIQUID,BI,U;0),,                +53859-41.351*T
+             -4.4*T*LN(T);,,                                          N 21Aga !
+ PAR  L(LIQUID,BI,U;1),,                -41756-10.498*T
+             -4.4*T*LN(T);,,                                          N 21Aga !
+ PAR  L(LIQUID,BI,U;2),,                +60711+13.807*T;,,            N 21Aga !
+ PAR  L(LIQUID,BI,U;3),,                -142816+79.02*T;,,            N 21Aga !
+ PAR  L(LIQUID,BI,U;4),,                -59816+32.88*T;,,             N 21Aga !
+ PAR  L(LIQUID,BI,U;5),,                -29930+80.15*T;,,             N 21Aga !
+$
+ PAR  L(BCC_A2,BI,U:VA;0),,             +50000;,,                     N 11Wan !
+ PAR  L(RHOMBOHEDRAL_A7,BI,U;0),,       +5000;,,                      N 21Aga !
+ PAR  L(ORTHORHOMBIC_A20,BI,U;0),,      +10000;,,                     N 21Aga !
+ PAR  L(TETRAGONAL_U,BI,U;0),,          +15000;,,                     N 21Aga !
+$
+ PAR  G(BI2U,BI:U),,                    +2*GHSERBI+GHSERUU
+             -118500+6.03*T;,,                                        N 21Aga !
+ PAR  G(BI4U3_D73,BI:U),,               +4*GHSERBI+3*GHSERUU
+             -341950+37.38*T;,,                                       N 21Aga !
+ PAR  G(BIU_B1,BI:U),,                  +GHSERBI+GHSERUU
+             -105300+13.44*T;,,                                       N 21Aga !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,BI,U:VA;0),,             +ZERO;,,                      N 21Aga !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che2 'P.-Y. Chevalier, Thermochim. Acta, 132, 111-16(1988),
+          SGTE unary database V.5.0, 2009; Bi' 
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr, U-Zr'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  11Wan  'C.P. Wang, W.J. Yu, Z.S. Li, X.J. Liu, A.T. Tang, F.S. Pan,
+          J. Nucl. Mater., 412, 66-71(2011); Bi-U'
+  21Aga  'R. Agarwal, Thermochim. Acta, 699, 178913(2021); Bi, Bi-U'
+!

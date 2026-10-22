@@ -1,0 +1,213 @@
+$
+$ Database for Sc-B from K.E. Spear and P.K. Liao (included in LB Vol. 2)
+$
+$ K.E. Spear, P.K. Liao, Bull. Alloy Phase Diag., 11, 321-24(1990).
+$
+$ Dataset created 2014.08.24 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ Pre-SGTE lattice stabilities were used by 90Spe.
+$
+$ Liquid modified by B. Sundman (02Sun) to push an inverse miscibility gap
+$ to higher temperature.
+$
+$ The invariant equilibria in LB are reproduced, but differ by up to 12 K
+$ from those in the paper.
+$
+$ There is an inverse miscibility gap with a minimum at 3672 K and x(B)=0.12.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT SC   HCP_A3                     44.9559    5217.448   34.6435 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B SC : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SC : B VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SC : B VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SC : B VA : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 1 1 !
+ CONST BETA_RHOMBO_B : B : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE SCB2_C32 % 2 1 2 !
+ CONST SCB2_C32 : SC : B : !
+$
+$ Prototype UB12 (cF52, Fm-3m)
+$ alt. ScB12 (tI26, I4/mmm)
+$ It does not have the Mn12Th (tI26, I4/mmm, D2_B) structure.
+$
+ PHASE SCB12_D2F % 2 1 12 !
+ CONST SCB12_D2F : SC : B : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+ PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+$PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+$PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+$PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Sc
+$
+$ FCC_A1 and DHCP added in unary 4.4
+$
+ PAR  G(HCP_A3,SC:VA),,                 +GHSERSC;                3200 N 91Din !
+ PAR  G(BCC_A2,SC:VA),,                 +GBCCSC;                 3200 N 91Din !
+ PAR  G(FCC_A1,SC:VA),,                 +GHSERSC+5000;           3200 N 99Cac !
+$PAR  G(DHCP,SC),,                      +GHSERSC
+$            +1200+0.4157255*T;                                  3200 N 00Nor2 !
+ PAR  G(LIQUID,SC),,                    +GLIQSC;                 3200 N 91Din !
+$
+ FUNCTION GHSERSC   298.15  -8689.547+153.48097*T-28.1882*T*LN(T)
+       +0.00321892*T**2-1.64531E-06*T**3+72177*T**(-1);
+       800.00  Y  -7511.295+132.759582*T-24.9132*T*LN(T)
+       -5.73295E-04*T**2-8.59345E-07*T**3;
+      1608.00  Y  +261143.04-1817.92245*T+241.441051*T*LN(T)
+       -0.117529396*T**2+8.7398E-06*T**3-50607159*T**(-1);
+      2000.00  Y  -30515.246+286.474338*T-44.2249*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCSC    298.15  +1979.728-1.024135*T+GHSERSC;
+      1000.00  Y  +230161.408-2004.05469*T+276.76664*T*LN(T)
+       -0.167120107*T**2+1.5637371E-05*T**3-33783257*T**(-1);
+      1608.00  Y  -25928.011+283.642312*T-44.2249*T*LN(T);
+      2000.00  Y  +4587.235-2.832026*T+GHSERSC;
+      3200.00  N !
+ FUNCTION GLIQSC    298.15  +6478.66+45.427539*T-10.7967803*T*LN(T)
+       -0.020636524*T**2+2.13106E-06*T**3-158106*T**(-1);
+      1608.00  Y  -11832.111+275.871695*T-44.2249*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From K.E. Spear and P.K. Liao (included in LB Vol. 2)
+$
+$ K.E. Spear, P.K. Liao, Bull. Alloy Phase Diag., 11, 321-24(1990).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ Pre-SGTE lattice stabilities were used by 90Spe.
+$
+$ Liquid modified by B. Sundman (02Sun) to push an inverse miscibility gap
+$ to higher temperature.
+$
+$ The invariant equilibria in LB are reproduced, but differ by up to 12 K
+$ from those in the paper.
+$
+$ There is an inverse miscibility gap with a minimum at 3672 K and x(B)=0.12.
+$
+ PAR  L(LIQUID,B,SC;0),,                -171800-38.9*T;,,             N 02Sun !
+ PAR  L(LIQUID,B,SC;1),,                -36300-46.7*T;,,              N 02Sun !
+ PAR  L(LIQUID,B,SC;2),,                -6000;,,                      N 02Sun !
+$ Original parameters from 90Spe below
+$PAR  L(LIQUID,B,SC;0),,                -177050-34.9*T;,,             N 90Spe !
+$PAR  L(LIQUID,B,SC;1),,                +3335-68.9*T;,,               N 90Spe !
+$
+ PAR  G(BCC_A2,SC:B),,                  +UN_ASS;,,                    N !
+ PAR  G(HCP_A3,SC:B),,                  +UN_ASS;,,                    N !
+$
+ PAR  G(SCB2_C32,SC:B),,                +GHSERSC+2*GHSERBB
+             -306990+15*T;,,                                          N 90Spe !
+ PAR  G(SCB12_D2F,SC:B),,               +GHSERSC+12*GHSERBB
+             -480740+26*T;,,                                          N 90Spe !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  B-SC(TDB -* +LIQ +SCB12_D2F +SCB2_C32 +BCC_A2 +BETA_RHO +HCP_A3
+  ;P3 TMM:300/3500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  90Spe  'K.E. Spear, P.K. Liao,
+          Bull. Alloy Phase Diag., 11, 321-24(1990); Sc-B'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99Cac  'G. Cacciamani, P. Riani, G. Borzone, N. Parodi, A. Saccone, R. Ferro,
+          A. Pisch, R. Schmid-Fetzer, Intermetallics, 7, 101-8(1999)
+          SGTE unary database V.4.4, 2001; Sc'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000,
+          SGTE unary database V.4.4, 2001; Nd, Sc'
+  02Sun  'B. Sundman, modified liquid interaction, 2002; Sc-B'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

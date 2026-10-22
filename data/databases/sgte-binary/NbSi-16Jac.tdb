@@ -1,0 +1,204 @@
+$
+$ Database for Nb-Si from A. Jacob 2016
+$
+$ A. Jacob, unpublished, 2016
+$
+$ Dataset created 2017.03.09 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$
+$ This dataset is used by A. Jacob for the modelling of the Fe-Nb-Si system.
+$ It is claimed to be taken from T. Geng et al. 2009/2010, but the parameters
+$ are different from those published by Geng. The actual origin of the dataset
+$ is unknown.
+$
+$ There are fairly large differences in some of the invariant temperatures
+$ and the Si solubility in bcc-Nb is much lower than in 09Gen. The results
+$ from A. Jacob are exactly reproduced.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NB SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NB% SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NB SI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype Ti3P (tP32, P4_2/n)
+$
+ PHASE NB3SI % 2 3 1 !
+ CONST NB3SI : NB : SI : !
+$
+$ Prototype Cr5B3 (tI32, I4/mcm), alpha-Nb5Si3
+$
+ PHASE NB5SI3_D8L % 2 5 3 !
+ CONST NB5SI3_D8L : NB% SI : SI : !
+$
+$ Prototype W5Si3 (tI32, I4/mcm), beta-Nb5Si3
+$
+ PHASE M5SI3_D8M % 3 4 1 3 !
+ CONST M5SI3_D8M : NB : NB SI : SI : !
+$
+$ Prototype CrSi2 (hP9, P6_222)
+$
+ PHASE MSI2_C40 % 2 1 2 !
+ CONST MSI2_C40 : NB% SI : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+$ CBCC_A12 and CUB_A13 from 06Slu not included in unary
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+$PAR  G(CBCC_A12,NB:VA),,               +GHSERNB+17600;,,             N 06Slu !
+$PAR  G(CUB_A13,NB:VA),,                +GHSERNB+22000;,,             N 06Slu !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+$PAR  G(C14_LAVES,NB:NB),,              +3*GHSERNB+49620;,,           N 12Liu !
+$PAR  G(C15_LAVES,NB:NB),,              +3*GHSERNB+48600;,,           N 06Slu !
+$PAR  G(MU_D85,NB:NB:NB:NB),,           +13*GHSERNB+227500;,,         N 12Liu ! 
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+ PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+ PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+$PAR  G(C14_LAVES,SI:SI),,              +3*GHSERSI+142380;,,          N 17Jac !
+$PAR  G(C15_LAVES,SI:SI),,              +3*GHSERSI+33000;,,           N 17Jac !
+$PAR  G(NB5SI3_D8L,SI:SI),,             +8*GHSERSI+40000;,,           N 09Gen !
+$PAR  G(MSI2_C40,SI:SI),,               +3*GHSERSI+15000;,,           N 09Gen !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A. Jacob, unpublished, 2016
+$
+$ Checked against 09Gen and a dataset for Fe-Nb-Si from A. Jacob.
+$ Checked at 6000 K.
+$
+$ This dataset is used by A. Jacob for the modelling of the Fe-Nb-Si system.
+$ It is claimed to be taken from T. Geng et al. 2009/2010, but the parameters
+$ are different from those published by Geng. The actual origin of the dataset
+$ is unknown.
+$
+$ There are fairly large differences in some of the invariant temperatures
+$ and the Si solubility in bcc-Nb is much lower than in 09Gen. The results
+$ from A. Jacob are exactly reproduced.
+$
+ PAR  L(LIQUID,NB,SI;0),,               -198000;,,                    N 16Jac2 !
+ PAR  L(LIQUID,NB,SI;1),,               -15000;,,                     N 16Jac2 !
+ PAR  L(LIQUID,NB,SI;2),,               +48000;,,                     N 16Jac2 !
+$
+ PAR  L(BCC_A2,NB,SI:VA;0),,            -154000+17*T;,,               N 16Jac2 !
+ PAR  L(BCC_A2,NB,SI:VA;1),,            -17000;,,                     N 16Jac2 !
+ PAR  L(BCC_A2,NB,SI:VA;2),,            +35000;,,                     N 16Jac2 !
+$
+ PAR  G(NB3SI,NB:SI),,                  +3*GHSERNB+GHSERSI
+             -142932-21.1244*T;,,                                     N 16Jac2 !
+$
+ PAR  G(NB5SI3_D8L,NB:SI),,             +5*GHSERNB+3*GHSERSI
+             -527864-12.6472*T;,,                                     N 16Jac2 !
+ PAR  L(NB5SI3_D8L,NB,SI:SI;0),,        -73808;,,                     N 16Jac2 !
+$
+ PAR  G(M5SI3_D8M,NB:NB:SI),,           +5*GHSERNB+3*GHSERSI
+             -445080-50.116*T;,,                                      N 16Jac2 !
+ PAR  G(M5SI3_D8M,NB:SI:SI),,           +4*GHSERNB+4*GHSERSI
+             -146496-122.2688*T;,,                                    N 09Gen !
+ PAR  L(M5SI3_D8M,NB:NB,SI:SI;0),,      -180944;,,                    N 16Jac2 !
+$
+ PAR  G(MSI2_C40,NB:SI),,               +GHSERNB+2*GHSERSI
+             -150249-14.8701*T;,,                                     N 16Jac2 !
+ PAR  L(MSI2_C40,NB,SI:SI;0),,          +38757+12.7986*T;,,           N 09Gen !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,NB,SI:VA;0),,            -154000+17*T;,,               N Same !
+ PAR  L(FCC_A1,NB,SI:VA;1),,            -17000;,,                     N Same !
+ PAR  L(FCC_A1,NB,SI:VA;2),,            +48000;,,                     N Same !
+$
+ PAR  L(HCP_A3,NB,SI:VA;0),,            -154000+17*T;,,               N Same !
+ PAR  L(HCP_A3,NB,SI:VA;1),,            -17000;,,                     N Same !
+ PAR  L(HCP_A3,NB,SI:VA;2),,            +48000;,,                     N Same !
+$
+$PAR  G(C14_LAVES,NB:SI),,              +2*GHSERNB+GHSERSI+121144;,,  N 17Jac !
+$PAR  G(C14_LAVES,SI:NB),,              +2*GHSERSI+GHSERNB
+$            +3400+35*T;,,                                            N 17Jac !
+$
+$PAR  G(C15_LAVES,NB:SI),,              +2*GHSERNB+GHSERSI+127050;,,  N 17Jac !
+$PAR  G(C15_LAVES,SI:NB),,              +2*GHSERSI+GHSERNB+10380;,,   N 17Jac !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09Gen  'T. Geng, C. Li, J. Bao, X. Zhao, Z. Du, C. Guo,
+          Intermetallics, 17, 343-57(2009); Nb-Si'
+  16Jac2 'A. Jacob, unpublished, 2016; Nb-Si, Fe-Nb-Si'
+  17Jac  'A. Jacob, E. Povoden-Karadeniz, E. Kozeschnik,
+          Calphad, 56, 80-91(2017); Cr-Si, Nb-Si, Cr-Nb-Si'
+!

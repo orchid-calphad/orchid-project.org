@@ -1,0 +1,138 @@
+$
+$ Database for Ag-Tl from H.L. Lukas 1998 (included in LB Vol. 1)
+$
+$ H.L. Lukas, unpublished, 1998.
+$
+$ Dataset created 2011.04.22 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$ 2024.08.29: Added upper T-interval for GHSERTL and GBCCTL.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AG   FCC_A1                    107.8682    5745.      42.55   ! 
+ ELEMENT TL   HCP_A3                    204.383     6831.97    64.2997 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AG TL : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AG% TL : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AG TL% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AG TL% : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ag
+$
+$ CUB_A13 added in unary 3.0
+$ CUB_A13 revised in unary 4.1
+$ BCT_A5 added in unary 4.1
+$
+ PAR  G(FCC_A1,AG:VA),,                 +GHSERAG;                3000 N 91Din !
+ PAR  G(HCP_A3,AG:VA),,                 +GHSERAG+300+0.3*T;      3000 N 91Din !
+ PAR  G(BCC_A2,AG:VA),,                 +GHSERAG+3400-1.05*T;    3000 N 91Din !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG+3400-1.05*T;    3000 N 95Lim !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG
+$            +3765.6-1.8826*T;                                   3000 N 96SGUN !
+$PAR  G(BCT_A5,AG),,                    +GHSERAG+4184.1;         3000 N 96Oh !
+ PAR  G(LIQUID,AG),,                    +GLIQAG;                 3000 N 91Din !
+$
+ FUNCTION GHSERAG   298.15  -7209.512+118.202013*T-23.8463314*T*LN(T)
+       -0.001790585*T**2-3.98587E-07*T**3-12011*T**(-1);
+      1234.93  Y  -15095.252+190.266404*T-33.472*T*LN(T)+1.411773E+29*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQAG    298.15  +11025.076-8.89102*T+GHSERAG-1.033905E-20*T**7;
+      1234.93  Y  -3587.111+180.964656*T-33.472*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Tl
+$
+$ Upper T-interval for GHSERTL and GBCCTL added in Version 5.0
+$
+ PAR  G(HCP_A3,TL:VA)           200.00  +GHSERTL;                1801 N 91Din !
+ PAR  G(BCC_A2,TL:VA)           200.00  +GBCCTL;                 1801 N 91Din !
+ PAR  G(FCC_A1,TL:VA)           200.00  +GHSERTL+310;            1801 N 91Din !
+ PAR  G(LIQUID,TL)              200.00  +GLIQTL;                 1801 N 91Din !
+$
+ FUNCTION GHSERTL   200.00  -8104.038+107.140405*T-25.2274*T*LN(T)
+       -0.0033063*T**2-1.21807E-07*T**3+42058*T**(-1);
+       577.00  Y  -15406.859+196.771926*T-38.4130658*T*LN(T)
+       +0.005228106*T**2-5.19136E-07*T**3+729665*T**(-1);
+      1800.00  Y  -4885.034+106.361006*T-25.8437*T*LN(T)
+       -8.3662E-04*T**2+9E-12*T**3-612570*T**(-1);
+      1801.00  N !
+ FUNCTION GBCCTL    200.00  -9194.493+150.019517*T-33.0508*T*LN(T)
+       +0.0172318*T**2-1.0115933E-05*T**3+82153*T**(-1);
+       577.00  Y  -41836.403+482.633817*T-79.2926704*T*LN(T)
+       +0.026042993*T**2-2.359101E-06*T**3+3507810*T**(-1);
+      1800.00  Y  -623.343+101.120182*T-25.8437*T*LN(T)
+       -8.3662E-04*T**2+9E-12*T**3-612570*T**(-1);
+      1801.00  N !
+ FUNCTION GLIQTL    200.00  -946.623+0.755649*T-7.44455*T*LN(T)
+       -0.044350292*T**2+1.4248046E-05*T**3-54228*T**(-1);
+       577.00  Y  -614.74+98.472609*T-25.8437*T*LN(T)
+       -8.3662E-04*T**2+9E-12*T**3-612570*T**(-1);
+      1801.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From H.L. Lukas 1998 (included in LB Vol. 1)
+$
+$ H.L. Lukas, unpublished, 1998.
+$
+$ Checked against LB. Checked at 6000 K.
+$
+ PAR  L(LIQUID,AG,TL;0),,               +16047.79-9.02334*T;,,        N 98Luk !
+ PAR  L(LIQUID,AG,TL;1),,               -3133.26+1.66516*T;,,         N 98Luk !
+ PAR  L(LIQUID,AG,TL;2),,               -943.06-0.68233*T;,,          N 98Luk !
+$
+ PAR  L(FCC_A1,AG,TL:VA;0),,            +15125.13+0.56004*T;,,        N 98Luk !
+ PAR  L(BCC_A2,AG,TL:VA;0),,            +50000;,,                     N 98Luk !
+ PAR  L(HCP_A3,AG,TL:VA;0),,            +50000;,,                     N 98Luk !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AG-TL(TDB -* +LIQ +FCC_A1 +BCC_A2 +HCP_A3 ;P3 TMM:300/1300 STP:0.5/700) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Lim  'S.S. Lim, P.L. Rossiter, J.W. Tibballs, Calphad, 19, 131-41(1995),
+          SGTE unary database V.4.1, 1999; Ag'
+  96Oh   'C.-S. Oh, J.-H. Shim, B.-J. Lee, D.N. Lee,
+          J. Alloys Compounds, 238, 155-66(1996),
+          SGTE unary database V.4.1, 1999; Ag'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Luk  'H.L. Lukas, unpublished, 1998; Ag-Tl'
+!

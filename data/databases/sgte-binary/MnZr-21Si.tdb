@@ -1,0 +1,191 @@
+$
+$ Database for Mn-Zr from X. Si et al. 2021.
+$
+$ X. Si, S. Liu, X. Li, C. Shi, Y. Liu, Y. Du, Z. Zhang,
+$ Calphad, 72, 102243(2021).
+$
+$ Dataset created 2023.05.01 by Bengt Hallstedt.
+$
+$ The value for G(MN2ZR_C14,ZR:MN) is unphysical. This compound has a negative
+$ heat capacity, which should not be possible even for an unstable inverse
+$ compound.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+ ELEMENT ZR   HCP_A3                     91.22      5566.27    39.1809 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MN ZR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN% ZR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN% ZR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : MN ZR% : VA : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : MN% ZR : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN% ZR : VA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE C14_LAVES % 2 2 1 !
+ CONST C14_LAVES : MN% ZR : MN ZR% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ PAR  G(C14_LAVES,MN:MN),,              +3*GHSERMN+12360.12;,,        N 21Si !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zr
+$
+$ CUB_A13, CBCC_A12, ORTHORHOMBIC_A20 and TETRAGONAL_U added in unary 4.1
+$
+ PAR  G(HCP_A3,ZR:VA)           130.00  +GHSERZR;,,                   N 91Din !
+ PAR  G(BCC_A2,ZR:VA)           130.00  +GBCCZR;,,                    N 91Din !
+$PAR  G(OMEGA,ZR)               130.00  +GOMEZR;,,                    N 91Din !
+ PAR  G(FCC_A1,ZR:VA)           130.00  +GHSERZR+7600-0.9*T;,,        N 91Din !
+ PAR  G(CBCC_A12,ZR:VA)         130.00  +GHSERZR+4602.2;,,            N 99SGUN !
+ PAR  G(CUB_A13,ZR:VA)          130.00  +GHSERZR+7531.2;,,            N 99SGUN !
+$PAR  G(ORTHORHOMBIC_A20,ZR)    130.00  +GBCCZR+5000;,,               N 99SGUN !
+$PAR  G(TETRAGONAL_U,ZR)        130.00  +GBCCZR+5000;,,               N 99SGUN !
+ PAR  G(LIQUID,ZR)              130.00  +GLIQZR;,,                    N 91Din !
+$
+ PAR  G(C14_LAVES,ZR:ZR),,              +3*GHSERZR+90000;,,           N 21Si !
+$
+ FUNCTION GHSERZR   130.00  -7827.595+125.64905*T-24.1618*T*LN(T)
+       -0.00437791*T**2+34971*T**(-1);
+      2128.00  Y  -26085.921+262.724183*T-42.144*T*LN(T)-1.342896E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GBCCZR    130.00  -525.539+124.9457*T-25.607406*T*LN(T)
+       -3.40084E-04*T**2-9.729E-09*T**3+25233*T**(-1)-7.6143E-11*T**4;
+      2128.00  Y  -4620.034+1.55998*T+GHSERZR+1.4103476E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GOMEZR    130.00  -8878.082+144.432234*T-26.8556*T*LN(T)
+       -0.002799446*T**2+38376*T**(-1);
+      2128.00  Y  -3414.603+2.566675*T+GHSERZR+8.517346E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQZR    130.00  +18147.69-9.080812*T+GHSERZR+1.6275E-22*T**7;
+      2128.00  Y  -8281.26+253.812609*T-42.144*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X. Si, S. Liu, X. Li, C. Shi, Y. Liu, Y. Du, Z. Zhang,
+$ Calphad, 72, 102243(2021).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The value for G(MN2ZR_C14,ZR:MN) is unphysical. This compound has a negative
+$ heat capacity, which should not be possible even for an unstable inverse
+$ compound.
+$
+ PAR  L(LIQUID,MN,ZR;0),,               -44426.52+2.01*T;,,           N 21Si !
+ PAR  L(LIQUID,MN,ZR;1),,               -21335.76+10.91*T;,,          N 21Si !
+ PAR  L(LIQUID,MN,ZR;2),,               +1337.27;,,                   N 21Si !
+$
+ PAR  L(FCC_A1,MN,ZR:VA;0),,            -17035.19;,,                  N 21Si !
+$
+ PAR  L(BCC_A2,MN,ZR:VA;0),,            -27035.41+10.6*T;,,           N 21Si !
+ PAR  L(BCC_A2,MN,ZR:VA;1),,            -4038.51;,,                   N 21Si !
+$
+ PAR  L(HCP_A3,MN,ZR:VA;0),,            -4619.42;,,                   N 21Si !
+ PAR  L(CBCC_A12,MN,ZR:VA;0),,          -31174.85;,,                  N 21Si !
+ PAR  L(CUB_A13,MN,ZR:VA;0),,           -30509.42;,,                  N 21Si !
+$
+ PAR  G(C14_LAVES,MN:ZR),,              +GMN2ZR;,,                    N 21Si !
+ PAR  G(C14_LAVES,ZR:MN),,              -GMN2ZR+102360.12;,,          N 21Si !
+$
+ FUNCTION GMN2ZR    298.15  -99353.86+418.62*T-76.77*T*LN(T)
+       -0.00944*T**2+229696.6*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  MN-ZR(TDB -* +LIQUID +BCC_A2 +CBCC_A12 +CUB_A13 +FCC_A1 +HCP_A3 +MN2ZR_C14
+  ;P3 TMM:300/2300 STP:.3/1800/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  21Si   'X. Si, S. Liu, X. Li, C. Shi, Y. Liu, Y. Du, Z. Zhang,
+          Calphad, 72, 102243(2021); Mn-Zr'
+!

@@ -1,0 +1,179 @@
+$
+$ Database for Ca-Ni from F. Islam and M. Medraj 2005
+$
+$ F. Islam, M. Medraj, Calphad, 29, 289-302(2005).
+$
+$ Dataset created 2018.05.05 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ The fcc and bcc interactions were not assessed in the paper, but it is
+$ necessary to include interactions to avoid large solubilities.
+$
+$ The eutectic at 900 K is correctly reproduced, but all other invariants are
+$ 20 to 30 K too low. Probably the liquid should be refitted.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA NI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA% NI% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CA% NI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CA NI : VA : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE CANI2_C15 % 2 1 2 !
+ CONST CANI2_C15 : CA : NI : !
+$
+$ Prototype Ni3Pu (hR12, R-3m)
+$
+ PHASE CANI3 % 2 1 3 !
+ CONST CANI3 : CA : NI : !
+$
+$ Prototype Co7Gd2 (hR18, R-3m)
+$
+ PHASE CA2NI7 % 2 2 7 !
+ CONST CA2NI7 : CA : NI : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE CANI5_D2D % 2 1 5 !
+ CONST CANI5_D2D : CA : NI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+ PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ F. Islam, M. Medraj, Calphad, 29, 289-302(2005).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The fcc and bcc interactions were not assessed in the paper, but it is
+$ necessary to include interactions to avoid large solubilities.
+$
+$ The eutectic at 900 K is correctly reproduced, but all other invariants are
+$ 20 to 30 K too low. Probably the liquid should be refitted.
+$
+ PAR  L(LIQUID,CA,NI;0),,               -25023+15.13*T;,,             N 05Isl !
+ PAR  L(LIQUID,CA,NI;1),,               +13652.6-1.91*T;,,            N 05Isl !
+ PAR  L(LIQUID,CA,NI;2),,               -6362.16-4.05*T;,,            N 05Isl !
+$
+ PAR  L(FCC_A1,CA,NI:VA;0),,            +50000;,,                     N 18Hal !
+ PAR  L(BCC_A2,CA,NI:VA;0),,            +50000;,,                     N 18Hal !
+$
+ PAR  G(CANI2_C15,CA:NI),,              +GHSERCA+2*GHSERNI
+             -22043.58+2.151*T;,,                                     N 05Isl !
+ PAR  G(CANI3,CA:NI),,                  +GHSERCA+3*GHSERNI
+             -28790.32+1.432*T;,,                                     N 05Isl !
+ PAR  G(CA2NI7,CA:NI),,                 +2*GHSERCA+7*GHSERNI
+             -63427.05+2.5704*T;,,                                    N 05Isl !
+ PAR  G(CANI5_D2D,CA:NI),,              +GHSERCA+5*GHSERNI
+             -35989.44;,,                                             N 05Isl !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,CA,NI:VA;0),,            +50000;,,                     N 18Hal !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  05Isl  'F. Islam, M. Medraj, Calphad, 29, 289-302(2005); Ca-Ni'
+  18Hal  'B. Hallstedt, Dummy fcc, bcc, hcp interactions, 2018; Ca-Ni'
+!

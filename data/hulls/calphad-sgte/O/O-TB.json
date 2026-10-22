@@ -1,0 +1,177 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "O",
+    "TB"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "O": {
+          "energy": -30548.988394397536,
+          "phase": "O2GAS"
+        },
+        "TB": {
+          "energy": -21855.504074436016,
+          "phase": "HCP_A3"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -932600.153264503
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -148.54004623739976
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "O2GAS",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -888312.9384788222,
+          "right": {
+            "phase": "C_R2O3_D53",
+            "x": 0.4
+          },
+          "slope": -888312.9384788222,
+          "x_hi": 0.4,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -621733.4355096687,
+            "slope": 621733.4355096687
+          },
+          "entropy": {
+            "intercept": -99.02669749159986,
+            "slope": 99.02669749159986
+          },
+          "intercept": -592208.6256525483,
+          "kind": "two_phase",
+          "left": {
+            "phase": "C_R2O3_D53",
+            "x": 0.4
+          },
+          "mu_a_rel": -592208.6256525483,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "HCP_A3",
+            "x": 1.0
+          },
+          "slope": 592208.6256525483,
+          "x_hi": 1.0,
+          "x_lo": 0.4
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "O2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -355325.17539152893,
+          "energy_per_atom": -355325.17539152893,
+          "enthalpy": -373040.0613058012,
+          "entries_at_x": 1,
+          "entropy": -59.416018494959914,
+          "formula": "",
+          "nsites": null,
+          "phase": "C_R2O3_D53",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.4
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "TbO-23Nak",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:02:45Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/TbO-23Nak.tdb",
+    "source_sha256": "3d78089014276cf1d0a9d8f134e910e59d708f9a02a74f38156a3d665ada44de"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "O-TB",
+  "x_element": "TB"
+}

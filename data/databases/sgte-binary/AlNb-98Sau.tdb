@@ -1,0 +1,219 @@
+$
+$ Database for Al-Nb from N. Saunders 1998
+$
+$ N. Saunders, COST 507, Final report round 2, 1998.
+$
+$ Dataset created 2009.08.22 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ This dataset is included in the COST 507 database and in in LBall-v7+fun.tdb.
+$ The dataset from Servant and Ansara 1997 is included in LB (and lb1-v2.tdb).
+$
+$ B2_BCC (AlNb) becomes stable below 765 K.
+$
+$ There is a small difference for the Fcc-Al + Liquid + Al3Nb equilibrium.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL NB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : AL NB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : AL NB : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2 (except Va)
+$
+ PHASE A2_BCC % 2 1 3 !
+ CONST A2_BCC : AL NB VA : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %O 3 0.5 0.5 3 !
+ CONST B2_BCC : AL% NB VA : AL NB% VA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : AL NB : VA : !
+$
+$ Prototype Al3Ti (tI8, I4/mmm)
+$
+ PHASE AL3NB_D022 % 2 3 1 !
+ CONST AL3NB_D022 : AL : NB% : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm), also known as AlNb2
+$
+ PHASE SIGMA_OLD % 3 8 4 18 !
+ CONST SIGMA_OLD : AL : NB : AL NB : !
+$
+$ Prototype Cr3Si (cP8)
+$
+ PHASE ALNB3_A15 % 2 1 3 !
+ CONST ALNB3_A15 : AL% NB : NB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ DEFAULT-COM REJECT_PHASE A2_BCC B2_BCC HCP_A3 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(A2_BCC,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  L(A2_BCC,AL,VA:VA;0),,            +GB2ALVA+LB2ALVA;,,           N 99Dup !
+ PAR  G(B2_BCC,VA:AL:VA),,              +0.5*GB2ALVA-0.5*LB2ALVA;,,   N 99Dup !
+ PAR  G(B2_BCC,AL:VA:VA),,              +0.5*GB2ALVA-0.5*LB2ALVA;,,   N 99Dup !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+$
+ FUNCTION GB2ALVA   298.15  +10000-T;                                  6000 N !
+ FUNCTION LB2ALVA   298.15  +150000;                                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(A2_BCC,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  L(A2_BCC,NB,VA:VA;0),,            +LB2VA;,,                     N 01Sun !
+ PAR  G(B2_BCC,VA:NB:VA),,              +ZERO;,,                      N 01Sun !
+ PAR  G(B2_BCC,NB:VA:VA),,              +ZERO;,,                      N 01Sun !
+$
+ PAR  G(ALNB3_A15,NB:NB),,              +4*GHSERNB+20000+10*T;,,      N 98Sau4 !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$
+ FUNCTION LB2VA     298.15  +100*T;                                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(A2_BCC,VA:VA),,                 +ZERO;,,                      N 01Sun !
+$PAR  L(A2_BCC,VA,*:VA;0),,             +LB2VA;,,                     N 01Sun !
+$
+$FUNCTION LB2VA     298.15  +100*T;                                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ N. Saunders, COST 507, Final report round 2, 1998.
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ This dataset is included in the COST 507 database and in in LBall-v7+fun.tdb.
+$ The dataset from Servant and Ansara 1997 is included in LB (and lb1-v2.tdb).
+$
+$ B2_BCC (AlNb) becomes stable below 765 K.
+$
+$ There is a small difference for the Fcc-Al + Liquid + Al3Nb equilibrium.
+$
+ PAR  L(LIQUID,AL,NB;0),,               -91000+25*T;,,                N 98Sau4 !
+ PAR  L(LIQUID,AL,NB;1),,               +6000;,,                      N 98Sau4 !
+ PAR  L(LIQUID,AL,NB;2),,               +15000;,,                     N 98Sau4 !
+$
+ PAR  L(FCC_A1,AL,NB:VA;0),,            -113500+21.1*T;,,             N 98Sau4 !
+ PAR  L(FCC_A1,AL,NB:VA;1),,            +5000;,,                      N 98Sau4 !
+ PAR  L(FCC_A1,AL,NB:VA;2),,            +10000;,,                     N 98Sau4 !
+$
+ PAR  L(BCC_A2,AL,NB:VA;0),,            -104050+30*T;,,               N 98Sau4 !
+ PAR  L(BCC_A2,AL,NB:VA;1),,            +9140-4*T;,,                  N 98Sau4 !
+ PAR  L(BCC_A2,AL,NB:VA;2),,            +12000;,,                     N 98Sau4 !
+$
+ PAR  L(A2_BCC,AL,NB:VA;0),,            -104050+30*T;,,               N 98Sau4 !
+ PAR  L(A2_BCC,AL,NB:VA;1),,            +9140-4*T;,,                  N 98Sau4 !
+ PAR  L(A2_BCC,AL,NB:VA;2),,            +12000;,,                     N 98Sau4 !
+$
+ PAR  G(B2_BCC,AL:NB:VA),,              -17300+2*T;,,                 N 98Sau4 !
+ PAR  G(B2_BCC,NB:AL:VA),,              -17300+2*T;,,                 N 98Sau4 !
+$
+ PAR  G(AL3NB_D022,AL:NB),,             +3*GHSERAL+GHSERNB
+             -136000+24*T;,,                                          N 98Sau4 !
+$
+ PAR  G(SIGMA_OLD,AL:NB:AL),,           +26*GHSERAL+4*GHSERNB
+             -150000+96*T;,,                                          N 98Sau4 !
+ PAR  G(SIGMA_OLD,AL:NB:NB),,           +8*GHSERAL+22*GHSERNB
+             -635250+60*T;,,                                          N 98Sau4 !
+ PAR  L(SIGMA_OLD,AL:NB:AL,NB;0),,      -990000+270*T;,,              N 98Sau4 !
+ PAR  L(SIGMA_OLD,AL:NB:AL,NB;1),,      +420000;,,                    N 98Sau4 !
+$
+ PAR  G(ALNB3_A15,AL:NB),,              +GHSERAL+3*GHSERNB
+             -77920+4.88*T;,,                                         N 98Sau4 !
+ PAR  L(ALNB3_A15,AL,NB:NB;0),,         -68000+20*T;,,                N 98Sau4 !
+ PAR  L(ALNB3_A15,AL,NB:NB;2),,         -12000;,,                     N 98Sau4 !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,AL,NB:VA;0),,            -113500+21.1*T;,,             N 98Sau4 !
+ PAR  L(HCP_A3,AL,NB:VA;1),,            +5000;,,                      N 98Sau4 !
+ PAR  L(HCP_A3,AL,NB:VA;2),,            +10000;,,                     N 98Sau4 !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-NB(TDB -* +LIQ +AL3NB_D022 +BCC_A2 +ALNB3_A15
+  +FCC_A1 +SIGMA_OLD ;P3 TMM:300/3000 STP:.4/1900) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97Ser  'C. Servant, I. Ansara, J. Chim. Phys., 94, 869-88(1997); Al-Nb'
+  98Sau4 'N. Saunders, COST 507, Final report round 2, 1998; Al-Nb'
+  99Dup  'N. Dupin, I. Ansara, Z. Metallkd., 90, 76-85(1999); Al-Ni'
+  01Sun  'B Sundman, fix to avoid BCC with just Va (in LB1-v2).'
+!

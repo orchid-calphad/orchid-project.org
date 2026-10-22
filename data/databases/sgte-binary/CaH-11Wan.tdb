@@ -1,0 +1,216 @@
+$
+$ Database for Ca-H from K. Wang et al. 2011
+$
+$ K. Wang, J. Du, X. Kong, X. Zeng, J. Zou, Z. Li, Z. Wu,
+$ Int. J. Hydrogen Energy, 36, 13632-39(2011).
+$
+$ Dataset created 2017.11.19 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ Non-standard models for BCC_A2 and HCP_A3.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+ ELEMENT H    1/2_MOLE_H2(G)              1.0079    4234.      65.285  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CA2                                CA2 !
+ SPECIE  CAH                                CA1H1 !
+ SPECIE  CAH2                               CA1H2 !
+ SPECIE  H2                                 H2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA CAH2 H : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA% : H VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 1.5 !
+ CONST BCC_A2 : CA : H VA% : !
+$
+$ Hcp (hP2, P6_3/mmc)
+$
+ PHASE HCP_A3 %A 1 1 !
+ CONST HCP_A3 : CA CAH2 : !
+$
+$ Co2Si (oP12, Pnma)
+$
+ PHASE CAH2_C37 % 2 1 2 !
+ CONST CAH2_C37 : CA : H : !
+$
+$ (Fm-3m) CaF2 type?
+$
+ PHASE CAH2_BETA % 2 1 2 !
+ CONST CAH2_BETA : CA : H : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : CA CA2 CAH H H2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+$ HCP_A3 from 11Wan not included in unary.
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+$PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(HCP_A3,CA),,                    +GHSERCA
+             +598.833-0.8293*T;                                  3001 N 11Wan !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$
+ PAR  G(GAS,CA;0),,                     +F2131T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,CA2;0),,                    +F2293T+RTLNP;,,              N 92SUB !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ Ca(g) :
+ FUNCTION F2131T    298.15  +173087.021-15.5575325*T-20.786112*T*LN(T);
+      1300.00  Y  +172997.956+5588.5688*T**(-1)-13.9593335*T
+       -21.0345161*T*LN(T)+2.38213948E-04*T**2-3.64413151E-08*T**3;
+      2000.00  Y  +134081.53+9296659.72*T**(-1)+218.694199*T
+       -51.8849472*T*LN(T)+0.0111923674*T**2-7.70260453E-07*T**3;
+      3600.00  Y  +672690.384-2.35270504E+08*T**(-1)-1610.06137*T
+       +171.348607*T*LN(T)-0.0300833784*T**2+6.66115115E-07*T**3;
+      4800.00  Y  +672623.642-2.1604084E+08*T**(-1)-1685.46289*T
+       +181.445018*T*LN(T)-0.032908206*T**2+7.77184973E-07*T**3;
+      6000.00  N !
+$ Ca2(g) :
+ FUNCTION F2293T    298.15  +331036.623+118736.69*T**(-1)+92.462223*T
+       -54.080292*T*LN(T)+0.0271296836*T**2-5.73392096E-06*T**3;
+       600.00  Y  +340712.213-633424.128*T**(-1)-59.9992293*T
+       -30.2654661*T*LN(T)+5.18998004E-04*T**2-4.10068261E-08*T**3;
+      2200.00  Y  +343774.134-1755137.79*T**(-1)-73.0668827*T
+       -28.6059243*T*LN(T)+6.54369232E-05*T**2-1.34699696E-08*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ H
+$
+$ H is not included in unary
+$
+ PAR  G(LIQUID,H),,                     +0.5*GHSERH2
+             +8035+25*T+2*T*LN(T);,,                                  N 06Qiu !
+$
+ PAR  G(GAS,H),,                        +F10383T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,H2),,                       +GHSERH2+RTLNP;,,             N 97SUB !
+$
+$ H(g)
+ FUNCTION F10383T   298.15  +211801.621+24.4989821*T-20.78611*T*LN(T);
+      6000.00  N !
+$ H2(g)
+ FUNCTION GHSERH2   298.15  -9522.9741+78.5273879*T-31.35707*T*LN(T)
+       +0.0027589925*T**2-7.46390667E-07*T**3+56582.3*T**(-1);
+      1000.00  Y  +180.108664-15.6128256*T-17.84857*T*LN(T)
+       -0.00584168*T**2+3.14618667E-07*T**3-1280036*T**(-1);
+      2100.00  Y  -18840.1663+92.3120255*T-32.05082*T*LN(T)
+       -0.0010728235*T**2+1.14281783E-08*T**3+3561002.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Wang, J. Du, X. Kong, X. Zeng, J. Zou, Z. Li, Z. Wu,
+$ Int. J. Hydrogen Energy, 36, 13632-39(2011).
+$
+$ Checked against paper.
+$
+$ Non-standard models for BCC_A2 and HCP_A3.
+$
+ PAR  G(LIQUID,CAH2),,                  +GCAH2A+50607.25-44.4435*T;,, N 11Wan !
+ PAR  L(LIQUID,CA,CAH2;0),,             +319716-246.572*T;,,          N 11Wan !
+ PAR  L(LIQUID,CA,CAH2;1),,             -47436.8+8.3952*T;,,          N 11Wan !
+ PAR  L(LIQUID,CA,H;0),,                -31624.5-26.5835*T;,,         N 11Wan !
+$
+ PAR  G(FCC_A1,CA:H),,                  -36404.97975-1.08123*T
+             -10.57263*T*LN(T)-0.03054*T**2+3.17851E-06*T**3
+             -785525.06574*T**(-1);,,                                 N 11Wan !
+ PAR  L(FCC_A1,CA:H,VA;0),,             +ZERO;,,                      N 11Wan !
+$
+ PAR  G(BCC_A2,CA:H),,                  -69531.32595+38.84472*T
+             -17.14321*T*LN(T)-0.03096*T**2+3.16411E-06*T**3
+             -821804.59697*T**(-1);,,                                 N 11Wan !
+ PAR  L(BCC_A2,CA:H,VA;0),,             +ZERO;,,                      N 11Wan !
+$
+ PAR  G(HCP_A3,CAH2),,                  +GCAH2A+71479.4-6.4241*T;,,   N 11Wan !
+ PAR  L(HCP_A3,CA,CAH2;0),,             -15207.2-80.5989*T;,,         N 11Wan !
+ PAR  L(HCP_A3,CA,CAH2;1),,             +16066.8+45.7235*T;,,         N 11Wan !
+ PAR  L(HCP_A3,CA,CAH2;2),,             -30065.8+3.9848*T;,,          N 11Wan !
+$
+ PAR  G(CAH2_C37,CA:H),,                +GCAH2A;,,                    N 11Wan !
+ PAR  G(CAH2_BETA,CA:H),,               +GCAH2A
+             +28607.34534-27.1636*T;,,                                N 11Wan !
+$
+ PAR  G(GAS,CAH),,                      +F5422T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GCAH2A    298.15  -202060.1937+354.9794*T-56.4724*T*LN(T)
+       -0.01008*T**2+9.86727E-07*T**3+1102560*T**(-1);
+      6000.00  N !
+$ CaH(g)
+ FUNCTION F5422T    298.15  +221747.08-39.5755609*T-23.34361*T*LN(T)
+       -0.01125994*T**2+1.64618883E-06*T**3-31552.07*T**(-1);
+       800.00  Y  +217494.791+21.6975697*T-32.70332*T*LN(T)
+       -0.002461013*T**2+1.397199E-07*T**3+309731.9*T**(-1);
+      3300.00  Y  +266500.909-68.8065818*T-23.08471*T*LN(T)
+       -0.0018792575*T**2+2.32418833E-08*T**3-31537130*T**(-1);
+      5800.00  Y  +640344.097-958.462013*T+80.41179*T*LN(T)
+       -0.014648735*T**2+3.19216E-07*T**3-2.856714E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE substance database, version 1992'
+  97SUB  'SGTE substance database, version 1997'
+  06Qiu  'C. Qiu, S.M. Opalka, G.B. Olson, D.L. Anton,
+          Int. J. Mater. Res., 97, 845-53(2006); Na-H'
+  11Wan  'K. Wang, J. Du, X. Kong, X. Zeng, J. Zou, Z. Li, Z. Wu,
+          Int. J. Hydrogen Energy, 36, 13632-39(2011); Ca-H'
+!

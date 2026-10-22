@@ -1,0 +1,238 @@
+$
+$ Database for Au-Ho from H.Q. Dong et al. 2012
+$
+$ H.Q. Dong, X.M. Tao, T. Laurila, M. Paulastro-Krockel,
+$ Calphad, 37, 87-93(2012).
+$
+$ Dataset created 2016.09.22 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$ 2024.10.16: Precision increased for Liquid, Au6Ho and AuHo2 parameters.
+$
+$ The FCC_A1 interaction is not acceptable.
+$
+$ There are up to 4 K differences in invariant equilibria, probably because
+$ of rounding errors when changing from fractional to integar compositions.
+$ Using more decimals from the Gibbs energy functions in the author's tdb
+$ does not improve this at all. Three decimals are used for compositions in
+$ the author's tdb and although there is no visible shift in composition in
+$ the calculated phase diagrams, it is obviously enough to visibly shift the
+$ relative stability of some phases.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AU   FCC_A1                    196.9665    6016.592   47.4884 ! 
+ ELEMENT HO   HCP_A3                    164.9304    7995.624   75.0191 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AU HO : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AU% HO : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AU HO : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AU HO% : VA : !
+$
+$ Prototype Au6Sm (tP56, P4_2/ncm)
+$
+ PHASE AU6HO % 2 6 1 !
+ CONST AU6HO : AU : HO : !
+$
+$ Prototype MoNi4 (tI10, I4/m)
+$
+ PHASE AU4HO_D1A % 2 4 1 !
+ CONST AU4HO_D1A : AU : HO : !
+$
+$ Prototype Ag51Gd14 (hP68, P6/m)
+$
+ PHASE AU51HO14 % 2 51 14 !
+ CONST AU51HO14 : AU : HO : !
+$
+$ Prototype Cu3Ti (oP8, Pmmn)
+$
+ PHASE AU3HO_D0A % 2 3 1 !
+ CONST AU3HO_D0A : AU : HO : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE AU2HO_C11B % 2 2 1 !
+ CONST AU2HO_C11B : AU : HO : !
+$
+$ Prototype Au10Gd7 (tI136, I4_1/acd)
+$
+ PHASE AU10HO7 % 2 10 7 !
+ CONST AU10HO7 : AU : HO : !
+$
+$ Prototype CrB (oC8, Cmcm), alpha-AuHo
+$
+ PHASE AUHO_B33 % 2 1 1 !
+ CONST AUHO_B33 : AU : HO : !
+$
+$ Prototype CsCl (cP2, Pm-3m), beta-AuHo
+$
+ PHASE AUHO_B2 % 2 1 1 !
+ CONST AUHO_B2 : AU : HO : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE AUHO2_C37 % 2 1 2 !
+ CONST AUHO2_C37 : AU : HO : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Au
+$
+$ DHCP added in unary 5.0
+$
+$ DHCP replaced by the value from 92Ans in SGSOL 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems. The value for DHCP from 92Ans was used to model these systems,
+$ thus this value must be included in the unary database and not the 04Du
+$ value.
+$
+ PAR  G(FCC_A1,AU:VA),,                 +GHSERAU;                3200 N 91Din !
+ PAR  G(HCP_A3,AU:VA),,                 +GHSERAU+240.75+1.6*T;   3200 N 91Din !
+ PAR  G(BCC_A2,AU:VA),,                 +GHSERAU+4250-1.1*T;     3200 N 91Din !
+$PAR  G(DHCP,AU),,                      +GHSERAU+125+0.79*T;     3200 N 92Ans !
+$PAR  G(DHCP,AU),,                      +GHSERAU+5000;           3200 N 04Du1 !
+ PAR  G(LIQUID,AU),,                    +GHSERAU
+             +12552-9.385866*T;                                  3200 N 91Din !
+$
+ FUNCTION GHSERAU   298.15  -6938.856+106.830098*T-22.75455*T*LN(T)
+       -0.00385924*T**2+3.79625E-07*T**3-25097*T**(-1);
+       929.40  Y  -93586.481+1021.69543*T-155.706745*T*LN(T)
+       +0.08756015*T**2-1.1518713E-05*T**3+10637210*T**(-1);
+      1337.33  Y  +314067.829-2016.37825*T+263.252259*T*LN(T)
+       -0.118216828*T**2+8.923844E-06*T**3-67999832*T**(-1);
+      1735.80  Y  -12133.783+165.272524*T-30.9616*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Ho
+$
+$ BCC_A2 and LIQUID revised in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+$ FCC_A1 from 03Cac and 04Wan not included in unary
+$
+ PAR  G(HCP_A3,HO:VA),,                 +GHSERHO;                3001 N 91Din !
+$PAR  G(FCC_A1,HO:VA),,                 +GHSERHO
+$            +2000-0.831451*T;                                   3001 N 03Cac !
+ PAR  G(FCC_A1,HO:VA),,                 +GHSERHO+1180;           3001 N 04Wan !
+ PAR  G(BCC_A2,HO:VA),,                 +GHSERHO
+             +4380-2.494353*T;                                   3001 N 00Nor1 !
+ PAR  G(LIQUID,HO),,                    +GLIQHO;                 3001 N 00Nor1 !
+$
+ FUNCTION GHSERHO   298.15  -7612.429+86.593171*T-23.4879*T*LN(T)
+       -0.00827315*T**2+2.375467E-06*T**3;
+       600.00  Y  -10917.688+182.475691*T-39.6932*T*LN(T)
+       +0.01820065*T**2-4.829733E-06*T**3;
+       900.00  Y  +46646.188-421.474473*T+48.0595*T*LN(T)
+       -0.0424634*T**2+3.233133E-06*T**3-7185900*T**(-1);
+      1200.00  Y  +27786.061-156.162846*T+8.28608*T*LN(T)
+       -0.01082725*T**2-1.112352E-06*T**3-6183850*T**(-1);
+      1703.00  Y  -825364.662+4248.379056*T-558.9506818*T*LN(T)
+       +0.139111904*T**2-6.824652E-06*T**3+2.19952973E+08*T**(-1);
+      3000.00  Y  -17149.229+235.898104*T-43.932*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHO    298.15  +17383.4216-9.992194*T+GHSERHO;
+      1000.00  Y  +124827.5326-994.683024*T+127.9577778*T*LN(T)
+       -0.088196514*T**2+8.008222E-6*T**3-15727191*T**(-1);  
+      1703.00  Y  -9688.5314+230.793918*T-43.932*T*LN(T);  
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H.Q. Dong, X.M. Tao, T. Laurila, M. Paulastro-Krockel,
+$ Calphad, 37, 87-93(2012).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The FCC_A1 interaction is not acceptable.
+$
+$ There are up to 4 K differences in invariant equilibria, probably because
+$ of rounding errors when changing from fractional to integar compositions.
+$ Using more decimals from the Gibbs energy functions in the author's tdb
+$ does not improve this at all. Three decimals are used for compositions in
+$ the author's tdb and although there is no visible shift in composition in
+$ the calculated phase diagrams, it is obviously enough to visibly shift the
+$ relative stability of some phases.
+$
+ PAR  L(LIQUID,AU,HO;0),,               -273007.89+10.004485*T;,,     N 12Don !
+ PAR  L(LIQUID,AU,HO;1),,               -86622.58;,,                  N 12Don !
+$
+ PAR  L(FCC_A1,AU,HO:VA;0),,            +ZERO;,,                      N 12Don !
+ PAR  L(FCC_A1,AU,HO:VA;1),,            -362710.98+13.0472*T;,,       N 12Don !
+$
+ PAR  L(HCP_A3,AU,HO:VA;0),,            -126093.45;,,                 N 12Don !
+$
+ PAR  G(AU6HO,AU:HO),,                  +6*GHSERAU+GHSERHO
+             -300724.38+11.41098*T;,,                                 N 12Don !
+ PAR  G(AU4HO_D1A,AU:HO),,              +4*GHSERAU+GHSERHO
+             -297043.15+18.376*T;,,                                   N 12Don !
+ PAR  G(AU51HO14,AU:HO),,               +51*GHSERAU+14*GHSERHO
+             -4098703.05+248.391*T;,,                                 N 12Don !
+ PAR  G(AU3HO_D0A,AU:HO),,              +3*GHSERAU+GHSERHO
+             -272496.08+10.0732*T;,,                                  N 12Don !
+ PAR  G(AU2HO_C11B,AU:HO),,             +2*GHSERAU+GHSERHO
+             -243922.44+14.9409*T;,,                                  N 12Don !
+ PAR  G(AU10HO7,AU:HO),,                +10*GHSERAU+7*GHSERHO
+             -1422903.74+75.1502*T;,,                                 N 12Don !
+ PAR  G(AUHO_B33,AU:HO),,               +GHSERAU+GHSERHO
+             -171933.6+8.3122*T;,,                                    N 12Don !
+ PAR  G(AUHO_B2,AU:HO),,                +GHSERAU+GHSERHO
+             -134682.98-11.4412*T;,,                                  N 12Don !
+ PAR  G(AUHO2_C37,AU:HO),,              +GHSERAU+2*GHSERHO
+             -196585.69+19.734*T;,,                                   N 12Don !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,AU,HO:VA;0),,            -126093.45;,,                 N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992); Au'
+  00Nor1 'S. Norgren, J. Phase Equilib., 21, 148-56(2000),
+          SGTE unary database V.4.4, 2001; Er, Ho'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Ho, Al-Ho'
+  04Du1  'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004),
+          SGTE unary database V.5.0, 2009; Au'
+  04Wan  'Y. Wang, S. Curtarolo, C. Jiang, R. Arroyave, T. Wang, G. Ceder,
+          L.-Q. Chen, Z.-K. Liu, Calphad, 28, 79-90(2004); Ho'
+  12Don  'H.Q. Dong, X.M. Tao, T. Laurila, M. Paulastro-Krockel,
+          Calphad, 37, 87-93(2012); Tm, Au-Ho, Au-Tm'
+!

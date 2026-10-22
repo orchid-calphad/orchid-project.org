@@ -1,0 +1,122 @@
+$
+$ Database for Rh-C from J. Korb and T. Jantzen 2004 (Included in LB Vol. 5)
+$
+$ J. Korb, T. Jantzen, unpublished work, GTT, 2004.
+$
+$ Dataset created 2015.03.22 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT RH   FCC_A1                    102.9055    4920.384   31.5557 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C RH : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : RH : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : RH : C VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : RH : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Rh
+$
+ PAR  G(FCC_A1,RH:VA),,                 +GHSERRH;                2500 N 91Din !
+ PAR  G(BCC_A2,RH:VA),,                 +GHSERRH+19000-4.7*T;    2500 N 91Din !
+ PAR  G(HCP_A3,RH:VA),,                 +GHSERRH+3000-0.5*T;     2500 N 91Din !
+ PAR  G(LIQUID,RH),,                    +GLIQRH;                 2500 N 91Din !
+$
+ FUNCTION GHSERRH   298.15  -7848.828+132.020923*T-24.0178336*T*LN(T)
+       -0.003424186*T**2-1.68032E-07*T**3+55846*T**(-1);
+      1200.00  Y  -28367.852+305.771019*T-48.3766632*T*LN(T)
+       +0.00966345*T**2-1.512774E-06*T**3+3348162*T**(-1);
+      2237.00  Y  -6237470.48+30151.6342*T-3874.21058*T*LN(T)
+       +1.04921361*T**2-5.3978814E-05*T**3+1.88036218E+09*T**(-1);
+      2450.00  Y  -44863.489+344.889895*T-50.58456*T*LN(T);
+      2500.00  N !
+ FUNCTION GLIQRH    298.15  +19092.91-6.92133*T+GHSERRH;
+       700.00  Y  +35898.508-147.926418*T+15.6492377*T*LN(T)
+       -0.028665357*T**2+2.100572E-06*T**3-2638940*T**(-1);
+      2237.00  Y  -18208.54+332.974832*T-50.58456*T*LN(T);
+      2500.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From J. Korb and T. Jantzen 2004 (Included in LB Vol. 5)
+$
+$ J. Korb, T. Jantzen, unpublished work, GTT, 2004.
+$
+$ Checked against LB. Checked at 6000K.
+$
+ PAR  L(LIQUID,C,RH;0),,                -67516.366+4.57647*T;,,       N 04Kor !
+ PAR  L(LIQUID,C,RH;1),,                +120.47286-3.32211*T;,,       N 04Kor !
+$
+ PAR  G(FCC_A1,RH:C),,                  +GHSERRH+GHSERCC
+             +60324.669+3.383*T;,,                                    N 04Kor !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  C-RH(TDB -* +LIQUID +GRAPH +FCC ;P3 TMM:500/2500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  04Kor  'J. Korb, T. Jantzen, unpublished work, GTT, 2004; Rh-C'
+!

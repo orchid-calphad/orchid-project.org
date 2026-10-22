@@ -1,0 +1,180 @@
+$
+$ Database for Cr-Nb from H.-J. Lu et al. 2015.
+$
+$ H.-J. Lu, W.-B. Wang, N. Zou, J.-Y. Shen, X.-G. Lu, Y.-L. He,
+$ Calphad, 50, 134-43(2015).
+$
+$ Dataset created 2020.08.14 by Bengt Hallstedt.
+$
+$ Includes also C14 and C36 Laves phases, which are not stable in Cr-Nb.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CR NB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CR NB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CR% NB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CR NB : VA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE C14_LAVES % 2 2 1 !
+ CONST C14_LAVES : CR NB : CR NB : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE C15_LAVES % 2 2 1 !
+ CONST C15_LAVES : CR% NB : CR NB% : !
+$
+$ Prototype MgNi2 (hP24, P6_3/mmc)
+$
+ PHASE C36_LAVES % 2 2 1 !
+ CONST C36_LAVES : CR NB : CR NB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+$PAR  G(CBCC_A12,CR:VA),,               +GHSERCR+11087+2.7196*T;,,    N 91Din !
+$PAR  G(CUB_A13,CR:VA),,                +GHSERCR+15899+0.6276*T;,,    N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ PAR  G(C14_LAVES,CR:CR),,              +3*GHSERCR+83339-2.3*T;,,     N 15Lu !
+ PAR  G(C15_LAVES,CR:CR),,              +3*GHSERCR+79374-2.59*T;,,    N 15Lu !
+ PAR  G(C36_LAVES,CR:CR),,              +3*GHSERCR+77859-6.33*T;,,    N 15Lu !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCR    298.15  +GHSERCR+7284+0.163*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+$ CBCC_A12 and CUB_A13 from 06Slu not included in unary
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+$PAR  G(CBCC_A12,NB:VA),,               +GHSERNB+17600;,,             N 06Slu !
+$PAR  G(CUB_A13,NB:VA),,                +GHSERNB+22000;,,             N 06Slu !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(C14_LAVES,NB:NB),,              +3*GHSERNB+46538;,,           N 15Lu !
+ PAR  G(C15_LAVES,NB:NB),,              +3*GHSERNB+48976+0.31*T;,,    N 15Lu !
+ PAR  G(C36_LAVES,NB:NB),,              +3*GHSERNB+48330-0.36*T;,,    N 15Lu !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H.-J. Lu, W.-B. Wang, N. Zou, J.-Y. Shen, X.-G. Lu, Y.-L. He,
+$ Calphad, 50, 134-43(2015).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Includes also C14 and C36 Laves phases, which are not stable in Cr-Nb.
+$
+$ Parameter below misprinted in paper
+$PAR  L(LIQUID,CR,NB;0),,               -11205-0.61*T;,,              N 15Lu !
+$ Parameter below from author's tdb
+ PAR  L(LIQUID,CR,NB;0),,               -11205+0.60618*T;,,           N 15Lu !
+ PAR  L(LIQUID,CR,NB;1),,               -8513.4-0.5*T;,,              N 15Lu !
+$
+ PAR  L(BCC_A2,CR,NB:VA;0),,            +43600-13.6*T;,,              N 15Lu !
+ PAR  L(BCC_A2,CR,NB:VA;1),,            +13755.2-6.8*T;,,             N 15Lu !
+$
+$ Parameter below misprinted in paper
+$PAR  G(C15_LAVES,CR:NB),,              +2*GHSERCR+GHSERNB
+$            -12051-6.98*T;,,                                         N 15Lu !
+$ Parameter below from author's tdb
+ PAR  G(C15_LAVES,CR:NB),,              +2*GHSERCR+GHSERNB
+             -12051-8.23*T;,,                                         N 15Lu !
+ PAR  G(C15_LAVES,NB:CR),,              +GHSERCR+2*GHSERNB
+             +213353-7.65*T;,,                                        N 15Lu !
+ PAR  L(C15_LAVES,CR,NB:NB;0),,         +50900;,,                     N 15Lu !
+ PAR  L(C15_LAVES,CR:CR,NB;0),,         -40400;,,                     N 15Lu !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,CR,NB:VA;0),,            +43600-13.6*T;,,              N Same !
+ PAR  L(FCC_A1,CR,NB:VA;1),,            +13755.2-6.8*T;,,             N Same !
+$
+ PAR  L(HCP_A3,CR,NB:VA;0),,            +43600-13.6*T;,,              N Same !
+ PAR  L(HCP_A3,CR,NB:VA;1),,            +13755.2-6.8*T;,,             N Same !
+$
+ PAR  G(C14_LAVES,CR:NB),,              +2*GHSERCR+GHSERNB
+             -7728.5+9*T;,,                                           N 15Lu !
+ PAR  G(C14_LAVES,NB:CR),,              +GHSERCR+2*GHSERNB
+             +216990+9*T;,,                                           N 15Lu !
+$
+ PAR  G(C36_LAVES,CR:NB),,              +2*GHSERCR+GHSERNB
+             -10517+T;,,                                              N 15Lu !
+ PAR  G(C36_LAVES,NB:CR),,              +GHSERCR+2*GHSERNB
+             +216420+T;,,                                             N 15Lu !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CR-NB(TDB -* +LIQ +BCC_A2 +C15_LAV ;P3 TMM:300/3000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  15Lu   'H.-J. Lu, W.-B. Wang, N. Zou, J.-Y. Shen, X.-G. Lu, Y.-L. He,
+          Calphad, 50, 134-43(2015); Cr-Nb'
+!

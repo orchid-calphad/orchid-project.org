@@ -1,0 +1,215 @@
+$
+$ Database for Tb-Zn from B.X. de Freitas et al. 2019.
+$
+$ B.X. de Freitas, T.T. Dorini, G.C. Coelho, C.A. Nunes, L.T.F. Eleno,
+$ Calphad, 67, 101676(2019).
+$
+$ Dataset created 2021.07.11 by Bengt Hallstedt.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT TB   HCP_A3                    158.9254    9426.552   73.3037 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : TB ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : TB% ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : TB% ZN% : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE TBZN_B2 % 2 1 1 !
+ CONST TBZN_B2 : TB : ZN : !
+$
+$ Prototype Hg2K (oI12, Imma)
+$
+ PHASE TBZN2 % 2 1 2 !
+ CONST TBZN2 : TB : ZN : !
+$
+$ Prototype YZn3 (oP16, Pnma)
+$
+ PHASE TBZN3 % 2 1 3 !
+ CONST TBZN3 : TB : ZN : !
+$
+$ Prototype Al11La3 (oI28, Immm)
+$
+ PHASE TB3ZN11 % 2 3 11 !
+ CONST TB3ZN11 : TB : ZN : !
+$
+$ Prototype Gd13Zn58 (hP142, P6_3/mmc)
+$
+ PHASE TB13ZN58 % 2 13 58 !
+ CONST TB13ZN58 : TB : ZN : !
+$
+$ Prototype Ni17Th2 (hP38, P6_3/mmc)
+$
+ PHASE TB2ZN17_LT % 2 2 17 !
+ CONST TB2ZN17_LT : TB : ZN : !
+$
+$ Prototype Th2Zn17 (hR19, R-3m)
+$
+ PHASE TB2ZN17_HT % 2 2 17 !
+ CONST TB2ZN17_HT : TB : ZN : !
+$
+$ Prototype Mn12Th (tI26, I4/mmm)
+$
+ PHASE TBZN12_D2B % 2 1 12 !
+ CONST TBZN12_D2B : TB : ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Tb
+$
+$ FCC_A1 from 94Lan not included in unary
+$
+ PAR  G(HCP_A3,TB:VA),,                 +GHSERTB;                3000 N 91Din !
+ PAR  G(BCC_A2,TB:VA),,                 +GBCCTB;                 3000 N 91Din !
+$PAR  G(FCC_A1,TB:VA),,                 +GHSERTB+5000;           3000 N 94Lan !
+ PAR  G(LIQUID,TB),,                    +GLIQTB;                 3000 N 91Din !
+$
+ FUNCTION GHSERTB   298.15  -20842.158+409.309555*T-77.5006*T*LN(T)
+       +0.0832265*T**2-2.5672833E-05*T**3+562430*T**(-1);
+       600.00  Y  -8772.606+102.61162*T-25.8659*T*LN(T)
+       -0.002757005*T**2-8.05838E-07*T**3+172355*T**(-1);
+      1200.00  Y  -7944.942+101.7776*T-25.9584*T*LN(T)
+       -0.001676335*T**2-1.067632E-06*T**3;
+      1562.00  Y  -265240.309+1456.04268*T-200.215695*T*LN(T)
+       +0.041615159*T**2-2.044697E-06*T**3+65043790*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCTB    298.15  +4167.835-2.652707*T+GHSERTB;
+      1200.00  Y  +633060.245-5157.77779*T+706.580596*T*LN(T)
+       -0.373763517*T**2+3.4100235E-05*T**3-1.03233571E+08*T**(-1);
+      1562.00  Y  -23398.029+257.388486*T-46.4842*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQTB    298.15  +3945.831+29.867521*T-14.252646*T*LN(T)
+       -0.020466105*T**2+2.17475E-06*T**3-160724*T**(-1);
+      1562.00  Y  -13247.649+251.16889*T-46.4842*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+$ DHCP from 12Ber not included in unary
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DHCP,ZN),,                      +GHSERZN+500;            1700 N 12Ber !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ B.X. de Freitas, T.T. Dorini, G.C. Coelho, C.A. Nunes, L.T.F. Eleno,
+$ Calphad, 67, 101676(2019).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+ PAR  L(LIQUID,TB,ZN;0),,               -103063-3.502*T;,,            N 19Fre !
+ PAR  L(LIQUID,TB,ZN;1),,               +57846-6.538*T;,,             N 19Fre !
+$
+ PAR  L(BCC_A2,TB,ZN:VA;0),,            -61400;,,                     N 19Fre !
+ PAR  L(HCP_A3,TB,ZN:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(TBZN_B2,TB:ZN),,                +GHSERTB+GHSERZN
+             -73204+0.05*T;,,                                         N 19Fre !
+ PAR  G(TBZN2,TB:ZN),,                  +GHSERTB+2*GHSERZN
+             -113842+0.2*T;,,                                         N 19Fre !
+ PAR  G(TBZN3,TB:ZN),,                  +GHSERTB+3*GHSERZN
+             -148000+12.9*T;,,                                        N 19Fre !
+ PAR  G(TB3ZN11,TB:ZN),,                +3*GHSERTB+11*GHSERZN
+             -472000+32*T;,,                                          N 19Fre !
+ PAR  G(TB13ZN58,TB:ZN),,               +13*GHSERTB+58*GHSERZN
+             -2187936+106.5*T;,,                                      N 19Fre !
+ PAR  G(TB2ZN17_LT,TB:ZN),,             +2*GHSERTB+17*GHSERZN
+             -432288+20.32*T;,,                                       N 19Fre !
+ PAR  G(TB2ZN17_HT,TB:ZN),,             +2*GHSERTB+17*GHSERZN
+             -428000+16.138*T;,,                                      N 19Fre !
+ PAR  G(TBZN12_D2B,TB:ZN),,             +GHSERTB+12*GHSERZN
+             -216511+0.1*T;,,                                         N 19Fre !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  94Lan  'S. Landin, J. Agren,
+          J. Alloys Compd., 207-208, 449-53(1994); Dy, Tb'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  12Ber  'A. Berche, P. Benigni, J. Rogez, M.-C. Record,
+          Calphad, 36, 65-70(2012); Zn'
+  19Fre  'B.X. de Freitas, T.T. Dorini, G.C. Coelho, C.A. Nunes, L.T.F. Eleno,
+          Calphad, 67, 101676(2019); Tb-Zn'
+!

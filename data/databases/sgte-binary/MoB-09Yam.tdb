@@ -1,0 +1,248 @@
+$
+$ Database for Mo-B from K. Yamada et al. 2009
+$
+$ K. Yamada, H. Ohtani, M. Hasebe, J. Jpn. Inst. Met., 73, 180-88(2009).
+$
+$ Dataset created 2011.02.20 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$
+$ The description was taken from M. Tojo et al, Calphad, 34, 263-70(2010).
+$ It should be checked against the original publication as soon as I get it.
+$
+$ B is modelled as substitutional in bcc.
+$
+$ MoB2 and Mo2B5 are described with a single model. This seems questionable
+$ since they have different structures.
+$
+$ Changing from fractional compositions leads to changes in invariant
+$ equilibria involving MO2B_C16 and MB2_C32. This was adjusted by subtracting
+$ 90 J from G(MO2B_C16,MO:B) and 100 J from G(MB2_C32,MO:B). The remaining
+$ differences are less than 1 K for most invariants. Exceptions are the
+$ stability range of Mo3B2 and the MoB + MoB2 + Mo2B5 equilibrium, where
+$ differences up to 5 K remain.
+$
+$ Mo2B is not stable below 831 K and Mo2B5 is not stable below 778 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B MO : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : B MO : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : B MO% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : B MO : VA : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 1 1 !
+ CONST BETA_RHOMBO_B : B : !
+$
+$ Prototype Al2Cu (tI12, I4/mcm)
+$
+ PHASE MO2B_C16 % 2 2 1 !
+ CONST MO2B_C16 : MO : B : !
+$
+$ Prototype Si2U3 (tP10, P4/mbm)
+$
+ PHASE MO3B2_D5A % 2 3 2 !
+ CONST MO3B2_D5A : MO : B : !
+$
+$ Prototype CrB (oC8, Cmcm), this is beta-MoB
+$ alpha-MoB has prototype MoB (tI16, I4_1/amd, SB B_g)
+$
+ PHASE MB_B33 % 2 1 1 !
+ CONST MB_B33 : MO : B : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$ This also includes Mo2B5 with prototype Mo2B5 (or MoB2) (hR6, R-3m)
+$
+ PHASE MB2_C32 % 2 1 2 !
+ CONST MB2_C32 : MO VA : B VA : !
+$
+$ Prototype MoB4 (hP16, P6_3/mmc)
+$
+ PHASE MOB4 % 2 1 4 !
+ CONST MOB4 : MO : B : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+ PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+$PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+ PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+ PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+ PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ PAR  G(MB2_C32,VA:B),,                 +2*GHSERBB+148662;,,          N 09Yam !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ PAR  G(MB2_C32,MO:VA),,                +GHSERMO+85224-0.9*T;,,       N 09Yam !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(MB2_C32,VA:VA),,                +300*T;,,                     N 09Yam !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Yamada, H. Ohtani, M. Hasebe, J. Jpn. Inst. Met., 73, 180-88(2009).
+$
+$ Checked against 10Toj and results calculated from their tdb.
+$ Checked at 6000 K.
+$
+$ The description was taken from M. Tojo et al, Calphad, 34, 263-70(2010).
+$ It should be checked against the original publication as soon as I get it.
+$
+$ B is modelled as substitutional in bcc.
+$
+$ MoB2 and Mo2B5 are described with a single model. This seems questionable
+$ since they have different structures.
+$
+$ Changing from fractional compositions leads to changes in invariant
+$ equilibria involving MO2B_C16 and MB2_C32. This was adjusted by subtracting
+$ 90 J from G(MO2B_C16,MO:B) and 100 J from G(MB2_C32,MO:B). The remaining
+$ differences are less than 1 K for most invariants. Exceptions are the
+$ stability range of Mo3B2 and the MoB + MoB2 + Mo2B5 equilibrium, where
+$ differences up to 5 K remain.
+$
+$ Mo2B is not stable below 831 K and Mo2B5 is not stable below 778 K.
+$
+ PAR  L(LIQUID,B,MO;0),,                -120000+4.8*T;,,              N 09Yam !
+ PAR  L(LIQUID,B,MO;1),,                -19000;,,                     N 09Yam !
+ PAR  L(LIQUID,B,MO;2),,                +14000;,,                     N 09Yam !
+$
+ PAR  L(BCC_A2,B,MO:VA;0),,             -30000;,,                     N 09Yam !
+$
+$ Adjusted parameter below
+ PAR  G(MO2B_C16,MO:B),,                +2*GHSERMO+GHSERBB
+             -98418-2.1*T;,,                                          N 09Yam !
+$ Original parameter below
+$PAR  G(MO2B_C16,MO:B),,                +2*GHSERMO+GHSERBB
+$            -98328-2.1*T;,,                                          N 09Yam !
+ PAR  G(MO3B2_D5A,MO:B),,               +3*GHSERMO+2*GHSERBB
+             -195500+59.36*T-9.5*T*LN(T)+0.005*T**2;,,                N 09Yam !
+ PAR  G(MB_B33,MO:B),,                  +GHSERMO+GHSERBB
+             -101160+1.2*T;,,                                         N 09Yam !
+$
+$ Adjusted parameter below
+ PAR  G(MB2_C32,MO:B),,                 +GHSERMO+2*GHSERBB
+             -85456+14.49*T-0.72*T*LN(T);,,                           N 09Yam !
+$ Original parameter below
+$PAR  G(MB2_C32,MO:B),,                 +GHSERMO+2*GHSERBB
+$            -85356+14.49*T-0.72*T*LN(T);,,                           N 09Yam !
+ PAR  L(MB2_C32,MO,VA:B;0),,            -135000-21*T;,,               N 09Yam !
+ PAR  L(MB2_C32,MO,VA:B;1),,            -130500-15*T;,,               N 09Yam !
+ PAR  L(MB2_C32,MO,VA:B;2),,            -342000;,,                    N 09Yam !
+ PAR  L(MB2_C32,MO:B,VA;0),,            -217500-8.1*T;,,              N 09Yam !
+ PAR  L(MB2_C32,MO:B,VA;1),,            -231000-24*T;,,               N 09Yam !
+ PAR  L(MB2_C32,MO:B,VA;2),,            +600000+9*T;,,                N 09Yam !
+$
+ PAR  G(MOB4,MO:B),,                    +GHSERMO+4*GHSERBB
+             -150000+14.25*T;,,                                       N 09Yam !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,B,MO:VA;0),,             +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,B,MO:VA;0),,             +UN_ASS;,,                    N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  09Yam  'K. Yamada, H. Ohtani, M. Hasebe,
+          J. Jpn. Inst. Met., 73, 180-88(2009); Mo-B'
+!

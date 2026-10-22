@@ -1,0 +1,234 @@
+$
+$ Database for Au-Nd from S.L. Wang et al. 2015.
+$
+$ S.L. Wang, L.J. Zhou, Z.F. Fan, J.L. Li, Y.H. Lin, C.P. Wang, X.J. Liu,
+$ J. Phase Equilib. Diffus., 36, 241-47(2015).
+$
+$ Dataset created 2018.03.30 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ The fcc interaction is not acceptable.
+$
+$ Misprint in the Au36Nd17 parameter. Invariant equilibria with this phase
+$ differ by up to 4 K after adjustment.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AU   FCC_A1                    196.9665    6016.592   47.4884 ! 
+ ELEMENT ND   DHCP                      144.24      7133.72    71.0862 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AU ND : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AU% ND : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AU ND% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1), zeta
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AU ND : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : AU ND% : !
+$
+$ Prototype Au6Pr (mC28, C2/c)
+$
+ PHASE AU6ND % 2 6 1 !
+ CONST AU6ND : AU : ND : !
+$
+$ Prototype Ag51Gd14 (hP68, P6/m)
+$
+ PHASE AU51ND14 % 2 51 14 !
+ CONST AU51ND14 : AU : ND : !
+$
+$ Prototype Au36Nd17 (tP106, P4/nmm)
+$
+ PHASE AU36ND17 % 2 36 17 !
+ CONST AU36ND17 : AU : ND : !
+$
+$ Prototype Pd4Pu3 (hR14, R-3) 
+$
+ PHASE AU4ND3 % 2 4 3 !
+ CONST AU4ND3 : AU : ND : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE AUND_B27 % 2 1 1 !
+ CONST AUND_B27 : AU : ND : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE AUND_B33 % 2 1 1 !
+ CONST AUND_B33 : AU : ND : !
+$
+$ Prototype CsCl (cP2, Pm3m)
+$
+ PHASE AUND_B2 % 2 1 1 !
+ CONST AUND_B2 : AU : ND : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE AUND2_C37 % 2 1 2 !
+ CONST AUND2_C37 : AU : ND : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Au
+$
+$ DHCP added in unary 5.0
+$ DHCP replaced by the value from 92Ans in SGSOL 5.0
+$
+$ HCP_A3 and BCT_A5 from 88Che1 not included in unary
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems. The value for DHCP from 92Ans was used to model these systems,
+$ thus this value must be included in the unary database and not the 04Du
+$ value.
+$
+ PAR  G(FCC_A1,AU:VA),,                 +GHSERAU;                3200 N 91Din !
+ PAR  G(HCP_A3,AU:VA),,                 +GHSERAU+240.75+1.6*T;   3200 N 91Din !
+$PAR  G(HCP_A3,AU:VA),,                 +GHSERAU+550+0.3*T;      3200 N 88Che1 !
+ PAR  G(BCC_A2,AU:VA),,                 +GHSERAU+4250-1.1*T;     3200 N 91Din !
+$PAR  G(BCT_A5,AU),,                    +GHSERAU+4184;           3200 N 88Che1 !
+ PAR  G(DHCP,AU),,                      +GHSERAU+125+0.79*T;     3200 N 92Ans !
+$PAR  G(DHCP,AU),,                      +GHSERAU+5000;           3200 N 04Du !
+ PAR  G(LIQUID,AU),,                    +GHSERAU
+             +12552-9.385866*T;                                  3200 N 91Din !
+$
+ FUNCTION GHSERAU   298.15  -6938.856+106.830098*T-22.75455*T*LN(T)
+       -0.00385924*T**2+3.79625E-07*T**3-25097*T**(-1);
+       929.40  Y  -93586.481+1021.69543*T-155.706745*T*LN(T)
+       +0.08756015*T**2-1.1518713E-05*T**3+10637210*T**(-1);
+      1337.33  Y  +314067.829-2016.37825*T+263.252259*T*LN(T)
+       -0.118216828*T**2+8.923844E-06*T**3-67999832*T**(-1);
+      1735.80  Y  -12133.783+165.272524*T-30.9616*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Nd
+$
+$ DHCP and LIQUID modified in unary 3.0 (upper/lower T interval added)
+$ FCC_A1 added in unary 3.0
+$ HCP_A3 added in unary 4.4
+$
+ PAR  G(DHCP,ND),,                      +GHSERND;                1800 N 91Din !
+ PAR  G(BCC_A2,ND:VA),,                 +GBCCND;                 1800 N 91Din !
+ PAR  G(FCC_A1,ND:VA),,                 +GHSERND+500;            1800 N SGCOST !
+ PAR  G(HCP_A3,ND:VA),,                 +GHSERND
+             +1500-0.415725*T;                                   1800 N 00Nor2 !
+ PAR  G(LIQUID,ND),,                    +GLIQND;                 1800 N 91Din !
+$
+ FUNCTION GHSERND   298.15  -8402.93+111.10239*T-27.0858*T*LN(T)
+       +5.56125E-04*T**2-2.6923E-06*T**3+34887*T**(-1);
+       900.00  Y  -6984.083+83.662617*T-22.7536*T*LN(T)
+       -0.00420402*T**2-1.802E-06*T**3;
+      1128.00  Y  -225610.846+1673.04075*T-238.182873*T*LN(T)
+       +0.078615997*T**2-6.048207E-06*T**3+38810350*T**(-1);
+      1799.00  Y  -25742.331+276.257088*T-48.7854*T*LN(T);
+      1800.00  N !
+ FUNCTION GBCCND    298.15  +1437.295-0.546281*T+GHSERND;
+       400.00  Y  +7312.2-153.033976*T+14.9956777*T*LN(T)
+       -0.050479*T**2+7.287217E-06*T**3-831810*T**(-1);
+      1128.00  Y  -18030.266+239.677322*T-44.5596*T*LN(T);
+      1289.00  Y  +334513.017-2363.9199*T+311.409193*T*LN(T)
+       -0.156030778*T**2+1.2408421E-05*T**3-64319604*T**(-1);
+      1800.00  N !
+ FUNCTION GLIQND    298.15  +5051.743-1.585076*T+GHSERND;
+       300.00  Y  +5350.01-86.593963*T+5.357301*T*LN(T)
+       -0.046955463*T**2+6.860782E-06*T**3-374380*T**(-1);
+      1128.00  Y  -16335.232+268.625903*T-48.7854*T*LN(T);
+      1799.00  Y  +9407.099-7.631185*T+GHSERND;
+      1800.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S.L. Wang, L.J. Zhou, Z.F. Fan, J.L. Li, Y.H. Lin, C.P. Wang, X.J. Liu,
+$ J. Phase Equilib. Diffus., 36, 241-47(2015).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The fcc interaction is not acceptable.
+$
+$ Misprint in the Au36Nd17 parameter. Invariant equilibria with this phase
+$ differ by up to 4 K after adjustment.
+$
+ PAR  L(LIQUID,AU,ND;0),,               -273000+6.023*T;,,            N 15Wan !
+ PAR  L(LIQUID,AU,ND;1),,               -112900-2.863*T;,,            N 15Wan !
+ PAR  L(LIQUID,AU,ND;2),,               +27856+6.853*T;,,             N 15Wan !
+ PAR  L(LIQUID,AU,ND;3),,               +57068-9.6*T;,,               N 15Wan !
+$
+ PAR  L(FCC_A1,AU,ND:VA;0),,            +ZERO;,,                      N 15Wan !
+ PAR  L(FCC_A1,AU,ND:VA;1),,            -239950;,,                    N 15Wan !
+ PAR  L(BCC_A2,AU,ND:VA;0),,            -137714;,,                    N 15Wan !
+ PAR  L(DHCP,AU,ND;0),,                 -122000;,,                    N 15Wan !
+$
+ PAR  G(AU6ND,AU:ND),,                  +6*GHSERAU+GHSERND
+             -310100+21.07*T;,,                                       N 15Wan !
+ PAR  G(AU51ND14,AU:ND),,               +51*GHSERAU+14*GHSERND
+             -3625700-204.75*T;,,                                     N 15Wan !
+$ Adjusted parameter below
+ PAR  G(AU36ND17,AU:ND),,               +36*GHSERAU+17*GHSERND
+             -3577500-238*T;,,                                        N 15Wan !
+$ Original parameter below
+$PAR  G(AU36ND17,AU:ND),,               +36*GHSERAU+17*GHSERND
+$            -3577500-282.596*T;,,                                    N 15Wan !
+ PAR  G(AU36ND17,AU:ND),,               +36*GHSERAU+17*GHSERND
+             -3577500-229.596*T;,,                                    N 15Wan !
+ PAR  G(AU4ND3,AU:ND),,                 +4*GHSERAU+3*GHSERND
+             -522550-20.6472*T;,,                                     N 15Wan !
+ PAR  G(AUND_B27,AU:ND),,               +GHSERAU+GHSERND
+             -158200-0.1604*T;,,                                      N 15Wan !
+ PAR  G(AUND_B33,AU:ND),,               +GHSERAU+GHSERND
+             -158000-0.4448*T;,,                                      N 15Wan !
+ PAR  G(AUND_B2,AU:ND),,                +GHSERAU+GHSERND
+             -153800-3.0152*T;,,                                      N 15Wan !
+ PAR  G(AUND2_C37,AU:ND),,              +GHSERAU+2*GHSERND
+             -161400-2.127*T;,,                                       N 15Wan !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,AU,ND:VA;0),,            -122000;,,                    N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  88Che1 'P.-Y. Chevalier, Thermochim. Acta, 130, 1-13(1988); Au, Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992); Au'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000; Nd, Sc'
+  04Du   'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004),
+          SGTE unary database V.5.0, 2009; Au'
+  15Wan  'S.L. Wang, L.J. Zhou, Z.F. Fan, J.L. Li, Y.H. Lin, C.P. Wang,
+          X.J. Liu, J. Phase Equilib. Diffus., 36, 241-47(2015); Au-Nd'
+!

@@ -1,0 +1,158 @@
+$
+$ Database for Al-Te from C.-S. Oh and D.N. Lee 1993
+$
+$ C.-S. Oh, D.N. Lee, Calphad, 17, 175-87(1993).
+$
+$ Dataset created 2017.03.25 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$ 2021.09.05: ION order fixed for GES6.
+$
+$ Old unary data for Te are used. In order to use current data reoptimization
+$ is necessary.
+$
+$ Incorrect reference for G(ION,AL+3:TE-2) in the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  AL+3                               AL/+3 !
+ SPECIE  TE-2                               TE/-2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : AL+3 : TE-2 VA TE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL : VA: !
+$
+$ gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ Prototype Al2Te3 (mP240, P2_1)
+$
+ PHASE AL2TE3 % 2 2 3 !
+ CONST AL2TE3 : AL : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+$PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  G(ION,AL+3:VA),,                  +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+$ Old unary data!
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                1600 N 91Din !
+$PAR  G(LIQUID,TE),,                    +GLIQTE;                 1600 N 91Din !
+$
+ PAR  G(ION,TE),,                       +GLIQTE;                 1600 N 91Din !
+$
+ FUNCTION GHSERTE   298.15  -6677.083+85.019049*T-19.1003366*T*LN(T)
+       -0.011050509*T**2;
+       722.66  Y  -14523.024+210.012403*T-37.656*T*LN(T)
+       +1.115357E+27*T**(-9);
+      1261.00  N !
+ FUNCTION GLIQTE    298.15  +17222.341-23.770344*T+GHSERTE
+       -4.31979E-19*T**7;
+       722.66  Y  +3173.591+185.552954*T-37.656*T*LN(T);
+      1261.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C.-S. Oh, D.N. Lee, Calphad, 17, 175-87(1993).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Old unary data for Te are used. In order to use current data reoptimization
+$ is necessary.
+$
+$ Incorrect reference for G(ION,AL+3:TE-2) in the paper.
+$
+ PAR  G(ION,AL+3:TE-2),,                +2*GLIQAL+3*GLIQTE
+             -362881.1+142.1063*T;,,                                  N 93Oh !
+ PAR  L(ION,AL+3:TE-2,VA;0),,           +56299.7+9.8515*T;,,          N 93Oh !
+ PAR  L(ION,AL+3:TE-2,VA;1),,           -38837.7+31.4487*T;,,         N 93Oh !
+ PAR  L(ION,AL+3:TE-2,VA;2),,           +7.7504*T;,,                  N 93Oh !
+ PAR  L(ION,AL+3:TE-2,TE;0),,           +5649.2-25.1996*T;,,          N 93Oh !
+ PAR  L(ION,AL+3:TE-2,TE;1),,           -74421.7;,,                   N 93Oh !
+ PAR  L(ION,AL+3:TE-2,TE;2),,           -7.4859*T;,,                  N 93Oh !
+$
+ PAR  G(AL2TE3,AL:TE),,                -366541.8+649.9469*T
+             -110.876*T*LN(T)-0.044285*T**2;,,                        N 93Oh !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Oh   'C.-S. Oh, D.N. Lee, Calphad, 17, 175-87(1993); Al-Te'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+!

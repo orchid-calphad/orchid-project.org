@@ -1,0 +1,168 @@
+$
+$ Database for K-Te from Y. Chen et al. 2014.
+$
+$ Y. Chen, Y. Liu, M. Chu, L. Wang, J. Alloys Compd., 588, 605-10(2014).
+$
+$ Dataset created 2018.10.20 by Bengt Hallstedt.
+$ 2021.01.17: Modified for use with GES6.
+$
+$ Associate liquid with two associates; K2Te and K2Te3. The K2Te3 associate
+$ makes no sense.
+$
+$ Temperature dependence for compounds probably too large.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT K    BCC_A2                     39.0983    7088.      64.68   ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  K2TE                               K2TE1 !
+ SPECIE  K2TE3                              K2TE3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : K K2TE K2TE3 TE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : K : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : K : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : K : VA: !
+$
+$ gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE K2TE_C1 % 2 2 1 !
+ CONST K2TE_C1 : K : TE : !
+$
+$ Prototype K5Te3 (tI32, I4/m)
+$
+ PHASE K5TE3 % 2 5 3 !
+ CONST K5TE3 : K : TE : !
+$
+$ Prototype Na2O2 (hP12, P-62m), low T; Li2O2 (hP8, P6_3/mmc), high T
+$
+ PHASE KTE % 2 1 1 !
+ CONST KTE : K : TE : !
+$
+$ Prototype K2Te3 (oP20, Pnma)
+$
+ PHASE K2TE3 % 2 2 3 !
+ CONST K2TE3 : K : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ K
+$
+ PAR  G(BCC_A2,K:VA)            200.00  +GHSERKK;                2200 N 91Din !
+ PAR  G(HCP_A3,K:VA)            200.00  +GHSERKK+50+2*T;         2200 N 91Din !
+ PAR  G(FCC_A1,K:VA)            200.00  +GHSERKK+50+1.3*T;       2200 N 91Din !
+ PAR  G(LIQUID,K)               200.00  +GLIQKK;                 2200 N 91Din !
+$
+ FUNCTION GHSERKK   200.00  -16112.929+389.624197*T-77.0571464*T*LN(T)
+       +0.146211135*T**2-8.4949147E-05*T**3+243385*T**(-1);
+       336.53  Y  -11122.441+192.586544*T-39.2885968*T*LN(T)
+       +0.012167386*T**2-2.64387E-06*T**3+43251*T**(-1)+1.19223E+22*T**(-9);
+      2200.00  N !
+ FUNCTION GLIQKK    200.00  +2318.096-6.886859*T+GHSERKK-9.44E-19*T**7;
+       336.53  Y  +2323.019-6.902217*T+GHSERKK-1.19223E+22*T**(-9);
+      2200.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                1600 N 95Dav !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 1600 N 95Dav !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Chen, Y. Liu, M. Chu, L. Wang, J. Alloys Compd., 588, 605-10(2014).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Associate liquid with two associates; K2Te and K2Te3. The K2Te3 associate
+$ makes no sense.
+$
+$ Temperature dependence for compounds probably too large.
+$
+ PAR  G(LIQUID,K2TE),,                  +2*GLIQKK+GLIQTE
+             -350000+68*T;,,                                          N 14Che !
+ PAR  G(LIQUID,K2TE3),,                 +2*GLIQKK+3*GLIQTE
+             -340000+71*T;,,                                          N 14Che !
+ PAR  L(LIQUID,K,K2TE;0),,              +UN_ASS;,,                    N !
+ PAR  L(LIQUID,K2TE,K2TE3;0),,          -160000;,,                    N 14Che !
+ PAR  L(LIQUID,K2TE,K2TE3;1),,          +150000;,,                    N 14Che !
+ PAR  L(LIQUID,K2TE3,TE;0),,            +UN_ASS;,,                    N !
+ PAR  L(LIQUID,K2TE,TE;0),,             -89000-39*T;,,                N 14Che !
+ PAR  L(LIQUID,K2TE,TE;1),,             +10500;,,                     N 14Che !
+$
+ PAR  G(K2TE_C1,K:TE),,                 +2*GHSERKK+GHSERTE
+             -390000+81*T;,,                                          N 14Che !
+ PAR  G(K5TE3,K:TE),,                   +5*GHSERKK+3*GHSERTE
+             -1024000+218*T;,,                                        N 14Che !
+ PAR  G(KTE,K:TE),,                     +GHSERKK+GHSERTE
+             -209000+33*T;,,                                          N 14Che !
+ PAR  G(K2TE3,K:TE),,                   +2*GHSERKK+3*GHSERTE
+             -420000+33.5*T;,,                                        N 14Che !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  14Che  'Y. Chen, Y. Liu, M. Chu, L. Wang,
+          J. Alloys Compd., 588, 605-10(2014); K-Te'
+!

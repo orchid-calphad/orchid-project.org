@@ -1,0 +1,127 @@
+$
+$ Database for Ir-Pt from Y. Yamabe-Mitarai et al. 2009.
+$
+$ Y. Yamabe-Mitarai, T. Aoyagi, T. Abe, J. Alloys Compd., 484, 327-34(2009).
+$
+$ Dataset created 2025.02.17 by Bengt Hallstedt.
+$
+$ The paper is only about the fcc demixing. By setting the same interaction
+$ for the liquid, experimental solidification data are reasonably reproduced.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT IR   FCC_A1                    192.22      5267.656   35.5054 ! 
+ ELEMENT PT   FCC_A1                    195.08      5723.712   41.6308 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : IR PT : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : IR PT : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : IR PT : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : IR PT : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ir
+$
+ PAR  G(FCC_A1,IR:VA),,                 +GHSERIR;                4000 N 91Din !
+ PAR  G(BCC_A2,IR:VA),,                 +GHSERIR+32000-6.9*T;    4000 N 91Din !
+ PAR  G(HCP_A3,IR:VA),,                 +GHSERIR+4000-0.6*T;     4000 N 91Din !
+ PAR  G(LIQUID,IR),,                    +GLIQIR;                 4000 N 91Din !
+$
+ FUNCTION GHSERIR   298.15  -6936.288+118.780119*T-22.7944*T*LN(T)
+       -0.003091976*T**2-20083*T**(-1);
+      1215.00  Y  -8123.73+140.066697*T-26.085*T*LN(T)-4.7969E-07*T**3;
+      2719.00  Y  +290529.037-1258.35297*T+152.498874*T*LN(T)
+       -0.047176402*T**2+1.844977E-06*T**3-92987250*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQIR    298.15  +23455.244-6.312059*T+GHSERIR;
+      1000.00  Y  +102217.789-587.632815*T+73.9517579*T*LN(T)
+       -0.04638802*T**2+2.761831E-06*T**3-13382612*T**(-1);
+      2719.00  Y  -38347.217+411.234043*T-59.418*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCIR    298.15  +GHSERIR+32000-6.9*T;                      4000 N !
+$ ------------------------------------------------------------------------------
+$ Pt
+$
+ PAR  G(FCC_A1,PT:VA),,                 +GHSERPT;                4000 N 91Din !
+ PAR  G(BCC_A2,PT:VA),,                 +GHSERPT+15000-2.4*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PT:VA),,                 +GHSERPT+2500+0.1*T;     4000 N 91Din !
+ PAR  G(LIQUID,PT),,                    +GLIQPT;                 4000 N 91Din !
+$
+ FUNCTION GHSERPT   298.15  -7595.631+124.388275*T-24.5526*T*LN(T)
+       -0.00248297*T**2-2.0138E-08*T**3+7974*T**(-1);
+      1300.00  Y  -9253.174+161.529615*T-30.2527*T*LN(T)
+       +0.002321665*T**2-6.56946E-07*T**3-272106*T**(-1);
+      2041.50  Y  -222048.216+1019.35892*T-136.192996*T*LN(T)
+       +0.020454938*T**2-7.59259E-07*T**3+71539020*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPT    298.15  +20114.016-9.275183*T+GHSERPT;
+       600.00  Y  +19023.491+32.94182*T-12.3403769*T*LN(T)
+       -0.011551507*T**2+9.31516E-07*T**3-601426*T**(-1);
+      2041.50  Y  +1404.468+205.858962*T-36.5*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCPT    298.15  +GHSERPT+15000-2.4*T;                      6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Yamabe-Mitarai, T. Aoyagi, T. Abe, J. Alloys Compd., 484, 327-34(2009).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ The paper is only about the fcc demixing. By setting the same interaction
+$ for the liquid, experimental solidification data are reasonably reproduced.
+$
+ PAR  L(LIQUID,IR,PT;0),,               +22000;,,                     N 09Yam !
+$
+ PAR  G(FCC_A1,IR,PT:VA;0),,            +22000;,,                     N 09Yam !
+$
+$ Metastable
+$
+ PAR  G(BCC_A2,IR,PT:VA;0),,            +22000;,,                     N Same !
+ PAR  G(HCP_A3,IR,PT:VA;0),,            +22000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  IR-PT(TDB -* +LIQUID +FCC_A1 ;G5 C_S:FCC_A1/PT:VA MAJ:FCC_A1/IR:VA
+  ;P3 TMM:300/2800 STP:.4/500/1 STP:.12/2670/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09Yam  'Y. Yamabe-Mitarai, T. Aoyagi, T. Abe,
+          J. Alloys Compd., 484, 327-34(2009); Ir-Pt'
+!

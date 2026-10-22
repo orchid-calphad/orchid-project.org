@@ -1,0 +1,189 @@
+$
+$ Database for Ag-Gd from H. Wang et al. 2008.
+$
+$ H. Wang, L.G. Zhang, W.J. Zhu, H.S. Liu, Z.P. Jin,
+$ J. Alloys Compd., 466, 165-68(2008).
+$
+$ Dataset created 2019.04.07 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ Invariant equilibria differ by up to 13 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AG   FCC_A1                    107.8682    5745.      42.55   ! 
+ ELEMENT GD   HCP_A3                    157.25      9087.648   68.0894 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AG GD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AG% GD : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AG GD% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AG GD% : VA : !
+$
+$ Prototype Ag51Gd14 (hP68, P6/m)
+$
+ PHASE AG51GD14 % 2 51 14 !
+ CONST AG51GD14 : AG : GD : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE AG2GD_C11B % 2 2 1 !
+ CONST AG2GD_C11B : AG : GD : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE AGGD_B2 % 2 1 1 !
+ CONST AGGD_B2 : AG : GD : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ag
+$
+$ CUB_A13 added in unary 3.0
+$ CUB_A13 revised in unary 4.1
+$ BCT_A5 added in unary 4.1
+$
+$ DHCP from 09Wan not included in unary
+$
+ PAR  G(FCC_A1,AG:VA),,                 +GHSERAG;                3000 N 91Din !
+ PAR  G(HCP_A3,AG:VA),,                 +GHSERAG+300+0.3*T;      3000 N 91Din !
+ PAR  G(BCC_A2,AG:VA),,                 +GHSERAG+3400-1.05*T;    3000 N 91Din !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG+3400-1.05*T;    3000 N 95Lim !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG
+$            +3765.6-1.8826*T;                                   3000 N 96SGUN !
+$PAR  G(BCT_A5,AG),,                    +GHSERAG+4184.1;         3000 N 96Oh !
+$PAR  G(DHCP,AG),,                      +GHSERAG+1000;           3000 N 09Wan !
+ PAR  G(LIQUID,AG),,                    +GLIQAG;                 3000 N 91Din !
+$
+ FUNCTION GHSERAG   298.15  -7209.512+118.202013*T-23.8463314*T*LN(T)
+       -0.001790585*T**2-3.98587E-07*T**3-12011*T**(-1);
+      1234.93  Y  -15095.252+190.266404*T-33.472*T*LN(T)+1.411773E+29*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQAG    298.15  +11025.076-8.89102*T+GHSERAG-1.033905E-20*T**7;
+      1234.93  Y  -3587.111+180.964656*T-33.472*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCAG    298.15  +GHSERAG+3400-1.05*T;                      6000 N !
+$ ------------------------------------------------------------------------------
+$ Gd
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ Small correction made to top two temperature ranges of bcc_A2 to ensure 
+$ continuity in Gibbs energy, AD, Dec 2002
+$ FCC_A1 added in unary 4.4
+$
+$ FCC_A1 from 03Cac not included in unary
+$
+ PAR  G(HCP_A3,GD:VA)           200.00  +GHSERGD;                3600 N 95She2 !
+ PAR  TC(HCP_A3,GD:VA)          200.00    293.4;                 3600 N 95She2 !
+ PAR  BM(HCP_A3,GD:VA)          200.00      3.0;                 3600 N 95She2 !
+$PAR  TC(HCP_A3,GD:VA)          200.00    291.8;                 3600 N 91Din !
+$PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 91Din !
+ PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+500;            3600 N 00Zin !
+$PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD
+$            +1800-0.831451*T;                                   3600 N 03Cac !
+ PAR  G(BCC_A2,GD:VA)           200.00  +GBCCGD;                 3600 N 95She2 !
+ PAR  G(LIQUID,GD)              200.00  +GLIQGD;                 3600 N 95She2 !
+$
+ FUNCTION GHSERGD   200.00  -6834.5855+97.13101*T-24.7214131*T*LN(T)
+       -0.00285240521*T**2-3.14674076E-07*T**3-8665.73348*T**(-1);
+      1000.00  Y  -6483.25362+95.6919924*T-24.6598297*T*LN(T)
+       -0.00185225011*T**2-6.61211607E-07*T**3;
+      1508.15  Y  -123124.992+699.125537*T-101.800197*T*LN(T)
+       +0.0150644246*T**2-6.39165948E-07*T**3+29356890.3*T**(-1);
+      3600.00  N !
+ FUNCTION GBCCGD    200.00  +3233.80866-2.11184585*T+GHSERGD;
+      1000.00  Y  +152792.743-1349.58873*T+180.097094*T*LN(T)
+       -0.119550229*T**2+1.17915728E-05*T**3-22038836*T**(-1);
+      1508.15  Y  -15783.7618+202.222183*T-38.960425*T*LN(T);
+      1586.15  Y  -19850.5562+224.818035*T-41.904333*T*LN(T)
+       +8.58222759E-04*T**2-3.77570269E-08*T**3+995428.573*T**(-1);
+      3600.00  N !
+ FUNCTION GLIQGD    200.00  +13060.0262-8.32179974*T+GHSERGD;
+      1000.00  Y  +146262.037-1208.70685*T+159.352082*T*LN(T)
+       -0.108247135*T**2+1.06945505E-05*T**3-19678357*T**(-1);
+      1508.15  Y  -5397.314+192.336215*T-38.5075*T*LN(T);
+      3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H. Wang, L.G. Zhang, W.J. Zhu, H.S. Liu, Z.P. Jin,
+$ J. Alloys Compd., 466, 165-68(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant equilibria differ by up to 13 K.
+$
+ PAR  L(LIQUID,AG,GD;0),,               -103000+50.4429*T
+             -4.1259*T*LN(T);,,                                       N 08Wan !
+ PAR  L(LIQUID,AG,GD;1),,               -31000+1.7421*T;,,            N 08Wan !
+ PAR  L(LIQUID,AG,GD;2),,               +10283;,,                     N 08Wan !
+$
+ PAR  L(FCC_A1,AG,GD:VA;0),,            -36201+2.15*T;,,              N 08Wan !
+ PAR  L(FCC_A1,AG,GD:VA;1),,            -21574;,,                     N 08Wan !
+$
+ PAR  L(BCC_A2,AG,GD:VA;0),,            +ZERO;,,                      N 08Wan !
+ PAR  L(HCP_A3,AG,GD:VA;0),,            +ZERO;,,                      N 08Wan !
+$
+ PAR  G(AG51GD14,AG:GD),,               +51*GHSERAG+14*GHSERGD
+             -1611545+250.484*T;,,                                    N 08Wan !
+ PAR  G(AG2GD_C11B,AG:GD),,             +2*GHSERAG+GHSERGD
+             -77379+7.2066*T;,,                                       N 08Wan !
+ PAR  G(AGGD_B2,AG:GD),,                +GHSERAG+GHSERGD
+             -53190+0.2814*T;,,                                       N 08Wan !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Lim  'S.S. Lim, P.L. Rossiter, J.W. Tibballs, Calphad, 19, 131-41(1995),
+          SGTE unary database V.4.1, 1999; Ag'
+  95She2 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-02,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Gd'
+  96Oh   'C.-S. Oh, J.-H. Shim, B.-J. Lee, D.N. Lee,
+          J. Alloys Compounds, 238, 155-66(1996),
+          SGTE unary database V.4.1, 1999; Ag'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  00Zin  'M. Zinkevich, N. Mattern, H. J Seifert,
+          J. Phase Equilib., 21, 385-94(2000),
+          SGTE unary database V.4.4, 2001; Gd'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Gd'
+  08Wan  'H. Wang, L.G. Zhang, W.J. Zhu, H.S. Liu, Z.P. Jin,
+          J. Alloys Compd., 466, 165-68(2008); Ag-Gd'
+  09Wan  'S.L. Wang, C.P. Wang, X.J. Liu, K. Ishida,
+          J. Alloys Compd., 476, 245-52(2009); Ag, Ag-Gd'
+!

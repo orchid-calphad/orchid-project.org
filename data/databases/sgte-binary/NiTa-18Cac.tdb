@@ -1,0 +1,256 @@
+$
+$ Database for Ni-Ta from G. Cacciamani et al. 2018.
+$
+$ G. Cacciamani, G. Roncallo, Y. Wang, E. Vacchieri, A. Costa,
+$ J. Alloys Compd., 730, 291-310(2018).
+$
+$ Dataset created 2023.11.27 by Bengt Hallstedt.
+$
+$ Modified from 09Zho with a new model for the mu phase. A generalized
+$ Wagner-Schottky model is used for the mu phase.
+$
+$ Pure element data are not given in 18Cac. These were assumed to be taken
+$ from 06Slu.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT TA   BCC_A2                    180.9479    5681.872   41.4718 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI TA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% TA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI TA% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI TA : VA : !
+$
+$ Prototype Al3Ti (tI8, I4/mmm)
+$
+ PHASE NI3TA_D022 % 2 3 1 !
+ CONST NI3TA_D022 : NI : TA : !
+$
+$ Prototype NbPt3 (mP16, P2_1/m)
+$
+ PHASE NI3TA_KAPPA % 2 3 1 !
+ CONST NI3TA_KAPPA : NI% TA : NI TA% : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE NI2TA_C11B % 2 2 1 !
+ CONST NI2TA_C11B : NI% TA : NI TA% : !
+$
+$ Prototype Fe7W6 (hR13, R-3m; mu-phase); 4:2:1:6 in 18Cac
+$
+ PHASE NITA_D85 % 4 1 4 2 6 !
+ CONST NITA_D85 : NI TA : NI TA% : NI TA : NI% TA : !
+$
+$ Prototype Al2Cu (tI12, I4/mcm; theta)
+$
+ PHASE NITA2_C16 % 2 1 2 !
+ CONST NITA2_C16 : NI% TA : NI TA% : !
+$
+$ Prototype Pt8Ti (tI18, I4/mmm)
+$
+ PHASE NI8X % 2 8 1 !
+ CONST NI8X : NI : TA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(NI3TA_KAPPA,NI:NI),,            +4*GHSERNI+14000;,,           N 09Zho !
+ PAR  G(NI2TA_C11B,NI:NI),,             +3*GHSERNI+23730;,,           N 09Zho !
+ PAR  G(NITA_D85,NI:NI:NI:NI),,         +13*GHSERNI+208000;,,         N 06Slu !
+ PAR  G(NITA2_C16,NI:NI),,              +3*GHSERNI+80310;,,           N 09Zho !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Ta
+$
+ PAR  G(BCC_A2,TA:VA),,                 +GHSERTA;,,                   N 91Din !
+ PAR  G(FCC_A1,TA:VA),,                 +GHSERTA+16000+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,TA:VA),,                 +GHSERTA+12000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,TA),,                    +GLIQTA;,,                    N 91Din !
+$
+ PAR  G(NI3TA_KAPPA,TA:TA),,            +4*GHSERTA+117280;,,          N 09Zho !
+ PAR  G(NI2TA_C11B,TA:TA),,             +3*GHSERTA+31470;,,           N 09Zho !
+ PAR  G(NITA_D85,TA:TA:TA:TA),,         +13*GHSERTA+153400;,,         N 06Slu !
+ PAR  G(NITA2_C16,TA:TA),,              +3*GHSERTA+152640;,,          N 09Zho !
+$
+ FUNCTION GHSERTA   298.15  -7285.889+119.139857*T-23.7592624*T*LN(T)
+       -0.002623033*T**2+1.70109E-07*T**3-3293*T**(-1);
+      1300.00  Y  -22389.955+243.88676*T-41.137088*T*LN(T)
+       +0.006167572*T**2-6.55136E-07*T**3+2429586*T**(-1);
+      2500.00  Y  +229382.886-722.59722*T+78.5244752*T*LN(T)
+       -0.017983376*T**2+1.95033E-07*T**3-93813648*T**(-1);
+      3290.00  Y  -1042384.01+2985.49125*T-362.159132*T*LN(T)
+       +0.043117795*T**2-1.055148E-06*T**3+5.54714342E+08*T**(-1);
+      6000.00  N !
+ FUNCTION GLIQTA    298.15  +29160.975-7.578729*T+GHSERTA;
+      1000.00  Y  +43884.339-61.981795*T+0.0279523*T*LN(T)
+       -0.012330066*T**2+6.14599E-07*T**3-3523338*T**(-1);
+      3290.00  Y  -6314.543+258.110873*T-41.84*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCTA    298.15  +GHSERTA+16000+1.7*T;                      6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Cacciamani, G. Roncallo, Y. Wang, E. Vacchieri, A. Costa,
+$ J. Alloys Compd., 730, 291-310(2018).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 09Zho with a new model for the mu phase. A generalized
+$ Wagner-Schottky model is used for the mu phase.
+$
+$ Pure element data are not given in 18Cac. These were assumed to be taken
+$ from 06Slu.
+$
+ PAR  L(LIQUID,NI,TA;0),,               -83812;,,                     N 09Zho !
+ PAR  L(LIQUID,NI,TA;1),,               -46039;,,                     N 09Zho !
+ PAR  L(LIQUID,NI,TA;2),,               -4023;,,                      N 09Zho !
+$
+ PAR  L(FCC_A1,NI,TA:VA;0),,            -75470-4.023*T;,,             N 09Zho !
+ PAR  L(FCC_A1,NI,TA:VA;1),,            -71135+13.235*T;,,            N 09Zho !
+ PAR  TC(FCC_A1,NI,TA:VA;0),,           -3820.74;,,                   N 09Zho !
+$
+ PAR  L(BCC_A2,NI,TA:VA;0),,            -28415-10.613*T;,,            N 09Zho !
+ PAR  L(BCC_A2,NI,TA:VA;1),,            -32471;,,                     N 09Zho !
+$
+ PAR  G(NI3TA_D022,NI:TA),,             +3*GHSERNI+GHSERTA
+             -146360+50.804*T;,,                                      N 09Zho !
+$
+ PAR  G(NI3TA_KAPPA,NI:TA),,            +3*GHSERNI+GHSERTA
+             -122760+11.692*T;,,                                      N 09Zho !
+ PAR  G(NI3TA_KAPPA,TA:NI),,            +3*GHSERTA+GHSERNI
+             +50160;,,                                                N 09Zho !
+ PAR  L(NI3TA_KAPPA,NI,TA:TA;0),,       -42373.6+40.516*T;,,          N 09Zho !
+ PAR  L(NI3TA_KAPPA,NI:NI,TA;0),,       -42372+30.436*T;,,            N 09Zho !
+$
+ PAR  G(NI2TA_C11B,NI:TA),,             +2*GHSERNI+GHSERTA
+             -110001+20.919*T;,,                                      N 09Zho !
+ PAR  G(NI2TA_C11B,TA:NI),,             +2*GHSERTA+GHSERNI
+             +15000;,,                                                N 09Zho !
+ PAR  L(NI2TA_C11B,NI:NI,TA;0),,        -58029;,,                     N 09Zho !
+$
+ PAR  G(NITA_D85,NI:NI:NI:TA),,         +7*GHSERNI+6*GHSERTA
+             +GMTANI0+GMNITA1+GMNITA2+GMTANI4;,,                      N 18Cac !
+ PAR  G(NITA_D85,NI:NI:TA:NI),,         +11*GHSERNI+2*GHSERTA
+             +GMTANI0+GMNITA1;,,                                      N 18Cac !
+ PAR  G(NITA_D85,NI:NI:TA:TA),,         +5*GHSERNI+8*GHSERTA
+             +GMTANI0+GMNITA1+GMTANI4;,,                              N 18Cac !
+ PAR  G(NITA_D85,TA:NI:NI:NI),,         +12*GHSERNI+GHSERTA
+             +GMTANI0+GMNITA1+GMNITA2+GMTANI3;,,                      N 18Cac !
+ PAR  G(NITA_D85,TA:NI:NI:TA),,         +6*GHSERNI+7*GHSERTA
+             +GMTANI0+GMNITA1+GMNITA2+GMTANI3+GMTANI4;,,              N 18Cac !
+ PAR  G(NITA_D85,TA:NI:TA:NI),,         +10*GHSERNI+3*GHSERTA
+             +GMTANI0+GMNITA1+GMTANI3;,,                              N 18Cac !
+ PAR  G(NITA_D85,TA:NI:TA:TA),,         +4*GHSERNI+9*GHSERTA
+             +GMTANI0+GMNITA1+GMTANI3+GMTANI4;,,                      N 18Cac !
+ PAR  G(NITA_D85,NI:TA:NI:NI),,         +9*GHSERNI+4*GHSERTA
+             +GMTANI0+GMNITA2;,,                                      N 18Cac !
+ PAR  G(NITA_D85,NI:TA:NI:TA),,         +3*GHSERNI+10*GHSERTA
+             +GMTANI0+GMNITA2+GMTANI4;,,                              N 18Cac !
+ PAR  G(NITA_D85,NI:TA:TA:NI),,         +7*GHSERNI+6*GHSERTA
+             +GMTANI0;,,                                              N 18Cac !
+ PAR  G(NITA_D85,NI:TA:TA:TA),,         +GHSERNI+12*GHSERTA
+             +GMTANI0+GMTANI4;,,                                      N 18Cac !
+ PAR  G(NITA_D85,TA:TA:NI:NI),,         +8*GHSERNI+5*GHSERTA
+             +GMTANI0+GMNITA2+GMTANI3;,,                              N 18Cac !
+ PAR  G(NITA_D85,TA:TA:NI:TA),,         +2*GHSERNI+11*GHSERTA
+             +GMTANI0+GMNITA2+GMTANI3+GMTANI4;,,                      N 18Cac !
+ PAR  G(NITA_D85,TA:TA:TA:NI),,         +6*GHSERNI+7*GHSERTA
+             +GMTANI0+GMTANI3;,,                                      N 18Cac !
+$
+ PAR  G(NITA2_C16,NI:TA),,              +GHSERNI+2*GHSERTA
+             -65550+6.246*T;,,                                        N 09Zho !
+ PAR  G(NITA2_C16,TA:NI),,              +GHSERTA+2*GHSERNI
+             +132420;,,                                               N 09Zho !
+ PAR  L(NITA2_C16,NI,TA:TA;0),,         -137991-19.629*T;,,           N 09Zho !
+ PAR  L(NITA2_C16,NI:NI,TA;0),,         -190695+46.446*T;,,           N 09Zho !
+$
+ PAR  G(NI8X,NI:TA),,                   +8*GHSERNI+GHSERTA
+             -162918+20.736*T;,,                                      N 09Zho !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,NI,TA:VA;0),,            -75470-4.023*T;,,             N Same !
+ PAR  L(HCP_A3,NI,TA:VA;1),,            -71135+13.235*T;,,            N Same !
+$
+ FUNCTION GMTANI0   298.15  -325000+21*T;                              6000 N !
+ FUNCTION GMNITA1   298.15  +405184;                                   6000 N !
+ FUNCTION GMNITA2   298.15  +51296;                                    6000 N !
+ FUNCTION GMTANI3   298.15  -20400;                                    6000 N !
+ FUNCTION GMTANI4   298.15  +516750;                                   6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-TA(TDB -* +LIQUID +FCC_A1 +BCC_A2 +NI2TA_C11B +NI3TA_D022 +NI3TA_KAPPA
+  +NI8X +NITA_D85 +NITA2_C16 ;P3 TMM:300/3500 STP:.05/1200) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  06Slu  'M.H.F. Sluiter, Calphad, 30, 357-66(2006); Endmember values'
+  09Zho  'S.H. Zhou, Y. Wang, L.-Q. Chen, Z.-K. Liu, R.E. Napolitano,
+          Calphad, 33, 631-41(2009); Ni-Ta'
+  18Cac  'G. Cacciamani, G. Roncallo, Y. Wang, E. Vacchieri, A. Costa,
+          J. Alloys Compd., 730, 291-310(2018); Ni-Ta'
+!

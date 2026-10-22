@@ -1,0 +1,233 @@
+$
+$ Database for B-O from D. Pham et al. 2023.
+$
+$ D. Pham, F. Gai, J. Rochester, J.H. Dycus, J.M. LeBeau, V.R. Manga,
+$ E.L. Corral, J. Am. Ceram. Soc., 106, 3127-40(2023).
+$
+$ Dataset created 2023.05.21 by Bengt Hallstedt.
+$
+$ Associate liquid model with B2O3 associates.
+$
+$ Data for several gas phase species originate from the Janaf 1971 tables
+$ although they are referred as 23Pha in this dataset. This reference will
+$ be kept until they have been verified against the Janaf tables (or updated).
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  B2                                 B2 !
+ SPECIE  BO                                 B1O1 !
+ SPECIE  BO2                                B1O2 !
+ SPECIE  B2O                                B2O1 !
+ SPECIE  B2O2                               B2O2 !
+ SPECIE  B2O3                               B2O3 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B B2O3 O : !
+$
+$ Prototype alpha-B (hR12, R-3m)
+$
+ PHASE ALPHA_RHOMBO_B % 1 1 !
+ CONST ALPHA_RHOMBO_B : B : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 1 1 !
+ CONST BETA_RHOMBO_B : B : !
+$
+$ Prototype B6P (hR14, R-3m)
+$
+ PHASE B6O % 2 6 1 !
+ CONST B6O : B : O : !
+$
+$ Prototype B2O3 (hP15, P3_121)
+$
+ PHASE B2O3 % 2 2 3 !
+ CONST B2O3 : B : O : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : B B2 BO BO2 B2O B2O2 B2O3 O O2 O3 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+ PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+ PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+$PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+$PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE_A9,B),,                +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE_A9,B),,                +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ PAR  G(GAS,B),,                        +F1389T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,B2),,                       +F1921T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+ FUNCTION GBCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ B(g)
+ FUNCTION F1389T    298.15 +558741.08-13.3403636*T-20.91611*T*LN(T)
+       +7.20885E-05*T**2-5.63569667E-09*T**3+4306.9065*T**(-1);
+      4800.00  Y  +593321.479-80.4363028*T-13.38924*T*LN(T)
+       -5.13201E-04*T**2-2.51243833E-09*T**3-26985320*T**(-1);
+     10000.00  N !
+$ B2(g)
+ FUNCTION F1921T    298.15 +829926.969-93.2007048*T-13.63395*T*LN(T)
+       -0.033960835*T**2+7.30767333E-06*T**3-67153.4*T**(-1);
+       600.00  Y  +815354.412+137.902601*T-49.68482*T*LN(T)
+       +0.00543292*T**2-7.11178167E-07*T**3+1030739.5*T**(-1);
+      1400.00  Y  +823475.255+55.7356689*T-37.91694*T*LN(T)
+       -0.001645613*T**2+5.37223333E-08*T**3+105366.3*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(LIQUID,O),,                     +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ D. Pham, F. Gai, J. Rochester, J.H. Dycus, J.M. LeBeau, V.R. Manga,
+$ E.L. Corral, J. Am. Ceram. Soc., 106, 3127-40(2023).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Associate liquid model with B2O3 associates.
+$
+$ Data for several gas phase species originate from the Janaf 1971 tables
+$ although they are referred as 23Pha in this dataset. This reference will
+$ be kept until they have been verified against the Janaf tables (or updated).
+$
+$ Gas phase equilibria around x(B)=0.5 are not matched. B2O2(g) too stable?
+$
+ PAR  G(LIQUID,B2O3),,                  +2*GHSERBB+3*GHSEROO
+             -1248973.7+231.715*T;,,                                  N 23Pha !
+ PAR  L(LIQUID,B,O;0),,                 +150000;,,                    N 23Pha !
+ PAR  L(LIQUID,B,B2O3;0),,              +150000;,,                    N 23Pha !
+ PAR  L(LIQUID,B2O3,O;0),,              +150000;,,                    N 23Pha !
+$
+ PAR  G(B6O,B:O),,                      +6*GHSERBB+GHSEROO
+             -565000+215*T;,,                                         N 23Pha !
+ PAR  G(B2O3,B:O),,                     +2*GHSERBB+3*GHSEROO
+             -1273500+265.638*T;,,                                    N 23Pha !
+$
+ PAR  G(GAS,BO),,                       +GHSERBB+GHSEROO+RTLNP
+             -19012.1-80.78*T;,,                                      N 23Pha !
+ PAR  G(GAS,BO2),,                      +GHSERBB+2*GHSEROO+RTLNP
+             -291106-15.81*T;,,                                       N 23Pha !
+ PAR  G(GAS,B2O),,                      +2*GHSERBB+GHSEROO+RTLNP
+             +61157.5-85.95*T;,,                                      N 23Pha !
+ PAR  G(GAS,B2O2),,                     +2*GHSERBB+2*GHSEROO+RTLNP
+             -473821.3-14.23*T;,,                                     N 23Pha !
+ PAR  G(GAS,B2O3),,                     +2*GHSERBB+3*GHSEROO+RTLNP
+             -884965.7+61.065*T;,,                                    N 23Pha !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  97SUB  'SGTE substance database, version 1997'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  23Pha  'D. Pham, F. Gai, J. Rochester, J.H. Dycus, J.M. LeBeau, V.R. Manga,
+          E.L. Corral, J. Am. Ceram. Soc., 106, 3127-40(2023); B-O'
+!

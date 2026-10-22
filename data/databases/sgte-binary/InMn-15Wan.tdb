@@ -1,0 +1,214 @@
+$
+$ Database for In-Mn from L.Y. Wang et al. 2015.
+$
+$ L.Y. Wang, J. Wang, C.F. Zhu, G. Cheng, C.Y. Tang, G.H. Rao, H.Y. Zhou,
+$ Thermochim. Acta, 607, 74-81(2015).
+$
+$ Dataset created 2018.10.03 by Bengt Hallstedt.
+$ 2021.01.17: Modified for use with GES6.
+$
+$ Old data used for fcc-In.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT IN   TETRAGONAL_A6             114.82      6610.0     57.65   ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : IN MN : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : IN MN% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : IN MN% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : IN MN : VA : !
+$
+$ Prototype In (tI2, I4/mmm)
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : IN : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 % 2 1 1 !
+ CONST CBCC_A12 : IN MN% : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : IN MN% : VA : !
+$
+$ Prototype Al4Cu9 (cP52, P-43m)
+$
+ PHASE INMN3_D83 % 2 1 3 !
+ CONST INMN3_D83 : IN : MN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ In
+$
+$ FCC_A1 and TET_ALPHA1 revised in unary 4.1
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$ TET_ALPHA1 revised in unary 5.0 (using the value from 99Ans)
+$ DHCP added in unary 5.0
+$
+$ CBCC_A12 and CUB_A13 from 15Wan not included in unary
+$
+$ There is quite a bit of confusion about TET_ALPHA1_A6. The structure is
+$ the same as In (TETRAGONAL_A6), but with a different (presumably) c/a ratio.
+$ TET_ALPHA1_A6 is present in Bi-In, In-Pb and In-Sn (possibly more). Between
+$ the TETRAGONAL_A6 (In-ss) and TET_ALPHA1_A6 there is a narrow two-phase
+$ region. In each system a different G(TET_ALPHA1_A6,IN) lattice stability
+$ was used.
+$ In 91Din a value from an unpublished revision of the Bi-In system by
+$ P.-Y. Chevalier 1990 is included. In SGTE Unary V 4.4 a value from 98Boa
+$ for the In-Pb system is included. 98Boa treated the TET_ALPHA1_A6
+$ phase in Bi-In and In-Pb as two different phases and used the lattice
+$ stability from 88Che0 for the Bi-In branch of this phase. Finally, SGTE
+$ unary V 5.0 uses a value from an unpublished evaluation by 99Ans of the
+$ In-Sn system. Due to the close proximity of the TETRAGONAL_A6 and
+$ TET_ALPHA1_A6 phases in these systems, any change of lattice stability
+$ will cause a distortion of the phase diagram and require reoptimisation.
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(TETRAGONAL_A6,IN),,             +GHSERIN;                3800 N 91Din !
+$PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+162.061;        3800 N 98Boa !
+ PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+123-0.1988*T;   3800 N 91Din !
+ PAR  G(BCC_A2,IN:VA),,                 +GHSERIN+800-0.8*T;      3800 N 91Din !
+ PAR  G(HCP_A3,IN:VA),,                 +GHSERIN+533-0.6868*T;   3800 N 91Din !
+$PAR  G(DHCP,IN),,                      +GHSERIN+520-0.384*T;    3800 N 92Ans !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+123-0.1988*T;   3800 N 99Ans1 !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+0.31*T;         3800 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+193-0.16479*T;  3800 N 91Din !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN-33+0.16*T;      3800 N 88Che0 !
+$PAR  G(BCT_A5,IN),,                    +GHSERIN
+$            +5040.87-3.33969*T;                                 3800 N 99Ans1 !
+$PAR  G(BCT_A5,IN),,                    +GHSERIN+2092;           3800 N 03Liu1 !
+$PAR  G(RHOMBOHEDRAL_A7,IN),,           +GHSERIN+4184;           3800 N 88Che0 !
+ PAR  G(CBCC_A12,IN:VA),,               +GHSERIN+1323-0.1988*T;  3800 N 15Wan !
+ PAR  G(CUB_A13,IN:VA),,                +GHSERIN+2523-0.1988*T;  3800 N 15Wan !
+ PAR  G(LIQUID,IN),,                    +GLIQIN;                 3800 N 91Din !
+$
+ FUNCTION GHSERIN   298.15  -6978.89+92.338115*T-21.8386*T*LN(T)
+       -0.00572566*T**2-2.120321E-06*T**3-22906*T**(-1);
+       429.75  Y  -7033.516+124.476588*T-27.4562*T*LN(T)
+       +5.4607E-04*T**2-8.367E-08*T**3-211708*T**(-1)+3.53116E+22*T**(-9);
+      3800.00  N !
+ FUNCTION GLIQIN    298.15  +3282.092-7.63686*T+GHSERIN-5.59058E-20*T**7;
+       429.75  Y  +3283.706-7.640804*T+GHSERIN-3.53116E+22*T**(-9);
+      3800.00  N !
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L.Y. Wang, J. Wang, C.F. Zhu, G. Cheng, C.Y. Tang, G.H. Rao, H.Y. Zhou,
+$ Thermochim. Acta, 607, 74-81(2015).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Old data used for fcc-In.
+$
+ PAR  L(LIQUID,IN,MN;0),,               +15257.37-3.4339*T;,,         N 15Wan !
+ PAR  L(LIQUID,IN,MN;1),,               -3595.94+4.3009*T;,,          N 15Wan !
+ PAR  L(LIQUID,IN,MN;2),,               +3225.06;,,                   N 15Wan !
+$
+ PAR  L(FCC_A1,IN,MN:VA;0),,            +20000-3.6*T;,,               N 15Wan !
+ PAR  L(BCC_A2,IN,MN:VA;0),,            +20700;,,                     N 15Wan !
+ PAR  L(CBCC_A12,IN,MN:VA;0),,          +22843.95;,,                  N 15Wan !
+ PAR  L(CUB_A13,IN,MN:VA;0),,           +14250;,,                     N 15Wan !
+$
+ PAR  G(INMN3_D83,IN:MN),,              +GHSERIN+3*GHSERMN
+             +2680-13.54*T;,,                                         N 15Wan !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,IN,MN:VA;0),,            +20000-3.6*T;,,               N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che0 'P.-Y Chevalier, Calphad, 12, 383-92(1988)
+          SGTE unary database V.4.1, 1999; In'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992),
+          SGTE unary database V.5.0, 2009; In'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb, In-Pb, Bi-In-Pb'
+  99Ans1 'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  15Wan  'L.Y. Wang, J. Wang, C.F. Zhu, G. Cheng, C.Y. Tang, G.H. Rao,
+          H.Y. Zhou, Thermochim. Acta, 607, 74-81(2015); In, In-Mn'
+!

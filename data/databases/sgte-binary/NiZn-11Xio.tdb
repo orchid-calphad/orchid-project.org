@@ -1,0 +1,271 @@
+$
+$ Database for Ni-Zn from W. Xiong et al. 2011
+$
+$ W. Xiong, H. Xu, Y. Du, Calphad, 35, 276-83(2011).
+$
+$ Dataset created 2017.06.18 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ The high temperature NiZn phase is modeled as B2 with a 2-SL add on model.
+$
+$ The low temperature NiZn is sometimes referred to as L1_0 and sometimes as
+$ CuTi-delta (L2_a, same space group). The Pauling file suggests CuTi-delta.
+$ 11Xio consider it to be CuTi-delta and models it with a Wagner-Schottky
+$ model. To me the difference between these two crystal structures is not clear.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI ZN : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2 (except Va)
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : NI ZN VA : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : NI% ZN VA : NI ZN% VA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI ZN% : VA : !
+$
+$ Prototype CuTi (tP2, P4/mmm)
+$
+ PHASE NIZN_L2A % 2 1 1 !
+ CONST NIZN_L2A : NI% ZN : NI ZN% : !
+$
+$ Prototype Cu5Zn8 (cI52, I4-3m), gamma-NiZn
+$
+ PHASE NI2ZN11_D82 % 3 4 1 8 !
+ CONST NI2ZN11_D82 : NI ZN : NI ZN : ZN : !
+$
+$ Prototype Ni3Zn22 (mC50, C2/m)
+$
+ PHASE NIZN8 % 2 1 8 !
+ CONST NIZN8 : NI : ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(A2_BCC,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(A2_BCC,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(A2_BCC,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  L(A2_BCC,NI,VA:VA;0),,            +GB2NIVA+LB2NIVA;,,           N 99Dup1 !
+ PAR  G(B2_BCC,VA:NI:VA),,              +0.5*GB2NIVA-0.5*LB2NIVA;,,   N 99Dup1 !
+ PAR  G(B2_BCC,NI:VA:VA),,              +0.5*GB2NIVA-0.5*LB2NIVA;,,   N 99Dup1 !
+$
+ PAR  G(NIZN_L2A,NI:NI),,               +2*GHSERNI+8430;,,            N 11Xio !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$
+$ With G(A2_BCC,VA:VA)=30*T the same amount must be subtracted from GB2NIVA.
+ FUNCTION GB2NIVA   298.15  +162397.3-27.40575*T-30*T;                 6000 N !
+ FUNCTION LB2NIVA   298.15  -64024.38+26.49419*T;                      6000 N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+ PAR  G(A2_BCC,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ PAR  L(A2_BCC,ZN,VA:VA;0),,            +GB2ZNVA+LB2ZNVA;,,           N 11Xio !
+ PAR  G(B2_BCC,VA:ZN:VA),,              +0.5*GB2ZNVA-0.5*LB2ZNVA;,,   N 11Xio !
+ PAR  G(B2_BCC,ZN:VA:VA),,              +0.5*GB2ZNVA-0.5*LB2ZNVA;,,   N 11Xio !
+$
+ PAR  G(NIZN_L2A,ZN:ZN),,               +2*GHSERZN+8430;,,            N 11Xio !
+ PAR  G(NI2ZN11_D82,ZN:ZN:ZN),,         +13*GHSERZN+118432.6;,,       N 11Xio !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+ FUNCTION GFCCZN    298.15  +GHSERZN+2969.82-1.56968*T;                6000 N !
+$ With G(A2_BCC,VA:VA)=30*T the same amount must be subtracted from GB2NIVA.
+ FUNCTION GB2ZNVA   298.15  +25222.7-30*T;                             6000 N !
+ FUNCTION LB2ZNVA   298.15  -2257.49;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(A2_BCC,VA:VA),,                 +30*T;,,                      N 09Sun !
+$PAR  G(A2_BCC,VA:VA),,                 +ZERO;,,                      N 99Dup1 !
+$PAR  L(A2_BCC,VA,*:VA;0),,             +LB2VA;,,                     N 01Sun !
+$
+$FUNCTION LB2VA     298.15  +100*T;                                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ W. Xiong, H. Xu, Y. Du, Calphad, 35, 276-83(2011).
+$
+$ Checked against paper and author's tdb. Checked at 6000K.
+$
+$ The high temperature NiZn phase is modeled as B2 with a 2-SL add on model.
+$
+$ The low temperature NiZn is sometimes referred to as L1_0 and sometimes as
+$ CuTi-delta (L2_a, same space group). The Pauling file suggests CuTi-delta.
+$ 11Xio consider it to be CuTi-delta and models it with a Wagner-Schottky
+$ model. To me the difference between these two crystal structures is not clear.
+$
+ PAR  L(LIQUID,NI,ZN;0),,               -40083.87;,,                  N 11Xio !
+ PAR  L(LIQUID,NI,ZN;1),,               +15841.15;,,                  N 11Xio !
+$
+ PAR  L(FCC_A1,NI,ZN:VA;0),,            -56168.45+9.9117*T;,,         N 11Xio !
+ PAR  L(FCC_A1,NI,ZN:VA;1),,            +1083.47+2.4401*T;,,          N 11Xio !
+ PAR  TC(FCC_A1,NI,ZN:VA;0),,           -1100.00;,,                   N 11Xio !
+ PAR  BM(FCC_A1,NI,ZN:VA;0),,              -1.46;,,                   N 11Xio !
+$
+ PAR  L(BCC_A2,NI,ZN:VA;0),,            +GB2NIZN+LB2NIZN;,,           N 11Xio !
+ PAR  L(A2_BCC,NI,ZN:VA;0),,            +GB2NIZN+LB2NIZN;,,           N 11Xio !
+$
+ PAR  G(B2_BCC,NI:ZN:VA),,              +0.5*GB2NIZN-0.5*LB2NIZN;,,   N 11Xio !
+ PAR  G(B2_BCC,ZN:NI:VA),,              +0.5*GB2NIZN-0.5*LB2NIZN;,,   N 11Xio !
+$
+ PAR  L(HCP_A3,NI,ZN:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(NIZN_L2A,NI:ZN),,               +GHSERNI+GHSERZN
+             -43071.66+6.816*T;,,                                     N 11Xio !
+ PAR  G(NIZN_L2A,ZN:NI),,               +GHSERNI+GHSERZN
+             +59931.66-6.816*T;,,                                     N 11Xio !
+ PAR  L(NIZN_L2A,NI,ZN:NI;0),,          -6053.2;,,                    N 11Xio !
+ PAR  L(NIZN_L2A,NI:NI,ZN;0),,          -6053.2;,,                    N 11Xio !
+ PAR  L(NIZN_L2A,NI,ZN:ZN;0),,          -12064.6;,,                   N 11Xio !
+ PAR  L(NIZN_L2A,ZN:NI,ZN;0),,          -12064.6;,,                   N 11Xio !
+$
+ PAR  G(NI2ZN11_D82,NI:NI:ZN),,         +5*GHSERNI+8*GHSERZN
+             -189985.25;,,                                            N 11Xio !
+ PAR  G(NI2ZN11_D82,NI:ZN:ZN),,         +4*GHSERNI+9*GHSERZN
+             -172443.05;,,                                            N 11Xio !
+ PAR  G(NI2ZN11_D82,ZN:NI:ZN),,         +GHSERNI+12*GHSERZN
+             +100890.4;,,                                             N 11Xio !
+ PAR  L(NI2ZN11_D82,NI,ZN:NI:ZN;0),,    -580136.05+125.008*T;,,       N 11Xio !
+ PAR  L(NI2ZN11_D82,NI,ZN:ZN:ZN;0),,    -580136.05+125.008*T;,,       N 11Xio !
+ PAR  L(NI2ZN11_D82,NI:NI,ZN:ZN;0),,    -16720.08+6.2257*T;,,         N 11Xio !
+ PAR  L(NI2ZN11_D82,ZN:NI,ZN:ZN;0),,    -16720.08+6.2257*T;,,         N 11Xio !
+$
+ PAR  G(NIZN8,NI:ZN),,                  +GHSERNI+8*GHSERZN
+             -88615.35+4.7682*T;,,                                    N 11Xio !
+$
+ FUNCTION GB2NIZN   298.15  -42884.09+2.9965*T;                        6000 N !
+ FUNCTION LB2NIZN   298.15  -37582.04+25.0094*T;                       6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-ZN(TDB -* +LIQUID +FCC_A1 +HCP_A3 +A2_BCC +B2_BCC +NIZN +NIZN8
+  +NI2ZN11_D82 ;P3 STP:.7/1000/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99Dup1 'N. Dupin, I. Ansara, Z. Metallkd., 90, 76-85(1999); Al-Ni'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  01Sun  'B Sundman, fix to avoid BCC with just Va (in LB1-v2).'
+  09Sun  'B. Sundman, I. Ohnuma, N. Dupin, U.R. Kattner, S.G. Fries,
+          Acta Mater., 57, 2896-2908(2009); Al-Fe'
+  11Xio  'W. Xiong, H. Xu, Y. Du, Calphad, 35, 276-83(2011); Ni-Zn'
+!

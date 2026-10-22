@@ -1,0 +1,194 @@
+$
+$ Database for Ge-Lu from K. Achgar et al. 2018.
+$
+$ K. Achgar, N. Selhaoui, A. Iddaoudi, R. Tamim, H. Azza, L. Bouirden,
+$ Calphad, 62, 18-29(2018).
+$
+$ Dataset created 2021.07.10 by Bengt Hallstedt.
+$
+$ Both RK and Kaptay equations are included. Here standard RK is used.
+$
+$ The liquid interaction has gone wild.
+$
+$ The difference in Gibbs energy between the two Ge3Lu2 modifications is
+$ too small.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+ ELEMENT LU   HCP_A3                    174.967     6388.968   50.9611 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GE LU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GE : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GE LU% : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE : !
+$
+$ Prototype Si2Zr (oC12, Cmcm)
+$
+ PHASE GE2LU_C49 % 2 0.642 0.358 !
+ CONST GE2LU_C49 : GE : LU : !
+$
+$ Pearson o*20
+$
+ PHASE GE3LU2_ALPHA % 2 3 2 !
+ CONST GE3LU2_ALPHA : GE : LU : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE GE3LU2_C32 % 2 3 2 !
+ CONST GE3LU2_C32 : GE : LU : !
+$
+$ unknown structure
+$
+ PHASE GE5LU4 % 2 5 4 !
+ CONST GE5LU4 : GE : LU : !
+$
+$ Prototype Ge10Ho11 (tI84, I4/mmm)
+$
+ PHASE GE10LU11 % 2 10 11 !
+ CONST GE10LU11 : GE : LU : !
+$
+$ Prototype Ge4Sm5 (oP36, Pnma)
+$
+ PHASE GE4LU5 % 2 4 5 !
+ CONST GE4LU5 : GE : LU : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE GE3LU5_D88 % 2 3 5 !
+ CONST GE3LU5_D88 : GE : LU : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Lu
+$
+$ FCC_A1 from 13Wan not in unary
+$ FCC_A1 from 18Shi not in unary and not acceptable
+$
+ PAR  G(HCP_A3,LU:VA),,                 +GHSERLU;                3700 N 91Din !
+$PAR  G(FCC_A1,LU:VA),,                 +GHSERLU+5000;           3700 N 13Wan !
+$PAR  G(FCC_A1,LU:VA),,                 +GHSERLU+75657;          3700 N 18Shi !
+ PAR  G(LIQUID,LU),,                    +GLIQLU;                 3700 N 91Din !
+$
+ FUNCTION GHSERLU   298.15  -8788.329+146.536283*T-29.812*T*LN(T)
+       +0.00519165*T**2-1.790717E-06*T**3+39723*T**(-1);
+       700.00  Y  -9043.057+142.327643*T-29.0095*T*LN(T)
+       +0.00371416*T**2-1.50147E-06*T**3+141549*T**(-1);
+      1700.00  Y  +6940.092-46.91844*T-1.83986*T*LN(T)-0.0119001*T**2;
+      1936.00  Y  -404023.691+1829.37943*T-239.019502*T*LN(T)
+       +0.041800748*T**2-1.661174E-06*T**3+1.24825465E+08*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQLU    298.15  +12772.12-4.998883*T+GHSERLU;
+       600.00  Y  +30389.863-198.378793*T+20.9392663*T*LN(T)
+       -0.034238743*T**2+2.890636E-06*T**3-2398650*T**(-1);
+      1936.00  Y  -18994.687+292.091104*T-47.9068*T*LN(T);
+      3700.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Achgar, N. Selhaoui, A. Iddaoudi, R. Tamim, H. Azza, L. Bouirden,
+$ Calphad, 62, 18-29(2018).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Both RK and Kaptay equations are included. Here standard RK is used.
+$
+$ The liquid interaction has gone wild.
+$
+$ The difference in Gibbs energy between the two Ge3Lu2 modifications is
+$ too small.
+$
+ PAR  L(LIQUID,GE,LU;0),,               -319389.19+34.3270475*T;,,    N 18Ach !
+ PAR  L(LIQUID,GE,LU;1),,               -8247.50556+2.10996002*T;,,   N 18Ach !
+ PAR  L(LIQUID,GE,LU;2),,               +182281.853-65.838478*T;,,    N 18Ach !
+$
+ PAR  L(HCP_A3,GE,LU:VA;0),,            +ZERO;,,                      N 18Ach !
+$
+ PAR  G(GE2LU_C49,GE:LU),,              +0.642*GHSERGE+0.358*GHSERLU
+             -79372.84+5.5101*T;,,                                    N 18Ach !
+ PAR  G(GE3LU2_ALPHA,GE:LU),,           +3*GHSERGE+2*GHSERLU
+             -406347.25+9.9035*T;,,                                   N 18Ach !
+ PAR  G(GE3LU2_C32,GE:LU),,             +3*GHSERGE+2*GHSERLU
+             -406332.15+9.892*T;,,                                    N 18Ach !
+$PAR  G(GE5LU4,GE:LU),,                 +5*GHSERGE+4*GHSERLU
+$            -752232.06+13.8339*T;,,                                  N 18Ach !
+ PAR  G(GE5LU4,GE:LU),,                 +5*GHSERGE+4*GHSERLU
+             -752548.83+13.8339*T;,,                                  N 18Ach !
+ PAR  G(GE10LU11,GE:LU),,               +10*GHSERGE+11*GHSERLU
+             -1843399.32+15.3027*T;,,                                 N 18Ach !
+ PAR  G(GE4LU5,GE:LU),,                 +4*GHSERGE+5*GHSERLU
+             -665513.28-55.3041*T;,,                                  N 18Ach !
+ PAR  G(GE3LU5_D88,GE:LU),,             +3*GHSERGE+5*GHSERLU
+             -741154.4+32.6976*T;,,                                   N 18Ach !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  13Wan  'D. Wang, Y. Yu, X.J. Liu, C.P. Wang, Calphad, 41, 20-25(2013); Lu'
+  18Ach  'K. Achgar, N. Selhaoui, A. Iddaoudi, R. Tamim, H. Azza, L. Bouirden,
+          Calphad, 62, 18-29(2018); Ge-Lu'
+  18Shi  'C. Shi, Y. Du, B. Hu, B. Yang, Y. Pan, F. Guo, S. Liu, Q. Du,
+          Calphad, 62, 207-14(2018); Lu'
+!

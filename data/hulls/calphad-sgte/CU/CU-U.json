@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "CU",
+    "U"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "CU": {
+          "energy": -9883.671571927713,
+          "phase": "FCC_A1"
+        },
+        "U": {
+          "energy": -14967.130300295268,
+          "phase": "ORTHORHOMBIC_A20"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": 5760.999700382865
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 22.839998130139776
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -1048.7457421183135,
+          "right": {
+            "phase": "CU5U_C15B",
+            "x": 0.16666666666666666
+          },
+          "slope": -1048.7457421183135,
+          "x_hi": 0.16666666666666666,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": 1152.199940076573,
+            "slope": -1152.1999400765728
+          },
+          "entropy": {
+            "intercept": 4.567999626027955,
+            "slope": -4.567999626027955
+          },
+          "intercept": -209.7491484236627,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CU5U_C15B",
+            "x": 0.16666666666666666
+          },
+          "mu_a_rel": -209.7491484236627,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "ORTHORHOMBIC_A20",
+            "x": 1.0
+          },
+          "slope": 209.7491484236627,
+          "x_hi": 1.0,
+          "x_lo": 0.16666666666666666
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -174.79095701971892,
+          "energy_per_atom": -174.79095701971892,
+          "enthalpy": 960.1666167304775,
+          "entries_at_x": 1,
+          "entropy": 3.806666355023296,
+          "formula": "",
+          "nsites": null,
+          "phase": "CU5U_C15B",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.16666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ORTHORHOMBIC_A20",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "CuU-19Sol",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:32:24Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/CuU-19Sol.tdb",
+    "source_sha256": "59e1b140f2a16d267dfc5650914fee9a772bb1fbb309a93375961b163601763b"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "CU-U",
+  "x_element": "U"
+}

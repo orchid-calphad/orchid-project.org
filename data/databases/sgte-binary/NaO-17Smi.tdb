@@ -1,0 +1,250 @@
+$
+$ Database for Na-O from A.L. Smith et al. 2017.
+$
+$ A.L. Smith, C. Gueneau, J.-L. Fleche, S. Chatain, O. Benes, R.J.M. Konings,
+$ J. Chem. Thermodyn., 114, 93-115(2017).
+$
+$ Dataset created 2018.12.09 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$ 2021.09.05: ION order fixed for GES6.
+$
+$ NaO2 is also stable above 2170 K when gas is not included.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NA   BCC_A2                     22.98977   6460.      51.3000 ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  NA+1                               NA1/+1 !
+ SPECIE  NA2                                NA2 !
+ SPECIE  NA2O                               NA2O1 !
+ SPECIE  NA2O2                              NA2O2 !
+ SPECIE  NAO2                               NA1O2 !
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O2-2                               O2/-2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : NA+1 : O-2 VA NA2O2 O : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NA : VA : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE NA2O_C1 % 2 2 1 !
+ CONST NA2O_C1 : NA+1 : O-2 : !
+$
+$ unknown structure
+$
+ PHASE NA2O_II % 2 2 1 !
+ CONST NA2O_II : NA+1 : O-2 : !
+$
+$ unknown structure
+$
+ PHASE NA2O_III % 2 2 1 !
+ CONST NA2O_III : NA+1 : O-2 : !
+$
+$ Prototype Na2O2 (hP12, P-62m)
+$
+ PHASE NA2O2_I % 2 2 1 !
+ CONST NA2O2_I : NA+1 : O2-2 : !
+$
+$ unknown structure
+$
+ PHASE NA2O2_II % 2 2 1 !
+ CONST NA2O2_II : NA+1 : O2-2 : !
+$
+$ Prototype NaCl (cF8, Fm-3m)
+$
+ PHASE NAO2_B1 % 1 1 !
+ CONST NAO2_B1 : NAO2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : NA NA2 NA2O NA2O2 O O2 O3 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE-SYSTEM-ELEMENT VA /- !
+ DEFAULT-COM REJECT-PHASE O2GAS !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Na
+$
+ PAR  G(BCC_A2,NA:VA)           200.00  +GHSERNA;                2300 N 91Din !
+ PAR  G(HCP_A3,NA:VA)           200.00  +GHSERNA-104+2*T;        2300 N 91Din !
+ PAR  G(FCC_A1,NA:VA)           200.00  +GHSERNA-50+1.3*T;       2300 N 91Din !
+$PAR  G(LIQUID,NA)              200.00  +GLIQNA;                 2300 N 91Din !
+$
+ PAR  G(ION,NA+1:VA)            200.00  +GLIQNA;                 2300 N 91Din !
+$
+ PAR  G(GAS,NA),,                       +F12933T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,NA2),,                      +F12977T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERNA   200.00  -11989.434+260.548732*T-51.0393608*T*LN(T)
+       +0.072306633*T**2-4.3638283E-05*T**3+132154*T**(-1);
+       370.87  Y  -11009.884+199.619999*T-38.1198801*T*LN(T)
+       +0.009745854*T**2-1.70664E-06*T**3+34342*T**(-1)+1.65071E+23*T**(-9);
+      2300.00  N !
+ FUNCTION GLIQNA    200.00  +2581.02-6.95218*T+GHSERNA-2.76132E-18*T**7;
+       370.87  Y  +2609.444-7.032656*T+GHSERNA-1.65071E+23*T**(-9);
+      2300.00  N !
+$ Na(g)
+ FUNCTION F12933T   298.15  +101202.044-12.9290068*T-21.02539*T*LN(T)
+       +1.9194285E-04*T**2-2.37558167E-08*T**3+6714.165*T**(-1);
+      2700.00  Y  +123818.458-80.8203215*T-13.00233*T*LN(T)
+       -6.87485E-04*T**2-3.3153E-08*T**3-10435685*T**(-1);
+      5500.00  Y  +200317.377-314.322311*T+14.94379*T*LN(T)
+       -0.0049580625*T**2+8.45444167E-08*T**3-45680820*T**(-1);
+      9600.00  Y  -248549.945+382.618817*T-61.81729*T*LN(T)
+       +8.73722E-04*T**2+1.54938383E-09*T**3+4.4661115E+08*T**(-1);
+     10000.00  N !
+$ Na2(g)
+ FUNCTION F12977T   298.15  +131697.685+6.55101085*T-35.05636*T*LN(T)
+       -0.0039954535*T**2+5.82776667E-07*T**3-20127.66*T**(-1);
+       800.00  Y  +123510.411+75.1001481*T-44.47351*T*LN(T)
+       -5.345085E-04*T**2+6.400745E-07*T**3+1150765*T**(-1);
+      1500.00  Y  +79657.0271+417.408691*T-91.76357*T*LN(T)
+       +0.022097085*T**2-1.3875195E-06*T**3+8765605*T**(-1);
+      3100.00  Y  +841444.171-2436.16812*T+261.4099*T*LN(T)
+       -0.0509968*T**2+1.46319E-06*T**3-3.005069E+08*T**(-1);
+      4800.00  Y  -471200.866+911.74126*T-131.5149*T*LN(T)
+       +0.0011608825*T**2+1.68225167E-07*T**3+5.200375E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$PAR  G(LIQUID,O),,                     +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$PAR  G(BCC_A2,O:VA),,                  +GHSEROO+30000;,,             N 91Din !
+$PAR  G(FCC_A1,O:VA),,                  +GHSEROO+30000;,,             N 91Din !
+$
+ PAR  G(ION,O),,                        +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A.L. Smith, C. Gueneau, J.-L. Fleche, S. Chatain, O. Benes, R.J.M. Konings,
+$ J. Chem. Thermodyn., 114, 93-115(2017).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ NaO2 is also stable above 2170 K when gas is not included.
+$
+ PAR  G(ION,NA+1:O-2),,                 -401097.3+608.877*T
+             -104.6*T*LN(T);,,                                        N 17Smi !
+ PAR  G(ION,NA2O2),,                    -530252.15+678.6366*T
+             -117.15*T*LN(T);,,                                       N 17Smi !
+ PAR  L(ION,NA+1:O-2,VA;0),,            +27500+26.3*T;,,              N 17Smi !
+ PAR  L(ION,NA+1:O-2,VA;1),,            +32000;,,                     N 17Smi !
+ PAR  L(ION,NA+1:O-2,NA2O2;0),,         -21500;,,                     N 17Smi !
+ PAR  L(ION,NA+1:NA2O2,O;0),,           +1250;,,                      N 17Smi !
+ PAR  L(ION,NA+1:NA2O2,O;1),,           -11000;,,                     N 17Smi !
+$
+ PAR  G(NA2O_C1,NA+1:O-2),,             +GNA2O;,,                     N 17Smi !
+ PAR  G(NA2O_II,NA+1:O-2),,             +GNA2O+1757-1.71716*T;,,      N 17Smi !
+ PAR  G(NA2O_III,NA+1:O-2),,            +GNA2O+13681-11.30854*T;,,    N 17Smi !
+ PAR  G(NA2O2_I,NA+1:O2-2),,            +GNA2O2;,,                    N 17Smi !
+ PAR  G(NA2O2_II,NA+1:O2-2),,           -541347+663.776*T
+             -113.596*T*LN(T);,,                                      N 17Smi !
+ PAR  G(NAO2_B1,NAO2),,                 +GNAO2;,,                     N 17Smi !
+$
+ PAR  G(GAS,NA2O),,                     +F12991T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,NA2O2),,                    +F13003T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GNA2O     298.15  -439396+385.475*T-66.216*T*LN(T)
+       -0.0219325*T**2+2.348E-06*T**3+406700*T**(-1);
+      6000.00  N !
+ FUNCTION GNA2O2    298.15  -542435+469.30554*T-80.965*T*LN(T)
+       -0.0312315*T**2+3.66733E-06*T**3+373200*T**(-1);
+      6000.00  N !
+ FUNCTION GNAO2     298.15  -280351+297.82134*T-59.953*T*LN(T)
+       -0.0204265*T**2;
+      6000.00  N !
+$ Na2O(g)
+ FUNCTION F12991T   298.15  -36208.3602+139.991847*T-60.99434*T*LN(T)
+       -7.94846E-04*T**2+8.105565E-08*T**3+208188.85*T**(-1);
+      1800.00  Y  -37169.2598+149.534408*T-62.35718*T*LN(T)
+       +8.054565E-08*T**2-9.43098333E-12*T**3+332214.75*T**(-1);
+      6000.00  N !
+$ Na2O2(g)
+ FUNCTION F13003T   298.15  -149425.429+215.299821*T-74.07082*T*LN(T)
+       -0.007371005*T**2+1.12289333E-06*T**3+417484.75*T**(-1);
+      1000.00  Y  -154321.431+275.560967*T-83.0616*T*LN(T)
+       -1.560291E-05*T**2+5.18616333E-10*T**3+925422*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  97SUB  'SGTE Substance Database, version 1997'
+  17Smi  'A.L. Smith, C. Gueneau, J.-L. Fleche, S. Chatain, O. Benes,
+          R.J.M. Konings, J. Chem. Thermodyn., 114, 93-115(2017); Na-O'
+!

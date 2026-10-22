@@ -1,0 +1,177 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "BR",
+    "CA"
+  ],
+  "flags": [
+    "has_intermediate_phases",
+    "liquid_on_hull"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "BR": {
+          "energy": -22690.712223971117,
+          "phase": "LIQUID"
+        },
+        "CA": {
+          "energy": -12399.465366951468,
+          "phase": "FCC_A1"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -683799.9832589679
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -63.79799705176282
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "LIQUID",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -664778.6104379848,
+          "right": {
+            "phase": "CABR2_C18",
+            "x": 0.3333333333333333
+          },
+          "slope": -664778.6104379848,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -341899.9916294839,
+            "slope": 341899.9916294839
+          },
+          "entropy": {
+            "intercept": -31.89899852588141,
+            "slope": 31.898998525881407
+          },
+          "intercept": -332389.30521899235,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CABR2_C18",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -332389.30521899235,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "FCC_A1",
+            "x": 1.0
+          },
+          "slope": 332389.30521899235,
+          "x_hi": 1.0,
+          "x_lo": 0.3333333333333333
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "LIQUID",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -221592.8701459949,
+          "energy_per_atom": -221592.8701459949,
+          "enthalpy": -227933.32775298928,
+          "entries_at_x": 1,
+          "entropy": -21.265999017254273,
+          "formula": "",
+          "nsites": null,
+          "phase": "CABR2_C18",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "CaBr-92Sta",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:20:12Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/CaBr-92Sta.tdb",
+    "source_sha256": "69998457925c61ce50ffbf9e53ba50d65a859187829d392d41afb47c1c16b3e9"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "BR-CA",
+  "x_element": "CA"
+}

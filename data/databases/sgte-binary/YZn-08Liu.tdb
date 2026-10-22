@@ -1,0 +1,237 @@
+$
+$ Database for Y-Zn from X.J. Liu et al. 2008.
+$
+$ X.J. Liu, M.Z. Wen, C.P. Wang, F.S. Pan, J. Alloys Compd., 452, 283-90(2008).
+$
+$ Dataset created 2024.08.16 by Bengt Hallstedt.
+$
+$ There is an inverse miscibility gap with a min at 3743 K and x(Zn)=0.85.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT Y    HCP_A3                     88.9059    5983.457   44.7875 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : Y ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : Y ZN : VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : Y% ZN : VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : Y% ZN% : VA% : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE YZN_B2 % 2 1 1 !
+ CONST YZN_B2 : Y : ZN : !
+$
+$ unknown structure
+$
+ PHASE YZN2_LT % 2 1 2 !
+ CONST YZN2_LT : Y : ZN : !
+$
+$ unknown structure
+$
+ PHASE YZN2_HT % 2 1 2 !
+ CONST YZN2_HT : Y : ZN : !
+$
+$ Prototype YZn3 (oP16, Pnma)
+$
+ PHASE YZN3 % 2 1 3 !
+ CONST YZN3 : Y : ZN : !
+$
+$ Prototype Al11La3 (oI28, Immm)
+$
+ PHASE Y3ZN11 % 2 3 11 !
+ CONST Y3ZN11 : Y : ZN : !
+$
+$ Prototype Y13Zn58 (hP146, P6_3/mmc)
+$
+ PHASE Y13ZN58 % 2 13 58 !
+ CONST Y13ZN58 : Y : ZN : !
+$
+$ Prototype ErZn5 (hP36, P6_3/mmc)
+$
+ PHASE YZN5 % 2 1 5 !
+ CONST YZN5 : Y : ZN : !
+$
+$ Prototype Ni17Th2 (hP38, P6_3/mmc)
+$
+ PHASE Y2ZN17 % 2 2 17 !
+ CONST Y2ZN17 : Y : ZN : !
+$
+$ Prototype Mn12Th (tI26, I4/mmm)
+$
+ PHASE YZN12_D2B % 2 1 12 !
+ CONST YZN12_D2B : Y : ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Y
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ FCC_A1 added in unary 4.1
+$
+ PAR  G(HCP_A3,Y:VA)            100.00  +GHSERYY;                3700 N 95She3 !
+ PAR  G(BCC_A2,Y:VA)            100.00  +GBCCYY;                 3700 N 95She3 !
+ PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+6000;           3700 N Frie2 !
+ PAR  G(LIQUID,Y)               100.00  +GLIQYY;                 3700 N 95She3 !
+$
+ FUNCTION GHSERYY   100.00  -8011.09379+128.572856*T-25.6656992*T*LN(T)
+       -0.00175716414*T**2-4.17561786E-07*T**3+26911.509*T**(-1);
+      1000.00  Y  -7179.74574+114.497104*T-23.4941827*T*LN(T)
+       -0.0038211802*T**2-8.2534534E-08*T**3;
+      1795.15  Y  -67480.7761+382.124727*T-56.9527111*T*LN(T)
+       +0.00231774379*T**2-7.22513088E-08*T**3+18077162.6*T**(-1);
+      3700.00  N !
+ FUNCTION GBCCYY    100.00  -833.658863+123.667346*T-25.5832578*T*LN(T)
+       -0.00237175965*T**2+9.10372497E-09*T**3+27340.0687*T**(-1);
+      1000.00  Y  -1297.79829+134.528352*T-27.3038477*T*LN(T)
+       -5.41757644E-04*T**2-3.05012175E-07*T**3;
+      1795.15  Y  +15389.4975+0.981325399*T-8.88296647*T*LN(T)
+       -0.00904576576*T**2+4.02944768E-07*T**3-2542575.96*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQYY    100.00  +2098.50738+119.41873*T-24.6467508*T*LN(T)
+       -0.00347023463*T**2-8.12981167E-07*T**3+23713.7332*T**(-1);
+      1000.00  Y  +7386.44846+19.4520171*T-9.0681627*T*LN(T)
+       -0.0189533369*T**2+1.7595327E-06*T**3;
+      1795.15  Y  -12976.5957+257.400783*T-43.0952*T*LN(T);
+      3700.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+$ RHOMB_C19 from 09Liu not included in unary
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(RHOMB_C19,ZN),,                 +GHSERZN+2108.72;        1700 N 09Liu !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X.J. Liu, M.Z. Wen, C.P. Wang, F.S. Pan, J. Alloys Compd., 452, 283-90(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There is an inverse miscibility gap with a min at 3743 K and x(Zn)=0.85.
+$
+ PAR  L(LIQUID,Y,ZN;0),,                -120443.49+18.85*T;,,         N 08Liu !
+ PAR  L(LIQUID,Y,ZN;1),,                +79694.1-37.82*T;,,           N 08Liu !
+ PAR  L(LIQUID,Y,ZN;2),,                +3471.11+2.88*T;,,            N 08Liu !
+$
+ PAR  L(BCC_A2,Y,ZN:VA;0),,             -2000;,,                      N 08Liu !
+ PAR  L(HCP_A3,Y,ZN:VA;0),,             -2000;,,                      N 08Liu !
+$
+ PAR  G(YZN_B2,Y:ZN),,                  +GHSERYY+GHSERZN
+             -90570+17.05*T;,,                                        N 08Liu !
+ PAR  G(YZN2_LT,Y:ZN),,                 +GHSERYY+2*GHSERZN
+             -153050+40.23*T;,,                                       N 08Liu !
+ PAR  G(YZN2_HT,Y:ZN),,                 +GHSERYY+2*GHSERZN
+             -145138+32.49*T;,,                                       N 08Liu !
+ PAR  G(YZN3,Y:ZN),,                    +GHSERYY+3*GHSERZN
+             -174500+45.9*T;,,                                        N 08Liu !
+ PAR  G(Y3ZN11,Y:ZN),,                  +3*GHSERYY+11*GHSERZN
+             -558004+145.25*T;,,                                      N 08Liu !
+ PAR  G(Y13ZN58,Y:ZN),,                 +13*GHSERYY+58*GHSERZN
+             -2595400+680.89*T;,,                                     N 08Liu !
+ PAR  G(YZN5,Y:ZN),,                    +GHSERYY+5*GHSERZN
+             -209038+55.8*T;,,                                        N 08Liu !
+ PAR  G(Y2ZN17,Y:ZN),,                  +2*GHSERYY+17*GHSERZN
+             -539000+156.75*T;,,                                      N 08Liu !
+ PAR  G(YZN12_D2B,Y:ZN),,               +GHSERYY+12*GHSERZN
+             -300680+100.36*T;,,                                      N 08Liu !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,Y,ZN:VA;0),,             +ZERO;,,                      N 08Liu !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  COST   'COST 507 database'
+  Frie2  'Suzana Fries and Leo Lukas, unpublished,
+          SGTE unary database V.4.1, 1999; Y'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  95She3 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-03,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Y'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  08Liu  'X.J. Liu, M.Z. Wen, C.P. Wang, F.S. Pan,
+          J. Alloys Compd., 452, 283-90(2008); Y-Zn'
+  09Liu  'X.J. Liu, X. Chen, C.P. Wang,
+          J. Alloys Compd., 468, 115-21(2009); Zn'
+!

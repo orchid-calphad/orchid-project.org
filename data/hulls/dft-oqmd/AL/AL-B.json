@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 10,
+    "entries": 78,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "AL",
+    "B"
+  ],
+  "flags": [
+    "degenerate_vertices",
+    "has_intermediate_compounds",
+    "mp_agreement_not_comparable",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-ref-Al",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -0.06596524499999926,
+          "right": {
+            "phase": "oqmd-103360",
+            "x": 0.6666666666666666
+          },
+          "slope": -0.06596524499999926,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.10308015727272399,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-103360",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -0.10308015727272399,
+          "mu_b_rel": -0.014425166363637248,
+          "right": {
+            "phase": "oqmd-2136711",
+            "x": 0.9032258064516129
+          },
+          "slope": 0.08865499090908674,
+          "x_hi": 0.9032258064516129,
+          "x_lo": 0.6666666666666666
+        },
+        {
+          "intercept": -0.23771504333333832,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-2136711",
+            "x": 0.9032258064516129
+          },
+          "mu_a_rel": -0.23771504333333832,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "oqmd-620379",
+            "x": 1.0
+          },
+          "slope": 0.23771504333333832,
+          "x_hi": 1.0,
+          "x_lo": 0.9032258064516129
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -3.745739,
+          "entries_at_x": 23,
+          "formula": "Al",
+          "nsites": null,
+          "phase": "oqmd-ref-Al",
+          "phase_kind": "structure",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.0439768299999995,
+          "energy_per_atom": -5.74453503666667,
+          "entries_at_x": 3,
+          "formula": "Al1 B2",
+          "nsites": 3,
+          "phase": "oqmd-103360",
+          "phase_kind": "structure",
+          "spacegroup_number": 191,
+          "spacegroup_symbol": "P6/mmm",
+          "theoretical": false,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.023004681612903713,
+          "energy_per_atom": -6.41720825,
+          "entries_at_x": 1,
+          "formula": "Al3 B28",
+          "nsites": 31,
+          "phase": "oqmd-2136711",
+          "phase_kind": "structure",
+          "spacegroup_number": 8,
+          "spacegroup_symbol": "Cm",
+          "theoretical": true,
+          "x": 0.9032258064516129
+        },
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-B"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -6.67796758,
+          "entries_at_x": 29,
+          "formula": "B1",
+          "nsites": 12,
+          "phase": "oqmd-620379",
+          "phase_kind": "structure",
+          "spacegroup_number": 166,
+          "spacegroup_symbol": "R-3m",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "is_stable is derived by the extraction, not an upstream flag, so comparing it against a hull recomputed from the same energies tests the derivation rather than the data",
+    "max_abs_delta_energy_above_hull": 1.120740722448943e-10,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "derived",
+    "mp_release": "qmdb_v1_8_022026",
+    "observed_at": "2026-09-05T17:02:03Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "2a9393262c52ec35600424236c352a4cdb3291c8b25c1c6588f5e62abe8e0d8d",
+    "stability_tol": 0.0001,
+    "thermo_type": "standard"
+  },
+  "reference": {
+    "kind": "dft_fitted_elemental_reference_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "AL-B",
+  "x_element": "B"
+}

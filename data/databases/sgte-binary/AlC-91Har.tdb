@@ -1,0 +1,156 @@
+$
+$ Database for Al-C from K.C. Hari Kumar and V. Raghavan 1991.
+$
+$ K.C. Hari Kumar, V. Raghavan, J. Phase Equilib., 12, 275-86(1991).
+$
+$ Dataset created 2019.05.01 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$ 2025.03.22: Corrected liquid interaction (from regular to subregular).
+$             This changes the peritectic temperature from 2418 to 2453 K.
+$
+$ Pre-SGTE element data were used in the paper. The peritectic temperature
+$ is at 2453 K instead of 2446 K.
+$
+$ The fcc (and bcc) parameters were derived to be useful for the Fe-rich
+$ corner in the Al-Fe-C system, but cannot be used in the binary Al-C system.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL C : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL : VA% C : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL : VA% C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype Al4C3 (hR7, R-3m)
+$
+ PHASE AL4C3_D71 % 2 4 3 !
+ CONST AL4C3_D71 : AL : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+ FUNCTION GHCPAL    298.15  +GHSERAL+5481-1.8*T;                       2900 N !
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+$PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K.C. Hari Kumar, V. Raghavan, J. Phase Equilib., 12, 275-86(1991).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Pre-SGTE element data were used in the paper. The peritectic temperature
+$ is at 2453 K instead of 2446 K.
+$
+$ The fcc (and bcc) parameters were derived to be useful for the Fe-rich
+$ corner in the Al-Fe-C system, but cannot be used in the binary Al-C system.
+$
+ PAR  L(LIQUID,AL,C;0),,                +91291-45.241*T;,,            N 91Har !
+ PAR  L(LIQUID,AL,C;1),,                +50958-45.241*T;,,            N 91Har !
+$
+$PAR  G(FCC_A1,AL:C),,                  +GHSERAL+GHSERCC
+$            -112288+115.363*T-0.02872443*T**2;,,                     N 91Har !
+$PAR  L(FCC_A1,AL:C,VA;0),,             +ZERO;,,                      N 91Har !
+$
+ PAR  G(AL4C3_D71,AL:C),,               +4*GHSERAL+3*GHSERCC
+             -208035+41.071*T;,,                                      N 91Har !
+$
+$ metastable
+$
+ PAR  G(BCC_A2,AL:C),,                  +GHSERAL+3*GHSERCC
+             +1253+2.541*T+9.771866E-04*T**2;,,                       N 91Har !
+ PAR  L(BCC_A2,AL:C,VA;0),,             +91815-9.333*T;,,             N 91Har !
+ PAR  L(BCC_A2,AL:C,VA;1),,             +22470;,,                     N 91Har !
+$
+ PAR  G(HCP_A3,AL:C),,                  +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,AL:C,VA;0),,             +UN_ASS;,,                    N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-C(TDB -* +LIQ +AL4C3_D71 +FCC_A1 +GRAPHITE_A9
+  ;P3 TMM:300/3000 STP:.1/1000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database; Al-C'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  91Har  'K.C. Hari Kumar, V. Raghavan,
+          J. Phase Equilib., 12, 275-86(1991); Al-C'
+!

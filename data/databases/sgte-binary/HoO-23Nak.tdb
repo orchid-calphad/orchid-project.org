@@ -1,0 +1,191 @@
+$
+$ Database for Ho-O from R. Nakazawa et al. 2023.
+$
+$ R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+$ Calphad, 83, 102636(2023).
+$
+$ Dataset created 2024.02.08 by Bengt Hallstedt.
+$
+$ Modified from 07Zin using own data on the Ho2O3 liquidus.
+$
+$ Gas phase (except O2) is not included.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT HO   HCP_A3                    164.9304    7995.624   75.0191 ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  HO+3                               HO/+3 !
+ SPECIE  HOO                                HO1O1 !
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : HO+3 : O-2 VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : HO : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : HO : VA : !
+$
+$ Prototype B-Sm2O3 (mC30, C2/m)
+$
+ PHASE B_R2O3:I % 2 2 3 !
+ CONST B_R2O3:I : HO+3 : O-2 : !
+$
+$ Prototype Mn2O3 (cI80, Ia-3)
+$
+ PHASE C_R2O3_D53:I % 2 2 3 !
+ CONST C_R2O3_D53:I : HO+3 : O-2 : !
+$
+$ Prototype H-La2O3 (hP10, P6_3/mmc)
+$
+ PHASE H_R2O3:I % 2 2 3 !
+ CONST H_R2O3:I : HO+3 : O-2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ho
+$
+$ BCC_A2 and LIQUID revised in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+$ FCC_A1 from 03Cac and 09Wan6 not included in unary
+$
+ PAR  G(HCP_A3,HO:VA),,                 +GHSERHO;                3001 N 91Din !
+$PAR  G(FCC_A1,HO:VA),,                 +GHSERHO
+$            +2000-0.831451*T;                                   3001 N 03Cac !
+$PAR  G(FCC_A1,HO:VA),,                 +GHSERHO+4000;,,         3001 N 09Wan6 !
+ PAR  G(BCC_A2,HO:VA),,                 +GHSERHO
+             +4380-2.494353*T;                                   3001 N 00Nor1 !
+$PAR  G(LIQUID,HO),,                    +GLIQHO;                 3001 N 00Nor1 !
+$
+ PAR  G(ION,HO+3:VA),,                  +GLIQHO;                 3001 N 00Nor1 !
+$
+ FUNCTION GHSERHO   298.15  -7612.429+86.593171*T-23.4879*T*LN(T)
+       -0.00827315*T**2+2.375467E-06*T**3;
+       600.00  Y  -10917.688+182.475691*T-39.6932*T*LN(T)
+       +0.01820065*T**2-4.829733E-06*T**3;
+       900.00  Y  +46646.188-421.474473*T+48.0595*T*LN(T)
+       -0.0424634*T**2+3.233133E-06*T**3-7185900*T**(-1);
+      1200.00  Y  +27786.061-156.162846*T+8.28608*T*LN(T)
+       -0.01082725*T**2-1.112352E-06*T**3-6183850*T**(-1);
+      1703.00  Y  -825364.662+4248.379056*T-558.9506818*T*LN(T)
+       +0.139111904*T**2-6.824652E-06*T**3+2.19952973E+08*T**(-1);
+      3000.00  Y  -17149.229+235.898104*T-43.932*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHO    298.15  +17383.4216-9.992194*T+GHSERHO;
+      1000.00  Y  +124827.5326-994.683024*T+127.9577778*T*LN(T)
+       -0.088196514*T**2+8.008222E-6*T**3-15727191*T**(-1);  
+      1703.00  Y  -9688.5314+230.793918*T-43.932*T*LN(T);  
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+$PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+$PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+$PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+$ Calphad, 83, 102636(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Modified from 07Zin using own data on the Ho2O3 liquidus.
+$
+$ Gas phase (except O2) is not included.
+$
+ PAR  G(ION,HO+3:O-2),,                 +GHO2O3L;,,                   N 07Zin !
+ PAR  L(ION,HO+3:O-2,VA;0),,            +80178;,,                     N 23Nak !
+$
+ PAR  G(C_R2O3_D53,HO+3:O-2),,          +GHO2O3C;,,                   N 07Zin !
+ PAR  G(B_R2O3,HO+3:O-2),,              +GHO2O3B;,,                   N 07Zin !
+ PAR  G(H_R2O3,HO+3:O-2),,              +GHO2O3H;,,                   N 07Zin !
+$
+ FUNCTION GHO2O3C   298.15  -1921338+654.7487*T-120.347*T*LN(T)
+       -0.005998*T**2+91000*T**(-1)+3E+07*T**(-2);
+      6000.00  N !
+ FUNCTION GHO2O3A   298.15  +GHO2O3C+17131-5.451*T;                    6000 N !
+ FUNCTION GHO2O3B   298.15  +GHO2O3C+9787-3.982*T;                     6000 N !
+ FUNCTION GHO2O3H   298.15  +GHO2O3C+44514-17.968*T;                   6000 N !
+ FUNCTION GHO2O3X   298.15  +GHO2O3C+56969-22.537*T;                   6000 N !
+ FUNCTION GHO2O3L   298.15  +GHO2O3C+127616-48.884*T;                  6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  00Nor1 'S. Norgren, J. Phase Equilib., 21, 148-56(2000),
+          SGTE unary database V.4.4, 2001; Er, Ho'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Dy, Ho'
+  07Zin  'M. Zinkevich, Prog. Mater. Sci., 52, 597-647(2007); Ho-O'
+  09Wan6 'S.L. Wang, C.P. Wang, X.J. Liu, A.T. Tang, F.S. Pan, K. Ishida,
+          J. Alloys Compd., 484, 102-7(2009); Ho'
+  23Nak  'R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+          Calphad, 83, 102636(2023); Ho-O'
+!

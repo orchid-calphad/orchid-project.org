@@ -1,0 +1,167 @@
+$
+$ Database for Li-Sb from F. Zhang et al. 2017.
+$
+$ F. Zhang, S. Liu, J. Wang, Y. Du, L. Sun, Calphad, 57, 28-36(2017).
+$
+$ Dataset created 2018.11.04 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$
+$ Li2Sb is not stable below 300 K.
+$
+$ Too much rounding in the printed parameters shifts the Li3Sb-D03 to
+$ Li3Sb-D018 transformation 3 K lower. The necessary decimals are added here.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT LI   BCC_A2                      6.941     4632.00    29.12   ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  LI3SB                              LI3SB1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : LI LI3SB SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LI SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : LI% SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : LI SB : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE LI3SB_D03 % 2 3 1 !
+ CONST LI3SB_D03 : LI : SB : !
+$
+$ Prototype Na3As (hP8, P6_3/mmc)
+$
+ PHASE LI3SB_D018 % 2 3 1 !
+ CONST LI3SB_D018 : LI : SB : !
+$
+$ Prototype GaMg2 (hP18, P-62c)
+$
+ PHASE LI2SB % 2 2 1 !
+ CONST LI2SB : LI : SB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Li
+$
+$ DIAMOND_A4 from 17Lia not included in unary
+$
+ PAR  G(BCC_A2,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(FCC_A1,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(HCP_A3,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(LIQUID,LI)              200.00  +GLIQLI;                 3000 N 91Din !
+$
+ FUNCTION GHSERLI   200.00  -10583.817+217.637482*T-38.940488*T*LN(T)
+       +0.035466931*T**2-1.9869816E-05*T**3+159994*T**(-1);
+       453.60  Y  -559579.123+10547.8799*T-1702.88865*T*LN(T)
+       +2.25832944*T**2-5.71066077E-04*T**3+33885874*T**(-1);
+       500.00  Y  -9062.994+179.278285*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQLI    200.00  +2700.205-5.795621*T+GHSERLI;
+       250.00  Y  +12015.027-362.187078*T+61.6104424*T*LN(T)
+       -0.182426463*T**2+6.3955671E-05*T**3-559968*T**(-1);
+       453.60  Y  -6057.31+172.652183*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+       500.00  Y  +3005.684-6.626102*T+GHSERLI;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ F. Zhang, S. Liu, J. Wang, Y. Du, L. Sun, Calphad, 57, 28-36(2017).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Li2Sb is not stable below 300 K.
+$
+$ Too much rounding in the printed parameters shifts the Li3Sb-D03 to
+$ Li3Sb-D018 transformation 3 K lower. The necessary decimals are added here.
+$
+ PAR  G(LIQUID,LI3SB),,                 +3*GLIQLI+GLIQSB
+             -294669.26+68.57*T;,,                                    N 17Zha !
+ PAR  L(LIQUID,LI,SB;0),,               -128946.98+1.68*T;,,          N 17Zha !
+ PAR  L(LIQUID,LI,SB;1),,               -46409.75+0.46*T;,,           N 17Zha !
+ PAR  L(LIQUID,LI,LI3SB;0),,            -13210.72-6.61*T;,,           N 17Zha !
+ PAR  L(LIQUID,LI,LI3SB;1),,            +6156.66;,,                   N 17Zha !
+ PAR  L(LIQUID,LI3SB,SB;0),,            +12645.5-47.62*T;,,           N 17Zha !
+$
+ PAR  L(BCC_A2,LI,SB:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(LI3SB_D03,LI:SB),,              +3*GHSERLI+GHSERSB
+             -298322.23+45.8764*T;,,                                  N 17Zha !
+ PAR  G(LI3SB_D018,LI:SB),,             +3*GHSERLI+GHSERSB
+             -295511.06+43.454*T;,,                                   N 17Zha !
+ PAR  G(LI2SB,LI:SB),,                  +2*GHSERLI+GHSERSB
+             -197620.01+25.93*T;,,                                    N 17Zha !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  17Zha  'F. Zhang, S. Liu, J. Wang, Y. Du, L. Sun,
+          Calphad, 57, 28-36(2017); Li-Sb'
+!

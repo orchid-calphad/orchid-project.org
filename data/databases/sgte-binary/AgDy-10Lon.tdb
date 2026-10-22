@@ -1,0 +1,194 @@
+$
+$ Database for Ag-Dy from Z.H. Long et al. 2010
+$
+$ Z.H. Long, Y.J. Yang, S. Jin, H.S. Liu, F. Zheng, Z.P. Jin,
+$ J. Alloys Compd., 489, 146-51(2010).
+$
+$ Dataset created 2017.07.23 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ Old unary data for Dy are used in the paper. This results in differences in
+$ invariant temperatures by up to 9 K.
+$
+$ The hcp interaction is improbable.
+$
+$ There is an inverse miscibility gap with a minimum at 3989 K and x(Dy)=0.11.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AG   FCC_A1                    107.8682    5745.      42.55   ! 
+ ELEMENT DY   HCP_A3                    162.50      8865.896   74.9559 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AG DY : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AG% DY : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AG DY% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AG DY% : VA : !
+$
+$ Prototype Ag51Gd14 (hP68, P6/m)
+$
+ PHASE AG51DY14 % 2 51 14 !
+ CONST AG51DY14 : AG : DY : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE AG2DY_C11B % 2 2 1 !
+ CONST AG2DY_C11B : AG : DY : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE AGDY_B2 %A 2 1 1 !
+ CONST AGDY_B2 : AG : DY : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ag
+$
+$ CUB_A13 added in unary 3.0
+$ CUB_A13 revised in unary 4.1
+$ BCT_A5 added in unary 4.1
+$
+$ DHCP from 09Wan not included in unary
+$
+ PAR  G(FCC_A1,AG:VA),,                 +GHSERAG;                3000 N 91Din !
+ PAR  G(HCP_A3,AG:VA),,                 +GHSERAG+300+0.3*T;      3000 N 91Din !
+ PAR  G(BCC_A2,AG:VA),,                 +GHSERAG+3400-1.05*T;    3000 N 91Din !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG+3400-1.05*T;    3000 N 95Lim !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG
+$            +3765.6-1.8826*T;                                   3000 N 96SGUN !
+$PAR  G(BCT_A5,AG),,                    +GHSERAG+4184.1;         3000 N 96Oh !
+$PAR  G(DHCP,AG),,                      +GHSERAG+1000;           3000 N 09Wan2 !
+ PAR  G(LIQUID,AG),,                    +GLIQAG;                 3000 N 91Din !
+$
+ FUNCTION GHSERAG   298.15  -7209.512+118.202013*T-23.8463314*T*LN(T)
+       -0.001790585*T**2-3.98587E-07*T**3-12011*T**(-1);
+      1234.93  Y  -15095.252+190.266404*T-33.472*T*LN(T)+1.411773E+29*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQAG    298.15  +11025.076-8.89102*T+GHSERAG-1.033905E-20*T**7;
+      1234.93  Y  -3587.111+180.964656*T-33.472*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCAG    298.15  +GHSERAG+3400-1.05*T;                      6000 N !
+$ ------------------------------------------------------------------------------
+$ Dy
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$
+$ FCC_A1 from 03Cac not included in unary (but it should be)
+$ FCC_A1, CBCC_A12 and CUB_A13 from 09Wan4 not included in unary.
+$
+ PAR  G(HCP_A3,DY:VA)           100.00  +GHSERDY;                3000 N 95She1 !
+ PAR  TC(HCP_A3,DY:VA)          100.00    179;                   3000 N 95She1 !
+ PAR  BM(HCP_A3,DY:VA)          100.00      3.0;                 3000 N 95She1 !
+ PAR  G(BCC_A2,DY:VA)           100.00  +GBCCDY;                 3000 N 95She1 !
+$PAR  G(FCC_A1,DY:VA)           100.00  +GHSERDY
+$            +1300-0.6651608*T;                                  3000 N 03Cac !
+ PAR  G(FCC_A1,DY:VA)           298.15  +GHSERDY+5000;           3000 N 09Wan4 !
+$PAR  G(CBCC_A12,DY:VA)         298.15  +GHSERDY+10000;          3000 N 09Wan4 !
+$PAR  G(CUB_A13,DY:VA)          298.15  +GHSERDY+10000;          3000 N 09Wan4 !
+ PAR  G(LIQUID,DY)              100.00  +GLIQDY;                 3000 N 95She1 !
+$
+ FUNCTION GHSERDY   100.00  -7937.16586+102.307412*T-26.3917167*T*LN(T)
+       -7.61683657E-04*T**2-5.86914125E-07*T**3+4010.90565*T**(-1);
+      1000.00  Y  -13733.328+214.012934*T-43.8283359*T*LN(T)
+       +0.0166909801*T**2-3.49702836E-06*T**3+0.0173619874*T**(-1);
+      1654.15  Y  -404681.371+2032.1415*T-272.123952*T*LN(T)
+       +0.0578301681*T**2-2.76169148E-06*T**3+1.09616238E+08*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCDY    100.00  +1508.1802-0.566616181*T+GHSERDY;
+      1000.00  Y  +327500.062-2868.04585*T+391.515418*T*LN(T)
+       -0.224042148*T**2+2.04076075E-05*T**3-48652656.5*T**(-1);
+      1654.15  Y  -33708.7949+291.409631*T-50.208*T*LN(T);
+      1685.15  Y  -40775.4966+330.318068*T-55.2811171*T*LN(T)
+       +0.0015254673*T**2-7.7437116E-08*T**3+1776589.32*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQDY    100.00  +13196.6185-7.5443643*T+GHSERDY;
+      1000.00  Y  +300126.971-2519.78614*T+341.302578*T*LN(T)
+       -0.196153225*T**2+1.76197799E-05*T**3-43071677.5*T**(-1);
+      1685.15  Y  -21864.7344+282.205014*T-49.9151*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z.H. Long, Y.J. Yang, S. Jin, H.S. Liu, F. Zheng, Z.P. Jin,
+$ J. Alloys Compd., 489, 146-51(2010).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Old unary data for Dy are used in the paper. This results in differences in
+$ invariant temperatures by up to 9 K.
+$
+$ The hcp interaction is improbable.
+$
+$ There is an inverse miscibility gap with a minimum at 3989 K and x(Dy)=0.11.
+$
+ PAR  L(LIQUID,AG,DY;0),,               -120882+21.174*T;,,           N 10Lon !
+ PAR  L(LIQUID,AG,DY;1),,               -69962+27.008*T;,,            N 10Lon !
+ PAR  L(LIQUID,AG,DY;2),,               +27773;,,                     N 10Lon !
+ PAR  L(LIQUID,AG,DY;3),,               +18181;,,                     N 10Lon !
+$
+ PAR  L(FCC_A1,AG,DY:VA;0),,            -65136-5.743*T;,,             N 10Lon !
+ PAR  L(BCC_A2,AG,DY:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,AG,DY:VA;0),,            +100000;,,                    N 10Lon !
+$
+ PAR  G(AG51DY14,AG:DY),,               +51*GHSERAG+14*GHSERDY
+             -1556100+93.925*T;,,                                     N 10Lon !
+ PAR  G(AG2DY_C11B,AG:DY),,             +2*GHSERAG+GHSERDY
+             -93150+6.621*T;,,                                        N 10Lon !
+ PAR  G(AGDY_B2,AG:DY),,                +GHSERAG+GHSERDY
+             -70006+5.408*T;,,                                        N 10Lon !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Lim  'S.S. Lim, P.L. Rossiter, J.W. Tibballs, Calphad, 19, 131-41(1995),
+          SGTE unary database V.4.1, 1999; Ag'
+  95She1 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-01,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Dy'
+  96Oh   'C.-S. Oh, J.-H. Shim, B.-J. Lee, D.N. Lee,
+          J. Alloys Compounds, 238, 155-66(1996),
+          SGTE unary database V.4.1, 1999; Ag'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Dy, Ho, Al-Dy'
+  09Wan2 'S.L. Wang, C.P. Wang, X.J. Liu, K. Ishida,
+          J. Alloys Compd., 476, 245-52(2009); Ag'
+  09Wan4 'C.P. Wang, Z. Lin, X.J. Liu,
+          J. Alloys Compd., 469, 123-28(2009); Dy, Mn, Pr'
+  10Lon  'Z.H. Long, Y.J. Yang, S. Jin, H.S. Liu, F. Zheng, Z.P. Jin,
+          J. Alloys Compd., 489, 146-51(2010); Ag-Dy'
+!

@@ -1,0 +1,225 @@
+$
+$ Database for Ni-Sb from Z. Cao et al. 2008
+$
+$ Z. Cao, Y. Takaku, I. Ohnuma, R. Kainuma, H. Zhu, K. Ishida,
+$ Rare. Met., 27, 384-92(2008).
+$
+$ Dataset created 2017.05.23 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ This dataset is not convincing.
+$
+$ I see no particular reason to make the fcc interaction so very asymmetric.
+$
+$ Invariant equilibria differ by up to 9 K, possibly because of change from
+$ fractional to integer compositions.
+$
+$ There is an inverse miscibility gap with a minimum at 3960 K and x(Sb)=0.64.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI SB : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB : !
+$
+$ Prototype Cu3Ti (oP8, Pmmn)
+$
+ PHASE NI3SB_D0A % 2 3 1 !
+ CONST NI3SB_D0A : NI : SB : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE NI3SB_D03 % 3 2 1 1 !
+ CONST NI3SB_D03 : NI% VA : NI : NI SB% : !
+$
+$ Prototype Ni5Sb2 (mC28, C2)
+$
+ PHASE NI5SB2_LT % 2 0.717 0.283 !
+ CONST NI5SB2_LT : NI : SB : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc)
+$
+ PHASE NISB_B81 % 3 1 1 1 !
+ CONST NISB_B81 : NI% VA : NI VA% : SB : !
+$
+$ Prototype alpha-FeS2 (marcasite, oP6, Pnnm)
+$
+ PHASE NISB2_C18 % 2 1 2 !
+ CONST NISB2_C18 : NI : SB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(NI3SB_D03,NI:NI:NI),,           +4*GHSERNI
+             +54650.1444-14.224*T;,,                                  N 08Cao !
+ PAR  G(NI3SB_D03,VA:NI:NI),,           +2*GHSERNI
+             +27429.1028-7.112*T;,,                                   N 08Cao !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(NISB_B81,VA:VA:SB),,            +GHSERSB
+             +8873.3673+54.5697*T;,,                                  N 08Cao !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+ FUNCTION GSBLOW    298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. Cao, Y. Takaku, I. Ohnuma, R. Kainuma, H. Zhu, K. Ishida,
+$ Rare. Met., 27, 384-92(2008).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ This dataset is not convincing.
+$
+$ I see no particular reason to make the fcc interaction so very asymmetric.
+$
+$ Invariant equilibria differ by up to 9 K, possibly because of change from
+$ fractional to integer compositions.
+$
+$ There is an inverse miscibility gap with a minimum at 3960 K and x(Sb)=0.64.
+$
+ PAR  L(LIQUID,NI,SB;0),,               -116000+26.0217*T;,,          N 08Cao !
+ PAR  L(LIQUID,NI,SB;1),,               -15000-13.9962*T;,,           N 08Cao !
+ PAR  L(LIQUID,NI,SB;2),,               +31600-19.9934*T;,,           N 08Cao !
+$
+ PAR  L(FCC_A1,NI,SB:VA;0),,            -34300.684+8.6829*T;,,        N 08Cao !
+ PAR  L(FCC_A1,NI,SB:VA;1),,            -95724.008;,,                 N 08Cao !
+$
+ PAR  G(NI3SB_D0A,NI:SB),,              +3*GHSERNI+GHSERSB
+             -96249.624;,,                                            N 08Cao !
+$
+ PAR  G(NI3SB_D03,NI:NI:SB),,           +3*GHSERNI+GHSERSB
+             -87522.62-7.7924*T;,,                                    N 08Cao !
+ PAR  G(NI3SB_D03,VA:NI:SB),,           +GHSERNI+GHSERSB
+             -76618+31.3508*T;,,                                      N 08Cao !
+$
+ PAR  G(NI5SB2_LT,NI:SB),,              +0.717*GHSERNI+0.283*GHSERSB
+             -26450+0.65*T;,,                                         N 08Cao !
+$
+ PAR  G(NISB_B81,NI:NI:SB),,            +2*GHSERNI+GHSERSB
+             -78000+9*T;,,                                            N 08Cao !
+ PAR  G(NISB_B81,NI:VA:SB),,            +GHSERNI+GSBLOW
+             -76800-2.52*T+1.54818852*T*LN(T)-7.8557568E-04*T**2
+			 +2.17338699E-06*T**3+73084.026*T**(-1)
+             +6.849E-21*T**7;,,                                       N 08Cao !
+ PAR  G(NISB_B81,VA:NI:SB),,            +GHSERNI+GHSERSB
+             +37479.528-13.5132*T;,,                                  N 08Cao !
+ PAR  L(NISB_B81,NI,VA:NI:SB;0),,       +8135.3508-76.3575*T;,,       N 08Cao !
+ PAR  L(NISB_B81,NI,VA:VA:SB;0),,       +8135.3508-76.3575*T;,,       N 08Cao !
+ PAR  L(NISB_B81,NI:NI,VA:SB;0),,       -10208.0514+0.48*T;,,         N 08Cao !
+ PAR  L(NISB_B81,VA:NI,VA:SB;0),,       -10208.0514+0.48*T;,,         N 08Cao !
+$
+ PAR  G(NISB2_C18,NI:SB),,              +GHSERNI+2*GHSERSB
+             -76807.68+6.12*T;,,                                      N 08Cao !
+$
+$ metastable
+$
+ PAR  L(BCC_A2,NI,SB:VA;0),,            -34300.684+8.6829*T;,,        N Same !
+ PAR  L(BCC_A2,NI,SB:VA;1),,            -95724.008;,,                 N Same !
+$
+ PAR  L(HCP_A3,NI,SB:VA;0),,            -34300.684+8.6829*T;,,        N Same !
+ PAR  L(HCP_A3,NI,SB:VA;1),,            -95724.008;,,                 N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  08Cao  'Z. Cao, Y. Takaku, I. Ohnuma, R. Kainuma, H. Zhu, K. Ishida,
+          Rare. Met., 27, 384-92(2008); Ni-Sb'
+!

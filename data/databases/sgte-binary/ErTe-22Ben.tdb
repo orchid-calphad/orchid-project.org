@@ -1,0 +1,172 @@
+$
+$ Database for Er-Te from S. Bennoui et al. 2022.
+$
+$ S. Bennoui, Y. Djaballah, V. Vassiliev, A. Belgacem-Bouzida,
+$ J. Phase Equilib. Diffus., 43, 126-38(2022).
+$
+$ Dataset created 2022.07.31 by Bengt Hallstedt.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT ER   HCP_A3                    167.26      7392.2912  73.17816! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  ERTE                               ER1TE1 !
+ SPECIE  ER2TE3                             ER2TE3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : ER ERTE ER2TE3 TE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : ER : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : ER : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : ER : VA: !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$ The phase is named HEXAGONAL_A8 in the SGTE unary database and
+$ TRIGONAL_A8 in LB.
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ Prototype NaCl (cF8, Fm-3m)
+$
+ PHASE ERTE_B1 % 2 1 1 !
+ CONST ERTE_B1 : ER : TE : !
+$
+$ Prototype Sc2S3 (oF80, Fddd)
+$
+ PHASE ER2TE3 % 2 2 3 !
+ CONST ER2TE3 : ER : TE : !
+$
+$ Prototype NdTe3 (oC16, Cmcm)
+$
+ PHASE ERTE3 % 2 1 3 !
+ CONST ERTE3 : ER : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Er
+$
+$ BCC_A2 added in unary 4.4
+$
+$ FCC_A1 from 02Cac not included in unary (but it should be)
+$ FCC_A1 from 99Du and 11Don not included in unary
+$
+ PAR  G(HCP_A3,ER:VA),,                 +GHSERER;                3200 N 91Din !
+$PAR  G(FCC_A1,ER:VA),,                 +GHSERER+5000;           3200 N 99Du !
+ PAR  G(FCC_A1,ER:VA),,                 +GHSERER
+             +1950-0.831451*T;                                   3200 N 02Cac !
+$PAR  G(FCC_A1,ER:VA),,                 +GHSERER+2000;           3200 N 11Don !
+ PAR  G(BCC_A2,ER:VA),,                 +GHSERER
+             +4600-2.494353*T;                                   3200 N 00Nor1 !
+ PAR  G(LIQUID,ER),,                    +GLIQER;                 3200 N 91Din !
+$
+ FUNCTION GHSERER   298.15  -8489.136+116.698964*T-28.3846744*T*LN(T)
+       +9.95792E-04*T**2-9.52557E-07*T**3+9581*T**(-1);
+      1802.00  Y  -445688.206+2233.10212*T-298.135131*T*LN(T)
+       +0.065950553*T**2-3.041405E-06*T**3+1.23973199E+08*T**(-1);
+      3200.00  N !
+ FUNCTION GLIQER    298.15  +19382.102-10.241846*T+GHSERER;
+       500.00  Y  +17912.678+0.355564*T-12.0761776*T*LN(T)
+       -0.014414687*T**2+1.316517E-06*T**3-528122*T**(-1);
+      1802.00  Y  +747.131+187.623024*T-38.702*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                2000 N 95Dav !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 2000 N 95Dav !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Bennoui, Y. Djaballah, V. Vassiliev, A. Belgacem-Bouzida,
+$ J. Phase Equilib. Diffus., 43, 126-38(2022).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  G(LIQUID,ERTE),,                  +GLIQER+GLIQTE
+             -219890+13.95*T;,,                                       N 22Ben !
+ PAR  G(LIQUID,ER2TE3),,                +2*GLIQER+3*GLIQTE
+             -428300-23.65*T;,,                                       N 22Ben !
+ PAR  L(LIQUID,ER,TE;0),,               -185312+18.87*T;,,            N 22Ben !
+ PAR  L(LIQUID,ER,TE;1),,               -49412+2.63*T;,,              N 22Ben !
+ PAR  L(LIQUID,ER,ERTE;0),,             -12430+9.98*T;,,              N 22Ben !
+ PAR  L(LIQUID,ER,ERTE;1),,             +11242-3.95*T;,,              N 22Ben !
+ PAR  L(LIQUID,ER2TE3,TE;0),,           -120254-19.5*T;,,             N 22Ben !
+ PAR  L(LIQUID,ERTE,ER2TE3;0),,         -118412-8.22*T;,,             N 22Ben !
+ PAR  L(LIQUID,ERTE,ER2TE3;1),,         +35512;,,                     N 22Ben !
+$
+ PAR  G(ERTE_B1,ER:TE),,                +GHSERER+GHSERTE
+             -237894+3.356*T;,,                                       N 22Ben !
+ PAR  G(ER2TE3,ER:TE),,                 +2*GHSERER+3*GHSERTE
+             -682375+78.275*T;,,                                      N 22Ben !
+ PAR  G(ERTE3,ER:TE),,                  +GHSERER+3*GHSERTE
+             -347856+36.32*T;,,                                       N 22Ben !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  99Du   'Z. Du, D. Wang, W. Zhang, J. Alloys. Compd., 284, 206-12(1999); Er'
+  00Nor1 'S. Norgren, J. Phase Equilib., 21, 148-56(2000),
+          SGTE unary database V.4.4, 2001; Er, Ho'
+  02Cac  'G. Cacciamani, A. Saccone, S. De Negri, R. Ferro,
+          J. Phase Equilib., 23, 38-50(2002); Er'
+  11Don  'H.Q. Dong, X.M. Tao, H.S. Liu, T. Laurila, M. Paulastro-Krockel,
+          J. Alloys Compd., 509, 4439-44(2011); Er'
+  22Ben  'S. Bennoui, Y. Djaballah, V. Vassiliev, A. Belgacem-Bouzida,
+          J. Phase Equilib. Diffus., 43, 126-38(2022); Er-Te'
+!

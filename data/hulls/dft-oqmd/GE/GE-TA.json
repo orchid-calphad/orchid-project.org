@@ -1,0 +1,220 @@
+{
+  "counts": {
+    "above_hull": 13,
+    "entries": 91,
+    "intervals": 4,
+    "vertices": 5
+  },
+  "elements": [
+    "GE",
+    "TA"
+  ],
+  "flags": [
+    "degenerate_vertices",
+    "has_intermediate_compounds",
+    "mp_agreement_not_comparable"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-2065280",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -0.6603337166666671,
+          "right": {
+            "phase": "oqmd-667417",
+            "x": 0.3333333333333333
+          },
+          "slope": -0.6603337166666671,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.05761497047618963,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-667417",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -0.05761497047618963,
+          "mu_b_rel": -0.5451037757142878,
+          "right": {
+            "phase": "oqmd-48717",
+            "x": 0.625
+          },
+          "slope": -0.4874888052380982,
+          "x_hi": 0.625,
+          "x_lo": 0.3333333333333333
+        },
+        {
+          "intercept": -0.7801764425000008,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-48717",
+            "x": 0.625
+          },
+          "mu_a_rel": -0.7801764425000008,
+          "mu_b_rel": -0.11156689250000107,
+          "right": {
+            "phase": "oqmd-18937",
+            "x": 0.75
+          },
+          "slope": 0.6686095499999998,
+          "x_hi": 0.75,
+          "x_lo": 0.625
+        },
+        {
+          "intercept": -1.114877120000004,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-18937",
+            "x": 0.75
+          },
+          "mu_a_rel": -1.114877120000004,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "oqmd-1215197",
+            "x": 1.0
+          },
+          "slope": 1.114877120000004,
+          "x_hi": 1.0,
+          "x_lo": 0.75
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-7651"
+            },
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Ge"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -4.62390405890625,
+          "entries_at_x": 31,
+          "formula": "Ge1",
+          "nsites": 64,
+          "phase": "oqmd-2065280",
+          "phase_kind": "structure",
+          "spacegroup_number": 160,
+          "spacegroup_symbol": "R3m",
+          "theoretical": true,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.220111238888889,
+          "energy_per_atom": -7.25341608555556,
+          "entries_at_x": 3,
+          "formula": "Ge2 Ta1",
+          "nsites": 9,
+          "phase": "oqmd-667417",
+          "phase_kind": "structure",
+          "spacegroup_number": 180,
+          "spacegroup_symbol": "P6222",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.362295473750001,
+          "energy_per_atom": -9.504011049375,
+          "entries_at_x": 3,
+          "formula": "Ge3 Ta5",
+          "nsites": 16,
+          "phase": "oqmd-48717",
+          "phase_kind": "structure",
+          "spacegroup_number": 140,
+          "spacegroup_symbol": "I4/mcm",
+          "theoretical": false,
+          "x": 0.625
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.278719280000001,
+          "energy_per_atom": -10.32403945375,
+          "entries_at_x": 7,
+          "formula": "Ge1 Ta3",
+          "nsites": 32,
+          "phase": "oqmd-18937",
+          "phase_kind": "structure",
+          "spacegroup_number": 86,
+          "spacegroup_symbol": "P42/n",
+          "theoretical": false,
+          "x": 0.75
+        },
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Ta"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -11.85252937,
+          "entries_at_x": 32,
+          "formula": "Ta1",
+          "nsites": 1,
+          "phase": "oqmd-1215197",
+          "phase_kind": "structure",
+          "spacegroup_number": 229,
+          "spacegroup_symbol": "Im-3m",
+          "theoretical": true,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "is_stable is derived by the extraction, not an upstream flag, so comparing it against a hull recomputed from the same energies tests the derivation rather than the data",
+    "max_abs_delta_energy_above_hull": 1.4898059452761458e-09,
+    "only_mp_stable": [
+      "oqmd-1522225",
+      "oqmd-2162668",
+      "oqmd-2162725"
+    ],
+    "only_ours_stable": [],
+    "stable_sets_match": false
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "derived",
+    "mp_release": "qmdb_v1_8_022026",
+    "observed_at": "2026-09-05T17:02:03Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "2a9393262c52ec35600424236c352a4cdb3291c8b25c1c6588f5e62abe8e0d8d",
+    "stability_tol": 0.0001,
+    "thermo_type": "standard"
+  },
+  "reference": {
+    "kind": "dft_fitted_elemental_reference_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "GE-TA",
+  "x_element": "TA"
+}

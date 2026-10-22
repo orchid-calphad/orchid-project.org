@@ -1,0 +1,225 @@
+$
+$ Database for Pd-Tb from Z. Du et al. 2000 (included in LB Vol. 5)
+$
+$ Z. Du, H. Yang, K. Han, Z. Metallkd., 91, 988-91(2000).
+$
+$ Dataset created 2016.03.19 by Bengt Hallstedt.
+$ 2021.02.03: Modified for use with GES6.
+$
+$ The FCC_A1 parameters are not acceptable.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+ ELEMENT TB   HCP_A3                    158.9254    9426.552   73.3037 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PD TB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PD% TB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PD TB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : PD TB% : VA : !
+$
+$ unknown structure
+$
+ PHASE PD7TB % 2 7 1 !
+ CONST PD7TB : PD : TB : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE PD3TB_L12 % 2 3 1 !
+ CONST PD3TB_L12 : PD : PD TB% : !
+$
+$ Prototype Pd21Sm10 (mC124, C2/m)
+$
+ PHASE PD21TB10 % 2 21 10 !
+ CONST PD21TB10 : PD : TB : !
+$
+$ unknown structure
+$
+ PHASE PD3TB2_ALPHA % 2 3 2 !
+ CONST PD3TB2_ALPHA : PD : TB : !
+$
+$ unknown structure
+$
+ PHASE PD3TB2_BETA % 2 3 2 !
+ CONST PD3TB2_BETA : PD : TB : !
+$
+$ Prototype Pd4Pu3 (hR14, R-3)
+$
+ PHASE PD4TB3 % 2 4 3 !
+ CONST PD4TB3 : PD : TB : !
+$
+$ Prototype CrB (oC8, Cmcm), alpha
+$
+ PHASE PDTB_B33 % 2 1 1 !
+ CONST PDTB_B33 : PD% TB : TB : !
+$
+$ Prototype FeB (oP8, Pnma), beta
+$
+ PHASE PDTB_B27 % 2 1 1 !
+ CONST PDTB_B27 : PD% TB : TB : !
+$
+$ Prototype Si2U3 (tP10, P4/mbm)
+$
+ PHASE PD2TB3_D5A % 2 2 3 !
+ CONST PD2TB3_D5A : PD : TB : !
+$
+$ Prototype Dy5Pd2 (cF144, Fd-3m)
+$
+ PHASE PD2TB5 % 2 2 5 !
+ CONST PD2TB5 : PD : TB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+$ RHOMB_C19 from 00Du1 is absurd and not included in unary.
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+$PAR  G(RHOMB_C19,PD),,                 +GHSERPD+714075;         4000 N 00Du1 !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ PAR  G(PD3TB_L12,PD:PD),,              +4*GHSERPD+10492;,,           N 00Du3 !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Tb
+$
+$ FCC_A1 from 00Du3 is absurd and not included in unary.
+$
+ PAR  G(HCP_A3,TB:VA),,                 +GHSERTB;                3000 N 91Din !
+ PAR  G(BCC_A2,TB:VA),,                 +GBCCTB;                 3000 N 91Din !
+ PAR  G(FCC_A1,TB:VA),,                 +GHSERTB+239180;         3000 N 00Du3 !
+ PAR  G(LIQUID,TB),,                    +GLIQTB;                 3000 N 91Din !
+$
+ PAR  G(PDTB_B33,TB:TB),,               +2*GHSERTB+361529;,,          N 00Du3 !
+ PAR  G(PDTB_B27,TB:TB),,               +2*GHSERTB+442092-0.813*T;,,  N 00Du3 !
+$
+ FUNCTION GHSERTB   298.15  -20842.158+409.309555*T-77.5006*T*LN(T)
+       +0.0832265*T**2-2.5672833E-05*T**3+562430*T**(-1);
+       600.00  Y  -8772.606+102.61162*T-25.8659*T*LN(T)
+       -0.002757005*T**2-8.05838E-07*T**3+172355*T**(-1);
+      1200.00  Y  -7944.942+101.7776*T-25.9584*T*LN(T)
+       -0.001676335*T**2-1.067632E-06*T**3;
+      1562.00  Y  -265240.309+1456.04268*T-200.215695*T*LN(T)
+       +0.041615159*T**2-2.044697E-06*T**3+65043790*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCTB    298.15  +4167.835-2.652707*T+GHSERTB;
+      1200.00  Y  +633060.245-5157.77779*T+706.580596*T*LN(T)
+       -0.373763517*T**2+3.4100235E-05*T**3-1.03233571E+08*T**(-1);
+      1562.00  Y  -23398.029+257.388486*T-46.4842*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQTB    298.15  +3945.831+29.867521*T-14.252646*T*LN(T)
+       -0.020466105*T**2+2.17475E-06*T**3-160724*T**(-1);
+      1562.00  Y  -13247.649+251.16889*T-46.4842*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From Z. Du et al. 2000 (included in LB Vol. 5)
+$
+$ Z. Du, H. Yang, K. Han, Z. Metallkd., 91, 988-91(2000).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ The FCC_A1 parameters are not acceptable.
+$
+ PAR  L(LIQUID,PD,TB;0),,               -341419+53.143*T;,,           N 00Du3 !
+ PAR  L(LIQUID,PD,TB;1),,               -151423+36.818*T;,,           N 00Du3 !
+$
+ PAR  L(FCC_A1,PD,TB:VA;0),,            -676654+63.604*T;,,           N 00Du3 !
+ PAR  L(BCC_A2,PD,TB:VA;0),,            +100000;,,                    N 00Du3 !
+ PAR  L(HCP_A3,PD,TB:VA;0),,            +100000;,,                    N 00Du3 !
+$
+ PAR  G(PD7TB,PD:TB),,                  +7*GHSERPD+GHSERTB
+             -416178+109.62*T;,,                                      N 00Du3 !
+$
+ PAR  G(PD3TB_L12,PD:TB),,              +3*GHSERPD+GHSERTB
+             -328210+39.746*T;,,                                      N 00Du3 !
+ PAR  L(PD3TB_L12,PD:PD,TB;0),,         -30115;,,                     N 00Du3 !
+$
+ PAR  G(PD21TB10,PD:TB),,               +21*GHSERPD+10*GHSERTB
+             -2556170+238.995*T;,,                                    N 00Du3 !
+ PAR  G(PD3TB2_ALPHA,PD:TB),,           +3*GHSERPD+2*GHSERTB
+             -414548+30.527*T;,,                                      N 00Du3 !
+ PAR  G(PD3TB2_BETA,PD:TB),,            +3*GHSERPD+2*GHSERTB
+             -413766+29.965*T;,,                                      N 00Du3 !
+ PAR  G(PD4TB3,PD:TB),,                 +4*GHSERPD+3*GHSERTB
+             -581577+39.027*T;,,                                      N 00Du3 !
+$
+ PAR  G(PDTB_B33,PD:TB),,               +GHSERPD+GHSERTB
+             -167438+13.484*T;,,                                      N 00Du3 !
+ PAR  L(PDTB_B33,PD,TB:TB;0),,          -354767;,,                    N 00Du3 !
+$
+ PAR  G(PDTB_B27,PD:TB),,               +GHSERPD+GHSERTB
+             -167132+13.211*T;,,                                      N 00Du3 !
+ PAR  L(PDTB_B27,PD,TB:TB;0),,          -433200;,,                    N 00Du3 !
+$
+ PAR  G(PD2TB3,PD:TB),,                 +2*GHSERPD+3*GHSERTB
+             -422169+85.527*T;,,                                      N 00Du3 !
+ PAR  G(PD2TB5,PD:TB),,                 +2*GHSERPD+5*GHSERTB
+             -427789+75.4*T;,,                                        N 00Du3 !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  PD-TB(TDB -* +LIQUID +BCC_A2 +FCC_A1 +HCP_A3 +PD3TB_L12 +PD7TB +PDTB_B33
+  +PDTB_B27 +PD21TB10 +PD3TB2_ALPHA +PD3TB2_BETA +PD4TB3 +PD2TB3 +PD2TB5
+  ;P3 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  00Du1  'Z. Du, H. Yang, Z. Metallkd., 91, 455-59(2000); Pd, Sm'
+  00Du3  'Z. Du, H. Yang, K. Han, Z. Metallkd., 91, 988-91(2000); Pd-Tb'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+!

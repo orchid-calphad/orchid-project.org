@@ -1,0 +1,189 @@
+$
+$ Database for Ga-Nb from R. Tamim et al. 2023.
+$
+$ R. Tamim, O. Rapaud, R. Boulesteix, A. Maitre, Calphad, 82, 102596(2023).
+$
+$ Dataset created 2024.03.07 by Bengt Hallstedt.
+$
+$ The liquid interaction has a very strong temperature dependence.
+$ There is a large inverse miscibility gap with a minimum at 3335 K and
+$ x(Nb)=0.41.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_A11           69.72      5572.0     40.7271 ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA NB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GA NB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GA NB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : GA NB : VA : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ unknown structure
+$
+ PHASE GA4NB % 2 4 1 !
+ CONST GA4NB : GA : NB : !
+$
+$ Prototype Al3Ti (tI8, I4/mmm)
+$
+ PHASE GA3NB_D022 % 2 3 1 !
+ CONST GA3NB_D022 : GA : NB : !
+$
+$ Prototype Ga13Nb5 (oC36, Cmmm)
+$
+ PHASE GA13NB5 % 2 13 5 !
+ CONST GA13NB5 : GA : NB : !
+$
+$ Prototype Ga5Nb4 (tP144, P4_2/mnm)
+$
+ PHASE GA5NB4 % 2 5 4 !
+ CONST GA5NB4 : GA : NB : !
+$
+$ Prototype Ga4Ti5 (hP18, P6_3/mcm)
+$
+ PHASE GA4NB5 % 2 4 5 !
+ CONST GA4NB5 : GA : NB : !
+$
+$ Prototype Si3W5 (tI32, I4/mcm)
+$ (Pauling file also lists prototype Mn5Si3 (hP16, P6_3/mcm))
+$
+ PHASE GA3NB5_D8M % 2 3 5 !
+ CONST GA3NB5_D8M : GA : NB : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE GANB3_A15 % 2 1 3 !
+ CONST GANB3_A15 : GA% NB : NB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ PAR  G(GANB3_A15,NB:NB),,              +4*GHSERNB+32967.403;,,       N 23Tam !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Tamim, O. Rapaud, R. Boulesteix, A. Maitre, Calphad, 82, 102596(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The liquid interaction has a very strong temperature dependence.
+$ There is a large inverse miscibility gap with a minimum at 3335 K and
+$ x(Nb)=0.41.
+$
+ PAR  L(LIQUID,GA,NB;0),,               -126886.4+50.416348*T;,,      N 23Tam !
+ PAR  L(LIQUID,GA,NB;1),,               +80353.798-19.686892*T;,,     N 23Tam !
+ PAR  L(LIQUID,GA,NB;2),,               -10072.869;,,                 N 23Tam !
+$
+ PAR  L(BCC_A2,GA,NB:VA;0),,            -67898.075+19.799939*T;,,     N 23Tam !
+ PAR  L(BCC_A2,GA,NB:VA;1),,            +5540.0088;,,                 N 23Tam !
+$
+ PAR  G(GA4NB,GA:NB),,                  +4*GHSERGA+GHSERNB
+             -75393.1571-35.499987*T;,,                               N 23Tam !
+ PAR  G(GA3NB_D022,GA:NB),,             +3*GHSERGA+GHSERNB
+             -107627.43+2.20066*T;,,                                  N 23Tam !
+ PAR  G(GA13NB5,GA:NB),,                +13*GHSERGA+5*GHSERNB
+             -493985.588+9.0027*T;,,                                  N 23Tam !
+ PAR  G(GA5NB4,GA:NB),,                 +5*GHSERGA+4*GHSERNB
+             -277194.035+15.0805889*T;,,                              N 23Tam !
+ PAR  G(GA4NB5,GA:NB),,                 +4*GHSERGA+5*GHSERNB
+             -297146.776+23.0529654*T;,,                              N 23Tam !
+ PAR  G(GA3NB5_D8M,GA:NB),,             +3*GHSERGA+5*GHSERNB
+             -231589.798+4.43*T;,,                                    N 23Tam !
+$
+ PAR  G(GANB3_A15,GA:NB),,              +GHSERGA+3*GHSERNB
+             -80126.8918;,,                                           N 23Tam !
+ PAR  L(GANB3_A15,GA,NB:NB;0),,         -29424.405;,,                 N 23Tam !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,GA,NB:VA;0),,            -67898.075+19.799939*T;,,     N Same !
+ PAR  L(FCC_A1,GA,NB:VA;1),,            +5540.0088;,,                 N Same !
+$
+ PAR  L(HCP_A3,GA,NB:VA;0),,            -67898.075+19.799939*T;,,     N Same !
+ PAR  L(HCP_A3,GA,NB:VA;1),,            +5540.0088;,,                 N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  23Tam  'R. Tamim, O. Rapaud, R. Boulesteix, A. Maitre,
+          Calphad, 82, 102596(2023); Ga-Nb'
+!

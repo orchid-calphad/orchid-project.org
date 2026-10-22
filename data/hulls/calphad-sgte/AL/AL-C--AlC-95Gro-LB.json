@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "AL",
+    "C"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "AL": {
+          "energy": -8437.646590792352,
+          "phase": "FCC_A1"
+        },
+        "C": {
+          "energy": -1712.07276034109,
+          "phase": "GRAPHITE_A9"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -73455.35111229452
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -14.463966815309185
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -69142.91940631009,
+          "right": {
+            "phase": "AL4C3_D71",
+            "x": 0.42857142857142855
+          },
+          "slope": -69142.91940631009,
+          "x_hi": 0.42857142857142855,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -55091.51333422089,
+            "slope": 55091.51333422089
+          },
+          "entropy": {
+            "intercept": -10.847975111481889,
+            "slope": 10.847975111481889
+          },
+          "intercept": -51857.18955473257,
+          "kind": "two_phase",
+          "left": {
+            "phase": "AL4C3_D71",
+            "x": 0.42857142857142855
+          },
+          "mu_a_rel": -51857.18955473257,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "GRAPHITE_A9",
+            "x": 1.0
+          },
+          "slope": 51857.18955473257,
+          "x_hi": 1.0,
+          "x_lo": 0.42857142857142855
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -29632.679745561465,
+          "energy_per_atom": -29632.679745561465,
+          "enthalpy": -31480.864762411933,
+          "entries_at_x": 1,
+          "entropy": -6.1988429208467934,
+          "formula": "",
+          "nsites": null,
+          "phase": "AL4C3_D71",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.42857142857142855
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "GRAPHITE_A9",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "AlC-95Gro-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:01:37Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/AlC-95Gro-LB.tdb",
+    "source_sha256": "39c020c75ad739cafaa9db0b70b1943ed55525fe98e08c13c2d97804aa32e152"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "AL-C",
+  "x_element": "C"
+}

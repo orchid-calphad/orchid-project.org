@@ -1,0 +1,246 @@
+$
+$ Database for Sn-Ti from F. Yin et al. 2007.
+$
+$ F. Yin, J.-C. Tedenac, F. Gascoin, Calphad, 31, 370-79(2007).
+$
+$ Dataset created 2024.06.25 by Bengt Hallstedt.
+$
+$ There is a very small region of bcc stable at x(TI)=0.152 between 504.5 K
+$ and 506.8 K.
+$
+$ Invariant equilibria differ by up to 3 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SN TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : SN TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : SN TI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : SN TI% : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SN : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SN% TI : !
+$
+$ Prototype Sn3Ti2 (oC40, Cmce)
+$
+ PHASE SN3TI2 %  2 3 2 !
+ CONST SN3TI2 : SN : TI : !
+$
+$ Prototype Sn5Ti6 (oI44, Immm), low T
+$ and prototype Sn5Ti6 (hP22, P6_3/mmc), high T
+$
+ PHASE SN5TI6 %  2 5 6 !
+ CONST SN5TI6 : SN : TI : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE SN3TI5_D88 %  2 3 5 !
+ CONST SN3TI5_D88 : SN : TI : !
+$
+$ Prototype InNi2 (hP6, P6_3/mmc)
+$
+ PHASE SNTI2_B82 %  2 1 2 !
+ CONST SNTI2_B82 : SN% VA : TI% VA : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE SNTI3_D019 %  2 1 3 !
+ CONST SNTI3_D019 : SN% VA : TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+$PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ PAR  G(SNTI2_B82,SN:VA),,              +GHSERSN+5000;,,              N 07Yin !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                         3000 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+ PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ PAR  G(SNTI2_B82,VA:TI),,              +2*GHSERTI+10000;,,           N 07Yin !
+ PAR  G(SNTI3_D019,VA:TI),,             +3*GHSERTI+15000;,,           N 07Yin !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(SNTI2_B82,VA:VA),,              +300000;,,                    N 07Yin !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ F. Yin, J.-C. Tedenac, F. Gascoin, Calphad, 31, 370-79(2007).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There is a very small region of bcc stable at x(TI)=0.152 between 504.5 K
+$ and 506.8 K.
+$
+$ Invariant equilibria differ by up to 3 K.
+$
+ PAR  L(LIQUID,SN,TI;0),,               -91598.9-0.9416*T;,,          N 07Yin !
+ PAR  L(LIQUID,SN,TI;1),,               +45682.64-12.1045*T;,,        N 07Yin !
+$
+ PAR  L(BCC_A2,SN,TI:VA;0),,            -142089.52+28.14226*T;,,      N 07Yin !
+ PAR  L(BCC_A2,SN,TI:VA;1),,            +41211.467;,,                 N 07Yin !
+$
+ PAR  L(HCP_A3,SN,TI:VA;0),,            -127549.582+23.2048828*T;,,   N 07Yin !
+ PAR  L(HCP_A3,SN,TI:VA;1),,            +64500.46+7.7566*T;,,         N 07Yin !
+ PAR  L(HCP_A3,SN,TI:VA;2),,            +31287.55;,,                  N 07Yin !
+$
+ PAR  L(BCT_A5,SN,TI;0),,               +50000;,,                     N 07Yin !
+$
+ PAR  G(SN3TI2,SN:TI),,                 +3*GHSERSN+2*GHSERTI
+             -173931.75+7.82593*T;,,                                  N 07Yin !
+ PAR  G(SN5TI6,SN:TI),,                 +5*GHSERSN+6*GHSERTI
+             -468938.25+5.3729*T;,,                                   N 07Yin !
+ PAR  G(SN3TI5_D88,SN:TI),,             +3*GHSERSN+5*GHSERTI
+             -330186.45+5.3066*T;,,                                   N 07Yin !
+$
+ PAR  G(SNTI2_B82,SN:TI),,              +GHSERSN+2*GHSERTI
+             -122344.77+6.0034*T;,,                                   N 07Yin !
+ PAR  L(SNTI2_B82,SN,VA:TI;0),,         -34085.17;,,                  N 07Yin !
+ PAR  L(SNTI2_B82,SN:TI,VA;0),,         -49803.91+24.471*T;,,         N 07Yin !
+$
+ PAR  G(SNTI3_D019,SN:TI),,             +GHSERSN+3*GHSERTI
+             -141133.07+1.1272*T;,,                                   N 07Yin !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,SN,TI:VA;0),,            +UN_ASS;,,                    N 07Yin !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  SN-TI(TDB -* +LIQUID +BCT_A5 +BCC_A2 +HCP_A3 +SN3TI5_D88 +SN5TI6
+  +SNTI2_B82 +SNTI3_D019 +SN3TI2
+  ;P3 TMM:300/3000 STP:.8/2000/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  07Yin  'F. Yin, J.-C. Tedenac, F. Gascoin, Calphad, 31, 370-79(2007); Sn-Ti'
+!

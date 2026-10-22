@@ -1,0 +1,170 @@
+$
+$ Database for Ge-As from I. Ansara and D. Dutartre 1984 (included in LB Vol. 1)
+$
+$ I. Ansara, D. Dutartre, Calphad, 8, 323-42(1984).
+$
+$ Dataset created 2012.09.22 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ In the phase diagram in LB a considerable solubility of Ge in As (rhombo-A7)
+$ is shown. The paper does not include any solubility of Ge in As and
+$ LBall-v7+fun.tdb does not contain a Ge-As interaction for the rhombo-A7
+$ phase. Thus, the solubility shown in LB must be considered accidental.
+$ Here no solubility of Ge in solid As is included.
+$
+$ The As + Liq + GeAs2 equilibrium from LB is obviously not reproduced.
+$
+$ In the paper pre SGTE lattice stabilities were used. This does not cause
+$ noticeable differences.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AS   RHOMBOHEDRAL_A7            74.922     5117.032   35.6895 ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AS GE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AS GE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AS GE : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AS GE : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : AS : !
+$
+$ Prototype SiAs (mC24, C2/m)
+$
+ PHASE GEAS % 2 1 1 !
+ CONST GEAS : GE : AS : !
+$
+$ Prototype GeAs2 (oP24, Pbam)
+$
+ PHASE GEAS2 % 2 1 2 !
+ CONST GEAS2 : GE : AS : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ As
+$
+$ RED_P added in unary 4.4
+$
+ PAR  G(RHOMBOHEDRAL_A7,AS),,           +GHSERAS;                1200 N 91Din !
+ PAR  G(FCC_A1,AS:VA),,                 +GHSERAS+24874-14.74*T;  1200 N 91Din !
+ PAR  G(BCC_A2,AS:VA),,                 +GHSERAS+24874-16.1*T;   1200 N 91Din !
+ PAR  G(HCP_A3,AS:VA),,                 +GHSERAS+24874-14*T;     1200 N 91Din !
+$PAR  G(RED_P,AS),,                     +GHSERAS+5782-3.85466*T; 1200 N 01SGUN !
+ PAR  G(LIQUID,AS),,                    +GHSERAS
+             +24442.9-22.424679*T;                               1200 N 91Din !
+$
+ FUNCTION GHSERAS   298.15  -7270.447+122.211069*T-23.3144*T*LN(T)
+       -0.00271613*T**2+11600*T**(-1);
+      1090.00  Y  -10454.913+163.457433*T-29.216037*T*LN(T);
+      1200.00  N !
+ FUNCTION GLIQAS    298.15  +GHSERAS+24442.9-22.424679*T;              6000 N !
+ FUNCTION GHCPAS    298.15  +GHSERAS+24874-14*T;                       6000 N !
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From I. Ansara and D. Dutartre 1984 (included in LB Vol. 1)
+$
+$ I. Ansara, D. Dutartre, Calphad, 8, 323-42(1984).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ In the phase diagram in LB a considerable solubility of Ge in As (rhombo-A7)
+$ is shown. The paper does not include any solubility of Ge in As and
+$ LBall-v7+fun.tdb does not contain a Ge-As interaction for the rhombo-A7
+$ phase. Thus, the solubility shown in LB must be considered accidental.
+$ Here no solubility of Ge in solid As is included.
+$
+$ The As + Liq + GeAs2 equilibrium from LB is obviously not reproduced.
+$
+$ In the paper pre SGTE lattice stabilities were used. This does not cause
+$ noticeable differences.
+$
+ PAR  L(LIQUID,AS,GE;0),,               -8786;,,                      N 84Ans !
+$
+ PAR  G(GEAS,GE:AS),,                   +2*GGEAS;,,                   N 84Ans !
+ PAR  G(GEAS2,GE:AS),,                  +3*GGEAS2;,,                  N 84Ans !
+$
+ FUNCTION GGEAS     298.15  +0.5*GHSERAS+0.5*GHSERGE-3036-18.02*T
+       +2.91*T*LN(T)-0.004314*T**2+7.57E-07*T**3-87456*T**(-1);
+      6000.00  N !
+ FUNCTION GGEAS2    298.15  +0.666667*GHSERAS+0.333333*GHSERGE
+       -705.3-37.81*T+5.666*T*LN(T)-0.005527*T**2+5.046E-07*T**3
+       -62174*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AS-GE(TDB -* +LIQ +RHOMB_A7 +DIAM +ASGE +AS2GE ;P3 TMM:300/1500) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  84Ans  'I. Ansara, D. Dutartre, Calphad, 8, 323-42(1984); Ge-As'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+!

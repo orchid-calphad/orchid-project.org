@@ -1,0 +1,190 @@
+$
+$ Database for Gd-Mg from M. Hampl et al. 2013.
+$
+$ M. Hampl, C. Blawert, M.R. Silva Campos, N. Hort, Q. Peng, K.U. Kainer,
+$ R. Schmid-Fetzer, J. Alloys Compd., 581, 166-77(2013).
+$
+$ Dataset created 2022.06.19 by Bengt Hallstedt.
+$
+$ The modelling is simplified compared to 03Cac and 07Guo.
+$
+$ Old data for Gd used. Changing to new Gd shifts the liquidus to lower
+$ temperature.
+$
+$ This is model II from the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GD   HCP_A3                    157.25      9087.648   68.0894 ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GD MG : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GD MG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GD MG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GD MG : VA : !
+$
+$ Prototype CsCl (cP2, Pm3m)
+$
+ PHASE GDMG_B2 % 2 1 1 !
+ CONST GDMG_B2 : GD : MG : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE GDMG2_C15 % 2 1 2 !
+ CONST GDMG2_C15 : GD : MG : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE GDMG3_D03 % 2 1 3 !
+ CONST GDMG3_D03 : GD : MG : !
+$
+$ Prototype Cd45Sm11 (cF448, F-43m)
+$
+ PHASE GDMG5 % 2 1 5 !
+ CONST GDMG5 : GD : MG : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Gd
+$
+$ Note! Old data for Gd.
+$
+$ FCC_A1 from 13Ham not included in unary
+$
+ PAR  G(HCP_A3,GD:VA)           200.00  +GHSERGD;                3600 N 91Din !
+ PAR  TC(HCP_A3,GD:VA)          200.00    291.8;                 3600 N 91Din !
+ PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 91Din !
+ PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+10000;          3600 N 13Ham !
+ PAR  G(BCC_A2,GD:VA)           200.00  +GBCCGD;                 3600 N 91Din !
+ PAR  G(LIQUID,GD)              200.00  +GLIQGD;                 3600 N 91Din !
+$
+ FUNCTION GHSERGD   200.00  -11600.525+151.111948*T-32.5013*T*LN(T)
+       +0.00281265*T**2-1.081237E-06*T**3+421363*T**(-1);
+      1300.00  Y  -8106.163+115.953605*T-27.459*T*LN(T)
+       -2.76123E-04*T**2-7.37325E-07*T**3;
+      1535.00  Y  -125618.511+711.994197*T-103.403757*T*LN(T)
+       +0.015817949*T**2-6.72548E-07*T**3+30183452*T**(-1);
+      3600.00  N !
+ FUNCTION GBCCGD    200.00  +3572.085-2.304997*T+GHSERGD;  
+      1000.00  Y  +86879.486-747.960507*T+95.1961984*T*LN(T)
+       -0.072542756*T**2+7.116157E-06*T**3-12664161*T**(-1);
+      1535.00  Y  -14097.626+192.503674*T-37.656*T*LN(T);
+      1587.00  Y  -18620.027+217.622313*T-40.9284427*T*LN(T)
+       +9.53751E-04*T**2-4.1967E-08*T**3+1107440*T**(-1);
+      3600.00  N !
+ FUNCTION GLIQGD    200.00  +13557.615-8.612727*T+GHSERGD;  
+      1000.00  Y  +80721.646-609.764875*T+74.8351133*T*LN(T)
+       -0.061538012*T**2+6.061728E-06*T**3-10325075*T**(-1);
+      1535.00  Y  -3485.133+182.116258*T-37.1539*T*LN(T);
+      3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Hampl, C. Blawert, M.R. Silva Campos, N. Hort, Q. Peng, K.U. Kainer,
+$ R. Schmid-Fetzer, J. Alloys Compd., 581, 166-77(2013).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The modelling is simplified compared to 03Cac and 07Guo.
+$
+$ Old data for Gd used. Changing to new Gd shifts the liquidus to lower
+$ temperature.
+$
+$ This is model II from the paper.
+$
+ PAR  L(LIQUID,GD,MG;0),,               -24899.7-2.0057*T;,,          N 13Ham !
+ PAR  L(LIQUID,GD,MG;1),,               +39569.7-15.5027*T;,,         N 13Ham !
+ PAR  L(LIQUID,GD,MG;2),,               -4025.92;,,                   N 13Ham !
+$
+ PAR  L(BCC_A2,GD,MG:VA;0),,            -42867.7+15.7986*T;,,         N 13Ham !
+ PAR  L(BCC_A2,GD,MG:VA;1),,            +14300-5.5617*T;,,            N 13Ham !
+ PAR  L(BCC_A2,GD,MG:VA;2),,            +33793.6-24.0107*T;,,         N 13Ham !
+$
+ PAR  L(HCP_A3,GD,MG:VA;0),,            -28514.7+10*T;,,              N 13Ham !
+ PAR  L(HCP_A3,GD,MG:VA;1),,            +9500+4.5186*T;,,             N 13Ham !
+$
+ PAR  G(GDMG_B2,GD:MG),,                +2*GGD1MG1;,,                 N 13Ham !
+ PAR  G(GDMG2_C15,GD:MG),,              +3*GGDMG2;,,                  N 13Ham !
+ PAR  G(GDMG3_D03,GD:MG),,              +4*GGDMG3;,,                  N 13Ham !
+ PAR  G(GDMG5,GD:MG),,                  +6*GGDMG5;,,                  N 13Ham !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,GD,MG:VA;0),,            -28514.7+10*T;,,              N Same !
+ PAR  L(FCC_A1,GD,MG:VA;1),,            +9500+4.5186*T;,,             N Same !
+$
+ FUNCTION GGD1MG1   298.15  -25592.4+122.0674*T-24.642*T*LN(T)
+       -0.004164*T**2+160943.5*T**(-1);
+      6000.00  N !
+ FUNCTION GGDMG2    298.15  -24767.3+123.747*T-24.005*T*LN(T)
+       -0.00442535*T**2+121077.5*T**(-1);
+      6000.00  N !
+ FUNCTION GGDMG3    298.15  -23840.5+125.865*T-23.689*T*LN(T)
+       -0.0045547*T**2+121278*T**(-1);
+      6000.00  N !
+ FUNCTION GGDMG5    298.15  -18831.5+123.257*T-23.2024*T*LN(T)
+       -0.0047014*T**2+50680*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  GD-MG(TDB -* +LIQUID +HCP_A3 +BCC_A2 +GDMG_B2 +GDMG2_C15 +GDMG5 +GDMG3 
+  ;P3 STP:.2/800/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  13Ham  'M. Hampl, C. Blawert, M.R. Silva Campos, N. Hort, Q. Peng,
+          K.U. Kainer, R. Schmid-Fetzer,
+          J. Alloys Compd., 581, 166-77(2013); Gd, Gd-Mg'
+!

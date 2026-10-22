@@ -1,0 +1,181 @@
+$
+$ Database for Cu-Mn from C. He et al. 2008
+$
+$ C. He, Y. Du, H.-L. Chen, S. Liu, H. Xu, Y. Ouyang, Z.-K. Liu,
+$ J. Alloys Compd., 457, 233-38(2008).
+$
+$ Dataset created 2009.11.29 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ There are minor differences for the invariant equilibria.
+$
+$ This probably an improvement, but the differences are small compared to
+$ CuMn-03Mie-LB.tdb.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU MN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% MN% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU MN% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU MN : VA : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : CU MN% : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : CU MN% : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+$ CBCC_A12 and CUB_A13 not included in unary
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(CBCC_A12,CU:VA),,               +GHSERCU+3556;           2000 N 03Mie2 !
+ PAR  G(CUB_A13,CU:VA),,                +GHSERCU+2092;           2000 N 03Mie2 !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. He, Y. Du, H.-L. Chen, S. Liu, H. Xu, Y. Ouyang, Z.-K. Liu,
+$ J. Alloys Compd., 457, 233-38(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There are minor differences for the invariant equilibria.
+$
+$ This probably an improvement, but the differences are small compared to
+$ CuMn-03Mie-LB.tdb.
+$
+$ The hcp parameter from 10Cha is very improbable.
+$
+ PAR  L(LIQUID,CU,MN;0),,               +1118.55-5.6225*T;,,          N 08He !
+ PAR  L(LIQUID,CU,MN;1),,               -10915.375;,,                 N 08He !
+$
+ PAR  L(FCC_A1,CU,MN:VA;0),,            +20235.508-13.2437*T;,,       N 08He !
+ PAR  L(FCC_A1,CU,MN:VA;1),,            -12154.853+2.9399*T;,,        N 08He !
+ PAR  L(FCC_A1,CU,MN:VA;2),,            +1037.56;,,                   N 08He !
+$
+ PAR  L(BCC_A2,CU,MN:VA;0),,            +18366.034-16.221*T;,,        N 08He !
+ PAR  L(BCC_A2,CU,MN:VA;1),,            -12667.53;,,                  N 08He !
+$
+ PAR  L(CBCC_A12,CU,MN:VA;0),,          +36627.137-12.209*T;,,        N 08He !
+$
+ PAR  L(CUB_A13,CU,MN:VA;0),,           +42493.307-14.1644*T;,,       N 08He !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,CU,MN:VA;0),,            +20235.508-13.2437*T;,,       N Same !
+ PAR  L(HCP_A3,CU,MN:VA;1),,            -12154.853+2.9399*T;,,        N Same !
+ PAR  L(HCP_A3,CU,MN:VA;2),,            +1037.56;,,                   N Same !
+$
+$PAR  L(HCP_A3,CU,MN:VA;0),,            +55000;,,                     N 10Cha !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CU-MN(TDB -* +LIQUID +FCC_A1 +BCC_A2 +CUB_A13 +CBCC_A12
+  ;P3 TMM:300/2000 STP:.97/1000/1 STP:.7/1300/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  03Mie2 'J. Miettinen, Calphad, 27, 103-14(2003); Cu, Cu-Mn'
+  08He   'C. He, Y. Du, H.-L. Chen, S. Liu, H. Xu, Y. Ouyang, Z.-K. Liu,
+          J. Alloys Compd., 457, 233-38(2008); Cu-Mn'
+  10Cha  'K. Chang, H. Xu, Y. Du, W. Sun, J. Liang, L. Zhang, S. Liu, J. Wang,
+          Int. J. Mater. Res., 101, 1376-91(2010); Cu-Mn-Zn'
+!

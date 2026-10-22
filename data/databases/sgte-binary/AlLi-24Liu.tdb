@@ -1,0 +1,247 @@
+$
+$ Database for Al-Li from Y. Liu et al. 2024.
+$
+$ Y. Liu, S. Liu, Y. Du, Calphad, 87, 102752(2024).
+$
+$ Dataset created 2025.01.10 by Bengt Hallstedt.
+$
+$ Based on 89Sau with Al3Li (4-SL and 2-SL fcc) and AlLi2 added.
+$
+$ This is part of modelling the Al-Li-Zn system, but the fcc ordering is not
+$ included in the ternary system.
+$
+$ There is an inverse miscibility gap in the liquid above 4050 K at x(Li)=0.55
+$
+$ Many parameters are misprinted in the paper. They are taken from
+$ the supplemental tdb.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT LI   BCC_A2                      6.941     4632.00    29.12   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL LI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% LI : VA : !
+$
+$ Disordered part of FCC_4SL and L12_FCC, identical to FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : AL% LI : VA : !
+$
+$ Prototype AuCu (L1_0, tP4, P4/mmm) and AuCu3 (L1_2, cP4, Pm-3m)
+$
+ PHASE FCC_4SL:F %AY 5 0.25 0.25 0.25 0.25 1 !
+ CONST FCC_4SL:F : AL% LI : AL% LI : AL% LI : AL% LI : VA : !
+$
+$ Prototype AuCu3 (L1_2, cP4, Pm-3m)
+$
+ PHASE L12_FCC %AL 3 0.75 0.25 1 !
+ CONST L12_FCC : AL% LI : AL% LI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL LI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL LI : VA : !
+$
+$ Prototype Al2Li3 (hR5, R-3m)
+$
+ PHASE AL2LI3 % 2 2 3 !
+ CONST AL2LI3 : AL : LI : !
+$
+$ Prototype GaLi2 (oC12, Cmcm)
+$
+ PHASE ALLI2 % 2 0.36 0.64 !
+ CONST ALLI2 : AL : LI : !
+$
+$ Prototype Al4Li9 (mC26, C2/m)
+$
+ PHASE AL4LI9 % 2 4 9 !
+ CONST AL4LI9 : AL : LI : !
+$
+$ Prototype NaTl (cF16, Fd-3m; also known as delta)
+$
+ PHASE ALLI_B32 % 2 1 1 !
+ CONST ALLI_B32 : AL% LI : LI% VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT-PHASE L12_FCC !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION FCC_4SL DIS_PART A1_FCC !
+ TYPE-DEF L GES AMEND_PHASE_DESCRIPTION L12_FCC DIS_PART A1_FCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(A1_FCC,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  G(ALLI_B32,AL:VA),,               +GHSERAL+24000;,,             N 89Sau !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+$ ------------------------------------------------------------------------------
+$ Li
+$
+ PAR  G(BCC_A2,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(FCC_A1,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(A1_FCC,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(HCP_A3,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(LIQUID,LI)              200.00  +GLIQLI;                 3000 N 91Din !
+$
+ PAR  G(ALLI_B32,LI:LI),,               +2*GHSERLI+2;,,               N 89Sau !
+ PAR  G(ALLI_B32,LI:VA),,               +GHSERLI+50000;,,             N 89Sau !
+$
+ FUNCTION GHSERLI   200.00  -10583.817+217.637482*T-38.940488*T*LN(T)
+       +0.035466931*T**2-1.9869816E-05*T**3+159994*T**(-1);
+       453.60  Y  -559579.123+10547.8799*T-1702.88865*T*LN(T)
+       +2.25832944*T**2-5.71066077E-04*T**3+33885874*T**(-1);
+       500.00  Y  -9062.994+179.278285*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQLI    200.00  +2700.205-5.795621*T+GHSERLI;
+       250.00  Y  +12015.027-362.187078*T+61.6104424*T*LN(T)
+       -0.182426463*T**2+6.3955671E-05*T**3-559968*T**(-1);
+       453.60  Y  -6057.31+172.652183*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+       500.00  Y  +3005.684-6.626102*T+GHSERLI;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Liu, S. Liu, Y. Du, Calphad, 87, 102752(2024).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Based on 89Sau with Al3Li (4-SL and 2-SL fcc) and AlLi2 added.
+$
+$ This is part of modelling the Al-Li-Zn system, but the fcc ordering is not
+$ included in the ternary system.
+$
+$ There is an inverse miscibility gap in the liquid above 4050 K at x(Li)=0.55
+$
+$ Many parameters are misprinted in the paper. They are taken from
+$ the supplemental tdb.
+$
+ PAR  L(LIQUID,AL,LI;0),,               -41500+20.96*T;,,             N 89Sau !
+ PAR  L(LIQUID,AL,LI;1),,               +10000-5.8*T;,,               N 89Sau !
+ PAR  L(LIQUID,AL,LI;2),,               +15902-9.368*T;,,             N 89Sau !
+ PAR  L(LIQUID,AL,LI;3),,               -250;,,                       N 89Sau !
+$
+ PAR  L(FCC_A1,AL,LI:VA;0),,            -27000+8*T;,,                 N 89Sau !
+ PAR  L(FCC_A1,AL,LI:VA;1),,            +ZERO;,,                      N 89Sau !
+ PAR  L(FCC_A1,AL,LI:VA;2),,            -4072.032+9.14*T;,,           N 24Liu !
+$
+ PAR  L(A1_FCC,AL,LI:VA;0),,            -27000+8*T;,,                 N 89Sau !
+ PAR  L(A1_FCC,AL,LI:VA;1),,            +ZERO;,,                      N 89Sau !
+ PAR  L(A1_FCC,AL,LI:VA;2),,            -4072.032+9.14*T;,,           N 24Liu !
+$
+ PAR  G(FCC_4SL,AL:AL:AL:LI:VA),,       +GFAL3LI;,,                   N 24Liu !
+ PAR  G(FCC_4SL,AL:AL:LI:LI:VA),,       +GFAL2LI2;,,                  N 24Liu !
+ PAR  G(FCC_4SL,AL:LI:LI:LI:VA),,       +GFALLI3;,,                   N 24Liu !
+ PAR  L(FCC_4SL,AL,LI:*:*:*:VA;0),,     +L0FALLI;,,                   N 24Liu !
+ PAR  L(FCC_4SL,AL,LI:*:*:*:VA;1),,     +L1FALLI;,,                   N 24Liu !
+ PAR  L(FCC_4SL,AL,LI:*:*:*:VA;2),,     +L2FALLI;,,                   N 24Liu !
+ PAR  L(FCC_4SL,AL,LI:AL,LI:*:*:VA;0),, +UFALLI;,,                    N 24Liu !
+$
+ PAR  G(L12_FCC,LI:AL:VA),,             -8583.75+3.3*T;,,             N 24Liu !
+ PAR  G(L12_FCC,AL:LI:VA),,             -6985.25-0.3*T;,,             N 24Liu !
+ PAR  L(L12_FCC,AL,LI:AL:VA;0),,        -1920.351-11.205*T;,,         N 24Liu !
+ PAR  L(L12_FCC,AL,LI:AL:VA;1),,        +ZERO;,,                      N 24Liu !
+ PAR  L(L12_FCC,AL,LI:AL:VA;2),,        +2146.3125-0.825*T;,,         N 24Liu !
+ PAR  L(L12_FCC,AL,LI:LI:VA;0),,        -6715.851-0.405*T;,,          N 24Liu !
+ PAR  L(L12_FCC,AL,LI:LI:VA;1),,        -3202.25+7.2*T;,,             N 24Liu !
+ PAR  L(L12_FCC,AL,LI:LI:VA;2),,        +2146.3125-0.825*T;,,         N 24Liu !
+ PAR  L(L12_FCC,AL:AL,LI:VA;0),,        +4999.5705-4.41*T;,,          N 24Liu !
+ PAR  L(L12_FCC,AL:AL,LI:VA;1),,        -800+1.8*T;,,                 N 24Liu !
+ PAR  L(L12_FCC,LI:AL,LI:VA;0),,        +4999.5705-4.41*T;,,          N 24Liu !
+ PAR  L(L12_FCC,LI:AL,LI:VA;1),,        -800+1.8*T;,,                 N 24Liu !
+ PAR  L(L12_FCC,AL,LI:AL,LI:VA;0),,     -8583.75+3.3*T;,,             N 24Liu !
+$
+ PAR  L(BCC_A2,AL,LI:VA;0),,            -27000+8*T;,,                 N 89Sau !
+ PAR  L(BCC_A2,AL,LI:VA;1),,            +ZERO;,,                      N 89Sau !
+ PAR  L(BCC_A2,AL,LI:VA;2),,            +3000;,,                      N 89Sau !
+$
+ PAR  G(ALLI_B32,AL:LI),,               +GHSERAL+GHSERLI
+             -41300+16.86*T;,,                                        N 89Sau !
+ PAR  L(ALLI_B32,AL,LI:LI;0),,          +20000;,,                     N 89Sau !
+ PAR  L(ALLI_B32,AL,LI:LI;1),,          -26000;,,                     N 89Sau !
+ PAR  L(ALLI_B32,AL,LI:VA;0),,          +2000;,,                      N 89Sau !
+ PAR  L(ALLI_B32,AL:LI,VA;0),,          -24000+10*T;,,                N 89Sau !
+$
+ PAR  G(AL2LI3,AL:LI),,                 +2*GHSERAL+3*GHSERLI
+             -89640+32.79*T;,,                                        N 89Sau !
+$
+ PAR  G(ALLI2,AL:LI),,                  +0.36*GHSERAL+0.64*GHSERLI
+             -16480.474+6.218*T;,,                                    N 24Liu !
+$
+ PAR  G(AL4LI9,AL:LI),,                 +4*GHSERAL+9*GHSERLI
+             -189540+78.065*T;,,                                      N 24Liu !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,AL,LI:VA;0),,            -27000+8*T;,,                 N 98Sau2 !
+$
+ FUNCTION UFALLI    298.15  -2861.75+1.1*T;                            6000 N !
+ FUNCTION GFAL3LI   298.15  +3*UFALLI+1600-3.6*T;                      6000 N !
+ FUNCTION GFAL2LI2  298.15  +4*UFALLI;                                 6000 N !
+ FUNCTION GFALLI3   298.15  +3*UFALLI;                                 6000 N !
+ FUNCTION L0FALLI   298.15  -3.75*UFALLI-5731.992-0.285*T;             6000 N !
+ FUNCTION L1FALLI   298.15  -800+1.8*T;                                6000 N !
+ FUNCTION L2FALLI   298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  89Sau  'N. Saunders, Z. Metallkd., 80, 894-903 (1989); Al-Li'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Sau2 'N. Saunders, COST 507, Final report round 2, 1998; Al-Li'
+  24Liu  'Y. Liu, S. Liu, Y. Du, Calphad, 87, 102752(2024); Al-Li'
+!

@@ -1,0 +1,238 @@
+$
+$ Database for Ni-Zr from T. Abe et al. 2005.
+$
+$ T. Abe, H. Onodera, M. Shimono, M. Ode,
+$ Mater. Trans. (JIM), 46, 2838-43(2005).
+$
+$ Dataset created 2024.03.15 by Bengt Hallstedt.
+$
+$ Associate liquid model with Ni2Zr associates. The paper also includes a model
+$ for the supercooled liquid and glass transition. This is simply the IHJ
+$ magnetic model.
+$
+$ Parameters for the solid phases are take from Zaitsev et al. 2002.
+$ In Zatitsev Delta-G for the compounds are given relative to bcc-Zr, but in
+$ the present paper they are given relative to hcp-Zr. I.e. the stability of
+$ the compounds has changed.
+$
+$ The liquid is also stable below 300 K for Ni-rich compositions.
+$
+$ There is an inverse miscibility gap with a minimum at 5526 K and x(Zr)=0.17.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT ZR   HCP_A3                     91.22      5566.27    39.1809 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  NI2ZR                              NI2ZR1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L %A 1 1 !
+ CONST LIQUID:L : NI NI2ZR ZR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% ZR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI ZR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI ZR% : VA : !
+$
+$ Prototype AuBe5 (cF24, F-43m)
+$
+ PHASE NI5ZR_C15B % 2 5 1 !
+ CONST NI5ZR_C15B : NI : ZR : ! 
+$
+$ Prototype Ni7Zr2 (mC36, C2/m)
+$
+ PHASE NI7ZR2 % 2 7 2 !
+ CONST NI7ZR2 : NI : ZR : !
+$
+$ Prototype Hf8Ni21 (aP29, P-1)
+$
+ PHASE NI21ZR8 % 2 21 8 !
+ CONST NI21ZR8 : NI : ZR : !
+$
+$ Prototype Ni10Zr7 (oC68, Cmca)
+$
+ PHASE NI10ZR7 % 2 10 7 !
+ CONST NI10ZR7 : NI : ZR : !
+$
+$ Prototype Pt11Zr9 (tI40, I4/m)
+$
+ PHASE NI11ZR9 % 2 11 9 !
+ CONST NI11ZR9 : NI : ZR : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE NIZR_B33 % 2 1 1 !
+ CONST NIZR_B33 : NI : ZR : !
+$
+$ Prototype Al2Cu (tI12, I4/mcm)
+$
+ PHASE NIZR2_C16 % 2 1 2 !
+ CONST NIZR2_C16 : NI : ZR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+ PAR  TC(LIQUID,NI),,                    1035.00;                3000 N 05Abe !
+ PAR  BMAG(LIQUID,NI),,                     2.416;               3000 N 00Sha !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ Zr
+$
+$ CUB_A13, CBCC_A12, ORTHORHOMBIC_A20 and TETRAGONAL_U added in unary 4.1
+$
+ PAR  G(HCP_A3,ZR:VA)           130.00  +GHSERZR;,,                   N 91Din !
+ PAR  G(BCC_A2,ZR:VA)           130.00  +GBCCZR;,,                    N 91Din !
+$PAR  G(OMEGA,ZR)               130.00  +GOMEZR;,,                    N 91Din !
+ PAR  G(FCC_A1,ZR:VA)           130.00  +GHSERZR+7600-0.9*T;,,        N 91Din !
+$PAR  G(CBCC_A12,ZR:VA)         130.00  +GHSERZR+4602.2;,,            N 99SGUN !
+$PAR  G(CUB_A13,ZR:VA)          130.00  +GHSERZR+7531.2;,,            N 99SGUN !
+$PAR  G(ORTHORHOMBIC_A20,ZR)    130.00  +GBCCZR+5000;,,               N 99SGUN !
+$PAR  G(TETRAGONAL_U,ZR)        130.00  +GBCCZR+5000;,,               N 99SGUN !
+ PAR  G(LIQUID,ZR)              130.00  +GLIQZR;,,                    N 91Din !
+ PAR  TC(LIQUID,ZR)             130.00    444.00;,,                   N 05Abe !
+ PAR  BMAG(LIQUID,ZR)           130.00      3.306;,,                  N 00Sha !
+$
+ FUNCTION GHSERZR   130.00  -7827.595+125.64905*T-24.1618*T*LN(T)
+       -0.00437791*T**2+34971*T**(-1);
+      2128.00  Y  -26085.921+262.724183*T-42.144*T*LN(T)-1.342896E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GBCCZR    130.00  -525.539+124.9457*T-25.607406*T*LN(T)
+       -3.40084E-04*T**2-9.729E-09*T**3+25233*T**(-1)-7.6143E-11*T**4;
+      2128.00  Y  -4620.034+1.55998*T+GHSERZR+1.4103476E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GOMEZR    130.00  -8878.082+144.432234*T-26.8556*T*LN(T)
+       -0.002799446*T**2+38376*T**(-1);
+      2128.00  Y  -3414.603+2.566675*T+GHSERZR+8.517346E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQZR    130.00  +18147.69-9.080812*T+GHSERZR+1.6275E-22*T**7;
+      2128.00  Y  -8281.26+253.812609*T-42.144*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ T. Abe, H. Onodera, M. Shimono, M. Ode,
+$ Mater. Trans. (JIM), 46, 2838-43(2005).
+$
+$ Checked against paper and NIMS tdb. Checked at 6000K.
+$
+$ Associate liquid model with Ni2Zr associates. The paper also includes a model
+$ for the supercooled liquid and glass transition. This is simply the IHJ
+$ magnetic model.
+$
+$ Parameters for the solid phases are take from Zaitsev et al. 2002.
+$ In Zatitsev Delta-G for the compounds are given relative to bcc-Zr, but in
+$ the present paper they are given relative to hcp-Zr. I.e. the stability of
+$ the compounds has changed.
+$
+$ The liquid is also stable below 300 K for Ni-rich compositions.
+$
+$ There is an inverse miscibility gap with a minimum at 5526 K and x(Zr)=0.17.
+$
+ PAR  G(LIQUID,NI2ZR),,                 +2*GLIQNI+GLIQZR
+             -72000+20*T;,,                                           N 05Abe !
+ PAR  TC(LIQUID,NI2ZR),,                  855.00;,,                   N 05Abe !
+ PAR  BMAG(LIQUID,NI2ZR),,                 15.00;,,                   N 05Abe !
+ PAR  L(LIQUID,NI,ZR;0),,               -170700+13.4*T;,,             N 05Abe !
+ PAR  L(LIQUID,NI,ZR;1),,               -90000+40*T;,,                N 05Abe !
+ PAR  L(LIQUID,NI,NI2ZR;0),,            -295000+180*T;,,              N 05Abe !
+ PAR  L(LIQUID,NI2ZR,ZR;0),,            -278000+73*T;,,               N 05Abe !
+ PAR  TC(LIQUID,NI,ZR;0),,                  0.00;,,                   N 05Abe !
+ PAR  BMAG(LIQUID,NI,ZR;0),,               15.00;,,                   N 05Abe !
+ PAR  TC(LIQUID,NI,NI2ZR;0),,            -290.00;,,                   N 05Abe !
+ PAR  BMAG(LIQUID,NI,NI2ZR;0),,           -58.00;,,                   N 05Abe !
+ PAR  TC(LIQUID,NI2ZR,ZR;0),,             510.00;,,                   N 05Abe !
+ PAR  BMAG(LIQUID,NI2ZR,ZR;0),,           -58.00;,,                   N 05Abe !
+$
+ PAR  L(FCC_A1,NI,ZR:VA;0),,            -124970;,,                    N 02Zai !
+ PAR  L(BCC_A2,NI,ZR:VA;0),,            -72720;,,                     N 02Zai !
+ PAR  L(HCP_A3,NI,ZR:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(NI5ZR_C15B,NI:ZR),,             +5*GHSERNI+GHSERZR
+             -192150+16.44*T;,,                                       N 02Zai !
+ PAR  G(NI7ZR2,NI:ZR),,                 +7*GHSERNI+2*GHSERZR
+             -386370+43.56*T;,,                                       N 02Zai !
+ PAR  G(NI21ZR8,NI:ZR),,                +21*GHSERNI+8*GHSERZR
+             -1363812+173.71*T;,,                                     N 02Zai !
+ PAR  G(NI10ZR7,NI:ZR),,                +10*GHSERNI+7*GHSERZR
+             -851275+87.72*T;,,                                       N 02Zai !
+ PAR  G(NI11ZR9,NI:ZR),,                +11*GHSERNI+9*GHSERZR
+             -993500+93.2*T;,,                                        N 02Zai !
+ PAR  G(NIZR_B33,NI:ZR),,               +GHSERNI+GHSERZR
+             -101586+10.64*T;,,                                       N 02Zai !
+ PAR  G(NIZR2_C16,NI:ZR),,              +GHSERNI+2*GHSERZR
+             -109380+6.36*T;,,                                        N 02Zai !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  NI-ZR(TDB -* +LIQUID +FCC_A1 +BCC_A2 +HCP_A3 +NI10ZR7 +NI11ZR9 +NI21ZR8
+  +NI5ZR_C15B +NI7ZR2 +NIZR_B33 +NIZR2_C16 ;P3 TMM:300/2300 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Sha  'G. Shao, J. Appl. Phys., 88, 4443-45(2000); Ni, Zr'
+  02Zai  'A.I. Zaitsev, N.E. Zaitseva, E.Kh. Shakhpazov, A.A. Kodentsov,
+          Phys. Chem. Chem. Phys., 4, 6047-58(2002); Ni-Zr'
+  05Abe  'T. Abe, H. Onodera, M. Shimono, M. Ode,
+          Mater. Trans. (JIM), 46, 2838-43(2005); Ni-Zr'
+!

@@ -1,0 +1,284 @@
+$
+$ Database for La-O from A.N. Grundy et al. 2001
+$
+$ A.N. Grundy, B. Hallstedt, L.J. Gauckler, J. Phase Equilib., 22, 105-13(2001).
+$
+$ Dataset created 2010.02.01 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$ 2024.02.08: Corrected species names in Gas phase parameters.
+$
+$ Wrong sign for the entropy term for A-, H- and X-La2O3 was used in the
+$ optimisation and in the original database. GLAO has been corrected to
+$ to reproduce the La solubility in La2O3 at 1800 K. The congruent melting
+$ point of La2O3 is still considerably higher than the stoichiometric
+$ melting point (relevant in air or O2), but not quite as extreme as in
+$ the paper.
+$
+$ This description has been modified by M. Chen et al., see LaO-05Che.tdb.
+$
+$ LaO with NaCl structure has been found at 4 GPa.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT LA   DHCP                      138.9055    6665.112   56.9024 ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  LA+2                               LA/+2 !
+ SPECIE  LA+3                               LA/+3 !
+ SPECIE  LAO                                LA1O1 !
+ SPECIE  LAO1.5                             LA1O1.5 !
+ SPECIE  LA2O                               LA2O1 !
+ SPECIE  LA2O2                              LA2O2 !
+ SPECIE  LA2O3                              LA2O3 !
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : LA+3 : O-2 VA : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : LA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LA : O VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$ Note! Not the standard bcc model
+$
+ PHASE BCC_A2 %B 2 1 1.5 !
+ CONST BCC_A2 : LA : O VA% : !
+$
+$ Prototype alpha-La (SB A3', hP4, P6_3/mmc)
+$
+ PHASE DHCP % 2 1 0.5 !
+ CONST DHCP : LA : VA% O : !
+$
+$ Prototype A-La2O3 (hP5, P-3m1)
+$
+ PHASE A_LA2O3_D52:I % 2 2 3 !
+ CONST A_LA2O3_D52:I : LA+2 LA+3 : O-2 VA : !
+$
+$ Prototype H-La2O3 (hP10, P6_3/mmc)
+$
+ PHASE H_LA2O3:I % 2 2 3 !
+ CONST H_LA2O3:I : LA+2 LA+3 : O-2 VA : !
+$
+$ Prototype Nd2O3 (cI26, Im-3m)
+$
+ PHASE X_LA2O3:I % 2 2 3 !
+ CONST X_LA2O3:I : LA+2 LA+3 : O-2 VA : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : LA LAO LA2O LA2O2 O O2% O3 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ La
+$
+ PAR  G(DHCP,LA:VA),,                   +GHSERLA;                4000 N 91Din !
+ PAR  G(FCC_A1,LA:VA),,                 +GFCCLA;                 4000 N 91Din !
+ PAR  G(BCC_A2,LA:VA),,                 +GBCCLA;                 4000 N 91Din !
+ PAR  G(LIQUID,LA),,                    +GLIQLA;                 4000 N 91Din !
+$
+ PAR  G(ION,LA+3:VA),,                  +GLIQLA;                 4000 N 91Din !
+$
+ PAR  G(GAS,LA),,                       +F12026T+RTLNP;,,             N 97SGT !
+$
+ FUNCTION GHSERLA   298.15  -7968.403+120.284604*T-26.34*T*LN(T)
+       -0.001295165*T**2;
+       550.00  Y  -3381.413+59.06113*T-17.1659411*T*LN(T)
+       -0.008371705*T**2+6.8932E-07*T**3-399448*T**(-1);
+      2000.00  Y  -15608.882+181.390071*T-34.3088*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCLA    298.15  -6109.797+89.878761*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+      1134.00  Y  -124598.976+955.878375*T-139.346741*T*LN(T)
+       +0.042032405*T**2-3.066199E-06*T**3+20994153*T**(-1);
+      2000.00  Y  +3009.496-2.846081*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GBCCLA    298.15  -3952.161+88.072353*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+       800.00  Y  +321682.673-3565.08252*T+513.440708*T*LN(T)
+       -0.387295093*T**2+4.9547989E-05*T**3-36581228*T**(-1);
+      1134.00  Y  -16377.894+218.492988*T-39.5388*T*LN(T);
+      1193.00  Y  -136609.91+1123.34397*T-163.413074*T*LN(T)
+       +0.053968535*T**2-4.056395E-06*T**3+21167204*T**(-1);
+      2000.00  Y  +7402.894-6.553756*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GLIQLA    298.15  +5332.653+18.23012*T-11.0188191*T*LN(T)
+       -0.020171603*T**2+2.93775E-06*T**3-133541*T**(-1);
+      1134.00  Y  -3942.004+171.018431*T-34.3088*T*LN(T);
+      4000.00  N !
+$ La(g)
+ FUNCTION F12026T   298.15  +422273.955-30.3347881*T-22.06299*T*LN(T)
+       -0.005444405*T**2+4.71447833E-07*T**3+102710.1*T**(-1); 
+       600.00  Y  +426628.905-85.4786162*T-13.83676*T*LN(T)
+       -0.011938995*T**2+1.33826017E-06*T**3-312130.2*T**(-1); 
+      1300.00  Y  +404460.17+114.016725*T-42.00406*T*LN(T)
+       +0.0037094435*T**2-2.70261E-07*T**3+2891891*T**(-1); 
+      3200.00  Y  +497751.747-246.085237*T+2.791973*T*LN(T)
+       -0.006002155*T**2+1.30043383E-07*T**3-34158815*T**(-1);
+      8200.00  Y  -92343.0441+773.338363*T-111.0188*T*LN(T)
+       +0.0037862445*T**2-2.82257667E-08*T**3+5.418475E+08*T**(-1); 
+     10000.00  N ! 
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SGT !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SGT !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A.N. Grundy, B. Hallstedt, L.J. Gauckler, J. Phase Equilib., 22, 105-13(2001).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Wrong sign for the entropy term for A-, H- and X-La2O3 was used in the
+$ optimisation and in the original database. GLAO has been corrected to
+$ to reproduce the La solubility in La2O3 at 1800 K. The congruent melting
+$ point of La2O3 is still considerably higher than the stoichiometric
+$ melting point (relevant in air or O2), but not quite as extreme as in
+$ the paper.
+$
+$ This description has been modified by M. Chen et al., see LaO-05Che.tdb.
+$
+$ LaO with NaCl structure has been found at 4 GPa.
+$
+ PAR  G(ION,LA+3:O-2),,                 +GLA2O3LQ;,,                  N 01Gru !
+$
+ PAR  G(FCC_A1,LA:O),,                  +GFCCLA+GHSEROO
+             -570000+91.4*T;,,                                        N 01Gru !
+$
+ PAR  G(BCC_A2,LA:O),,                  +GBCCLA+1.5*GHSEROO
+             -855000+142.5*T;,,                                       N 01Gru !
+$
+ PAR  G(DHCP,LA:O),,                    +GHSERLA+0.5*GHSEROO
+             -285000+42.4*T;,,                                        N 01Gru !
+$
+ PAR  G(A_LA2O3_D52,LA+2:VA),,          +2*GLAO-2*GHSEROO
+             +15.87691*T;,,                                           N 08Hal !
+ PAR  G(A_LA2O3_D52,LA+2:O-2),,         +2*GLAO+GHSEROO+15.87691*T;,, N 08Hal !
+ PAR  G(A_LA2O3_D52,LA+3:O-2),,         +GLA2O3A;,,                   N 01Gru !
+ PAR  G(A_LA2O3_D52,LA+3:VA),,          +GLA2O3A-3*GHSEROO;,,         N 01Gru !
+$
+ PAR  G(H_LA2O3,LA+2:VA),,              +2*GLAO-2*GHSEROO
+             +15.87691*T;,,                                           N 08Hal !
+ PAR  G(H_LA2O3,LA+2:O-2),,             +2*GLAO+GHSEROO+15.87691*T;,, N 08Hal !
+ PAR  G(H_LA2O3,LA+3:O-2),,             +GLA2O3H;,,                   N 01Gru !
+ PAR  G(H_LA2O3,LA+3:VA),,              +GLA2O3H-3*GHSEROO;,,         N 01Gru !
+$
+ PAR  G(X_LA2O3,LA+2:VA),,              +2*GLAO-2*GHSEROO
+             +15.87691*T;,,                                           N 08Hal !
+ PAR  G(X_LA2O3,LA+2:O-2),,             +2*GLAO+GHSEROO+15.87691*T;,, N 08Hal !
+ PAR  G(X_LA2O3,LA+3:O-2),,             +GLA2O3X;,,                   N 01Gru !
+ PAR  G(X_LA2O3,LA+3:VA),,              +GLA2O3X-3*GHSEROO;,,         N 01Gru !
+$
+ PAR  G(GAS,LAO),,                      +F12049T+RTLNP;,,             N 97SGT ! 
+ PAR  G(GAS,LA2O),,                     +F12085T+RTLNP;,,             N 97SGT ! 
+ PAR  G(GAS,LA2O2),,                    +F12089T+RTLNP;,,             N 97SGT !
+$
+ FUNCTION GLA2O3A   298.15  -1835600+674.72*T-118*T*LN(T)
+       -0.008*T**2+620000*T**(-1);
+      6000.00  N !
+$ The original parameter from 01Gru below
+$FUNCTION GLAO      298.15  +0.333333*GLA2O3A+0.333333*GHSERLA+62000;  6000 N !
+ FUNCTION GLAO      298.15  +0.333333*GLA2O3A+0.333333*GHSERLA+33500;  6000 N !
+ FUNCTION GLA2O3B   298.15  +GLA2O3A+6388+0.508*T;                     6000 N !
+ FUNCTION GLA2O3C   298.15  +GLA2O3A+10586+5.938*T;                    6000 N !
+ FUNCTION GLA2O3H   298.15  +GLA2O3A+46000-19.89*T;                    6000 N !
+ FUNCTION GLA2O3X   298.15  +GLA2O3A+106000-45.07*T;                   6000 N !
+ FUNCTION GLA2O3LQ  298.15  -1812300+1285.34*T-200*T*LN(T);            6000 N !
+$ LaO(g)
+ FUNCTION F12049T   298.15  -131496.968-24.5469483*T-31.53764*T*LN(T)
+       -0.0051956*T**2+7.60442333E-07*T**3+103677.85*T**(-1);
+       900.00  Y  -133112.849+7.93847638*T-36.65559*T*LN(T)
+       +2.4937065E-04*T**2-2.05688333E-07*T**3+108868.35*T**(-1);
+      2500.00  Y  -137735.323-23.9414477*T-31.58251*T*LN(T)
+       -0.003177688*T**2+6.84986667E-08*T**3+5676870*T**(-1);
+      5400.00  Y  -39118.6731-213.786313*T-10.21743*T*LN(T)
+       -0.005021225*T**2+9.162985E-08*T**3-74562000*T**(-1);
+     10000.00  N !
+$ La2O(g)
+ FUNCTION F12085T   298.15  -69316.3279+46.9195461*T-51.12563*T*LN(T)
+       -0.005701935*T**2+8.637425E-07*T**3+212452.95*T**(-1);
+      1000.00  Y  -73167.5826+93.9280358*T-58.13034*T*LN(T)
+       -1.332372E-05*T**2+4.41584333E-10*T**3+616730*T**(-1); 
+      6000.00  N ! 
+$ La2O2(g)
+ FUNCTION F12089T   298.15  -642532.065+54.8487791*T-51.72813*T*LN(T)
+       -0.028452875*T**2+4.99643833E-06*T**3+271002.95*T**(-1);
+       700.00  Y  -657497.385+256.452173*T-82.32033*T*LN(T)
+       -1.8245965E-04*T**2+6.891315E-09*T**3+1664162*T**(-1);
+      5100.00  Y  -672122.137+293.83814*T-86.72291*T*LN(T)
+       +4.319301E-04*T**2-9.75906E-09*T**3+11187120*T**(-1); 
+      6000.00  N ! 
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SGT  'SGTE Substance Database, version 1992'
+  97SGT  'SGTE Substance Database, version 1997'
+  01Gru  'A.N. Grundy, B. Hallstedt, L.J. Gauckler,
+          J. Phase Equilib., 22, 105-13(2001); La-O'
+  08Hal  'B. Hallstedt, correction, 2008; La-O'
+!

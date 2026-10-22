@@ -1,0 +1,273 @@
+$
+$ Database for Ni-Sn from H.S. Liu et al. 2004
+$
+$ H.S. Liu, J. Wang, Z.P. Jin, Calphad, 28, 363-70(2004).
+$
+$ Dataset created 2017.05.23 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ 04Liu used the old lattice stability for fcc-Sn from 91Din instead of the
+$ current one from 89Fec. Using the current lattice stability results in a too
+$ stable fcc. Modified fcc parameters are taken from 
+$ V. Gandova, G.P. Vassilev, J. Alloys Compd., 609, 1-6(2014) who cite 04Liu.
+$ The parameters actually originate from the Solders database (3.0) where
+$ reference is given to A. Watson 2005.
+$
+$ Invariant equilibria involving fcc differ by up to 7 K and the solubility
+$ of Sn in fcc-Ni is slightly higher than in the table of invariants in 04Liu.
+$
+$ It was necessary to modify the hcp interaction to avoid stable hcp near Sn.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI SN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% SN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI SN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI SN : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SN : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SN : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc), low T
+$
+ PHASE NI3SN_D019 %  2 3 1 !
+ CONST NI3SN_D019 : NI : SN : !
+$
+$ Prototype BiF3 (cF16, Fm-3m), high T
+$
+ PHASE NI3SN_D03 %  3 1 1 2 !
+ CONST NI3SN_D03 : NI% SN : NI SN% : NI : !
+$
+$ Prototype Ni3Sn2 (oP20, Pnma), low T
+$
+ PHASE NI3SN2_LT %  3 2 2 1 !
+ CONST NI3SN2_LT : NI : NI SN : SN : !
+$
+$ Prototype InNi2 (hP6, P6_3/mmc), high T
+$
+ PHASE NI3SN2_B82 %  3 1 1 1 !
+ CONST NI3SN2_B82 : NI : NI SN : SN : !
+$
+$ Prototype Ni3Sn4 (mC14, C2/m)
+$
+ PHASE NI3SN4 %  3 1 1 2 !
+ CONST NI3SN4 : NI : NI SN : SN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(NI3SN_D03,NI:NI:NI),,           +4*GHSERNI;,,                 N 04Liu !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+$PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                         3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H.S. Liu, J. Wang, Z.P. Jin, Calphad, 28, 363-70(2004).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ 04Liu used the old lattice stability for fcc-Sn from 91Din instead of the
+$ current one from 89Fec. Using the current lattice stability results in a too
+$ stable fcc. Modified fcc parameters are taken from 
+$ V. Gandova, G.P. Vassilev, J. Alloys Compd., 609, 1-6(2014) who cite 04Liu.
+$ The parameters actually originate from the Solders database (3.0) where
+$ reference is given to A. Watson 2005.
+$
+$ Invariant equilibria involving fcc differ by up to 7 K and the solubility
+$ of Sn in fcc-Ni is slightly higher than in the table of invariants in 04Liu.
+$
+$ It was necessary to modify the hcp interaction to avoid stable hcp near Sn.
+$
+ PAR  L(LIQUID,NI,SN;0),,               -105002.87+197.8089*T
+             -21.6959*T*LN(T);,,                                      N 04Liu !
+ PAR  L(LIQUID,NI,SN;1),,               -28342.17+52.5528*T
+             -7.56094*T*LN(T);,,                                      N 04Liu !
+ PAR  L(LIQUID,NI,SN;2),,               +5582.31;,,                   N 04Liu !
+$
+$PAR  L(FCC_A1,NI,SN:VA;0),,            -69460.28+77.6267*T
+$            -8.89084*T*LN(T);,,                                      N 04Liu !
+ PAR  L(FCC_A1,NI,SN:VA;0),,            -69507.35+74.5697727*T
+             -8.2319551*T*LN(T);,,                                    N 05Wat !
+ PAR  L(FCC_A1,NI,SN:VA;1),,            -8295.19;,,                   N 04Liu !
+ PAR  TC(FCC_A1,NI,SN:VA;0),,           -6000;,,                      N 04Liu !
+ PAR  TC(FCC_A1,NI,SN:VA;1),,           +3000;,,                      N 04Liu !
+$
+ PAR  G(NI3SN_D03,NI:SN:NI),,           +3*GHSERNI+GHSERSN
+             -86979.16+6.8196*T;,,                                    N 04Liu !
+ PAR  G(NI3SN_D03,SN:NI:NI),,           +3*GHSERNI+GHSERSN
+             +54228.48-9.7736*T;,,                                    N 04Liu !
+ PAR  G(NI3SN_D03,SN:SN:NI),,           +2*GHSERNI+2*GHSERSN
+             -96279.16+48.7748*T;,,                                   N 04Liu !
+ PAR  L(NI3SN_D03,NI,SN:NI:NI;0),,      -66904.36;,,                  N 04Liu !
+ PAR  L(NI3SN_D03,NI,SN:SN:NI;0),,      -66904.36;,,                  N 04Liu !
+ PAR  L(NI3SN_D03,NI:NI,SN:NI;0),,      +26542.88;,,                  N 04Liu !
+ PAR  L(NI3SN_D03,SN:NI,SN:NI;0),,      +26542.88;,,                  N 04Liu !
+$
+ PAR  G(NI3SN_D019,NI:SN),,             +3*GHSERNI+GHSERSN
+             -107529.88+23.6316*T;,,                                  N 04Liu !
+$
+ PAR  G(NI3SN2_LT,NI:NI:SN),,           +4*GHSERNI+GHSERSN
+             -41280+41.1415*T;,,                                      N 04Liu !
+ PAR  G(NI3SN2_LT,NI:SN:SN),,           +2*GHSERNI+3*GHSERSN
+             -61439.15+30.1895*T;,,                                   N 04Liu !
+ PAR  L(NI3SN2_LT,NI:NI,SN:SN;0),,      -393916;,,                    N 04Liu !
+$
+ PAR  G(NI3SN2_B82,NI:NI:SN),,          +2*GHSERNI+GHSERSN
+             -67345.95+0.8484*T;,,                                    N 04Liu !
+ PAR  G(NI3SN2_B82,NI:SN:SN),,          +GHSERNI+2*GHSERSN
+             -14806.14+22.6713*T;,,                                   N 04Liu !
+ PAR  L(NI3SN2_B82,NI:NI,SN:SN;0),,     -136403.28;,,                 N 04Liu !
+$
+ PAR  G(NI3SN4,NI:NI:SN),,              +2*GHSERNI+2*GHSERSN
+             -104552.6+19.648*T;,,                                    N 04Liu !
+ PAR  G(NI3SN4,NI:SN:SN),,              +GHSERNI+3*GHSERSN
+             +30452.96+34.996*T;,,                                    N 04Liu !
+ PAR  L(NI3SN4,NI:NI,SN:SN;0),,         -203312.64;,,                 N 04Liu !
+$
+$ metastable
+$
+ PAR  L(BCC_A2,NI,SN:VA;0),,            -69507.35+74.5697727*T
+             -8.2319551*T*LN(T);,,                                    N Same !
+ PAR  L(BCC_A2,NI,SN:VA;1),,            -8295.19;,,                   N Same !
+$
+ PAR  L(HCP_A3,NI,SN:VA;0),,            -59507.35+74.5697727*T
+             -8.2319551*T*LN(T);,,                                    N Same !
+ PAR  L(HCP_A3,NI,SN:VA;1),,            -8295.19;,,                   N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803 (1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  91TC   'Thermo-Calc additions to the SGTE unary database V.2.0, 1991'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58 (2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  04Liu  'H.S. Liu, J. Wang, Z.P. Jin, Calphad, 28, 363-70(2004); Ni-Sn'
+  05Wat  'A. Watson, Solders database, V 3.0, 2005; Ni-Sn'
+!

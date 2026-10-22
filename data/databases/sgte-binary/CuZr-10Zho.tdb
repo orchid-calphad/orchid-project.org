@@ -1,0 +1,236 @@
+$
+$ Database for Cu-Zr from S.H. Zhou and R.E. Napolitano 2010.
+$
+$ S.H. Zhou, R.E. Napolitano, Acta Mater., 58, 2186-96(2010).
+$
+$ Dataset created 2018.03.04 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ Associate model for the liquid with Cu2Zr associate, though the enthalpy
+$ of mixing curve is almost symmetric.
+$
+$ The modelling of the intermetallic compounds is based on their own ab initio
+$ calculations. This is not consistent with the KEMS data from Zaitsev 2003.
+$ I would give preference to the KEMS data in such a case.
+$
+$ There are large differences for several invariant equilibria and Cu24Zr13
+$ is missing. The reason is possibly insufficient number of decimals for
+$ the compound compositions. In addition the parameters for Cu10Zr7 given
+$ in the paper are incorrect.
+$
+$ There is a discussion if the most Cu-rich phase is Cu5Zr or Cu9Zr2.
+$ I assume that it is just a matter of composition and that the crystal
+$ structure is the same for Cu5Zr and Cu9Zr2.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT ZR   HCP_A3                     91.22      5566.27    39.1809 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CU2ZR                              CU2ZR1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU CU2ZR ZR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% ZR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU ZR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU ZR% : VA : !
+$
+$ Prototype AuBe5 (cF24, F-43m)
+$
+ PHASE CU5ZR_C15B % 2 5 1 !
+ CONST CU5ZR_C15B : CU : ZR : !
+$
+$ Prototype Ag51Gd14 (hP68, P6/m)
+$
+ PHASE CU51ZR14 % 2 51 14 !
+ CONST CU51ZR14 : CU : ZR : !
+$
+$ Prototype Cu8Hf3 (oP44, Pnma)
+$
+ PHASE CU8ZR3 % 2 8 3 !
+ CONST CU8ZR3 : CU : ZR : !
+$
+$ unknown structure 
+$
+ PHASE CU2ZR % 2 2 1 !
+ CONST CU2ZR : CU : ZR : !
+$
+$ Pearson o*37 
+$
+ PHASE CU24ZR13 % 2 24 13 !
+ CONST CU24ZR13 : CU : ZR : !
+$
+$ Prototype Ni10Zr7 (oC68, Cmca)
+$
+ PHASE CU10ZR7 % 2 10 7 !
+ CONST CU10ZR7 : CU : ZR : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE CUZR_B2 % 2 1 1 !
+ CONST CUZR_B2 : CU : ZR : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE CUZR_B33 % 2 1 1 !
+ CONST CUZR_B33 : CU : ZR : !
+$
+$ Prototype NiTi (mP4, P2_1/m)
+$
+ PHASE CUZR_B19 % 2 1 1 !
+ CONST CUZR_B19 : CU : ZR : !
+$
+$ Prototype CuZr2 (tI6, I4/mmm)
+$
+ PHASE CUZR2 % 2 1 2 !
+ CONST CUZR2 : CU : ZR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEFINITION % SEQ * !
+ TYPE_DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE_DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Zr
+$
+$ CUB_A13, CBCC_A12, ORTHORHOMBIC_A20 and TETRAGONAL_U added in unary 4.1
+$
+ PAR  G(HCP_A3,ZR:VA)           130.00  +GHSERZR;,,                   N 91Din !
+ PAR  G(BCC_A2,ZR:VA)           130.00  +GBCCZR;,,                    N 91Din !
+$PAR  G(OMEGA,ZR)               130.00  +GOMEZR;,,                    N 91Din !
+ PAR  G(FCC_A1,ZR:VA)           130.00  +GHSERZR+7600-0.9*T;,,        N 91Din !
+$PAR  G(CBCC_A12,ZR:VA)         130.00  +GHSERZR+4602.2;,,            N 99SGUN !
+$PAR  G(CUB_A13,ZR:VA)          130.00  +GHSERZR+7531.2;,,            N 99SGUN !
+$PAR  G(ORTHORHOMBIC_A20,ZR)    130.00  +GBCCZR+5000;,,               N 99SGUN !
+$PAR  G(TETRAGONAL_U,ZR)        130.00  +GBCCZR+5000;,,               N 99SGUN !
+ PAR  G(LIQUID,ZR)              130.00  +GLIQZR;,,                    N 91Din !
+$
+ FUNCTION GHSERZR   130.00  -7827.595+125.64905*T-24.1618*T*LN(T)
+       -0.00437791*T**2+34971*T**(-1);
+      2128.00  Y  -26085.921+262.724183*T-42.144*T*LN(T)-1.342896E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GBCCZR    130.00  -525.539+124.9457*T-25.607406*T*LN(T)
+       -3.40084E-04*T**2-9.729E-09*T**3+25233*T**(-1)-7.6143E-11*T**4;
+      2128.00  Y  -4620.034+1.55998*T+GHSERZR+1.4103476E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GOMEZR    130.00  -8878.082+144.432234*T-26.8556*T*LN(T)
+       -0.002799446*T**2+38376*T**(-1);
+      2128.00  Y  -3414.603+2.566675*T+GHSERZR+8.517346E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQZR    130.00  +18147.69-9.080812*T+GHSERZR+1.6275E-22*T**7;
+      2128.00  Y  -8281.26+253.812609*T-42.144*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S.H. Zhou, R.E. Napolitano, Acta Mater., 58, 2186-96(2010).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Associate model for the liquid with Cu2Zr associate, though the enthalpy
+$ of mixing curve is almost symmetric.
+$
+$ The modelling of the intermetallic compounds is based on their own ab initio
+$ calculations. This is not consistent with the KEMS data from Zaitsev 2003.
+$ I would give preference to the KEMS data in such a case.
+$
+$ There are large differences for several invariant equilibria and Cu24Zr13
+$ is missing. The reason is possibly insufficient number of decimals for
+$ the compound compositions. In addition the parameters for Cu10Zr7 given
+$ in the paper are incorrect.
+$
+$ There is a discussion if the most Cu-rich phase is Cu5Zr or Cu9Zr2.
+$ I assume that it is just a matter of composition and that the crystal
+$ structure is the same for Cu5Zr and Cu9Zr2.
+$
+ PAR  G(LIQUID,CU2ZR),,                 +2*GLIQCU+GLIQZR
+             -35230+13.034*T;,,                                       N 10Zho !
+ PAR  L(LIQUID,CU,ZR;0),,               -68890+16.201*T;,,            N 10Zho !
+ PAR  L(LIQUID,CU,CU2ZR;0),,            -31052;,,                     N 10Zho !
+ PAR  L(LIQUID,CU2ZR,ZR;0),,            -26112;,,                     N 10Zho !
+$
+ PAR  L(FCC_A1,CU,ZR:VA;0),,            -8600;,,                      N 10Zho !
+ PAR  L(BCC_A2,CU,ZR:VA;0),,            -9573;,,                      N 10Zho !
+ PAR  L(HCP_A3,CU,ZR:VA;0),,            -5013;,,                      N 10Zho !
+$
+ PAR  G(CU5ZR_C15B,CU:ZR),,             +5*GHSERCU+GHSERZR
+             -91926+17.112*T;,,                                       N 10Zho !
+ PAR  G(CU51ZR14,CU:ZR),,               +51*GHSERCU+14*GHSERZR
+             -1316380+278.33*T;,,                                     N 10Zho !
+ PAR  G(CU8ZR3,CU:ZR),,                 +8*GHSERCU+3*GHSERZR
+             -204156.26+26.796*T;,,                                   N 10Zho !
+ PAR  G(CU2ZR,CU:ZR),,                  +2*GHSERCU+GHSERZR
+             -52977.66+4.605*T;,,                                     N 10Zho !
+ PAR  G(CU24ZR13,CU:ZR),,               +24*GHSERCU+13*GHSERZR
+             -636999.4+41.477*T;,,                                    N 10Zho !
+$ Modifed parameter below
+ PAR  G(CU10ZR7,CU:ZR),,                +10*GHSERCU+7*GHSERZR
+             -277491+3.2385*T;,,                                      N 10Zho !
+$ Original parameter from 10Zho below
+$PAR  G(CU10ZR7,CU:ZR),,                +10*GHSERCU+7*GHSERZR
+$            -274261-32.385*T;,,                                      N 10Zho !
+ PAR  G(CUZR_B2,CU:ZR),,                +GHSERCU+GHSERZR
+             -24883.36-5.406*T;,,                                     N 10Zho !
+ PAR  G(CUZR_B33,CU:ZR),,               +GHSERCU+GHSERZR
+             -28020.4+0.592*T;,,                                      N 10Zho !
+ PAR  G(CUZR_B19,CU:ZR),,               +GHSERCU+GHSERZR
+             -27700.4-0.002*T;,,                                      N 10Zho !
+ PAR  G(CUZR2,CU:ZR),,                  +GHSERCU+2*GHSERZR
+             -41520+1.962*T;,,                                        N 10Zho !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CU-ZR(TDB -* +LIQUID +FCC_A1 +BCC_A2 +CU10ZR7 +CU51ZR14 +CU9ZR2_C15B +CU8ZR3
+  +CUZR_B2 +CUZR2 +HCP_A3 +CU2ZR +CU24ZR13 ;P3 TMM:300/3000 STP:.5/1500/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  10Zho  'S.H. Zhou, R.E. Napolitano, Acta Mater., 58, 2186-96(2010); Cu-Zr'
+!

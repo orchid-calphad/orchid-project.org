@@ -1,0 +1,166 @@
+$
+$ Database for Sc-Si from A. Qin et al. 2015
+$
+$ A. Qin, D. Liu, C. Chen, S. Liu, Y. Du, M. Wang, P. Nash,
+$ J. Thermal Analysis Calorim., 119, 1315-21(2015).
+$
+$ Dataset created 2015.03.08 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SC   HCP_A3                     44.9559    5217.448   34.6435 ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SC SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : SC SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : SC% SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : SC% SI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE SC5SI3_D88 % 2 5 3 !
+ CONST SC5SI3_D88 : SC : SI : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE SCSI_B33 % 2 1 1 !
+ CONST SCSI_B33 : SC : SI : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE ALPHA_SC3SI5_C32 % 2 3  5 !
+ CONST ALPHA_SC3SI5_C32 : SC : SI : !
+$
+$ Unknown structure
+$
+ PHASE BETA_SC3SI5 % 2 3  5 !
+ CONST BETA_SC3SI5 : SC : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sc
+$
+$ FCC_A1 and DHCP added in unary 4.4
+$
+ PAR  G(HCP_A3,SC:VA),,                 +GHSERSC;                3200 N 91Din !
+ PAR  G(BCC_A2,SC:VA),,                 +GBCCSC;                 3200 N 91Din !
+ PAR  G(FCC_A1,SC:VA),,                 +GHSERSC+5000;           3200 N 99Cac !
+$PAR  G(DHCP,SC),,                      +GHSERSC
+$            +1200+0.4157255*T;                                  3200 N 00Nor2 !
+ PAR  G(LIQUID,SC),,                    +GLIQSC;                 3200 N 91Din !
+$
+ FUNCTION GHSERSC   298.15  -8689.547+153.48097*T-28.1882*T*LN(T)
+       +0.00321892*T**2-1.64531E-06*T**3+72177*T**(-1);
+       800.00  Y  -7511.295+132.759582*T-24.9132*T*LN(T)
+       -5.73295E-04*T**2-8.59345E-07*T**3;
+      1608.00  Y  +261143.04-1817.92245*T+241.441051*T*LN(T)
+       -0.117529396*T**2+8.7398E-06*T**3-50607159*T**(-1);
+      2000.00  Y  -30515.246+286.474338*T-44.2249*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCSC    298.15  +1979.728-1.024135*T+GHSERSC;
+      1000.00  Y  +230161.408-2004.05469*T+276.76664*T*LN(T)
+       -0.167120107*T**2+1.5637371E-05*T**3-33783257*T**(-1);
+      1608.00  Y  -25928.011+283.642312*T-44.2249*T*LN(T);
+      2000.00  Y  +4587.235-2.832026*T+GHSERSC;
+      3200.00  N !
+ FUNCTION GLIQSC    298.15  +6478.66+45.427539*T-10.7967803*T*LN(T)
+       -0.020636524*T**2+2.13106E-06*T**3-158106*T**(-1);
+      1608.00  Y  -11832.111+275.871695*T-44.2249*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A. Qin, D. Liu, C. Chen, S. Liu, Y. Du, M. Wang, P. Nash,
+$ J. Thermal Analysis Calorim., 119, 1315-21(2015).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+ PAR  L(LIQUID,SC,SI;0),,               -233581-22.8*T;,,             N 15Qin !
+ PAR  L(LIQUID,SC,SI;1),,               -25537;,,                     N 15Qin !
+ PAR  L(LIQUID,SC,SI;2),,               +71642;,,                     N 15Qin !
+$
+ PAR  L(HCP_A3,SC,SI:VA;0),,            +80000;,,                     N 15Qin !
+$
+ PAR  G(SC5SI3_D88,SC:SI),,             +8*GSC5SI3;,,                 N 15Qin !
+ PAR  G(SCSI_B33,SC:SI),,               +2*GSCSI;,,                   N 15Qin !
+ PAR  G(ALPHA_SC3SI5_C32,SC:SI),,       +3*GHSERSC+5*GHSERSI
+             -412096.8-82*T;,,                                        N 15Qin !
+ PAR  G(BETA_SC3SI5,SC:SI),,            +3*GHSERSC+5*GHSERSI
+             -410915.2-82.88*T;,,                                     N 15Qin !
+$
+ FUNCTION GSC5SI3   298.15  -95000+78.2*T-15.15*T*LN(T)
+       -0.0088*T**2-91187.45*T**(-1);
+      6000.00  N !
+ FUNCTION GSCSI     298.15  -75472.6-3.5*T-4.782*T*LN(T)
+       -0.0105*T**2-1201477.7*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Cac  'G. Cacciamani, P. Riani, G. Borzone, N. Parodi, A. Saccone, R. Ferro,
+          A. Pisch, R. Schmid-Fetzer, Intermetallics, 7, 101-8(1999)
+          SGTE unary database V.4.4, 2001; Sc'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000,
+          SGTE unary database V.4.4, 2001; Nd, Sc'
+  15Qin  'A. Qin, D. Liu, C. Chen, S. Liu, Y. Du, M. Wang, P. Nash,
+          J. Thermal Analysis Calorim., 119, 1315-21(2015); Sc-Si'
+!

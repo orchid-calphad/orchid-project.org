@@ -1,0 +1,298 @@
+$
+$ Database for Li-Zn from C. Guo et al. 2011
+$
+$ C. Guo, Y. Liang, C. Li, Z. Du, Calphad, 35, 54-65(2011).
+$
+$ Dataset created 2016.04.17 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$ 2025.01.10: G(LIZN4_ALPHA,ZN:LI) corrected (caused inverse stability of
+$             LiZn4-alpha).
+$
+$ Modified from Y. Liang et al. 2008.
+$
+$ LIZN4_BETA is probably disordered hcp. Here it is modelled as
+$ ordered hcp (add on) and probably incorrectly.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT LI   BCC_A2                      6.941     4632.00    29.12   ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : LI ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LI ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : LI% ZN : VA : !
+$
+$ Disordered part of LIZN_B32, identical to BCC_A2
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : LI% ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : LI ZN% : VA: !
+$
+$ Disordered part of LIZN4_BETA, identical to HCP_A3
+$
+ PHASE A3_HCP %A 2 1 0.5 !
+ CONST A3_HCP : LI ZN% : VA : !
+$
+$ Prototype NaTl (cF16, Fd-3m)
+$
+ PHASE LIZN_B32 %O 3 0.5 0.5 3 !
+ CONST LIZN_B32 : LI% ZN : LI ZN% : VA : !
+$
+$ Prototype Li5Sn2 (hR7, R-3m)
+$
+ PHASE LI2ZN3_ALPHA % 2 2 3 !
+ CONST LI2ZN3_ALPHA : LI : LI ZN% : !
+$
+$ Prototype Ga4Li5 (hP9, P-3m1)
+$
+ PHASE LI2ZN3_BETA % 2 2 3 !
+ CONST LI2ZN3_BETA : LI% ZN : LI ZN% : !
+$
+$ Unknown structure
+$
+ PHASE LIZN2 % 2 1 2 !
+ CONST LIZN2 : LI : ZN : !
+$
+$ Unknown structure
+$
+ PHASE LI2ZN5_ALPHA % 2 2 5 !
+ CONST LI2ZN5_ALPHA : LI% ZN : ZN : !
+$
+$ Prototype beta-Li2Zn5 (aP86, P-1)
+$
+ PHASE LI2ZN5_BETA % 2 2 5 !
+ CONST LI2ZN5_BETA : LI% ZN : ZN : !
+$
+$ Unknown structure
+$
+ PHASE LIZN4_ALPHA % 2 1 4 !
+ CONST LIZN4_ALPHA : LI% ZN : LI ZN% : !
+$
+$ Prototype Mg (hP2, P6_3/mmc)
+$
+ PHASE LIZN4_BETA %X 3 0.2 0.8 0.5 !
+ CONST LIZN4_BETA : LI% ZN : LI ZN% : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION LIZN_B32 DIS_PART A2_BCC !
+ TYPE-DEF X GES AMEND_PHASE_DESCRIPTION LIZN4_BETA DIS_PART A3_HCP !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Li
+$
+ PAR  G(BCC_A2,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(A2_BCC,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(FCC_A1,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(HCP_A3,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(A3_HCP,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(LIQUID,LI)              200.00  +GLIQLI;                 3000 N 91Din !
+$
+ PAR  G(LI2ZN3_ALPHA,LI:LI),,           +5*GHSERLI+19964.61;,,        N 08Lia !
+ PAR  G(LI2ZN3_BETA,LI:LI),,            +5*GHSERLI+9307.8;,,          N 08Lia !
+ PAR  G(LIZN4_ALPHA,LI:LI),,            +5*GHSERLI+15000;,,           N 11Guo !
+$
+ FUNCTION GHSERLI   200.00  -10583.817+217.637482*T-38.940488*T*LN(T)
+       +0.035466931*T**2-1.9869816E-05*T**3+159994*T**(-1);
+       453.60  Y  -559579.123+10547.8799*T-1702.88865*T*LN(T)
+       +2.25832944*T**2-5.71066077E-04*T**3+33885874*T**(-1);
+       500.00  Y  -9062.994+179.278285*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQLI    200.00  +2700.205-5.795621*T+GHSERLI;
+       250.00  Y  +12015.027-362.187078*T+61.6104424*T*LN(T)
+       -0.182426463*T**2+6.3955671E-05*T**3-559968*T**(-1);
+       453.60  Y  -6057.31+172.652183*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+       500.00  Y  +3005.684-6.626102*T+GHSERLI;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+ PAR  G(A3_HCP,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+ PAR  G(A2_BCC,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ PAR  G(LI2ZN3_BETA,ZN:ZN),,            +5*GHSERZN+9307.8;,,          N 08Lia !
+ PAR  G(LI2ZN5_ALPHA,ZN:ZN),,           +7*GHSERZN+12169.3;,,         N 08Lia !
+ PAR  G(LI2ZN5_BETA,ZN:ZN),,            +7*GHSERZN+26766;,,           N 08Lia !
+ PAR  G(LIZN4_ALPHA,ZN:ZN),,            +5*GHSERZN+15000;,,           N 11Guo !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Guo, Y. Liang, C. Li, Z. Du, Calphad, 35, 54-65(2011).
+$
+$ Checked against paper and tdb from authors. Checked at 6000 K.
+$
+$ LIZN4_BETA is probably disordered hcp. Here it is modelled as
+$ ordered hcp (add on) and probably incorrectly.
+$
+ PAR  L(LIQUID,LI,ZN;0),,               -45258.6+26.3677*T;,,         N 08Lia !
+ PAR  L(LIQUID,LI,ZN;1),,               +22887.2-4.1921*T;,,          N 08Lia !
+ PAR  L(LIQUID,LI,ZN;2),,               -4552.6+4.0715*T;,,           N 08Lia !
+$
+ PAR  L(BCC_A2,LI,ZN:VA;0),,            -54260.4+45.772*T;,,          N 08Lia !
+ PAR  L(BCC_A2,LI,ZN:VA;1),,            +25153.3;,,                   N 08Lia !
+$
+ PAR  L(A2_BCC,LI,ZN:VA;0),,            -54260.4+45.772*T;,,          N 08Lia !
+ PAR  L(A2_BCC,LI,ZN:VA;1),,            +25153.3;,,                   N 08Lia !
+$
+ PAR  L(HCP_A3,LI,ZN:VA;0),,            -29301.5-0.2586*T;,,          N 11Guo !
+ PAR  L(HCP_A3,LI,ZN:VA;1),,            +15702.2+3.5167*T;,,          N 11Guo !
+$
+ PAR  L(A3_HCP,LI,ZN:VA;0),,            -29301.5-0.2586*T;,,          N 11Guo !
+ PAR  L(A3_HCP,LI,ZN:VA;1),,            +15702.2+3.5167*T;,,          N 11Guo !
+$
+ PAR  G(LIZN_B32,LI:ZN:VA),,            -26930.7+10.0062*T;,,         N 08Lia !
+ PAR  G(LIZN_B32,ZN:LI:VA),,            -26930.7+10.0062*T;,,         N 08Lia !
+ PAR  L(LIZN_B32,LI,ZN:LI:VA;0),,       -26474.4+30.2611*T;,,         N 08Lia !
+ PAR  L(LIZN_B32,LI:LI,ZN:VA;0),,       -26474.4+30.2611*T;,,         N 08Lia !
+ PAR  L(LIZN_B32,LI,ZN:ZN:VA;0),,       -13623.4+1.789*T;,,           N 08Lia !
+ PAR  L(LIZN_B32,ZN:LI,ZN:VA;0),,       -13623.4+1.789*T;,,           N 08Lia !
+ PAR  L(LIZN_B32,LI,ZN:LI:VA;1),,       -11635.9+1.4065*T;,,          N 08Lia !
+ PAR  L(LIZN_B32,LI:LI,ZN:VA;1),,       -11635.9+1.4065*T;,,          N 08Lia !
+ PAR  L(LIZN_B32,LI,ZN:ZN:VA;1),,       -4786-4.0231*T;,,             N 08Lia !
+ PAR  L(LIZN_B32,ZN:LI,ZN:VA;1),,       -4786-4.0231*T;,,             N 08Lia !
+$
+ PAR  G(LI2ZN3_ALPHA,LI:ZN),,           +2*GHSERLI+3*GHSERZN
+             -85329.5+30.2362*T;,,                                    N 08Lia !
+ PAR  L(LI2ZN3_ALPHA,LI:LI,ZN;0),,      -7720.6+12.5469*T;,,          N 08Lia !
+ PAR  L(LI2ZN3_ALPHA,LI:LI,ZN;1),,      +1001.2+1.0073*T;,,           N 08Lia !
+$
+ PAR  G(LI2ZN3_BETA,LI:ZN),,            +2*GHSERLI+3*GHSERZN
+             -84218.4+27.758*T;,,                                     N 08Lia !
+ PAR  G(LI2ZN3_BETA,ZN:LI),,            +2*GHSERZN+3*GHSERLI
+             +84218.4-27.758*T;,,                                     N 08Lia !
+ PAR  L(LI2ZN3_BETA,LI,ZN:LI;0),,       -87667.3+59.7976*T;,,         N 08Lia !
+ PAR  L(LI2ZN3_BETA,LI,ZN:ZN;0),,       -87667.3+59.7976*T;,,         N 08Lia !
+ PAR  L(LI2ZN3_BETA,LI,ZN:LI;1),,       +49513.8-70.0108*T;,,         N 08Lia !
+ PAR  L(LI2ZN3_BETA,LI,ZN:ZN;1),,       +49513.8-70.0108*T;,,         N 08Lia !
+ PAR  L(LI2ZN3_BETA,LI:LI,ZN;0),,       +7367.6+6.9984*T;,,           N 08Lia !
+ PAR  L(LI2ZN3_BETA,ZN:LI,ZN;0),,       +7367.6+6.9984*T;,,           N 08Lia !
+ PAR  L(LI2ZN3_BETA,LI:LI,ZN;1),,       +8734.9-11.9*T;,,             N 08Lia !
+ PAR  L(LI2ZN3_BETA,ZN:LI,ZN;1),,       +8734.9-11.9*T;,,             N 08Lia !
+$
+ PAR  G(LIZN2,LI:ZN),,                  +GHSERLI+2*GHSERZN
+             -53133.9+23.4266*T;,,                                    N 11Guo !
+$
+ PAR  G(LI2ZN5_ALPHA,LI:ZN),,           +2*GHSERLI+5*GHSERZN
+             -123038.9+51.8671*T;,,                                   N 11Guo !
+ PAR  L(LI2ZN5_ALPHA,LI,ZN:ZN;0),,      -12463.9;,,                   N 11Guo !
+$
+ PAR  G(LI2ZN5_BETA,LI:ZN),,            +2*GHSERLI+5*GHSERZN
+             -122836+51.4932*T;,,                                     N 11Guo !
+ PAR  L(LI2ZN5_BETA,LI,ZN:ZN;0),,       -13440.5;,,                   N 11Guo !
+ PAR  L(LI2ZN5_BETA,LI,ZN:ZN;1),,       -21665.2;,,                   N 11Guo !
+$
+ PAR  G(LIZN4_ALPHA,LI:ZN),,            +GHSERLI+4*GHSERZN
+             -78372+43.2115*T;,,                                      N 11Guo !
+ PAR  G(LIZN4_ALPHA,ZN:LI),,            +GHSERZN+4*GHSERLI
+             +78372-43.2115*T;,,                                      N 11Guo !
+ PAR  L(LIZN4_ALPHA,LI,ZN:LI;0),,       -33953.6+20.1515*T;,,         N 11Guo !
+ PAR  L(LIZN4_ALPHA,LI,ZN:ZN;0),,       -33953.6+20.1515*T;,,         N 11Guo !
+ PAR  L(LIZN4_ALPHA,LI:LI,ZN;0),,       -18698.3+7.7695*T;,,          N 11Guo !
+ PAR  L(LIZN4_ALPHA,ZN:LI,ZN;0),,       -18698.3+7.7695*T;,,          N 11Guo !
+$
+ PAR  G(LIZN4_BETA,LI:ZN:VA),,          -191.117297-0.0855*T;,,       N 11Guo !
+ PAR  G(LIZN4_BETA,ZN:LI:VA),,          +191.117297+0.0855*T;,,       N 11Guo !
+ PAR  L(LIZN4_BETA,LI,ZN:LI:VA;0),,     +4904.8-1.9606*T;,,           N 11Guo !
+ PAR  L(LIZN4_BETA,LI,ZN:ZN:VA;0),,     +5159.5-1.8466*T;,,           N 11Guo !
+ PAR  L(LIZN4_BETA,LI:LI,ZN:VA;0),,     +20574.6225-7.4146*T;,,       N 11Guo !
+ PAR  L(LIZN4_BETA,ZN:LI,ZN:VA;0),,     +19682.1-7.8141*T;,,          N 11Guo !
+ PAR  L(LIZN4_BETA,LI,ZN:LI:VA;1),,     -7361.9+8.2575*T;,,           N 11Guo !
+ PAR  L(LIZN4_BETA,LI,ZN:ZN:VA;1),,     -7361.9+8.2575*T;,,           N 11Guo !
+ PAR  L(LIZN4_BETA,LI:LI,ZN:VA;1),,     -29447.8+33.0299*T;,,         N 11Guo !
+ PAR  L(LIZN4_BETA,ZN:LI,ZN:VA;1),,     -29447.8+33.0299*T;,,         N 11Guo !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,LI,ZN:VA;0),,            -29301.5-0.2586*T;,,          N Same !
+ PAR  L(FCC_A1,LI,ZN:VA;1),,            +15702.2+3.5167*T;,,          N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  08Lia  'Y. Liang, Z. Du, C. Guo, C. Li,
+          J. Alloys Compd., 455, 236-42(2008); Li-Zn'
+  11Guo  'C. Guo, Y. Liang, C. Li, Z. Du, Calphad, 35, 54-65(2011); Li-Zn'
+!

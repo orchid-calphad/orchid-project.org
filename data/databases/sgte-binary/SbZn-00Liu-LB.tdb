@@ -1,0 +1,235 @@
+$
+$ Database for Sb-Zn from X.J. Liu et al. 2000 (included in LB Vol. 4)
+$
+$ X.J. Liu, C.P. Wang, I. Ohnuma, R. Kainuma, K. Ishida,
+$ J. Phase Equilib., 21, 432-42(2000).
+$
+$ Dataset created 2013.06.01 by Bengt Hallstedt.
+$ 2019.12.15: Modified for use with GES6.
+$
+$ In LBall-v7+fun.tdb and in the paper a positive interaction for hcp-A3 is
+$ included, leading to almost zero Sb solubility in Zn. The printed phase
+$ diagram in LB shows some Sb solubility in Zn and slightly different
+$ invariant temperatures when hcp-A3 is involved. The hcp-A3 interaction
+$ seems not to have been included when calculating the phase diagram.
+$
+$ LBall-v7+fun.tdb contains two SbZn phases; BE_SBZN and SBZN_BETA with
+$ different parameters. The latter is the one from 00Liu. The former becomes
+$ stable relative to the latter above 894 K, which is above the melting
+$ temperature.
+$
+$ There is an inverse miscibility gap with a min at 2740 K and x(Zn)=0.51.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SB ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SB ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SB ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SB ZN : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB ZN : !
+$
+$ Prototype CdSb (oP16, Pbca), beta
+$
+ PHASE SBZN_BE % 2 1 1 !
+ CONST SBZN_BE : SB : ZN : !
+$
+$ Unknown structure, gamma
+$
+ PHASE SB9ZN11 % 2 0.45 0.55 !
+ CONST SB9ZN11 : SB : ZN : !
+$
+$ Prototype Sb17Zn23 (hR22, R-3c), epsilon
+$
+ PHASE SB17ZN23_L % 2 0.425 0.575 !
+ CONST SB17ZN23_L : SB : ZN : !
+$
+$ Unknown structure, delta
+$
+ PHASE SB17ZN23_H % 2 0.425 0.575 !
+ CONST SB17ZN23_H : SB : ZN : !
+$
+$ Prototype Sb2Zn3-ht1 (oP30, Pmmn), eta, ht1
+$
+ PHASE SB19ZN31 % 2 0.38 0.62 !
+ CONST SB19ZN31 : SB : ZN : !
+$
+$ Prototype Sb2Zn3-ht2 (oP192, Pccn), zeta, ht2
+$
+ PHASE SB2ZN3 % 2 0.4 0.6 !
+ CONST SB2ZN3 : SB : ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+ PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From X.J. Liu et al. 2000 (included in LB Vol. 4)
+$
+$ X.J. Liu, C.P. Wang, I. Ohnuma, R. Kainuma, K. Ishida,
+$ J. Phase Equilib., 21, 432-42(2000).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ In LBall-v7+fun.tdb and in the paper a positive interaction for hcp-A3 is
+$ included, leading to almost zero Sb solubility in Zn. The printed phase
+$ diagram in LB shows some Sb solubility in Zn and slightly different
+$ invariant temperatures when hcp-A3 is involved. The hcp-A3 interaction
+$ seems not to have been included when calculating the phase diagram.
+$
+$ LBall-v7+fun.tdb contains two SbZn phases; BE_SBZN and SBZN_BETA with
+$ different parameters. The latter is the one from 00Liu. The former becomes
+$ stable relative to the latter above 894 K, which is above the melting
+$ temperature.
+$
+$ There is an inverse miscibility gap with a min at 2740 K and x(Zn)=0.51.
+$
+ PAR  L(LIQUID,SB,ZN;0),,               -11740.942-0.1283*T;,,        N 00Liu !
+ PAR  L(LIQUID,SB,ZN;1),,               -427.582-0.809855*T;,,        N 00Liu !
+ PAR  L(LIQUID,SB,ZN;2),,               +34440.943-33.59286*T;,,      N 00Liu !
+$
+ PAR  L(HCP_A3,SB,ZN:VA;0),,            +50000;,,                     N 00Liu !
+$
+$ Parameters for BE_SBZN in LBall-v7+fun.tdb below
+$PAR  G(SBZN_BE,SB:ZN),,                +GHSERSB+GHSERZN
+$            -19295.8+5.76*T;,,                                       N Null !
+$ Parameters for SBZN_BETA in LBall-v7+fun.tdb below
+ PAR  G(SBZN_BE,SB:ZN),,                +GHSERSB+GHSERZN
+             -23085.36+10*T;,,                                        N 00Liu !
+ PAR  G(SB9ZN11,SB:ZN),,                +0.45*GHSERSB+0.55*GHSERZN
+             -8748.7632+1.3365*T;,,                                   N 00Liu !
+ PAR  G(SB17ZN23_L,SB:ZN),,             +0.425*GHSERSB+0.575*GHSERZN
+             -7730.454;,,                                             N 00Liu !
+ PAR  G(SB17ZN23_H,SB:ZN),,             +0.425*GHSERSB+0.575*GHSERZN
+             -7348-0.5*T;,,                                           N 00Liu !
+ PAR  G(SB2ZN3,SB:ZN),,                 +0.4*GHSERSB+0.6*GHSERZN
+             -4918.01-3.37557*T;,,                                    N 00Liu !
+ PAR  G(SB19ZN31,SB:ZN),,               +0.38*GHSERSB+0.62*GHSERZN
+             -5042.71-2.743826*T;,,                                   N 00Liu !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  SB-ZN(TDB -* +LIQUID +HCP_A3 +RHOMBO_A7 +SBZN_BE +SB9ZN11 +SB17ZN23_L
+  +SB17ZN23_H +SB2ZN3 +SB19ZN31 ;P3 TMM:200/1000 STP:.2/800) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Liu  'X.J. Liu, C.P. Wang, I. Ohnuma, R. Kainuma, K. Ishida,
+          J. Phase Equilib., 21, 432-42(2000); Sb-Zn'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+!

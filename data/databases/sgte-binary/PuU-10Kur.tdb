@@ -1,0 +1,243 @@
+$
+$ Database for Pu-U from M. Kurata 2010.
+$
+$ M. Kurata, IOP Conf. Ser.: Mater. Sci. Eng., 9, 012022(2010).
+$
+$ Dataset created 2019.09.21 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT PU   ALPHA_PU                  244.        6902.0     54.4610 ! 
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PU U : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PU% U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PU% U% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : PU U : VA : !
+$
+$ Prototype In (tI2, I4/mmm), delta-prime
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : PU% U : !
+$
+$ Prototype alpha-Pu (mP16, P2_1/m)
+$
+ PHASE ALPHA_PU % 1 1 !
+ CONST ALPHA_PU : PU% U : !
+$
+$ Prototype beta-Pu (mC34, C2/m)
+$
+ PHASE BETA_PU % 1 1 !
+ CONST BETA_PU : PU% U : !
+$
+$ Prototype gamma-Pu (oF8, Fddd)
+$
+ PHASE GAMMA_PU % 1 1 !
+ CONST GAMMA_PU : PU% U : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : PU U% : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : PU U% : !
+$
+$ Prototype PuU-zeta (hR58, R-3m)
+$
+ PHASE PUU_ZETA % 1 1 !
+ CONST PUU_ZETA : PU U : !
+$
+$ Pearson tP52
+$
+ PHASE PUU_ETA % 1 1 !
+ CONST PUU_ETA : PU U : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Pu
+$
+$ HCP_A3, ORTHORHOMBIC_A20 and TETRAGONAL_U from 10Kur1 not included in unary
+$ DHCP, ORTHO_AC and TETRAG_AD from 10Kur2 not included in unary
+$
+ PAR  G(ALPHA_PU,PU),,                  +GHSERPU;                3000 N 91Din !
+ PAR  G(BCC_A2,PU:VA),,                 +GBCCPU;                 3000 N 91Din !
+ PAR  G(BETA_PU,PU),,                   +GBETPU;                 3000 N 91Din !
+ PAR  G(FCC_A1,PU:VA),,                 +GFCCPU;                 3000 N 91Din !
+ PAR  G(GAMMA_PU,PU),,                  +GGAMPU;                 3000 N 91Din !
+ PAR  G(TETRAGONAL_A6,PU),,             +GTETPU;                 3000 N 91Din !
+ PAR  G(HCP_A3,PU:VA),,                 +GFCCPU+5000;            3000 N 10Kur1 !
+$PAR  G(DHCP,PU),,                      +GFCCPU+5000;            3000 N 10Kur2 !
+$PAR  G(ORTHO_AC,PU),,                  +GHSERPU+1248.6;         3000 N 10Kur2 !
+$PAR  G(TETRAG_AD,PU),,                 +GTETPU+575.1;           3000 N 10Kur2 !
+ PAR  G(ORTHORHOMBIC_A20,PU),,          +GBETPU+652.7;           3000 N 10Kur1 !
+ PAR  G(TETRAGONAL_U,PU),,              +GTETPU+209.6;           3000 N 10Kur1 !
+ PAR  G(LIQUID,PU),,                    +GHSERPU
+             +6608.1-12.5133*T;                                  3000 N 91Din !
+$
+ PAR  G(PUU_ZETA,PU),,                  +GBETPU+500;             3000 N 10Kur1 !
+ PAR  G(PUU_ETA,PU),,                   +GGAMPU+51.1;            3000 N 10Kur1 !
+$
+ FUNCTION GHSERPU   298.15  -7396.309+80.301382*T-18.1258*T*LN(T)
+       -0.02241*T**2;
+       400.00  Y  -16605.962+236.786603*T-42.4187*T*LN(T)
+       -0.00134493*T**2+2.63443E-07*T**3+579325*T**(-1);
+       944.00  Y  -14462.156+232.961553*T-42.248*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCPU    298.15  -1358.984+116.603882*T-27.094*T*LN(T)
+       -0.009105*T**2+2.061667E-06*T**3+20863*T**(-1);
+       745.00  Y  -2890.817+156.878957*T-33.72*T*LN(T);
+       956.00  Y  +29313.619-132.788248*T+6.921*T*LN(T)
+       -0.02023305*T**2+1.426922E-06*T**3-4469245*T**(-1);
+      2071.00  Y  -938.429-5.539698*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GBETPU    298.15  -4873.654+123.249151*T-27.416*T*LN(T)
+       -0.00653*T**2;
+       679.50  Y  +2435.094+43.566585*T-15.7351*T*LN(T)
+       -0.0154772*T**2+1.524942E-06*T**3-864940*T**(-1);
+      1464.00  Y  +503.094-4.739938*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GFCCPU    298.15  -3920.781+127.586536*T-28.4781*T*LN(T)
+       -0.0054035*T**2;
+       990.00  Y  +3528.208+41.52572*T-15.7351*T*LN(T)
+       -0.0154772*T**2+1.524942E-06*T**3-864940*T**(-1);
+      1464.00  Y  +1596.208-6.780803*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GGAMPU    298.15  -16766.303+419.402655*T-77.5802*T*LN(T)
+       +0.0816415*T**2-2.8103833E-05*T**3+574825*T**(-1);
+       487.90  Y  -2942.77+88.325069*T-22.0233*T*LN(T)-0.0114795*T**2;
+       593.90  Y  -9336.967+160.314641*T-32.3405*T*LN(T)
+       -0.0070383*T**2+6.92887E-07*T**3+630600*T**(-1);
+      1179.00  Y  +2026.406-6.829936*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GTETPU    298.15  -496.178+54.586547*T-16.43*T*LN(T)
+       -0.024006*T**2+5.166667E-06*T**3-158470*T**(-1);
+       736.00  Y  -6122.307+173.35008*T-35.56*T*LN(T);
+       757.00  Y  +3982.078+63.890352*T-19.756*T*LN(T)
+       -0.00937295*T**2+6.59882E-07*T**3-1112565*T**(-1);
+      2157.00  Y  -738.383-4.905143*T+GHSERPU;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not in unary
+$ FCC_A1, HCP_A3, ALPHA_PU, BETA_PU, GAMMA_PU and TETRAGONAL_A6 from 10Kur1
+$ not included in unary
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+$PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(FCC_A1,U:VA),,                  +GBCCUU+5000;            3000 N 10Kur1 !
+$PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000;            3000 N 10Kur1 !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+ PAR  G(ALPHA_PU,U),,                   +GHSERUU+5000;           3000 N 10Kur1 !
+ PAR  G(BETA_PU,U),,                    +GHSERUU+5000;           3000 N 10Kur1 !
+ PAR  G(GAMMA_PU,U),,                   +GHSERUU+5000;           3000 N 10Kur1 !
+ PAR  G(TETRAGONAL_A6,U),,              +GBCCUU+5000;            3000 N 10Kur1 !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ PAR  G(PUU_ZETA,U),,                   +GHSERUU+337.8;          3000 N 10Kur1 !
+ PAR  G(PUU_ETA,U),,                    +GTETUU+118.7;           3000 N 10Kur1 !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Kurata, IOP Conf. Ser.: Mater. Sci. Eng., 9, 012022(2010).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Misprint for G(PUU_ZETA,U) in 10Kur1.
+$
+ PAR  L(LIQUID,PU,U;0),,                +32231-31.465*T;,,            N 10Kur1 !
+ PAR  L(LIQUID,PU,U;1),,                -8980.2;,,                    N 10Kur1 !
+$
+ PAR  L(FCC_A1,PU,U:VA;0),,             +723.76;,,                    N 10Kur1 !
+$
+ PAR  L(BCC_A2,PU,U:VA;0),,             +19374-17.25*T;,,             N 10Kur1 !
+ PAR  L(BCC_A2,PU,U:VA;1),,             -4939.5;,,                    N 10Kur1 !
+$
+ PAR  L(ALPHA_PU,PU,U;0),,              +5000;,,                      N 10Kur1 !
+ PAR  L(BETA_PU,PU,U;0),,               +5000;,,                      N 10Kur1 !
+ PAR  L(GAMMA_PU,PU,U;0),,              +4342.7;,,                    N 10Kur1 !
+ PAR  L(TETRAGONAL_A6,PU,U;0),,         +495.37;,,                    N 10Kur1 !
+ PAR  L(ORTHORHOMBIC_A20,PU,U;0),,      +6176.5;,,                    N 10Kur1 !
+ PAR  L(TETRAGONAL_U,PU,U;0),,          +5287.3;,,                    N 10Kur1 !
+$
+ PAR  L(PUU_ETA,PU,U;0),,               +4049.1-1.5232*T;,,           N 10Kur1 !
+ PAR  L(PUU_ETA,PU,U;1),,               -617.36-3.4139*T;,,           N 10Kur1 !
+$
+ PAR  L(PUU_ZETA,PU,U;0),,              -6336.9+10.446*T;,,           N 10Kur1 !
+ PAR  L(PUU_ZETA,PU,U;1),,              -19997+24.65*T;,,             N 10Kur1 !
+ PAR  L(PUU_ZETA,PU,U;2),,              +12364-7.8368*T;,,            N 10Kur1 !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,PU,U:VA;0),,            +5000;,,                      N 10Kur1 !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr'
+  10Kur1 'M. Kurata, IOP Conf. Ser.: Mater. Sci. Eng., 9, 012022(2010);
+          Pu, U, Pu-U'
+  10Kur2 'M. Kurata, IOP Conf. Ser.: Mater. Sci. Eng., 9, 012023(2010); Pu'
+  18Xie  'W. Xie, D. Morgan, Comput. Mater. Sci., 143, 505-14(2018);
+          Np, U, Zr'
+!

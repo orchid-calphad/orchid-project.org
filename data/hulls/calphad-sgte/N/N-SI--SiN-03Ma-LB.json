@@ -1,0 +1,177 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "N",
+    "SI"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "N": {
+          "energy": -28531.825454865768,
+          "phase": "N2GAS"
+        },
+        "SI": {
+          "energy": -5608.213483726854,
+          "phase": "DIAMOND_A4"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -246407.06924948882
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -108.62034648106517
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "N2GAS",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -214021.91294615925,
+          "right": {
+            "phase": "SI3N4",
+            "x": 0.42857142857142855
+          },
+          "slope": -214021.91294615925,
+          "x_hi": 0.42857142857142855,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -184805.3019371166,
+            "slope": 184805.30193711663
+          },
+          "entropy": {
+            "intercept": -81.46525986079888,
+            "slope": 81.46525986079888
+          },
+          "intercept": -160516.43470961944,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SI3N4",
+            "x": 0.42857142857142855
+          },
+          "mu_a_rel": -160516.43470961944,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "DIAMOND_A4",
+            "x": 1.0
+          },
+          "slope": 160516.43470961944,
+          "x_hi": 1.0,
+          "x_lo": 0.42857142857142855
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "N2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -91723.67697692539,
+          "energy_per_atom": -91723.67697692539,
+          "enthalpy": -105603.02967835235,
+          "entries_at_x": 1,
+          "entropy": -46.551577063313644,
+          "formula": "",
+          "nsites": null,
+          "phase": "SI3N4",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.42857142857142855
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "DIAMOND_A4",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "SiN-03Ma-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:00:56Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/SiN-03Ma-LB.tdb",
+    "source_sha256": "82df19923aefac84b72d87315794ac1e422d18acd5b09e24c5a7c3fa75edb376"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "N-SI",
+  "x_element": "SI"
+}

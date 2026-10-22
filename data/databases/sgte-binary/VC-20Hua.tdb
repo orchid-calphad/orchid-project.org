@@ -1,0 +1,172 @@
+$
+$ Database for V-C from L. Huang et al. 2020.
+$
+$ L. Huang, Y. Pan, J. Zhang, Y. Du, F. Luo, P. Zhou, S. Zhang,
+$ Calphad, 71, 102199(2020).
+$
+$ Dataset created 2021.02.16 by Bengt Hallstedt.
+$
+$ Liquid interaction from 91Hua modified to remove a small miscibility gap.
+$ There is a slight change of the eutectic composition (L=bcc+V2C) comparted to
+$ 91Hua.
+$
+$ The tdb of 20Hua contains a misprint for the V3C2 phase, which lowers its
+$ peritectoid formation temperature by 24 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT V    BCC_A2                     50.9415    4507.0     30.89   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C V : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : V : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : V : C VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : V : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype Sc2Te3 (hR8, R-3m), zeta-carbide
+$ (Prototype V4C3 (hR20, R-3m) seems to be obsolete)
+$
+ PHASE V3C2 % 2 3 2 !
+ CONST V3C2 : V : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ V
+$
+ PAR  G(BCC_A2,V:VA),,                  +GHSERVV;                4000 N 91Din !
+ PAR  G(FCC_A1,V:VA),,                  +GHSERVV+7500+1.7*T;     4000 N 91Din !
+ PAR  G(HCP_A3,V:VA),,                  +GHSERVV+4000+2.4*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,V:VA),,                +GHSERVV+9000;           4000 N 91Din !
+$PAR  G(CUB_A13,V:VA),,                 +GHSERVV+10000;          4000 N 91Din !
+ PAR  G(LIQUID,V),,                     +GLIQVV;                 4000 N 91Din !
+$
+ FUNCTION GHSERVV   298.15  -7930.43+133.346053*T-24.134*T*LN(T)
+       -0.003098*T**2+1.2175E-07*T**3+69460*T**(-1);
+       790.00  Y  -7967.842+143.291093*T-25.9*T*LN(T)
+       +6.25E-05*T**2-6.8E-07*T**3;
+      2183.00  Y  -41689.864+321.140783*T-47.43*T*LN(T)+6.44389E+31*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQVV    298.15  +20764.117-9.455552*T+GHSERVV-5.19136E-22*T**7;
+      2183.00  Y  -19617.51+311.055983*T-47.43*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L. Huang, Y. Pan, J. Zhang, Y. Du, F. Luo, P. Zhou, S. Zhang,
+$ Calphad, 71, 102199(2020).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Liquid interaction from 91Hua modified to remove a small miscibility gap.
+$ There is a slight change of the eutectic composition (L=bcc+V2C) comparted to
+$ 91Hua.
+$
+$ The tdb of 20Hua contains a misprint for the V3C2 phase, which lowers its
+$ peritectoid formation temperature by 24 K.
+$
+ PAR  L(LIQUID,C,V;0),,                 -281302.27+37.95*T;,,         N 20Hua !
+ PAR  L(LIQUID,C,V;1),,                 +89839.34-15.85*T;,,          N 20Hua !
+ PAR  L(LIQUID,C,V;2),,                 +96424.87;,,                  N 20Hua !
+$
+ PAR  G(BCC_A2,V:C),,                   +GHSERVV+3*GHSERCC+108449;,,  N 91Hua1 !
+ PAR  L(BCC_A2,V:C,VA;0),,              -297868;,,                    N 91Hua1 !
+$
+ PAR  G(FCC_A1,V:C),,                   -117302+262.57*T
+             -41.756*T*LN(T)-0.00557101*T**2+590546*T**(-1);,,        N 91Hua1 !
+ PAR  L(FCC_A1,V:C,VA;0),,              -74811+10.201*T;,,            N 91Hua1 !
+ PAR  L(FCC_A1,V:C,VA;1),,              -30394;,,                     N 91Hua1 !
+$
+ PAR  G(HCP_A3,V:C),,                   -85473+182.441*T
+             -30.551*T*LN(T)-0.00538998*T**2+229029*T**(-1);,,        N 91Hua1 !
+ PAR  L(HCP_A3,V:C,VA;0),,              +12430-3.986*T;,,             N 91Hua1 !
+$
+ PAR  G(V3C2,V:C),,                     +3*GHSERVV+2*GHSERCC
+             -260341+16.897*T;,,                                      N 91Hua1 !
+$
+$ metastable
+$
+$PAR  G(CBCC_A12,V:C),,                 +GHSERVV+GHSERCC+10000;,,     N 91Fer !
+$PAR  G(CUB_A13,V:C),,                  +GHSERVV+GHSERCC+10000;,,     N 91Fer !
+$PAR  G(CEMENTITE_D011,V:C),,           -156971+601.922*T
+$            -100.438*T*LN(T)+765557*T**(-1);,,                       N 91Fer !
+$PAR  G(M7C3_D101,V:C),,                -454245+1518.48*T
+$            -250.981*T*LN(T)+2148692*T**(-1);,,                      N 91Fer !
+$PAR  G(M3C2_D510,V:C),,                +3*GHSERVV+2*GHSERCC
+$            -222500+16.6545*T;,,                                     N 92Lee !
+$PAR  G(M23C6_D84,V:V:C),,              +GVM23C6;,,                   N 91Fer !
+$PAR  G(M5C2,V:C),,                     -307123.3+1059.7*T
+$            -175.66*T*LN(T)+1453274*T**(-1);,,                       N 91Fer !
+$
+ FUNCTION GVM23C6   298.15  -990367+4330.63*T-728.829*T*LN(T)
+       +5003425*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  C-V(TDB -* +LIQ +GRAPH +FCC_A1 +BCC_A2 +HCP_A3 +V3C2
+  ;G5 C_S:FCC_A1/V:C C_S:HCP_A3/V:C ;P3 TMM:300/5000 STP:.55/2700/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  91Fer  'A. Fernandez Guillermet, W. Huang,
+          Int. J. Thermophys., 12, 1077-1102(1991); Mn-V-C'
+  91Hua1 'W. Huang, Z. Metallkd., 82, 174-81(1991); V-C'
+  92Lee  'B.-J. Lee, J. Phase Equilib., 13, 349-64(1992); Cr-Fe-V-C'
+  20Hua  'L. Huang, Y. Pan, J. Zhang, Y. Du, F. Luo, P. Zhou, S. Zhang,
+          Calphad, 71, 102199(2020); V-C'
+!

@@ -1,0 +1,252 @@
+$
+$ Database for Sb-Te from G. Ghosh et al. 1989
+$
+$ G. Ghosh, H.L. Lukas, L. Delaey, Z. Metallkd., 80, 731-36 (1989).
+$
+$ Dataset created 2013.05.30 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$ 2021.09.05: ION order fixed for GES6.
+$
+$ Unary Te has changed radically since 89Gho.
+$ 89Gho actually used Delta-G=0 for G(RHOMBOHEDRAL_A7,TE).
+$
+$ A database sbsete.tdb was found with unknown origin. The source for Sb-Te
+$ is given as 89Gho, but it uses other parameters for the nonstoichiometry
+$ of SB2TE3 and possibly also for the ionic liquid, but it is also possible
+$ that the ionic liquid model was differently programmed in the Lukas program.
+$
+$ The parameters from sbsete.tdb reproduce the figures in the paper well,
+$ within 1 K for the invariant equilibria, much better than the parameters
+$ in the paper. The change of unary Te does not seem to have much influence
+$ on the phase diagram.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  SB+3                               SB1/+3 !
+ SPECIE  TE-2                               TE1/-2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : SB+3 : TE-2 VA TE : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SB TE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : SB : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SB : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SB : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB% TE : !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$ The phase is named HEXAGONAL_A8 in the SGTE unary database and
+$ TRIGONAL_A8 in LB.
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ Prototype Sb2Te (hP9, P-3m1)
+$
+ PHASE SB2TE_DELTA % 2 2 3 !
+ CONST SB2TE_DELTA : SB : SB TE : !
+$
+$ Prototype BiSe (hP12, P-3m1)
+$
+ PHASE SBTE_GAMMA % 2 2 3 !
+ CONST SBTE_GAMMA : SB : SB TE : !
+$
+$ Prototype Bi2Te3 (hR5, R-3m)
+$
+ PHASE SB2TE3_C33 % 2 2 3 !
+ CONST SB2TE3_C33 : SB% TE : SB TE% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+ PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(ION,SB+3:VA),,                  +GLIQSB;                 2000 N 91Din !
+$
+ PAR  G(SB2TE_DELTA,SB:SB),,            +5*GHSERSB+5350-1.8*T;   1200 N 89Gho !
+ PAR  G(SBTE_GAMMA,SB:SB),,             +5*GHSERSB+7300-2.45*T;  1200 N 89Gho !
+$ from 89Gho
+$PAR  G(SB2TE3_C33,SB:SB),,             +5*GHSERSB
+$            +292837.5-179.7592*T+9.1687*T*LN(T);                1200 N 89Gho !
+$ from sbsete.tdb
+ PAR  G(SB2TE3_C33,SB:SB),,             +5*GHSERSB
+             +154837.5-133.7592*T+9.1687*T*LN(T);                1200 N 89Gho !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                1600 N 95Dav !
+ PAR  G(RHOMBOHEDRAL_A7,TE),,           +GHSERTE+15*T;           1600 N 89Gho !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 1600 N 95Dav !
+$
+ PAR  G(ION,TE),,                       +GLIQTE;                 1600 N 95Dav !
+$
+$ from 89Gho
+$PAR  G(SB2TE3_C33,TE:TE),,             +5*GHSERTE
+$            +847837.5-364.7592*T+9.1687*T*LN(T);                1200 N 89Gho !
+$ from sbsete.tdb
+ PAR  G(SB2TE3_C33,TE:TE),,             +5*GHSERTE
+             +307837.5-184.7592*T+9.1687*T*LN(T);                1200 N 89Gho !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$ Old functions used by 89Gho
+$FUNCTION GHSERTE   298.15  -6677.083+85.019049*T-19.1003366*T*LN(T)
+$      -0.011050509*T**2;
+$      722.62  Y  -14523.024+210.012403*T-37.656*T*LN(T)+1.1154E+27*T**(-9);  
+$     2000.00  N !
+$FUNCTION GLIQTE    298.15  +10545.258+61.248705*T-19.1003366*T*LN(T)
+$      -0.011050509*T**2-4.31979E-19*T**7;
+$      722.62  Y  +3173.591+185.552954*T-37.656*T*LN(T);
+$     2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Ghosh, H.L. Lukas, L. Delaey, Z. Metallkd., 80, 731-36 (1989).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Unary Te has changed radically since 89Gho.
+$ 89Gho actually used Delta-G=0 for G(RHOMBOHEDRAL_A7,TE).
+$
+$ A database sbsete.tdb was found with unknown origin. The source for Sb-Te
+$ is given as 89Gho, but it uses other parameters for the nonstoichiometry
+$ of SB2TE3 and possibly also for the ionic liquid, but it is also possible
+$ that the ionic liquid model was differently programmed in the Lukas program.
+$
+$ The parameters from sbsete.tdb reproduce the figures in the paper well,
+$ within 1 K for the invariant equilibria, much better than the parameters
+$ in the paper. The change of unary Te does not seem to have much influence
+$ on the phase diagram.
+$
+ PAR  G(ION,SB+3:TE-2),,                +2*GLIQSB+3*GLIQTE
+             -97986+67.0285*T;,,                                      N 89Gho !
+$ from 89Gho
+$PAR  L(ION,SB+3:TE-2,VA;0),,           +30670.5+7.3155*T;,,          N 89Gho !
+$PAR  L(ION,SB+3:TE,TE-2;0),,           +41640.5;,,                   N 89Gho !
+$ from sbsete.tdb
+ PAR  L(ION,SB+3:TE-2,VA;0),,           +24536.4+5.8524*T;,,          N 89Gho !
+ PAR  L(ION,SB+3:TE-2,VA;1),,           +6134.1+1.4631*T;,,           N 89Gho !
+ PAR  L(ION,SB+3:TE-2,TE;0),,           +33312.4;,,                   N 89Gho !
+ PAR  L(ION,SB+3:TE-2,TE;1),,           +8328.1;,,                    N 89Gho !
+ PAR  L(ION,SB+3:TE-2,VA,TE;0),,        -14462.2-1.4631*T;,,          N 89Gho !
+ PAR  L(ION,SB+3:TE-2,VA,TE;1),,        -14462.2-1.4631*T;,,          N 89Gho !
+ PAR  L(ION,SB+3:TE-2,VA,TE;2),,        -14462.2-1.4631*T;,,          N 89Gho !
+$
+ PAR  G(SB2TE_DELTA,SB:TE),,            +2*GHSERSB+3*GHSERTE
+             -46912.5-66.5092*T+9.1687*T*LN(T);                  1200 N 89Gho !
+ PAR  L(SB2TE_DELTA,SB:SB,TE;0),,       -35000+79*T;             1200 N 89Gho !
+$
+ PAR  G(SBTE_GAMMA,SB:TE),,             +2*GHSERSB+3*GHSERTE
+             -47962.5-66.1592*T+9.1687*T*LN(T);                  1200 N 89Gho !
+ PAR  L(SBTE_GAMMA,SB:SB,TE;0),,        -35000+79*T;             1200 N 89Gho !
+$
+ PAR  G(SB2TE3_C33,SB:TE),,             +2*GHSERSB+3*GHSERTE
+             -52162.5-64.7592*T+9.1687*T*LN(T);                  1200 N 89Gho !
+$ from 89Gho
+$PAR  G(SB2TE3_C33,TE:SB),,             +3*GHSERSB+2*GHSERTE
+$            +1192837.5-479.7592*T+9.1687*T*LN(T);               1200 N 89Gho !
+$ from sbsete.tdb
+ PAR  G(SB2TE3_C33,TE:SB),,             +3*GHSERSB+2*GHSERTE
+             +514837.5-253.7592*T+9.1687*T*LN(T);                1200 N 89Gho !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  89Che  'P.-Y. Chevalier, Thermochim. Acta, 155, 227-40 (1989); Ge-Sb'
+  89Gho  'G. Ghosh, H.L. Lukas, L. Delaey,
+          Z. Metallkd., 80, 731-36 (1989); Sb-Te'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  01Din  'A.T. Dinsdale, unpublished, 2001; Ge, Sb'
+!

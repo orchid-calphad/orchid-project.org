@@ -1,0 +1,352 @@
+$
+$ Database for U-O from P.-Y. Chevalier et al. 2002.
+$
+$ P.-Y. Chevalier, E. Fischer, B. Cheynet, J. Nucl. Mater., 303, 1-28(2002).
+$
+$ Dataset created 2024.08.10 by Bengt Hallstedt.
+$
+$ Associate liquid model with UO2 associates.
+$
+$ Based on 98Che with a different model for UO2 and new Gibbs energies for
+$ U4O9, U3O8 and UO3.
+$
+$ The U4O9 and U3O8 phases have an absurd number of temperature intervals to
+$ to reproduce some peaks in the heat capacity curve, probably from the
+$ transitions between the different crystal structures. Thermo-Calc has
+$ problems with these phases when mapping.
+$
+$ The upper temperature intervals of U4O9, U3O8 and UO3 are absurd.
+$
+$ It was not possible to extract useful crystal structure data for the
+$ uranium oxides from Springer Materials. The suggested structures for
+$ U4O9, U3O8 and UO3 are tentative at best. This should be checked against
+$ some other source.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  UO                                 U1O1 !
+ SPECIE  UO2                                U1O2 !
+ SPECIE  UO3                                U1O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : O U UO2 : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : U : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : U : VA : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : U : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : U : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE UO2_C1 % 3 1 2 1 !
+ CONST UO2_C1 : U : O VA : O VA : !
+$
+$ Superstructure of beta-U4O9? (S1)
+$ Prototypa beta-U4O9 (cF76, F-43m) (S2)
+$ ? (S3)
+$
+ PHASE U4O9 % 2 4 9 !
+ CONST U4O9 : U : O : !
+$
+$ Prototype alpha-U3O8 (oC22, Amm2) (S1)
+$ Prototype beta-U3O8 (oC44, Cmcm) (S2)
+$ Prototype U3O8-ht2 (hP11, P-62m) (S3)
+$ ? (S4)
+$
+ PHASE U3O8 % 2 3 8 !
+ CONST U3O8 : U : O : !
+$
+$ Prototype UO3 (oF128, Fddd)
+$
+ PHASE UO3 % 2 1 3 !
+ CONST UO3 : U : O : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : O O2 O3 U UO UO2 UO3 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(LIQUID,O),,                     +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+ PAR  G(GAS,O),,                        +F13349T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F14021T+RTLNP;,,             N 97SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F13349T    298.15  +243206.494-20.8612582*T-21.01555*T*LN(T)
+       +1.2687055E-04*T**2-1.23131283E-08*T**3-42897.09*T**(-1);
+      2950.00  Y  +252301.423-52.0847281*T-17.21188*T*LN(T)
+       -5.413565E-04*T**2+7.64520667E-09*T**3-3973170.5*T**(-1);
+      6000.00  N !
+$ O3(g)
+ FUNCTION F14021T    298.15  +130696.944-37.9096643*T-27.58118*T*LN(T)
+       -0.02763076*T**2+4.60539333E-06*T**3+99530.45*T**(-1);
+       700.00  Y  +114760.623+176.626737*T-60.10286*T*LN(T)
+       +0.00206456*T**2-5.17486667E-07*T**3+1572175*T**(-1);
+      1300.00  Y  +49468.3956+710.09482*T-134.3696*T*LN(T)
+       +0.039707355*T**2-4.10457667E-06*T**3+12362250*T**(-1);
+      2100.00  Y  +866367.075-3566.80563*T+421.2001*T*LN(T)
+       -0.1284109*T**2+5.44768833E-06*T**3-2.1304835E+08*T**(-1);
+      2800.00  Y  +409416.383-1950.70834*T+223.4437*T*LN(T)
+       -0.0922361*T**2+4.306855E-06*T**3-21589870*T**(-1);
+      3500.00  Y  -1866338.6+6101.13383*T-764.8435*T*LN(T)
+       +0.09852775*T**2-2.59784667E-06*T**3+9.610855E+08*T**(-1);
+      4900.00  Y  +97590.043+890.798361*T-149.9608*T*LN(T)
+       +0.01283575*T**2-3.555105E-07*T**3-2.1699975E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not in unary
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+ PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ PAR  G(UO2_C1,U:VA:VA),,               +GHSERUU+50000;,,             N 98Che !
+$
+ PAR  G(GAS,U),,                        +F15544T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQUU    298.15  +GHSERUU+12355.5-10.3239*T;                3000 N !
+$ U(g)
+ FUNCTION F15544T   298.15  +525166.477+13.5711342*T-32.50774*T*LN(T)
+       +0.011257965*T**2-2.43108833E-06*T**3+151047.95*T**(-1);
+       900.00  Y  +542789.503-171.438872*T-5.648039*T*LN(T)
+       -0.00709159*T**2-5.38072333E-08*T**3-2029813.5*T**(-1);
+      2000.00  Y  +592134.796-453.615007*T+31.52311*T*LN(T)
+       -0.019666645*T**2+7.51833333E-07*T**3-14442780*T**(-1);
+      4100.00  Y  +135174.943+932.918525*T-135.1826*T*LN(T)
+       +0.00759784*T**2-9.137355E-08*T**3+2.224411E+08*T**(-1);
+      7200.00  Y  +289996.336+696.70696*T-109.3279*T*LN(T)
+       +0.005828805*T**2-7.20728667E-08*T**3+56961900*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ P.-Y. Chevalier, E. Fischer, B. Cheynet, J. Nucl. Mater., 303, 1-28(2002).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Associate liquid model with UO2 associates.
+$
+$ Based on 98Che with a different model for UO2 and new Gibbs energies for
+$ U4O9, U3O8 and UO3.
+$
+$ The U4O9 and U3O8 phases have an absurd number of temperature intervals to
+$ to reproduce some peaks in the heat capacity curve, probably from the
+$ transitions between the different crystal structures. Thermo-Calc has
+$ problems with these phases when mapping.
+$
+$ The upper temperature intervals of U4O9, U3O8 and UO3 are absurd.
+$
+$ It was not possible to extract useful crystal structure data for the
+$ uranium oxides from Springer Materials. The suggested structures for
+$ U4O9, U3O8 and UO3 are tentative at best. This should be checked against
+$ some other source.
+$
+ PAR  G(LIQUID,UO2),,                   +GUO2L;,,                     N 98Che !
+ PAR  L(LIQUID,O,UO2;0),,               -75032.4;,,                   N 02Che !
+ PAR  L(LIQUID,O,UO2;1),,               -5693.17;,,                   N 02Che !
+ PAR  L(LIQUID,O,U;0),,                 +ZERO;,,                      N 98Che !
+ PAR  L(LIQUID,U,UO2;0),,               +28422.83;,,                  N 02Che !
+ PAR  L(LIQUID,U,UO2;1),,               +50649.93;,,                  N 02Che !
+ PAR  L(LIQUID,U,UO2;2),,               -27846.19;,,                  N 02Che !
+ PAR  L(LIQUID,U,UO2;3),,               +25146.41;,,                  N 02Che !
+$
+ PAR  G(UO2_C1,U:O:O),,                 +GHSERUU+3*GHSEROO
+             -1065703.28+272.16504*T;,,                               N 02Che !
+ PAR  G(UO2_C1,U:O:VA),,                +GUO2S;,,                     N 98Che !
+ PAR  G(UO2_C1,U:VA:O),,                +GHSERUU+GHSEROO+1500000;,,   N 02Che !
+ PAR  L(UO2_C1,U:O,VA:O;0),,            +ZERO;,,                      N 02Che !
+ PAR  L(UO2_C1,U:O,VA:VA;0),,           +164381.63-52.87598*T;,,      N 02Che !
+ PAR  L(UO2_C1,U:O:O,VA;0),,            -280800.72-55.16513*T;,,      N 02Che !
+ PAR  L(UO2_C1,U:O:O,VA;1),,            -133180.02;,,                 N 02Che !
+ PAR  L(UO2_C1,U:VA:O,VA;0),,           +ZERO;,,                      N 02Che !
+$
+ PAR  G(U4O9,U:O),,                     +GU4O9;,,                     N 02Che !
+ PAR  G(U3O8,U:O),,                     +GU3O8;,,                     N 02Che !
+ PAR  G(UO3,U:O),,                      +GUO3;,,                      N 02Che !
+$
+ PAR  G(GAS,UO),,                       +F13605T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,UO2),,                      +F13959T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,UO3),,                      +F14125T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GUO2S     298.15  -1112055.29+433.85191*T-74.6514*T*LN(T)
+       -0.00610305*T**2+1.7213E-07*T**3+649010*T**(-1);
+      1500.00  Y  -1707426.87+4369.945*T-604.679*T*LN(T)
+       +0.205276*T**2-1.583148E-05*T**3+126580500*T**(-1);
+      2670.00  Y  -1303255.56+1218.637*T-167.038*T*LN(T);
+      6000.00  N !
+ FUNCTION GUO2L     298.15  -1018368.29+403.26101*T-74.6514*T*LN(T)
+       -0.00610305*T**2+1.7213E-07*T**3+649010*T**(-1);
+      1500.00  Y  -1613739.87+4339.451*T-604.679*T*LN(T)
+       +0.205276*T**2-1.583148E-05*T**3+126580500*T**(-1);
+      2598.00  Y  -1115877.41+868.30348*T-130.959*T*LN(T);
+      6000.00  N !
+ FUNCTION GU4O9     298.15  -4571334.84+553.52242*T-104.2240*T*LN(T)
+       -0.317914*T**2;
+       315.00  Y  -21527707.15+462627.93725*T-80353.134511*T*LN(T)
+       +168.72160812*T**2-0.066861023679*T**3+672731715*T**(-1);
+       349.10  Y  +682636436.42-16813679.498*T+2855145.3398*T*LN(T)
+       -5273.4688266*T**2+1.8262229613*T**3-3.1015579491E+10*T**(-1);
+       358.00  Y  +8204367.23-295424.2196*T+49607.744082*T*LN(T)
+       -86.43924029*T**2+0.0280551397*T**3-615931223*T**(-1);
+       388.00  Y  -4561894.7+719.84272*T-139.677*T*LN(T)
+       -0.2618065*T**2+5.798585E-05*T**3-1519527*T**(-1);
+       580.00  Y  -4620832.13+1881.86577*T-327.8259*T*LN(T)
+       -0.0057467735*T**2-5.503398E-06*T**3+1721083*T**(-1);
+      1405.00  Y  -4615385.21+1686.32344*T-295.61164*T*LN(T)
+       -0.04262143*T**2;
+      1705.00  Y  +1000000;
+      6000.00  N !
+ FUNCTION GU3O8     298.15  -3757004.9+3598.46802*T-611.67931*T*LN(T)
+       +0.56012754*T**2-0.000184496*T**3+6125573*T**(-1);
+       430.00  Y  -3713067.3+3855.55052*T-691.62374*T*LN(T)
+       +1.0284935*T**2-0.000415785*T**3;
+       466.00  Y  -211824711.19+4093443.7656*T-665467.06062*T*LN(T)
+       +944.83137476*T**2-0.25166204651*T**3+1.221599679E+10*T**(-1);
+       482.28  Y  +23768140.14-496787.93874*T+79521.03488*T*LN(T)
+       -103.1609946*T**2+0.024999846914*T**3-1.76708302E+09*T**(-1);
+       520.00  Y  -13568444.8+178893.3056*T-28588.981158*T*LN(T)
+       +35.995755244*T**2-0.0085918794943*T**3+651132994*T**(-1);
+       570.00  Y  +29696877.315-533521.93592*T+83425.234274*T*LN(T)
+       -93.394402393*T**2+0.019544782971*T**3-2.4937438726E+09*T**(-1);
+       600.00  Y  -2372823.06-17215.05551*T+2612.09997*T*LN(T)
+       -2.869557*T**2+0.000528132*T**3-107072548*T**(-1);
+       700.00  Y  -4401329.96+11838.606414*T-1840.06837*T*LN(T)
+       +1.485206*T**2-0.000272514*T**3+66730372*T**(-1);
+       850.20  Y  -1298406.16-22608.66524*T+3218.87706*T*LN(T)
+       -2.302029*T**2+0.000279384*T**3-299292069*T**(-1);
+      1020.00  Y  -3658949.79+1464.78256*T-256.43532*T*LN(T)
+       -0.0305604*T**2+1.326559E-06*T**3+999752*T**(-1);
+      3000.00  Y  +1000000;
+      6000.00  N !
+ FUNCTION GUO3      298.15  -1254274.53+507.96927*T-88.701*T*LN(T)
+       -0.0072448*T**2+504515*T**(-1);
+      1500.00  Y  +1000000;
+      6000.00  N !
+$ UO(g)
+ FUNCTION F13605T   298.15  +16876.7281+19.0537968*T-39.24244*T*LN(T)
+       -0.01112893*T**2+3.10306167E-06*T**3+224109.55*T**(-1);
+       600.00  Y  +13659.1249+89.4122076*T-50.72352*T*LN(T)
+       +0.004664911*T**2-6.57119833E-07*T**3+341211.4*T**(-1);
+      1600.00  Y  +42061.6932-87.2257934*T-27.12151*T*LN(T)
+       -0.004339484*T**2+1.51070967E-08*T**3-6205765*T**(-1);
+      3600.00  Y  +45736.8641-175.350898*T-15.0643*T*LN(T)
+       -0.00855199*T**2+2.31189167E-07*T**3+3333798.5*T**(-1);
+      6400.00  Y  -408214.205+818.908155*T-129.4768*T*LN(T)
+       +0.0042929265*T**2-3.95851167E-08*T**3+3.4213425E+08*T**(-1);
+     10000.00  N !
+$ UO2(g)
+ FUNCTION F13959T   298.15  -495807.676+124.776837*T-57.92347*T*LN(T)
+       -0.004670147*T**2+2.33750167E-07*T**3+46964.395*T**(-1);
+      3600.00  Y  -552144.682+348.950829*T-85.89682*T*LN(T)
+       +0.001488699*T**2-1.91601167E-08*T**3+21380610*T**(-1);
+     10000.00  N !
+$ UO3(g)
+ FUNCTION F14125T   298.15  -821782.567+127.612956*T-63.2747*T*LN(T)
+       -0.01749984*T**2+2.94846167E-06*T**3+339277.35*T**(-1);
+       800.00  Y  -833602.387+273.282058*T-85.06606*T*LN(T)
+       +9.630085E-04*T**2-7.86249333E-08*T**3+1580565*T**(-1);
+      3700.00  Y  -616310.89-317.414757*T-15.37892*T*LN(T)
+       -0.008371305*T**2+1.30991117E-07*T**3-1.205203E+08*T**(-1);
+      7000.00  Y  -1113541.65+452.506893*T-99.7827*T*LN(T)
+       -0.0025359575*T**2+6.781155E-08*T**3+4.009627E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Lin    'Linear combination of lattice stabilities'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94SUB  'SGTE Substance Database, version 1994'
+  97SUB  'SGTE Substance Database, version 1997'
+  98Che  'P.-Y. Chevalier, E. Fischer, J. Nucl. Mater., 257, 213-55(1998); U-O'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  02Che  'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          J. Nucl. Mater., 303, 1-28(2002); U-O'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr, U-Zr'
+!

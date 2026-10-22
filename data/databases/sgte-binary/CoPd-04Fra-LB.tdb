@@ -1,0 +1,138 @@
+$
+$ Database for Co-Pd from P. Franke 2004 (included in LB Vol. 5)
+$
+$ P. Franke, unpublished, 2004.
+$
+$ Dataset created 2015.05.02 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO PD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% PD% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO PD : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% PD : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From P. Franke 2004 (included in LB Vol. 5)
+$
+$ P. Franke, unpublished, 2004.
+$
+$ Checked against LB. Checked at 6000 K.
+$
+ PAR  L(LIQUID,CO,PD;0),,               -46530+13.52*T;,,             N 04Fra !
+ PAR  L(LIQUID,CO,PD;1),,               +10570+0.5*T;,,               N 04Fra !
+$
+ PAR  L(FCC_A1,CO,PD:VA;0),,            -42910+17.9*T;,,              N 04Fra !
+ PAR  L(FCC_A1,CO,PD:VA;1),,            +22040-4.8*T;,,               N 04Fra !
+ PAR  TC(FCC_A1,CO,PD:VA;0),,           +1110.1;,,                    N 99Gho !
+ PAR  TC(FCC_A1,CO,PD:VA;1),,            -536.76;,,                   N 99Gho !
+ PAR  BM(FCC_A1,CO,PD:VA;0),,              +1.3224;,,                 N 99Gho !
+ PAR  BM(FCC_A1,CO,PD:VA;1),,              -1.5504;,,                 N 99Gho !
+$
+ PAR  L(HCP_A3,CO,PD:VA;0),,            +UN_ASS;,,                    N !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,CO,PD:VA;0),,            +UN_ASS;,,                    N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+    CO-PD(TDB -* +LIQUID +FCC +HCP_A3 ;P3 STP:.4/1600/-2 STP:.001/500/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, C. Kantner, G.B. Olson,
+          J. Phase Equilib., 20, 295-308(1999); Co-Pd'
+  04Fra  'P. Franke, unpublished, 2004; Co-Pd'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+!

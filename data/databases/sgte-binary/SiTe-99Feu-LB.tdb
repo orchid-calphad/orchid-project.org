@@ -1,0 +1,136 @@
+$
+$ Database for Si-Te from Y. Feutelais et al. 1999 (included in LB vol. 4)
+$
+$ Y. Feutelais, A. Schlieper, S.G. Fries, Calphad, 23, 365-78(1999).
+$
+$ Dataset created 2016.03.25 by Bengt Hallstedt.
+$ 2020.04.10: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  SI2TE3                             SI2TE3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SI SI2TE3 TE : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ Prototype alpha-Si2Te3 (hP40, P-31c)
+$
+ PHASE SI2TE3_LT % 2 2 3 !
+ CONST SI2TE3_LT : SI : TE : !
+$
+$ unknown structure
+$
+ PHASE SI2TE3_HT % 2 2 3 !
+ CONST SI2TE3_HT : SI : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                2000 N 95Dav !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 2000 N 95Dav !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From from Y. Feutelais et al. 1999 (included in LB vol. 4)
+$
+$ Y. Feutelais, A. Schlieper, S.G. Fries, Calphad, 23, 365-78(1999).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+ PAR  G(LIQUID,SI2TE3),,                +2*GLIQSI+3*GLIQTE
+             -103374.29-28.15335*T;,,                                 N 99Feu !
+ PAR  L(LIQUID,SI,SI2TE3;0),,           -1188.07;,,                   N 99Feu !
+ PAR  L(LIQUID,SI,SI2TE3;1),,           +20527.93;,,                  N 99Feu !
+ PAR  L(LIQUID,SI2TE3,TE;0),,           -53203.79;,,                  N 99Feu !
+$
+ PAR  G(SI2TE3_LT,SI:TE),,              +2*GHSERSI+3*GHSERTE
+             -71000-66.77375*T;,,                                     N 99Feu !
+ PAR  G(SI2TE3_HT,SI:TE),,              +2*GHSERSI+3*GHSERTE
+             -70217.45-67.9348*T;,,                                   N 99Feu !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  SI-TE(TDB -* +LIQUID +SI2TE3_HT +SI2TE3_LT +DIAMOND_A4 +HEXAGONAL_A8 
+  ;P3 TMM:300/2500 STP:0.1/1000/1 STP:0.1/2000/2 STP:.9/500/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  99Feu  'Y. Feutelais, A. Schlieper, S.G. Fries,
+          Calphad, 23, 365-78(1999); Si-Te'
+!

@@ -1,0 +1,229 @@
+$
+$ Database for In-Sc from Z. Hu et al. 2018.
+$
+$ Z. Hu, C. Huang, J. Tu, Y. Huang, A. Dong,
+$ J. Mining Metall. B, 54, 161-67(2018).
+$
+$ Dataset created 2022.11.27 by Bengt Hallstedt.
+$
+$ Invariant eqilibria differ by up to 18 K. Rounding errors?
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT IN   TETRAGONAL_A6             114.82      6610.0     57.65   ! 
+ ELEMENT SC   HCP_A3                     44.9559    5217.448   34.6435 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : IN SC : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : IN SC : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : IN SC% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : IN SC% : VA : !
+$
+$ Prototype In (tI2, I4/mmm)
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : IN : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE IN3SC_L12 % 2 3 1 !
+ CONST IN3SC_L12 : IN : SC : !
+$
+$ Prototype Ga2Zr (oC12, Cmmm)
+$
+ PHASE IN2SC % 2 2 1 !
+ CONST IN2SC : IN : SC : !
+$
+$ Prototype AuCu (tP4, P4/mmm)
+$
+ PHASE INSC_L10 % 2 1 1 !
+ CONST INSC_L10 : IN : SC : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE IN4SC5_B2 % 2 4 5 !
+ CONST IN4SC5_B2 : IN : SC : !
+$
+$ Prototype InNi2 (hP6, P6_3/mmc)
+$
+ PHASE INSC2_B82 % 2 1 2 !
+ CONST INSC2_B82 : IN : SC : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE INSC3_D019 % 2 1 3 !
+ CONST INSC3_D019 : IN : SC : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ In
+$
+$ FCC_A1 and TET_ALPHA1 revised in unary 4.1
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$ TET_ALPHA1 revised in unary 5.0 (using the value from 99Ans)
+$ DHCP added in unary 5.0
+$
+$ There is quite a bit of confusion about TET_ALPHA1_A6. The structure is
+$ the same as In (TETRAGONAL_A6), but with a different (presumably) c/a ratio.
+$ TET_ALPHA1_A6 is present in Bi-In, In-Pb and In-Sn (possibly more). Between
+$ the TETRAGONAL_A6 (In-ss) and TET_ALPHA1_A6 there is a narrow two-phase
+$ region. In each system a different G(TET_ALPHA1_A6,IN) lattice stability
+$ was used.
+$ In 91Din a value from an unpublished revision of the Bi-In system by
+$ P.-Y. Chevalier 1990 is included. In SGTE Unary V 4.4 a value from 98Boa
+$ for the In-Pb system is included. 98Boa treated the TET_ALPHA1_A6
+$ phase in Bi-In and In-Pb as two different phases and used the lattice
+$ stability from 88Che0 for the Bi-In branch of this phase. Finally, SGTE
+$ unary V 5.0 uses a value from an unpublished evaluation by 99Ans of the
+$ In-Sn system. Due to the close proximity of the TETRAGONAL_A6 and
+$ TET_ALPHA1_A6 phases in these systems, any change of lattice stability
+$ will cause a distortion of the phase diagram and require reoptimisation.
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(TETRAGONAL_A6,IN),,             +GHSERIN;                3800 N 91Din !
+ PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+162.061;        3800 N 98Boa !
+$PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+123-0.1988*T;   3800 N 91Din !
+ PAR  G(BCC_A2,IN:VA),,                 +GHSERIN+800-0.8*T;      3800 N 91Din !
+ PAR  G(HCP_A3,IN:VA),,                 +GHSERIN+533-0.6868*T;   3800 N 91Din !
+$PAR  G(DHCP,IN),,                      +GHSERIN+520-0.384*T;    3800 N 92Ans !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+123-0.1988*T;   3800 N 99Ans1 !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+0.31*T;         3800 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+193-0.16479*T;  3800 N 91Din !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN-33+0.16*T;      3800 N 88Che0 !
+$PAR  G(BCT_A5,IN),,                    +GHSERIN
+$            +5040.87-3.33969*T;                                 3800 N 99Ans1 !
+$PAR  G(RHOMBOHEDRAL_A7,IN),,           +GHSERIN+4184;           3800 N 88Che0 !
+ PAR  G(LIQUID,IN),,                    +GLIQIN;                 3800 N 91Din !
+$
+ FUNCTION GHSERIN   298.15  -6978.89+92.338115*T-21.8386*T*LN(T)
+       -0.00572566*T**2-2.120321E-06*T**3-22906*T**(-1);
+       429.75  Y  -7033.516+124.476588*T-27.4562*T*LN(T)
+       +5.4607E-04*T**2-8.367E-08*T**3-211708*T**(-1)+3.53116E+22*T**(-9);
+      3800.00  N !
+ FUNCTION GLIQIN    298.15  +3282.092-7.63686*T+GHSERIN-5.59058E-20*T**7;
+       429.75  Y  +3283.706-7.640804*T+GHSERIN-3.53116E+22*T**(-9);
+      3800.00  N !
+$ ------------------------------------------------------------------------------
+$ Sc
+$
+$ FCC_A1 and DHCP added in unary 4.4
+$
+ PAR  G(HCP_A3,SC:VA),,                 +GHSERSC;                3200 N 91Din !
+ PAR  G(BCC_A2,SC:VA),,                 +GBCCSC;                 3200 N 91Din !
+ PAR  G(FCC_A1,SC:VA),,                 +GHSERSC+5000;           3200 N 99Cac !
+$PAR  G(DHCP,SC),,                      +GHSERSC
+$            +1200+0.4157255*T;                                  3200 N 00Nor2 !
+ PAR  G(LIQUID,SC),,                    +GLIQSC;                 3200 N 91Din !
+$
+ FUNCTION GHSERSC   298.15  -8689.547+153.48097*T-28.1882*T*LN(T)
+       +0.00321892*T**2-1.64531E-06*T**3+72177*T**(-1);
+       800.00  Y  -7511.295+132.759582*T-24.9132*T*LN(T)
+       -5.73295E-04*T**2-8.59345E-07*T**3;
+      1608.00  Y  +261143.04-1817.92245*T+241.441051*T*LN(T)
+       -0.117529396*T**2+8.7398E-06*T**3-50607159*T**(-1);
+      2000.00  Y  -30515.246+286.474338*T-44.2249*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCSC    298.15  +1979.728-1.024135*T+GHSERSC;
+      1000.00  Y  +230161.408-2004.05469*T+276.76664*T*LN(T)
+       -0.167120107*T**2+1.5637371E-05*T**3-33783257*T**(-1);
+      1608.00  Y  -25928.011+283.642312*T-44.2249*T*LN(T);
+      2000.00  Y  +4587.235-2.832026*T+GHSERSC;
+      3200.00  N !
+ FUNCTION GLIQSC    298.15  +6478.66+45.427539*T-10.7967803*T*LN(T)
+       -0.020636524*T**2+2.13106E-06*T**3-158106*T**(-1);
+      1608.00  Y  -11832.111+275.871695*T-44.2249*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. Hu, C. Huang, J. Tu, Y. Huang, A. Dong,
+$ J. Mining Metall. B, 54, 161-67(2018).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant eqilibria differ by up to 18 K. Rounding errors?
+$
+ PAR  L(LIQUID,IN,SC;0),,               -96394.19;,,                  N 18Hu !
+ PAR  L(LIQUID,IN,SC;1),,               +40221.46-9.8*T;,,            N 18Hu !
+ PAR  L(LIQUID,IN,SC;2),,               +3200;,,                      N 18Hu !
+$
+ PAR  L(BCC_A2,IN,SC:VA;0),,            -100806.23;,,                 N 18Hu !
+ PAR  L(BCC_A2,IN,SC:VA;1),,            +21202.68;,,                  N 18Hu !
+$
+ PAR  L(HCP_A3,IN,SC:VA;0),,            -95743.42;,,                  N 18Hu !
+ PAR  L(HCP_A3,IN,SC:VA;1),,            +23197.63;,,                  N 18Hu !
+$
+ PAR  G(IN3SC_L12,IN:SC),,              +3*GHSERIN+GHSERSC
+             -119572+19.04*T;,,                                       N 18Hu !
+ PAR  G(IN2SC,IN:SC),,                  +2*GHSERIN+GHSERSC
+             -108889.46+18.98*T;,,                                    N 18Hu !
+ PAR  G(INSC_L10,IN:SC),,               +GHSERIN+GHSERSC
+             -82200+8.69*T;,,                                         N 18Hu !
+ PAR  G(IN4SC5_B2,IN:SC),,              +4*GHSERIN+5*GHSERSC
+             -363654.29+25.99*T;,,                                    N 18Hu !
+ PAR  G(INSC2_B82,IN:SC),,              +GHSERIN+2*GHSERSC
+             -112484.2+5.1171264*T;,,                                 N 18Hu !
+ PAR  G(INSC3_D019,IN:SC),,             +GHSERIN+3*GHSERSC
+             -115904.59;,,                                            N 18Hu !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,IN,SC:VA;0),,            -100806.23;,,                 N Same !
+ PAR  L(FCC_A1,IN,SC:VA;1),,            +23197.63;,,                  N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che0 'P.-Y Chevalier, Calphad, 12, 383-92(1988)
+          SGTE unary database V.4.1, 1999; In'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992),
+          SGTE unary database V.5.0, 2009; In'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  99Ans1 'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  99Cac  'G. Cacciamani, P. Riani, G. Borzone, N. Parodi, A. Saccone, R. Ferro,
+          A. Pisch, R. Schmid-Fetzer, Intermetallics, 7, 101-8(1999),
+          SGTE unary database V.4.4, 2001; Sc'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000,
+          SGTE unary database V.4.4, 2001; Nd, Sc'
+  18Hu   'Z. Hu, C. Huang, J. Tu, Y. Huang, A. Dong,
+          J. Mining Metall. B, 54, 161-67(2018); In-Sc'
+!

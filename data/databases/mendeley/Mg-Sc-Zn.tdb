@@ -1,0 +1,218 @@
+$******************************************************************************
+$ ------------------------------Mg-Sc-Zn TDB   --------------------------------
+$----------------------------Made by Yiheng Wang--------------------------------
+$******************************************************************************
+$
+
+ ELEMENT /-   ELECTRON_GAS              0.0000E+00  0.0000E+00  0.0000E+00!
+ ELEMENT VA   VACUUM                    0.0000E+00  0.0000E+00  0.0000E+00!
+ ELEMENT ZN   HCP_ZN                    6.5390E+01  5.6568E+03  4.1631E+01! 
+ ELEMENT MG   HCP_A3                    2.4305E+01  4.9980E+03  3.2671E+01!
+ ELEMENT SC   HCP_A3                    4.4956E+01  0.0000E+00  0.0000E+00!
+$
+$
+$---------------------------Mg----------------------------------------------    
+  FUNCTION GLIQMG    298.15 -165.097+134.838617*T-26.1849782*T*LN(T)
+      +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1)-8.0176E-20*T**7; 923 Y
+       -5439.869+195.324057*T-34.3088*T*LN(T); 3000 N !
+  FUNCTION GBCCMG    298.15 -5267.34+141.575547*T-26.1849782*T*LN(T)
+      +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1); 923 Y
+       -11030.185+202.616215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9); 3000 N !
+  FUNCTION GFCCMG    298.15 -5767.34+142.775547*T-26.1849782*T*LN(T)
+      +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1); 923 Y
+       -11530.185+203.816215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9); 3000 N !
+  FUNCTION GHSERMG   298.15 -8367.34+143.675547*T-26.1849782*T*LN(T)
+      +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1); 923 Y
+       -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9); 3000 N !
+$
+$--------------------------Zn------------------------------------------------
+  FUNCTION GHSERZN  298.15 -7285.787+118.470069*T
+       -23.701314*T*LN(T)-1.712034E-3*T**2-1.264963E-6*T**3;
+       692.677 Y -11070.546+172.345644*T-31.38*T*LN(T)
+       +470.47E24*T**(-9);  1700.00 N !		   
+  FUNCTION GHCPZN   298.15 2969.82-1.56968*T+GHSERZN; 1700 N !
+  FUNCTION GLIQZN   298.15 7157.222-10.29305*T-358.949E-21*T**7+GHSERZN;
+                   692.677 Y -3620.385+161.60854*T-31.38*T*LN(T); 1700 N !
+  FUNCTION GFCCZN   298.15 2969.82-1.56968*T+GHSERZN; 1700 N !
+  FUNCTION GBCCZN   298.15 2886.96-2.5104*T+GHSERZN; 1700 N ! 
+$ 
+$--------------------------Sc-------------------------------------------------      
+  FUNCTION GHSERSC  298.15
+      -8689.547+153.48097*T-28.1882*T*LN(T)+3.21892E-3*T**2-1.64531E-6*T**3
+      +72177*T**(-1);   800.00 Y
+      -7511.295+132.759582*T-24.9132*T*LN(T)-0.573295E-3*T**2-0.859345E-6*T**3;
+      1608.00 Y
+      261143.04-1817.922454*T+241.4410508*T*LN(T)-117.529396E-3*T**2
+      +8.7398E-6*T**3-50607159*T**(-1);  2000.00 Y
+      -30515.246+286.474338*T-44.2249*T*LN(T);  3200.00 N !
+  FUNCTION GBCCSC   298.15
+      -6709.819+152.456835*T-28.1882*T*LN(T)+3.21892E-3*T**2-1.64531E-6*T**3
+      +72177*T**(-1);   800.00 Y
+      -5531.567+131.735447*T-24.9132*T*LN(T)-0.573295E-3*T**2-0.859345E-6*T**3;
+      1000.00 Y
+      230161.408-2004.054685*T+276.7666402*T*LN(T)-167.120107E-3*T**2
+      +15.637371E-6*T**3-33783257*T**(-1);  1608.00 Y
+      -25928.011+283.642312*T-44.2249*T*LN(T);  3200.00 N !
+  FUNCTION GLIQSC   298.15
+      6478.66+45.427539*T-10.7967803*T*LN(T)-20.636524E-3*T**2+2.13106E-6*T**3
+      -158106*T**(-1);  1608.00 Y
+      -11832.111+275.871695*T-44.2249*T*LN(T);  3200.00 N !
+  FUNCTION GFCCSC  298.15 5000+GHSERSC; 3200 N !
+  FUNCTION GDHCPSC 298.15 1200+0.415725*T+GHSERSC; 3200 N !
+$
+$ Mg-Sc-----------------------------------------------------------------------
+
+  FUNCTION B2MGSC     2.98150E+02  -19290+6.1*T;   6.00000E+03   N !
+  FUNCTION LB2MGSC    2.98150E+02  0.0;   6.00000E+03   N !
+  FUNCTION B2MGVA     2.98150E+02  +10000-T;   6.00000E+03   N !
+  FUNCTION LB2MGVA    2.98150E+02  0.0; 6000.00  N !
+  FUNCTION B2SCVA     2.98150E+02  +B2MGVA#-B2MGSC#;   6.00000E+03   N !
+  FUNCTION LB2SCVA    2.98150E+02  0.0;   6.00000E+03   N !
+  
+  FUNCTION UN_ASS 298.15 +0; 300 N !
+
+$$-------------------------------------------------------------------------
+  TYPE_DEFINITION % SEQ *!
+ DEFINE_SYSTEM_DEFAULT ELEMENT 2 !
+ DEFAULT_COMMAND DEF_SYS_ELEMENT VA /- !
+$---------------------------------- PHASE-------------------------------------
+$-----------------------------------LIQUID-------------------------------------
+  PHASE LIQUID  %  1  1.0  !
+    CONSTITUENT LIQUID  :MG,ZN,SC :  !
+    PARAMETER G(LIQUID,MG;0)               298.15 +GLIQMG#; 3000 N REF1 !
+    PARAMETER G(LIQUID,ZN;0)               298.15 +GLIQZN; 1700 N !
+    PARAMETER G(LIQUID,SC;0)               298.15 +GLIQSC#; 3200 N REF1 !
+    PARAMETER G(LIQUID,MG,SC;0)            298.15 -12000.0+8.75*T; 3000 N !
+    PARAMETER G(LIQUID,MG,ZN;0)            298.15 
+	 -77729.24+680.52266*T-95*T*LN(T)+0.04*T**2; 3000 N !
+    PARAMETER G(LIQUID,MG,ZN;1)            298.15 3674.72+0.57139*T; 3000 N !
+    PARAMETER G(LIQUID,MG,ZN;2)            298.15 -1588.15; 3000 N !	
+    PARAMETER G(LIQUID,SC,ZN;0)            298.15 -83967+10.7848*T; 3000 N ! 
+    PARAMETER G(LIQUID,SC,ZN;1)            298.15 15273; 3000 N !
+    PARAMETER G(LIQUID,MG,SC,ZN;0)            298.15 5000; 3000 N !
+	PARAMETER G(LIQUID,MG,SC,ZN;1)            298.15 0; 3000 N !
+	PARAMETER G(LIQUID,MG,SC,ZN;2)            298.15 0; 3000 N !
+$
+$--------------------------------HCP_A3---------------------------------------
+ TYPE_DEFINITION . GES A_P_D HCP_A3 MAGNETIC  -3.0    2.80000E-01 !
+ PHASE HCP_A3  %.  2 1   0.5 !
+    CONSTITUENT HCP_A3  :MG,SC,ZN : VA :  !
+    PARAMETER G(HCP_A3,MG:VA;0)            298.15 +GHSERMG#; 3000 N REF1 !
+    PARAMETER G(HCP_A3,SC:VA;0)            298.15 +GHSERSC#; 3200 N REF1!
+    PARAMETER G(HCP_A3,ZN:VA;0)            298.15 GHCPZN; 1700 N !
+    PARAMETER G(HCP_A3,MG,SC:VA;0)         298.15 -16115.8+15.02*T; 3000 N !
+    PARAMETER G(HCP_A3,MG,ZN:VA;0)         298.15 -3056.82+5.63801*T; 3000 N !
+    PARAMETER G(HCP_A3,MG,ZN:VA;1)         298.15 -3127.26+5.65563*T; 3000 N !
+    PARAMETER G(HCP_A3,SC,ZN:VA;0)         298.15 -1000; 3000 N !
+	PARAMETER G(HCP_A3,MG,SC,ZN:VA;0)      298.15 -50000; 3000 N !
+	PARAMETER G(HCP_A3,MG,SC,ZN:VA;1)      298.15 0; 3000 N !
+	PARAMETER G(HCP_A3,MG,SC,ZN:VA;2)      298.15 0; 3000 N !
+$
+$--------------------------------HCP_ZN---------------------------------------
+ PHASE HCP_ZN  %  2 1   0.5 !
+    CONSTITUENT HCP_ZN  :MG,ZN,SC : VA :  !
+    PARAMETER G(HCP_ZN,MG:VA;0)            298.15 +100+GHSERMG#; 3000 N !
+    PARAMETER G(HCP_ZN,ZN:VA;0)            298.15 GHSERZN#; 1700 N !
+    PARAMETER G(HCP_ZN,MG,ZN:VA;0)         298.15 -3056.82+5.63801*T; 3000 N ! 
+    PARAMETER G(HCP_ZN,MG,ZN:VA;1)         298.15 -3127.26+5.65563*T; 3000 N !  
+$
+$--------------------------------BCC_A2---------------------------------------
+ TYPE_DEFINITION & GES A_P_D BCC_A2 MAGNETIC  -1.0    4.00000E-01 !
+ PHASE BCC_A2  %&  2 1   3 !
+    CONSTITUENT BCC_A2  :MG,SC,ZN : VA :  !
+    PARAMETER G(BCC_A2,MG:VA;0)            298.15 +GBCCMG#; 3000 N REF0 !
+    PARAMETER G(BCC_A2,SC:VA;0)            298.15 +GBCCSC#; 3200 N REF1 !
+	PARAMETER G(BCC_A2,ZN:VA;0)            298.15 +GBCCZN#; 6000 N REF0 !
+    PARAMETER G(BCC_A2,MG,SC:VA;0)         298.15 -24051.0+15.56*T; 3000 N !
+	PARAMETER G(BCC_A2,MG,ZN:VA;0)         298.15 -10000; 3000 N REF0 !
+    PARAMETER G(BCC_A2,MG,ZN:VA;1)         298.15 0; 3000 N REF0 ! 
+	PARAMETER G(BCC_A2,MG,SC,ZN:VA;0)      298.15 -120000; 3000 N REF0 !
+    PARAMETER G(BCC_A2,MG,SC,ZN:VA;1)      298.15 0; 3000 N REF0 !
+    PARAMETER G(BCC_A2,MG,SC,ZN:VA;2)      298.15 0; 3000 N REF0 !
+$
+$--------------------------------BCC_B2--------------------------------------- 
+ PHASE BCC_B2  %  3  0.5   0.5  3!
+    CONSTITUENT BCC_B2  :MG,ZN :MG,SC : VA: !
+	PARAMETER G(BCC_B2,ZN:MG:VA;0)    298.15     
+	   -10023.8+15*T+0.5*GHSERMG#+0.5*GHSERZN; 3000 N  !	 
+	PARAMETER G(BCC_B2,ZN:SC:VA;0)    298.15     
+	   -36379+5.1667*T+0.5*GHSERSC#+0.5*GHSERZN; 3000 N  ! 
+    PARAMETER G(BCC_B2,MG:MG:VA;0)      298.15 GBCCMG; 3000 N  !
+    PARAMETER G(BCC_B2,MG:SC:VA;0)      298.15 
+	   0.5*GHSERMG+0.5*GHSERSC-20580+19.43*T; 3000 N  !
+    PARAMETER G(BCC_B2,ZN:MG,SC:VA;0)      298.15 7000; 3000 N REF0 !
+    PARAMETER G(BCC_B2,ZN:MG,SC:VA;1)      298.15 0; 3000 N REF0 !  
+    PARAMETER G(BCC_B2,MG,ZN:SC:VA;0)    298.15  26325-25*T; 3000 N  !
+    PARAMETER G(BCC_B2,MG,ZN:SC:VA;1)    298.15  0; 3000 N  ! 
+$
+$--------------------------------MG51ZN20---------------------------------------  
+ PHASE MG51ZN20  %  2 51   20 !
+    CONSTITUENT MG51ZN20  :MG : ZN :  !
+    PARAMETER G(MG51ZN20,MG:ZN;0)         298.15 -335741.54+35.5*T
+	+51*GHSERMG#+20*GHSERZN#; 3000 N  !
+$
+$--------------------------------MG12ZN13--------------------------------------- 
+  PHASE MG12ZN13  %  2 12   13 !
+    CONSTITUENT MG12ZN13  :MG : ZN :  !
+    PARAMETER G(MG12ZN13,MG:ZN;0)         298.15 -236980.84+59.24524*T
+	+12*GHSERMG#+13*GHSERZN#; 3000 N  !
+$
+$--------------------------------MG2ZN3--------------------------------------- 
+  PHASE MG2ZN3  %  2 2   3 !
+    CONSTITUENT MG2ZN3  :MG : ZN :  !
+    PARAMETER G(MG2ZN3,MG:ZN;0)         298.15 -54406.2+13.60156*T
+	+2*GHSERMG#+3*GHSERZN#; 3000 N  ! 
+$
+$--------------------------------LAVES_C14-----------------------------------
+  PHASE  LAVES_C14  %  2 2   1 !
+    CONSTITUENT LAVES_C14  :MG,ZN :MG,ZN :  !
+    PARAMETER G(LAVES_C14,MG:MG;0)         298.15 15000+3*GHSERMG#; 3000 N  !
+    PARAMETER G(LAVES_C14,MG:ZN;0)         298.15 
+	      65355.45-8.83886*T+2*GHSERMG#+GHSERZN#; 3000 N  !
+    PARAMETER G(LAVES_C14,ZN:MG;0)         298.15 -35355.45+8.83886*T
+	                                       +GHSERMG#+2*GHSERZN#; 3000 N  ! 
+    PARAMETER G(LAVES_C14,ZN:ZN;0)         298.15 15000+3*GHSERZN#; 3000 N  ! 
+    PARAMETER G(LAVES_C14,MG,ZN:MG;0)      298.15 35000; 3000 N  !  
+    PARAMETER G(LAVES_C14,MG,ZN:ZN;0)      298.15 35000; 3000 N  !  
+    PARAMETER G(LAVES_C14,MG:MG,ZN;0)      298.15 8000; 3000 N  !  
+    PARAMETER G(LAVES_C14,ZN:MG,ZN;0)      298.15 8000; 3000 N  !  
+$
+$--------------------------------MG2ZN11------------------------------------
+  PHASE MG2ZN11  %  2 2   11 !
+    CONSTITUENT MG2ZN11  :MG : ZN :  !
+    PARAMETER G(MG2ZN11,MG:ZN;0)         298.15 -73818.32+18.45457*T
+	+2*GHSERMG#+11*GHSERZN#; 3000 N  !  
+$
+$--------------------------------SCZN2---------------------------------------  
+ PHASE SCZN2  %  2 0.3333   0.6667 !
+    CONSTITUENT SCZN2  :SC : ZN :  !
+    PARAMETER G(SCZN2,SC:ZN;0)    298.15     
+	   -33063+5.1345*T+0.3333*GHSERSC#+0.6667*GHSERZN; 3000 N  !
+$
+$--------------------------------SC13ZN58--------------------------------------- 
+ PHASE SC13ZN58  %  2 0.1831   0.8169 !
+    CONSTITUENT SC13ZN58  :SC : ZN :  !
+    PARAMETER G(SC13ZN58,SC:ZN;0)   298.15      
+	  -25600+6.0471*T+0.1831*GHSERSC#+0.8169*GHSERZN#; 3000 N  !
+$
+$--------------------------------SC3ZN17--------------------------------------- 
+ PHASE SC3ZN17  %  2 0.15   0.85 !
+    CONSTITUENT SC3ZN17  :SC : ZN :  !
+    PARAMETER G(SC3ZN17,SC:ZN;0)  298.15      
+	 -21287+3.9010*T+0.15*GHSERSC#+0.85*GHSERZN; 3000 N  !
+$
+$--------------------------------SCZN12---------------------------------------
+ PHASE SCZN12  %  2 0.0769   0.9231 !
+    CONSTITUENT SCZN12  :SC : ZN :  !
+    PARAMETER G(SCZN12,SC:ZN;0)   298.15     
+	     -12741+4.0350*T+0.0769*GHSERSC#+0.9231*GHSERZN; 3000 N  !
+ 
+$$$ DATABASE-INFO 'FOR THE Mg-Sc-Zn SYSTEM' ! 
+$------------------------------------------------------------------------
+ 
+ 
+ 
+ 
+  LIST_OF_REFERENCES
+ NUMBER  SOURCE
+ !

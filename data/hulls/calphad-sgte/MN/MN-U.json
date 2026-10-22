@@ -1,0 +1,218 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "MN",
+    "U"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "MN": {
+          "energy": -9606.564374731233,
+          "phase": "CBCC_A12"
+        },
+        "U": {
+          "energy": -14967.130373682267,
+          "phase": "ORTHORHOMBIC_A20"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -27299.308761293352
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 0.9618544977447243
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CBCC_A12",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -27586.085679795946,
+          "right": {
+            "phase": "MN2U_C15",
+            "x": 0.3333333333333333
+          },
+          "slope": -27586.085679795946,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -11651.472580291407,
+            "slope": 7655.108979580873
+          },
+          "entropy": {
+            "intercept": 2.249109048567771,
+            "slope": -5.7854726479585885
+          },
+          "intercept": -12322.044443121891,
+          "kind": "two_phase",
+          "left": {
+            "phase": "MN2U_C15",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -12322.044443121891,
+          "mu_b_rel": -2941.9967935521636,
+          "right": {
+            "phase": "MNU6_D2C",
+            "x": 0.8571428571428571
+          },
+          "slope": 9380.047649569728,
+          "x_hi": 0.8571428571428571,
+          "x_lo": 0.3333333333333333
+        },
+        {
+          "enthalpy": {
+            "intercept": -35629.65418455461,
+            "slope": 35629.65418455461
+          },
+          "entropy": {
+            "intercept": -18.969072547777124,
+            "slope": 18.969072547777124
+          },
+          "intercept": -29974.025204434867,
+          "kind": "two_phase",
+          "left": {
+            "phase": "MNU6_D2C",
+            "x": 0.8571428571428571
+          },
+          "mu_a_rel": -29974.025204434867,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "ORTHORHOMBIC_A20",
+            "x": 1.0
+          },
+          "slope": 29974.025204434867,
+          "x_hi": 1.0,
+          "x_lo": 0.8571428571428571
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "CBCC_A12",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -9195.361893265315,
+          "energy_per_atom": -9195.361893265315,
+          "enthalpy": -9099.769587097784,
+          "entries_at_x": 1,
+          "entropy": 0.3206181659149081,
+          "formula": "",
+          "nsites": null,
+          "phase": "MN2U_C15",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -4282.003600633554,
+          "energy_per_atom": -4282.003600633554,
+          "enthalpy": -5089.950597793518,
+          "entries_at_x": 1,
+          "entropy": -2.7098675068253044,
+          "formula": "",
+          "nsites": null,
+          "phase": "MNU6_D2C",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.8571428571428571
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ORTHORHOMBIC_A20",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "MnU-08Liu",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:49:17Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/MnU-08Liu.tdb",
+    "source_sha256": "edda765ad8b359b9585f2556eccd22880a95b536adcb16cb42215463d58d5d7a"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "MN-U",
+  "x_element": "U"
+}

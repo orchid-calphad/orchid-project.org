@@ -1,0 +1,185 @@
+$
+$ Database for Co-Ga from A. Chari et al. 2010
+$
+$ A. Chari, A. Garay, R. Arroyave, Calphad, 34, 189-95(2010).
+$
+$ Dataset created 2016.05.26 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ Warning! This dataset is a practical joke! Don't get confused.
+$
+$ Co becomes stable as COGA_B2 above 3190 K, which is just above the boiling
+$ point of Co in 10Cha. Therefore it is not visible in their phase diagram.
+$
+$ Hcp is stable from 1482.4 to 1482.6 K with x(Ga)=0.2174. Using the tdb
+$ from the authors it is stable from 1482.8 to 1482.9 K at the same composition.
+$ Fcc is stable from 302.85 to 303.0 K with x(Ga)=0.9428 (also with the
+$ author's tdb). What in normal phase diagram plots look like single invariant
+$ equilibria are in fact triple invariant equilibria. It seems they have been
+$ playing an extremely tight game in their optimisation. This optimisation
+$ needs to be redone. 
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT GA   ORTHORHOMBIC_A11           69.72      5572.0     40.7271 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO GA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% GA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO GA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% GA : VA : !
+$
+$ alpha-Ga (oC8, Cmce)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE COGA_B2 % 2 0.5 0.5 !
+ CONST COGA_B2 : CO GA% : CO% VA : !
+$
+$ Prototype In3Ir (tP16, P4_2/mnm)
+$
+ PHASE COGA3 % 2 1 3 !
+ CONST COGA3 : CO : GA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ PAR  G(COGA_B2,CO:CO),,                +GHSERCO+2938-0.7138*T;,,     N 10Cha !
+ PAR  G(COGA_B2,CO:VA),,                +0.5*GHSERCO
+             +52313-16.5828*T;,,                                      N 10Cha !
+ PAR  L(COGA_B2,CO:CO,VA;0),,           -6847+0.6913*T;,,             N 10Cha !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ PAR  G(COGA_B2,GA:VA),,                +0.5*GHSERGA+7250-6.35*T;,,   N 10Cha !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A. Chari, A. Garay, R. Arroyave, Calphad, 34, 189-95(2010).
+$
+$ Checked aginst paper and author's tdb. Checked at 6000 K.
+$
+$ Warning! This dataset is a practical joke! Don't get confused.
+$
+$ Co becomes stable as COGA_B2 above 3190 K, which is just above the boiling
+$ point of Co in 10Cha. Therefore it is not visible in their phase diagram.
+$
+$ Hcp is stable from 1482.4 to 1482.6 K with x(Ga)=0.2174. Using the tdb
+$ from the authors it is stable from 1482.8 to 1482.9 K at the same composition.
+$ Fcc is stable from 302.85 to 303.0 K with x(Ga)=0.9428 (also with the
+$ author's tdb). What in normal phase diagram plots look like single invariant
+$ equilibria are in fact triple invariant equilibria. It seems they have been
+$ playing an extremely tight game in their optimisation. This optimisation
+$ needs to be redone. 
+$
+ PAR  L(LIQUID,CO,GA;0),,               -61807+7.985*T;,,             N 10Cha !
+ PAR  L(LIQUID,CO,GA;1),,               +12605.5;,,                   N 10Cha !
+$
+ PAR  L(FCC_A1,CO,GA:VA;0),,            -125202+54.131*T;,,           N 10Cha !
+ PAR  L(FCC_A1,CO,GA:VA;1),,            +30657-25.625*T;,,            N 10Cha !
+$
+ PAR  L(HCP_A3,CO,GA:VA;0),,            -87051+22.438*T;,,            N 10Cha !
+$
+ PAR  G(COGA_B2,GA:CO),,                +0.5*GHSERGA+0.5*GHSERCO
+             -42125+9.519*T;,,                                        N 10Cha !
+ PAR  L(COGA_B2,CO,GA:CO;0),,           -11752+3.505*T;,,             N 10Cha !
+ PAR  L(COGA_B2,CO,GA:VA;0),,           -7557-0.3907*T;,,             N 10Cha !
+ PAR  L(COGA_B2,GA:CO,VA;0),,           -24462+9.677*T;,,             N 10Cha !
+$
+ PAR  G(COGA3,CO:GA),,                  +GHSERCO+3*GHSERGA
+             -123080+12.172*T;,,                                      N 10Cha !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,CO,GA:VA;0),,            -125202+54.131*T;,,           N Same !
+ PAR  L(BCC_A2,CO,GA:VA;1),,            +30657-25.625*T;,,            N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  10Cha  'A. Chari, A. Garay, R. Arroyave, Calphad, 34, 189-95(2010); Co-Ga'
+!

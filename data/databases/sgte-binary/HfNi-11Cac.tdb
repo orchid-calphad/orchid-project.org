@@ -1,0 +1,235 @@
+$
+$ Database for Hf-Ni from G. Cacciamani et al. 2011.
+$
+$ G. Cacciamani, P. Riani, F. Valenza, Calphad, 35, 601-19(2011).
+$
+$ Dataset created 2022.11.05 by Bengt Hallstedt.
+$
+$ Modified from 01Wan. Liquid interaction modified. By this the melting
+$ temperature of Hf2Ni7 increases by about 15 K and The inverse miscibility gap
+$ starts at lower temperature.
+$
+$ There is an inverse miscibility gap with a minimum at 4348 K and x(Ni)=0.88.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT HF   HCP_A3                    178.49      5845.0     43.56   ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : HF NI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : HF NI% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : HF% NI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : HF% NI : VA : !
+$
+$ Prototype Al2Cu (tI12, I4/mcm)
+$
+ PHASE HF2NI_C16 % 2 2 1 !
+ CONST HF2NI_C16 : HF : NI VA : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE HFNI_B33 % 2 1 1 !
+ CONST HFNI_B33 : HF : NI : !
+$
+$ Unknown structure
+$
+ PHASE HFNI_HT % 2 1 1 !
+ CONST HFNI_HT : HF : NI : !
+$
+$ Prototype Pt11Zr9 (tI40, I4/m)
+$
+ PHASE HF9NI11 % 2 9 11 !
+ CONST HF9NI11 : HF : NI : !
+$
+$ Prototype Ni10Zr7 (oC68, Cmca)
+$
+ PHASE HF7NI10 % 2 7 10 !
+ CONST HF7NI10 : HF : NI : !
+$
+$ Prototype Hf3Ni7 (aP20, P-1)
+$
+ PHASE HF3NI7 % 2 3 7 !
+ CONST HF3NI7 : HF : NI : !
+$
+$ Prototype Hf8Ni21 (aP29, P-1)
+$
+ PHASE HF8NI21 % 2 8 21 !
+ CONST HF8NI21 : HF : NI : !
+$
+$ Prototype Pd2RhTa (hP40, P6_3/mmc)
+$
+ PHASE HFNI3_RT % 2 1 3 !
+ CONST HFNI3_RT : HF : NI : !
+$
+$ Prototype BaPb3 (hR12, R-3m)
+$
+ PHASE HFNI3_HT % 2 1 3 !
+ CONST HFNI3_HT : HF : NI : !
+$
+$ Prototype Ni7Zr2 (mC36, C2/m)
+$
+ PHASE HF2NI7 % 2 2 7 !
+ CONST HF2NI7 : HF : NI : !
+$
+$ Prototype AuBe5 (cF24, F-43m)
+$
+ PHASE HFNI5_C15B % 2 1 5 !
+ CONST HFNI5_C15B : HF : NI : ! 
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Hf
+$
+$ HCP_A3 and BCC_A2 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(HCP_A3,HF:VA),,                 +GHSERHF;                3001 N 91Din !
+ PAR  G(BCC_A2,HF:VA),,                 +GBCCHF;                 3001 N 91Din !
+ PAR  G(FCC_A1,HF:VA),,                 +GHSERHF+10000-2.2*T;    3001 N 91Din !
+ PAR  G(LIQUID,HF),,                    +GLIQHF;                 3001 N 91Din !
+$
+ PAR  G(HF2NI_C16,HF:VA),,              +2*GHSERHF+39000-3.9*T;  3001 N 01Wan !
+$
+ FUNCTION GHSERHF   298.15  -6987.297+110.744026*T-22.7075*T*LN(T)
+       -0.004146145*T**2-4.77E-10*T**3-22590*T**(-1);
+      2506.00  Y  -1446776.329+6193.609991*T-787.5363829*T*LN(T)
+       +0.1735215*T**2-7.575759E-06*T**3+5.01742495E+08*T**(-1);
+      3000.00  Y  -34274.698+277.882368*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCHF    298.15  +5370.703+103.836026*T-22.8995*T*LN(T)
+       -0.004206605*T**2+8.71923E-07*T**3-22590*T**(-1)-1.446E-10*T**4;
+      2506.00  Y  +1912456.771-8624.20573*T+1087.6141247*T*LN(T)
+       -0.286857065*T**2+1.3427829E-05*T**3-6.10085091E+08*T**(-1);
+      3000.00  Y  -32498.178+276.723247*T-44*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHF    298.15  +27402.256-10.953093*T+GHSERHF;
+      1000.00  Y  +49731.499-149.91739*T+12.116812*T*LN(T)
+       -0.021262021*T**2+1.376466E-06*T**3-4449699*T**(-1);
+      2506.00  Y  -4247.217+265.470523*T-44*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Cacciamani, P. Riani, F. Valenza, Calphad, 35, 601-19(2011).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Modified from 01Wan. Liquid interaction modified. By this the melting
+$ temperature of Hf2Ni7 increases by about 15 K and The inverse miscibility gap
+$ starts at lower temperature.
+$
+$ There is an inverse miscibility gap with a minimum at 4348 K and x(Ni)=0.88.
+$
+ PAR  L(LIQUID,HF,NI;0),,               -230010+28.596*T;,,           N 01Wan !
+ PAR  L(LIQUID,HF,NI;1),,               +58890-29.566*T;,,            N 01Wan !
+ PAR  L(LIQUID,HF,NI;2),,               +11*T;,,                      N 11Cac !
+$
+ PAR  L(FCC_A1,HF,NI:VA;0),,            -113714+11.312*T;,,           N 01Wan !
+ PAR  L(FCC_A1,HF,NI:VA;1),,            +36185;,,                     N 01Wan !
+$
+ PAR  L(BCC_A2,HF,NI:VA;0),,            -99330+10.965*T;,,            N 01Wan !
+ PAR  L(BCC_A2,HF,NI:VA;1),,            -62643+12.592*T;,,            N 01Wan !
+$
+ PAR  L(HCP_A3,HF,NI:VA;0),,            -73979;,,                     N 01Wan !
+$
+ PAR  G(HF2NI_C16,HF:NI),,              +2*GHSERHF+GHSERNI
+             -111302-5.82*T;,,                                        N 01Wan !
+ PAR  L(HF2NI_C16,HF:NI,VA;0),,         -2104;,,                      N 01Wan !
+$
+ PAR  G(HFNI_B33,HF:NI),,               +GHSERHF+GHSERNI
+             -104236+1.35*T;,,                                        N 01Wan !
+ PAR  G(HFNI_HT,HF:NI),,                +GHSERHF+GHSERNI
+             -98236-2.866*T;,,                                        N 01Wan !
+ PAR  G(HF9NI11,HF:NI),,                +9*GHSERHF+11*GHSERNI
+             -1024860+12.3*T;,,                                       N 01Wan !
+ PAR  G(HF7NI10,HF:NI),,                +7*GHSERHF+10*GHSERNI
+             -852618+12.597*T;,,                                      N 01Wan !
+ PAR  G(HF3NI7,HF:NI),,                 +3*GHSERHF+7*GHSERNI
+             -443850+8.39*T;,,                                        N 01Wan !
+ PAR  G(HF8NI21,HF:NI),,                +8*GHSERHF+21*GHSERNI
+             -1240098+22.388*T;,,                                     N 01Wan !
+ PAR  G(HFNI3_RT,HF:NI),,               +GHSERHF+3*GHSERNI
+             -184004+16.552*T;,,                                      N 01Wan !
+ PAR  G(HFNI3_HT,HF:NI),,               +GHSERHF+3*GHSERNI
+             -172004+8.404*T;,,                                       N 01Wan !
+ PAR  G(HF2NI7,HF:NI),,                 +2*GHSERHF+7*GHSERNI
+             -391734+34.092*T;,,                                      N 01Wan !
+ PAR  G(HFNI5_C15B,HF:NI),,             +GHSERHF+5*GHSERNI
+             -232212+38.976*T;,,                                      N 01Wan !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  HF-NI(TDB -* +LIQUID +BCC_A2 +HCP_A3 +FCC_A1 +HF2NI +HFNI_B33 +HFNI_HT
+  +HF9NI11 +HF7NI10 +HF3NI7 +HF8NI21 +HFNI3_RT +HFNI3_HT +HF2NI7 +HFNI5 ;P3 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Lin    'Linear combination of lattice stabilities'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  01Wan  'T. Wang, Z.P. Jin, J.-C. Zhao, Z. Metallkd., 92, 441-46(2001); Hf-Ni'
+  11Cac  'G. Cacciamani, P. Riani, F. Valenza, Calphad, 35, 601-19(2011); Hf-Ni'
+!

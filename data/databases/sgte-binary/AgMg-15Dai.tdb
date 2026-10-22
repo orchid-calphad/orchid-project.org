@@ -1,0 +1,194 @@
+$
+$ Database for Ag-Mg from C. Dai and D.V. Malakhov 2015.
+$
+$ C. Dai, D.V. Malakhov, J. Alloys Compd., 619, 20-25(2015).
+$
+$ Dataset created 2019.04.13 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ 4-SL fcc with option F.
+$
+$ Fcc and bcc interactions have large temperature dependencies. Bcc is stable
+$ above 1595 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AG   FCC_A1                    107.8682    5745.      42.55   ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AG MG : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AG% MG : VA : !
+$
+$ Disordered part of FCC_4SL, identical to FCC_A1
+$
+ PHASE A1_FCC %A 2 1 1 !
+ CONST A1_FCC : AG% MG : VA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m, L1_2) and AuCu (tP4, P4/mmm, L1_0)
+$
+ PHASE FCC_4SL:F %AY 5 0.25 0.25 0.25 0.25 1 !
+ CONST FCC_4SL:F : AG% MG : AG% MG : AG% MG : AG MG% : VA :  !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AG MG : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : AG MG : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : AG MG : AG MG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AG MG% : VA : !
+$
+$ Prototype Hf54Os17 (oI142, Immm), also Ag17Mg54
+$
+ PHASE AGMG3 % 2 0.23 0.77 !
+ CONST AGMG3 : AG : MG : !
+$
+$ Prototype Ag9Mg37 (hP116, P6_3/m)
+$
+ PHASE AGMG4 % 2 1 4 !
+ CONST AGMG4 : AG : MG : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ TYPE-DEF Y GES AMEND_PHASE_DESCRIPTION FCC_4SL DIS_PART A1_FCC !
+ DEFAULT-COM REJECT_PHASE FCC_A1 BCC_A2 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ag
+$
+$ CUB_A13 added in unary 3.0
+$ CUB_A13 revised in unary 4.1
+$ BCT_A5 added in unary 4.1
+$
+ PAR  G(FCC_A1,AG:VA),,                 +GHSERAG;                3000 N 91Din !
+ PAR  G(A1_FCC,AG:VA),,                 +GHSERAG;                3000 N 91Din !
+ PAR  G(HCP_A3,AG:VA),,                 +GHSERAG+300+0.3*T;      3000 N 91Din !
+ PAR  G(BCC_A2,AG:VA),,                 +GHSERAG+3400-1.05*T;    3000 N 91Din !
+ PAR  G(A2_BCC,AG:VA),,                 +GHSERAG+3400-1.05*T;    3000 N 91Din !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG+3400-1.05*T;    3000 N 95Lim !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG
+$            +3765.6-1.8826*T;                                   3000 N 96SGUN !
+$PAR  G(BCT_A5,AG:VA),,                 +GHSERAG+4184.1;         3000 N 96Oh !
+ PAR  G(LIQUID,AG),,                    +GLIQAG;                 3000 N 91Din !
+$
+ FUNCTION GHSERAG   298.15  -7209.512+118.202013*T-23.8463314*T*LN(T)
+       -0.001790585*T**2-3.98587E-07*T**3-12011*T**(-1);
+      1234.93  Y  -15095.252+190.266404*T-33.472*T*LN(T)+1.411773E+29*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQAG    298.15  +11025.076-8.89102*T+GHSERAG-1.033905E-20*T**7;
+      1234.93  Y  -3587.111+180.964656*T-33.472*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(A1_FCC,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(A2_BCC,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Dai, D.V. Malakhov, J. Alloys Compd., 619, 20-25(2015).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ 4-SL fcc with option F.
+$
+$ Fcc and bcc interactions have large temperature dependencies. Bcc is stable
+$ above 1595 K.
+$
+ PAR  L(LIQUID,AG,MG;0),,               -51000-13.1*T;,,              N 15Dai !
+ PAR  L(LIQUID,AG,MG;1),,               -4000;,,                      N 15Dai !
+$
+ PAR  L(FCC_A1,AG,MG:VA;0),,            -59998;,,                     N 15Dai !
+ PAR  L(FCC_A1,AG,MG:VA;1),,            +17195-30.84*T;,,             N 15Dai !
+ PAR  L(FCC_A1,AG,MG:VA;2),,            +9*T;,,                       N 15Dai !
+ PAR  L(A1_FCC,AG,MG:VA;0),,            -59998;,,                     N 15Dai !
+ PAR  L(A1_FCC,AG,MG:VA;1),,            +17195-30.84*T;,,             N 15Dai !
+ PAR  L(A1_FCC,AG,MG:VA;2),,            +9*T;,,                       N 15Dai !
+$
+ PAR  G(FCC_4SL,AG:AG:AG:MG:VA),,       -9972;,,                      N 15Dai !
+ PAR  G(FCC_4SL,AG:AG:MG:MG:VA),,       -13295;,,                     N 15Dai !
+ PAR  G(FCC_4SL,AG:MG:MG:MG:VA),,       -9972;,,                      N 15Dai !
+$
+ PAR  L(BCC_A2,AG,MG:VA;0),,            -29455-28.877*T;,,            N 15Dai !
+ PAR  L(BCC_A2,AG,MG:VA;1),,            -34254+29.29*T;,,             N 15Dai !
+ PAR  L(BCC_A2,AG,MG:VA;2),,            +33400-60*T;,,                N 15Dai !
+ PAR  L(A2_BCC,AG,MG:VA;0),,            -29455-28.877*T;,,            N 15Dai !
+ PAR  L(A2_BCC,AG,MG:VA;1),,            -34254+29.29*T;,,             N 15Dai !
+ PAR  L(A2_BCC,AG,MG:VA;2),,            +33400-60*T;,,                N 15Dai !
+$
+ PAR  G(B2_BCC,MG:AG:VA),,              -32152+13.223*T;,,            N 15Dai !
+ PAR  G(B2_BCC,AG:MG:VA),,              -32152+13.223*T;,,            N 15Dai !
+$
+ PAR  L(HCP_A3,AG,MG:VA;0),,            -22618-14.63*T;,,             N 97Lim !
+$
+ PAR  G(AGMG3,AG:MG),,                  +0.23*GHSERAG+0.77*GHSERMG
+             -21600+12.8*T;,,                                         N 97Lim !
+ PAR  G(AGMG4,AG:MG),,                  +GHSERAG+4*GHSERMG
+             -102290+66.79*T;,,                                       N 97Lim !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AG-MG(TDB -* +LIQ +AGMG3 +AGMG4 +A2_BCC +BCC_B2 +A1_FCC
+  +FCC_4SL +HCP_A3 ;P3 TMM:300/1300 STP:.45/1200 ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Lim  'S.S. Lim, P.L. Rossiter, J.W. Tibballs, Calphad, 19, 131-41(1995),
+          SGTE unary database V.4.1, 1999; Ag'
+  96Oh   'C.-S. Oh, J.-H. Shim, B.-J. Lee, D.N. Lee,
+          J. Alloys Compounds, 238, 155-66(1996),
+          SGTE unary database V.4.1, 1999; Ag'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  97Lim  'M.S. Lim, J.E. Tibballs, P.L. Rossiter,
+          Z. Metallkd., 88, 162-69(1997); Ag-Mg'
+  15Dai  'C. Dai, D.V. Malakhov, J. Alloys Compd., 619, 20-25(2015); Ag-Mg'
+!

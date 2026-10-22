@@ -1,0 +1,185 @@
+$
+$ Database for Ga-Lu from M. Ait Boukideur et al. 2022.
+$
+$ M. Ait Boukideur, N. Selhaoui, F.Z. Chrifti Alaoui, D.O. Poletaev, H. Bouchta,
+$ K. Achgar, A. Aharoune, Calphad, 79, 102464(2022).
+$
+$ Dataset created 2023.07.22 by Bengt Hallstedt.
+$
+$ The paper contains both an RK and an associate model for the liquid. This
+$ dataset includes the associate version with GaLu associates.
+$
+$ Terminal solubilities are not modelled.
+$
+$ There is an inverse miscibility gap with a minimum at 4196 K and x(LU)=0.75.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_A11           69.72      5572.0     40.7271 ! 
+ ELEMENT LU   HCP_A3                    174.967     6388.968   50.9611 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  GALU                               GA1LU1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA GALU LU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : GA LU% : VA : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE GA3LU_L12 % 2 3 1 !
+ CONST GA3LU_L12 : GA : LU : !
+$
+$ Prototype Hg2K (oI12, Imma)
+$
+ PHASE GA2LU % 2 2 1 !
+ CONST GA2LU : GA : LU : !
+$
+$ Prototype Ga5Tm3 (oP32, Pnma, 62)
+$
+ PHASE GA5LU3 % 2 5 3 !
+ CONST GA5LU3 : GA : LU : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE GALU_B33 % 2 1 1 !
+ CONST GALU_B33 : GA : LU : !
+$
+$ Prototype Ga3Y5 (mC32, C2/m)
+$
+ PHASE GA3LU5 % 2 3 5 !
+ CONST GA3LU5 : GA : GA LU% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ PAR  G(GA3LU5,GA:GA),,                 +8*GHSERGA+40000;,,           N 22Ait !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Lu
+$
+ PAR  G(HCP_A3,LU:VA),,                 +GHSERLU;                3700 N 91Din !
+ PAR  G(LIQUID,LU),,                    +GLIQLU;                 3700 N 91Din !
+$
+ FUNCTION GHSERLU   298.15  -8788.329+146.536283*T-29.812*T*LN(T)
+       +0.00519165*T**2-1.790717E-06*T**3+39723*T**(-1);
+       700.00  Y  -9043.057+142.327643*T-29.0095*T*LN(T)
+       +0.00371416*T**2-1.50147E-06*T**3+141549*T**(-1);
+      1700.00  Y  +6940.092-46.91844*T-1.83986*T*LN(T)-0.0119001*T**2;
+      1936.00  Y  -404023.691+1829.37943*T-239.019502*T*LN(T)
+       +0.041800748*T**2-1.661174E-06*T**3+1.24825465E+08*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQLU    298.15  +12772.12-4.998883*T+GHSERLU;
+       600.00  Y  +30389.863-198.378793*T+20.9392663*T*LN(T)
+       -0.034238743*T**2+2.890636E-06*T**3-2398650*T**(-1);
+      1936.00  Y  -18994.687+292.091104*T-47.9068*T*LN(T);
+      3700.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Ait Boukideur, N. Selhaoui, F.Z. Chrifti Alaoui, D.O. Poletaev, H. Bouchta,
+$ K. Achgar, A. Aharoune, Calphad, 79, 102464(2022).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The paper contains both an RK and an associate model for the liquid. This
+$ dataset includes the associate version with GaLu associates.
+$
+$ Terminal solubilities are not modelled.
+$
+$ There is an inverse miscibility gap with a minimum at 4196 K and x(LU)=0.75.
+$
+ PAR  G(LIQUID,GALU),,                  +GLIQGA+GLIQLU
+             -101918-9.71*T;,,                                        N 22Ait !
+ PAR  L(LIQUID,GA,GALU;0),,             -34370-19.49*T;,,             N 22Ait !
+ PAR  L(LIQUID,GA,GALU;1),,             -54020+23.56*T;,,             N 22Ait !
+ PAR  L(LIQUID,GALU,LU;0),,             -32880+18.17*T;,,             N 22Ait !
+ PAR  L(LIQUID,GALU,LU;1),,             +22011-12.01*T;,,             N 22Ait !
+$
+ PAR  L(HCP_A3,GA,LU:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(GA3LU_L12,GA:LU),,              +3*GHSERGA+GHSERLU
+             -189016-28.88*T;,,                                       N 22Ait !
+ PAR  G(GA2LU,GA:LU),,                  +2*GHSERGA+GHSERLU
+             -168969-23.7*T;,,                                        N 22Ait !
+ PAR  G(GA5LU3,GA:LU),,                 +5*GHSERGA+3*GHSERLU
+             -468912-67.68*T;,,                                       N 22Ait !
+ PAR  G(GALU_B33,GA:LU),,               +GHSERGA+GHSERLU
+             -116566-15.28*T;,,                                       N 22Ait !
+$
+ PAR  G(GA3LU5,GA:LU),,                 +3*GHSERGA+5*GHSERLU
+             -384032-50.56*T;,,                                       N 22Ait !
+ PAR  L(GA3LU5,GA:GA,LU;0),,            -720000-80*T;,,               N 22Ait !
+ PAR  L(GA3LU5,GA:GA,LU;1),,            +23224;,,                     N 22Ait !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  22Ait  'M. Ait Boukideur, N. Selhaoui, F.Z. Chrifti Alaoui, D.O. Poletaev,
+          H. Bouchta, K. Achgar, A. Aharoune, Calphad, 79, 102464(2022); Ga-Lu'
+!

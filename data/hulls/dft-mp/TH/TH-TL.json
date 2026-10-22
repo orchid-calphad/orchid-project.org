@@ -1,0 +1,168 @@
+{
+  "counts": {
+    "above_hull": 7,
+    "entries": 13,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "TH",
+    "TL"
+  ],
+  "flags": [
+    "has_intermediate_compounds"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaaaaabl",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -0.3100081766666669,
+          "right": {
+            "phase": "mp-aaabewiw",
+            "x": 0.5
+          },
+          "slope": -0.3100081766666669,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.14061060000000047,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaabewiw",
+            "x": 0.5
+          },
+          "mu_a_rel": -0.14061060000000047,
+          "mu_b_rel": -0.16939757666666644,
+          "right": {
+            "phase": "mp-aaaaadbh",
+            "x": 0.75
+          },
+          "slope": -0.028786976666665964,
+          "x_hi": 0.75,
+          "x_lo": 0.5
+        },
+        {
+          "intercept": -0.6488033299999998,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaaaadbh",
+            "x": 0.75
+          },
+          "mu_a_rel": -0.6488033299999998,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "mp-aaacdikd",
+            "x": 1.0
+          },
+          "slope": 0.6488033299999998,
+          "x_hi": 1.0,
+          "x_lo": 0.75
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -7.41385825,
+          "entries_at_x": 2,
+          "formula": "Th",
+          "nsites": 1,
+          "phase": "mp-aaaaaabl",
+          "phase_kind": "structure",
+          "spacegroup_number": 225,
+          "spacegroup_symbol": "Fm-3m",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.15500408833333346,
+          "energy_per_atom": -5.043254786666666,
+          "entries_at_x": 1,
+          "formula": "ThTl",
+          "nsites": 24,
+          "phase": "mp-aaabewiw",
+          "phase_kind": "structure",
+          "spacegroup_number": 57,
+          "spacegroup_symbol": "Pbcm",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.16220083249999995,
+          "energy_per_atom": -3.787647755,
+          "entries_at_x": 1,
+          "formula": "ThTl3",
+          "nsites": 4,
+          "phase": "mp-aaaaadbh",
+          "phase_kind": "structure",
+          "spacegroup_number": 221,
+          "spacegroup_symbol": "Pm-3m",
+          "theoretical": false,
+          "x": 0.75
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -2.3626431466666666,
+          "entries_at_x": 6,
+          "formula": "Tl",
+          "nsites": 3,
+          "phase": "mp-aaacdikd",
+          "phase_kind": "structure",
+          "spacegroup_number": 166,
+          "spacegroup_symbol": "R-3m",
+          "theoretical": true,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": true,
+    "comparable_note": "",
+    "max_abs_delta_energy_above_hull": 8.881784197001252e-16,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "upstream_flag",
+    "mp_release": "2026.04.13",
+    "observed_at": "2026-09-01T20:54:47Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "b6deba8ecf1b67211b3d89cd33a5f98a1939d4bcd92db561818195e55187492a",
+    "stability_tol": 0.0001,
+    "thermo_type": "GGA_GGA+U"
+  },
+  "reference": {
+    "kind": "dft_elemental_ground_state_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "TH-TL",
+  "x_element": "TL"
+}

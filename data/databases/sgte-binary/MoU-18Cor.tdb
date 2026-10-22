@@ -1,0 +1,170 @@
+$
+$ Database for Mo-U from E.C. Corcoran et al. 2018.
+$
+$ E.C. Corcoran, J.-L. Fleche, N. Dupin, B. Sundman, C. Gueneau,
+$ Calphad, 63, 196-211(2018).
+$
+$ Dataset created 2023.10.18 by Bengt Hallstedt.
+$
+$ The parameters are not printed in the paper itself, but given as supplemental
+$ material in the form of list-data output from GES (not tdb).
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MO U : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MO U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MO U : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MO U : VA : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : MO U% : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : MO U% : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE MOU2_C11B % 2 1 2 !
+ CONST MOU2_C11B : MO : U : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+$ ORTHORHOMBIC_A20 and TETRAGONAL_U from 10Zha and 11Ber not included in unary
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+$PAR  G(ORTHORHOMBIC_A20,MO),,          +GHSERMO+21482.5454;     5000 N 10Zha !
+ PAR  G(ORTHORHOMBIC_A20,MO),,          +GHSERMO+20000;          5000 N 11Ber !
+$PAR  G(TETRAGONAL_U,MO),,              +GHSERMO+19751.2267;     5000 N 10Zha !
+ PAR  G(TETRAGONAL_U,MO),,              +GHSERMO+18400;          5000 N 11Ber !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not in unary
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+ PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQUU    298.15  +GHSERUU+12355.5-10.3239*T;                3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ E.C. Corcoran, J.-L. Fleche, N. Dupin, B. Sundman, C. Gueneau,
+$ Calphad, 63, 196-211(2018).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ In the paper the TAF-ID database is cited for the Mo-U parameters. They don't
+$ seem to be published previously.
+$
+$ The parameters are not printed in the paper itself, but given as supplemental
+$ material in the form of list-data output from GES (not tdb).
+$
+ PAR  L(LIQUID,MO,U;0),,                +19992-2.15*T+27-16.2*T;,,    N 18Cor !
+ PAR  L(LIQUID,MO,U;1),,                +43155-12.6*T-1950+3*T;,,     N 18Cor !
+ PAR  L(LIQUID,MO,U;2),,                +47058-24.3*T+890;,,          N 18Cor !
+$
+ PAR  L(FCC_A1,MO,U:VA;0),,             +UN_ASS;,,                    N !
+$
+ PAR  L(BCC_A2,MO,U:VA;0),,             +19992-2.15*T;,,              N 18Cor !
+ PAR  L(BCC_A2,MO,U:VA;1),,             +43155-12.6*T;,,              N 18Cor !
+ PAR  L(BCC_A2,MO,U:VA;2),,             +47058-24.3*T;,,              N 18Cor !
+$
+ PAR  L(ORTHORHOMBIC_A20,MO,U;0),,      +19992-2.15*T+6000;,,         N 18Cor !
+ PAR  L(ORTHORHOMBIC_A20,MO,U;1),,      +43155-12.6*T;,,              N 18Cor !
+ PAR  L(ORTHORHOMBIC_A20,MO,U;2),,      +47058-24.3*T;,,              N 18Cor !
+$
+ PAR  L(TETRAGONAL_U,MO,U;0),,          +19992-2.15*T-1000;,,         N 18Cor !
+ PAR  L(TETRAGONAL_U,MO,U;1),,          +43155-12.6*T;,,              N 18Cor !
+ PAR  L(TETRAGONAL_U,MO,U;2),,          +47058-24.3*T;,,              N 18Cor !
+$
+ PAR  G(MOU2_C11B,MO:U),,                +GHSERMO+2*GHSERUU
+             -13037+10.5*T;,,                                         N 18Cor !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr'
+  10Zha  'X. Zhang, Y.F. Cui, G.L. Xu, W.J. Zhu, H.S. Liu, B.Y. Yin, Z.P. Jin,
+          J. Nucl. Mater., 402, 15-24(2010); Mo'
+  11Ber  'A. Berche, N. Dupin, C. Gueneau, C. Rado, B. Sundman, J.C. Dumas,
+          J. Nucl. Mater., 411, 131-43(2011); Mo'
+  18Cor  'E.C. Corcoran, J.-L. Fleche, N. Dupin, B. Sundman, C. Gueneau,
+          Calphad, 63, 196-211(2018); Mo-U'
+!

@@ -1,0 +1,340 @@
+$
+$ Database for In-Ni from Z. Cao et al. 2013.
+$
+$ Z. Cao, W. Xie, K. Wang, G. Du, Z. Qiao,
+$ J. Electron. Mater., 42, 2615-29(2013).
+$
+$ Dataset created 2018.01.15 by Bengt Hallstedt.
+$ 2021.01.17: Modified for use with GES6.
+$ 2024.10.08: Changed lattice stability of fcc-In to match paper.
+$
+$ Modified from the 02Wal dataset. Va included on the 2nd sl of INNI2_B81.
+$ The data given by 02Wal were converted by 13Cao to Gibbs energy expressions
+$ that are tdb-compatible. Unfortunately, they also changed the models
+$ to fractional.
+$
+$ The original lattice stability for fcc-In from 91Din is used. When the 98Boa
+$ value is used the In solubility in fcc-Ni is somewhat decreased.
+$
+$ There is a large region of INNI_B2 above 1700 K as an In-based solid solution.
+$ This should be fairly easily fixable (not done here). Otherwise, the
+$ dataset appears to behave reasonably.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT IN   TETRAGONAL_A6             114.82      6610.0     57.65   ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : IN NI : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : IN NI% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : IN NI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : IN NI : VA : !
+$
+$ Prototype In (tI2, I4/mmm)
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : IN : !
+$
+$ Prototype Ru3Sn7 (cI40, Im-3m)
+$
+ PHASE IN7NI3_D8F % 2 7 3 !
+ CONST IN7NI3_D8F : IN : NI : !
+$
+$ Prototype Al3Ni2 (hP5, P-3m1)
+$
+ PHASE IN3NI2_D513 % 2 3 2 !
+ CONST IN3NI2_D513 : IN : NI : !
+$
+$ Prototype CsCl (cP2, Pm-3m), delta
+$
+ PHASE INNI_B2 % 2 1 1 !
+ CONST INNI_B2 : IN% NI : NI% VA : !
+$
+$ Prototype CoSn (hP6, P6/mmm), epsilon
+$
+ PHASE INNI_B35 % 2 1 1 !
+ CONST INNI_B35 : IN : NI : !
+$
+$ Prototype Ga9Ni13 (mC44, C2/m), zeta-prime, related to NiAs (B8_1) ?
+$
+ PHASE IN9NI13 % 3 1 1 1 !
+ CONST IN9NI13 : IN : NI : NI VA : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc), zeta
+$ Prototype InNi2 is also suggested, but this makes no sense since the low T
+$ phase is already InNi2.
+$
+ PHASE INNI2_B81 % 3 1 1 1 !
+ CONST INNI2_B81 : IN% NI : NI% VA : NI VA : !
+$
+$ Prototype InNi2 (hP6, P6_3/mmc)
+$
+ PHASE INNI2_B82 % 2 1 2 !
+ CONST INNI2_B82 : IN : NI : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE INNI3_D019 % 2 1 3 !
+ CONST INNI3_D019 : IN : NI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ In
+$
+$ FCC_A1 and TET_ALPHA1 revised in unary 4.1
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$ TET_ALPHA1 revised in unary 5.0 (using the value from 99Ans)
+$ DHCP added in unary 5.0
+$
+$ There is quite a bit of confusion about TET_ALPHA1_A6. The structure is
+$ the same as In (TETRAGONAL_A6), but with a different (presumably) c/a ratio.
+$ TET_ALPHA1_A6 is present in Bi-In, In-Pb and In-Sn (possibly more). Between
+$ the TETRAGONAL_A6 (In-ss) and TET_ALPHA1_A6 there is a narrow two-phase
+$ region. In each system a different G(TET_ALPHA1_A6,IN) lattice stability
+$ was used.
+$ In 91Din a value from an unpublished revision of the Bi-In system by
+$ P.-Y. Chevalier 1990 is included. In SGTE Unary V 4.4 a value from 98Boa
+$ for the In-Pb system is included. 98Boa treated the TET_ALPHA1_A6
+$ phase in Bi-In and In-Pb as two different phases and used the lattice
+$ stability from 88Che0 for the Bi-In branch of this phase. Finally, SGTE
+$ unary V 5.0 uses a value from an unpublished evaluation by 99Ans of the
+$ In-Sn system. Due to the close proximity of the TETRAGONAL_A6 and
+$ TET_ALPHA1_A6 phases in these systems, any change of lattice stability
+$ will cause a distortion of the phase diagram and require reoptimisation.
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(TETRAGONAL_A6,IN),,             +GHSERIN;                3800 N 91Din !
+$PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+162.061;        3800 N 98Boa !
+ PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+123-0.1988*T;   3800 N 91Din !
+ PAR  G(BCC_A2,IN:VA),,                 +GHSERIN+800-0.8*T;      3800 N 91Din !
+ PAR  G(HCP_A3,IN:VA),,                 +GHSERIN+533-0.6868*T;   3800 N 91Din !
+$PAR  G(DHCP,IN),,                      +GHSERIN+520-0.384*T;    3800 N 92Ans !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+123-0.1988*T;   3800 N 99Ans1 !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+0.31*T;         3800 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+193-0.16479*T;  3800 N 91Din !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN-33+0.16*T;      3800 N 88Che0 !
+$PAR  G(BCT_A5,IN),,                    +GHSERIN
+$            +5040.87-3.33969*T;                                 3800 N 99Ans1 !
+$PAR  G(BCT_A5,IN),,                    +GHSERIN+2092;           3800 N 03Liu1 !
+$PAR  G(RHOMBOHEDRAL_A7,IN),,           +GHSERIN+4184;           3800 N 88Che0 !
+ PAR  G(LIQUID,IN),,                    +GLIQIN;                 3800 N 91Din !
+$
+ PAR  G(INNI_B2,IN:VA),,                +2*GINNIH2;,,                 N 02Wal !
+ PAR  G(INNI2_B81,IN:VA:VA),,           +3*GINNI2H6;,,                N 13Cao !
+$
+ FUNCTION GHSERIN   298.15  -6978.89+92.338115*T-21.8386*T*LN(T)
+       -0.00572566*T**2-2.120321E-06*T**3-22906*T**(-1);
+       429.75  Y  -7033.516+124.476588*T-27.4562*T*LN(T)
+       +5.4607E-04*T**2-8.367E-08*T**3-211708*T**(-1)+3.53116E+22*T**(-9);
+      3800.00  N !
+ FUNCTION GLIQIN    298.15  +3282.092-7.63686*T+GHSERIN-5.59058E-20*T**7;
+       429.75  Y  +3283.706-7.640804*T+GHSERIN-3.53116E+22*T**(-9);
+      3800.00  N !
+$
+ FUNCTION GINNIH2   298.15  +18028.73497+34.64659255*T-10.9193*T*LN(T)
+       -0.00286283*T**2-1.0601605E-06*T**3-11453*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI2H6  298.15  +11254.70331+25.256*T-7.2795333*T*LN(T)
+       -0.00191*T**2-7.0677E-07*T**3-7635.3333*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(INNI_B2,NI:NI),,                +2*GBCCNI;,,                  N 97Ans !
+ PAR  G(INNI_B2,NI:VA),,                +GBCCNI+B2NIVA;,,             N 97Ans !
+ PAR  L(INNI_B2,NI:NI,VA;0),,           +LB2NIVA;,,                   N 97Ans !
+$
+ PAR  G(INNI2_B81,NI:NI:NI),,           +3*GINNI2H3;,,                N 02Wal !
+ PAR  G(INNI2_B81,NI:NI:VA),,           +3*GINNI2H4;,,                N 02Wal !
+ PAR  G(INNI2_B81,NI:VA:NI),,           +3*GINNI2H7;,,                N 13Cao !
+ PAR  G(INNI2_B81,NI:VA:VA),,           +3*GINNI2H8;,,                N 13Cao !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$
+ FUNCTION B2NIVA    298.15  +162397.3-27.40575*T;                      6000 N !
+ FUNCTION LB2NIVA   298.15  -64024.38+26.49419*T;                      6000 N !
+ FUNCTION GINNI2H3  298.15  +10545.766+118.392*T-22.096*T*LN(T)
+       -0.0048407*T**2;
+      6000.00  N !
+ FUNCTION GINNI2H4  298.15  +7030.51067+78.928*T-14.730667*T*LN(T)
+       -0.003227133*T**2;
+      6000.00  N !
+ FUNCTION GINNI2H7  298.15  +7030.51067+78.928*T-14.730667*T*LN(T)
+       -0.003227133*T**2;
+      6000.00  N !
+ FUNCTION GINNI2H8  298.15  +3515.25537+39.464*T-7.3653333*T*LN(T)
+       -0.001613566*T**2;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. Cao, W. Xie, K. Wang, G. Du, Z. Qiao,
+$ J. Electron. Mater., 42, 2615-29(2013).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Modified from the 02Wal dataset. Va included on the 2nd sl of INNI2_B81.
+$ The data given by 02Wal were converted by 13Cao to Gibbs energy expressions
+$ that are tdb-compatible. Unfortunately, they also changed the models
+$ to fractional.
+$
+$ The original lattice stability for fcc-In from 91Din is used. When the 98Boa
+$ value is used the In solubility in fcc-Ni is somewhat decreased.
+$
+$ There is a large region of INNI_B2 above 1700 K as an In-based solid solution.
+$ This should be fairly easily fixable (not done here). Otherwise, the
+$ dataset appears to behave reasonably.
+$
+ PAR  L(LIQUID,IN,NI;0),,               -43340.31+17.42413*T;,,       N 02Wal !
+ PAR  L(LIQUID,IN,NI;1),,               +19273.7-8.30913*T;,,         N 02Wal !
+ PAR  L(LIQUID,IN,NI;2),,               +3079.33-17.52576*T;,,        N 02Wal !
+ PAR  L(LIQUID,IN,NI;3),,               -15351.06;,,                  N 02Wal !
+$
+ PAR  L(FCC_A1,IN,NI:VA;0),,            -26062.75+15.25921*T;,,       N 02Wal !
+$
+ PAR  G(IN7NI3_D8F,IN:NI),,             +10*GIN7NI3;,,                N 02Wal !
+ PAR  G(IN3NI2_D513,IN:NI),,            +5*GIN3NI2;,,                 N 02Wal !
+$
+ PAR  G(INNI_B2,IN:NI),,                +2*GINNIH1;,,                 N 02Wal !
+$ Parameters below from the 13Cao paper and cited to 02Wal
+ PAR  L(INNI_B2,IN:NI,VA;0),,           -85788.8+51.97*T;,,           N 02Wal !
+ PAR  L(INNI_B2,IN:NI,VA;1),,           -39935.08+52.266*T;,,         N 02Wal !
+$ Parameters below from the 02Wal paper
+$PAR  L(INNI_B2,IN:NI,VA;0),,           -73393.66+37.13719*T;,,       N 02Wal !
+$PAR  L(INNI_B2,IN:NI,VA;1),,           -45496.26+59.16134*T;,,       N 02Wal !
+$
+ PAR  G(INNI_B35,IN:NI),,               +2*GINNIL;,,                  N 02Wal !
+$
+ PAR  G(IN9NI13,IN:NI:NI),,             +3*GINNI2P1;,,                N 02Wal !
+ PAR  G(IN9NI13,IN:NI:VA),,             +3*GINNI2P2;,,                N 02Wal !
+$
+ PAR  G(INNI2_B81,IN:NI:NI),,           +3*GINNI2H1;,,                N 02Wal !
+ PAR  G(INNI2_B81,IN:NI:VA),,           +3*GINNI2H2;,,                N 02Wal !
+ PAR  G(INNI2_B81,IN:VA:NI),,           +3*GINNI2H5;,,                N 13Cao !
+ PAR  L(INNI2_B81,IN:NI:NI,VA;0),,      -22151.5+30.32828*T;,,        N 02Wal !
+ PAR  L(INNI2_B81,IN,NI:NI:NI;0),,      -34625.91;,,                  N 02Wal !
+ PAR  L(INNI2_B81,IN:NI,VA:NI;0),,      -9180+37*T;,,                 N 13Cao !
+$
+ PAR  G(INNI2_B82,IN:NI),,              +3*GINNI2L;,,                 N 02Wal !
+ PAR  G(INNI3_D019,IN:NI),,             +4*GINNI3;,,                  N 02Wal !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,IN,NI:VA;0),,            -26062.75+15.25921*T;,,       N Same !
+ PAR  L(HCP_A3,IN,NI:VA;0),,            -26062.75+15.25921*T;,,       N Same !
+$
+ FUNCTION GIN7NI3   298.15  -26742.1514+109.466332*T-21.91582*T*LN(T)
+       -0.00546*T**2-1.48422E-06*T**3-16034.2*T**(-1);
+      6000.00  N !
+ FUNCTION GIN3NI2   298.15  -32597.3056+115.1419914*T-21.94156*T*LN(T)
+       -0.00537167*T**2-1.272192E-06*T**3-13743.6*T**(-1);
+      6000.00  N !
+ FUNCTION GINNIH1   298.15  -21438.72795+78.079172*T-17.86*T*LN(T)
+       -0.004493*T**2-3.783335E-07*T**3-155623.5*T**(-1);
+      6000.00  N !
+ FUNCTION GINNIL    298.15  -27231.26295+82.595751*T-17.86*T*LN(T)
+       -0.004493*T**2-3.78335E-07*T**3-155623.5*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI2P1  298.15  -23372.31587+117.947*T-22.0102*T*LN(T)
+       -0.0051357*T**2-7.1E-07*T**3-7635.3333*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI2P2  298.15  -18137.5653+56.27629*T-11.9066667*T*LN(T)
+       -0.002995333*T**2-2.5222333E-07*T**3-103749*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI2H1  298.15  -23318.81587+116.35747*T-22.0102*T*LN(T)
+       -0.0051357*T**2-7.1E-07*T**3-7635.33333*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI2H2  298.15  -12001.26863+50.52042*T-11.9066667*T*LN(T)
+       -0.002995333*T**2-2.5222333E-07*T**3-103749*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI2H5  298.15  -5975.6553+65.07631*T-11.9066667*T*LN(T)
+       -0.002995333*T**2-2.5222333E-07*T**3-103749*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI2L   298.15  -23385.98587+115.707976*T-22.0102*T*LN(T)
+       -0.005135686*T**2-7.06773333E-07*T**3-7635.333333*T**(-1);
+      6000.00  N !
+ FUNCTION GINNI3    298.15  -20124.8066+117.1621585*T-22.03165*T*LN(T)
+       -0.00506194*T**2-5.3008E-07*T**3-5726.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che0 'P.-Y Chevalier, Calphad, 12, 383-92(1988)
+          SGTE unary database V.4.1, 1999; In'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992),
+          SGTE unary database V.5.0, 2009; In'
+  97Ans  'I. Ansara, N. Dupin, H.L. Lukas, B. Sundman,
+          J. Alloys Compd., 247, 20-30(1997); Al-Ni'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb, In-Pb, Bi-In-Pb'
+  99Ans1 'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  02Wal  'P. Waldner, H. Ipser, Z. Metallkd., 93, 825-32(2002); In-Ni'
+  13Cao  'Z. Cao, W. Xie, K. Wang, G. Du, Z. Qiao,
+          J. Electron. Mater., 42, 2615-29(2013); In-Ni'
+!

@@ -1,0 +1,182 @@
+$
+$ Database for Co-Cr from A. Kusoffsky and B. Jansson 1997
+$ (included in LB Vol. 2)
+$
+$ A. Kusoffsky, B. Jansson, Calphad, 21, 321-33(1997).
+$
+$ Dataset created 2009.10.18 by Bengt Hallstedt.
+$ 2020.01.26: Modified for use with GES6.
+$
+$ The SIGMA_D8B phase field is more narrow than SIGMA_OLD and does not agree
+$ as well with experimental data. It is rather close to the sigma phase field
+$ in the later assessment from 16Liu though.
+$
+$ An attempt to widen the SIGMA_D8B phase field did not work. To appreciably
+$ widen the phase field it will be necessary to include Cr on the first
+$ sublattice.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO CR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% CR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO CR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% CR : VA : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_D8B % 3 10 4 16 !
+ CONST SIGMA_D8B : CO : CR : CO CR : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$ Sigma in TCFE 2000 and SSOL V4
+$
+ PHASE SIGMA_OLD % 3 8 4 18 !
+ CONST SIGMA_OLD : CO : CR : CO CR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ DEFAULT-COM REJECT_PHASE SIGMA_OLD !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCO    298.15  +GHSERCO+427.59-0.615248*T;                6000 N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+$PAR  G(CBCC_A12,CR:VA),,               +GHSERCR+11087+2.7196*T;,,    N 91Din !
+$PAR  G(CUB_A13,CR:VA),,                +GHSERCR+15899+0.6276*T;,,    N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCR    298.15  +GHSERCR+7284+0.163*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From A. Kusoffsky and B. Jansson 1997 (included in LB Vol. 2)
+$
+$ A. Kusoffsky, B. Jansson, Calphad, 21, 321-33(1997).
+$
+$ Checked against paper and LB. Checked at 6000 K.
+$
+$ The SIGMA_D8B phase field is more narrow than SIGMA_OLD and does not agree
+$ as well with experimental data. It is rather close to the sigma phase field
+$ in the later assessment from 16Liu though.
+$
+$ An attempt to widen the SIGMA_D8B phase field did not work. To appreciably
+$ widen the phase field it will be necessary to include Cr on the first
+$ sublattice.
+$
+ PAR  L(LIQUID,CO,CR;0),,               -3034-5.624*T;,,              N 97Kus !
+ PAR  L(LIQUID,CO,CR;1),,               +909;,,                       N 97Kus !
+$
+ PAR  L(FCC_A1,CO,CR:VA;0),,            +1500-9.592*T;,,              N 97Kus !
+ PAR  TC(FCC_A1,CO,CR:VA;0),,           -1795.00;,,                   N 97Kus !
+$
+ PAR  L(BCC_A2,CO,CR:VA;0),,            +17208-13.519*T;,,            N 97Kus !
+ PAR  L(BCC_A2,CO,CR:VA;1),,            -5470;,,                      N 97Kus !
+$
+ PAR  L(HCP_A3,CO,CR:VA;0),,            -6436;,,                      N 97Kus !
+ PAR  TC(HCP_A3,CO,CR:VA;0),,           -1795.00;,,                   N 97Kus !
+$
+ PAR  G(SIGMA_D8B,CO:CR:CO),,           +10*GFCCCO+4*GHSERCR+16*GBCCCO
+             +1668+26.86*T;,,                                         N 00Wes !
+ PAR  G(SIGMA_D8B,CO:CR:CR),,           +10*GFCCCO+20*GHSERCR
+             -11113-128.54*T;,,                                       N 00Wes !
+$
+ PAR  G(SIGMA_OLD,CO:CR:CO),,           +8*GFCCCO+4*GHSERCR+18*GBCCCO
+             +17077-30.518*T;,,                                       N 97Kus !
+ PAR  G(SIGMA_OLD,CO:CR:CR),,           +8*GFCCCO+22*GHSERCR
+             -7466-104.215*T;,,                                       N 97Kus !
+$
+$ Metastable
+$
+$ Added 100 J to SIGMA_D8B
+$PAR  G(HIGH_SIGMA,CO:CR:CO),,          +10*GFCCCO+4*GHSERCR+16*GBCCCO
+$            +1768+26.86*T;,,                                         N 00Wes !
+$PAR  G(HIGH_SIGMA,CO:CR:CR),,          +10*GFCCCO+20*GHSERCR
+$            -11013-128.54*T;,,                                       N 00Wes !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CO-CR(TDB -* +LIQ +HCP_A3 +BCC_A2 +FCC_A1 +SIGMA_D8B
+  ;G5 C_S:FCC/CO:VA ;P3 TMM:300/3000 STP:.1/1100) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97Kus  'A. Kusoffsky, B. Jansson, Calphad, 21, 321-33(1997); Co-Cr'
+  00Wes  'S. Westman, unpublished, 2000; Co-Cr'
+!

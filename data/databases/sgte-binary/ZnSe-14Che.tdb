@@ -1,0 +1,230 @@
+$
+$ Database for Zn-Se from Y. Chen et al. 2014
+$
+$ Y. Chen, Y. Liu, M. Chu, L. Wang, J. Alloys Compd., 617, 423-28(2014).
+$
+$ Dataset created 2014.04.05 by Bengt Hallstedt.
+$ 2021.02.07: Modified for use with GES6.
+$
+$ There is a slight difference for the monotectic, maybe a rounding error.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SE   HEXAGONAL_A8               78.96      5514.512   41.9655 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  SE2                                SE2 !
+ SPECIE  SE3                                SE3 !
+ SPECIE  SE4                                SE4 !
+ SPECIE  SE5                                SE5 !
+ SPECIE  SE6                                SE6 !
+ SPECIE  SE7                                SE7 !
+ SPECIE  SE8                                SE8 !
+ SPECIE  ZNSE                               ZN1SE1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SE ZN ZNSE : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : ZN : VA : !
+$
+$ gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : SE : !
+$
+$ ZnS (cF8, F-43m)
+$
+ PHASE ZNSE_B3 % 2 1 1 !
+ CONST ZNSE_B3 : ZN : SE : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : SE SE2 SE3 SE4 SE5 SE6 SE7 SE8 ZNSE ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Se
+$
+ PAR  G(HEXAGONAL_A8,SE),,              +GHSERSE;                1000 N 91Din !
+ PAR  G(LIQUID,SE),,                    +GLIQSE;                 1000 N 91Din !
+$
+ PAR  G(GAS,SE),,                       +F15139T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE2),,                      +F15179T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE3),,                      +F15186T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE4),,                      +F15188T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE5),,                      +F15190T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE6),,                      +F15192T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE7),,                      +F15194T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE8),,                      +F15196T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERSE   298.15  -9376.371+174.205877*T-33.6527*T*LN(T)
+       +0.02424314*T**2-1.5318461E-05*T**3+102249*T**(-1);
+       494.00  Y  -37546.134+507.111538*T-81.2006585*T*LN(T)
+       +0.037144892*T**2-5.611026E-06*T**3+2614263*T**(-1);
+       800.00  Y  -12193.47+197.770166*T-35.1456*T*LN(T);
+      1000.00  N !
+ FUNCTION GLIQSE    298.15  +50533.347-1178.28824*T+194.107439*T*LN(T)
+       -0.390268991*T**2+1.19219297E-04*T**3-2224398*T**(-1); 
+       494.00  Y  -5228.304+183.72559*T-35.1456*T*LN(T);
+      1000.00  N !
+$ Se(g)
+ FUNCTION F15139T   298.15  +232766.124-65.5963457*T-16.24307*T*LN(T)
+       -0.005571435*T**2+6.58265833E-07*T**3-71610.6*T**(-1);
+       800.00  Y  +225185.129+10.7157034*T-27.19696*T*LN(T)
+       +0.001124752*T**2-5.25977833E-08*T**3+878596.5*T**(-1);
+      2000.00  Y  +234611.822-36.1730681*T-21.1825*T*LN(T)
+       -4.4978065E-04*T**2+1.40450217E-08*T**3-1751022*T**(-1);
+      7000.00  Y  +214845.002+13.1902612*T-26.95059*T*LN(T)
+       +2.7852715E-04*T**2-2.74948333E-09*T**3+10695825*T**(-1);
+     10000.00  N !
+$ Se2(g)
+ FUNCTION F15179T   298.15  +129222.34+86.2984759*T-50.63634*T*LN(T)
+       +0.01244823*T**2-2.32291333E-06*T**3+119836.85*T**(-1);
+       800.00  Y  +137406.921-23.0997313*T-34.10038*T*LN(T)
+       -0.0022372185*T**2+9.96887667E-08*T**3-629665*T**(-1);
+      3600.00  Y  +132735.028-3.17188301*T-36.64234*T*LN(T)
+       -0.0015478395*T**2+6.43754667E-08*T**3+1458396*T**(-1);
+      6000.00  N !
+$ Se3(g)
+ FUNCTION F15186T   298.15  +159494.857+79.4847259*T-58.11338*T*LN(T)
+       -2.21118E-05*T**2+8.831945E-10*T**3+162301*T**(-1);
+      6000.00  N !
+$ Se4(g)
+ FUNCTION F15188T   298.15  +139091.401+214.439147*T-82.98956*T*LN(T)
+       -3.913065E-05*T**2+1.564701E-09*T**3+276514.2*T**(-1);
+      6000.00  N !
+$ Se5(g)
+ FUNCTION F15190T   298.15  +122769.294+309.584196*T-108*T*LN(T)
+       -2.2141475E-05*T**2+8.847785E-10*T**3+247104.45*T**(-1);
+      6000.00  N !
+$ Se6(g)
+ FUNCTION F15192T   298.15  +96476.825+456.85972*T-132.9572*T*LN(T)
+       -1.8633165E-05*T**2+7.45342833E-10*T**3+280912.3*T**(-1);
+      6000.00  N !
+$ Se7(g)
+ FUNCTION F15194T   298.15  +99084.1042+567.553812*T-157.8755*T*LN(T)
+       -2.493888E-05*T**2+9.973365E-10*T**3+348709*T**(-1);
+      6000.00  N !
+$ Se8(g)
+ FUNCTION F15196T   298.15  +100471.831+695.896437*T-182.7964*T*LN(T)
+       -3.059853E-05*T**2+1.2224525E-09*T**3+403660.45*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+$PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 91Din !
+$PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ PAR  G(GAS,ZN),,                       +F15669T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ Zn(g)
+ FUNCTION F15669T   298.15  +124152.804-21.0289705*T-20.897*T*LN(T)
+       +6.65E-05*T**2-5.58E-09*T**3+3335*T**(-1);
+      4300.00  Y  +104038.336+64.4573277*T-31.558*T*LN(T)
+       +0.00230425*T**2-8.82333333E-08*T**3+5389360*T**(-1);
+      8200.00  Y  +681283.394-922.574931*T+78.50201*T*LN(T)
+       -0.0070638*T**2+6.18466667E-08*T**3-5.65175E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Chen, Y. Liu, M. Chu, L. Wang, J. Alloys Compd., 617, 423-28(2014).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There is a slight difference for the monotectic, maybe a rounding error.
+$
+ PAR  G(LIQUID,ZNSE),,                  +GLIQZN+GLIQSE
+             -129998.75+4.61*T;,,                                     N 14Che !
+ PAR  L(LIQUID,SE,ZNSE;0),,             +24001.25-8.39*T;,,           N 14Che !
+ PAR  L(LIQUID,SE,ZNSE;1),,             +3998.42;,,                   N 14Che !
+ PAR  L(LIQUID,ZN,ZNSE;0),,             +89001.45-38.01*T;,,          N 14Che !
+ PAR  L(LIQUID,ZN,ZNSE;1),,             +6702.45;,,                   N 14Che !
+ PAR  L(LIQUID,ZN,ZNSE;2),,             -4001.14;,,                   N 14Che !
+$
+ PAR  G(ZNSE,ZN:SE),,                   +GHSERZN+GHSERSE
+             -175998.42+13.01*T;,,                                    N 14Che !
+$
+ PAR  G(GAS,ZNSE),,                     +F15177T+RTLNP;,,             N 97SUB !
+$ ZnSe(g)
+ FUNCTION F15177T   298.15  +225726.536+1.02944772*T-37.37986*T*LN(T)
+       -9.05836E-06*T**2+53764.4*T**(-1);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  97SUB  'SGTE Substance Database, version 1997'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  14Che  'Y. Chen, Y. Liu, M. Chu, L. Wang,
+          J. Alloys Compd., 617, 423-28(2014); Zn-Se'
+!

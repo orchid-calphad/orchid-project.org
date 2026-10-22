@@ -1,0 +1,173 @@
+$
+$ Database for Bi-Zn from Y. Djaballah et al. 2005.
+$
+$ Y. Djaballah, L. Bennour, F. Bouharkat, A. Belgacem-Bouzida,
+$ Modelling Simul. Mater. Sci. Eng., 13, 361-69(2005).
+$
+$ Dataset created 2019.11.17 by Bengt Hallstedt.
+$ 2023.02.24: Unary Bi changed from V4.4 to V5.0.
+$
+$ The dataset presented by 05Dja is incomplete. It only contains the liquid
+$ interaction.
+$
+$ The shape of the liquid miscibility gap is not correctly reproduced.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BI   RHOMBOHEDRAL_A7           208.98      6426.6     56.735  !
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : BI ZN : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : ZN : VA: !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : BI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Bi
+$
+$ RHOMBOHEDRAL_A7 and LIQUID modified in unary 5.0
+$ DIAMOND_A4 added in unary 5.0
+$
+ PAR  G(RHOMBOHEDRAL_A7,BI),,           +GHSERBI;                3000 N 09SGUN !
+ PAR  G(FCC_A1,BI:VA),,                 +GHSERBI+9900-12.5*T;    3000 N 91Din !
+ PAR  G(BCC_A2,BI:VA),,                 +GHSERBI+11297-13.9*T;   3000 N 91Din !
+ PAR  G(HCP_A3,BI:VA),,                 +GHSERBI+9900-11.8*T;    3000 N 91Din !
+$PAR  G(DIAMOND_A4,BI),,                +GHSERBI
+$            +11296.8+9.253655*T;                                3000 N 88Che2 !
+$PAR  G(BCT_A5,BI),,                    +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,BI),,             +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TET_ALPHA1_A6,BI),,             +GHSERBI+4234;           3000 N 91Din !
+ PAR  G(LIQUID,BI),,                    +GLIQBI;                 3000 N 09SGUN ! 
+$
+ FUNCTION GHSERBI   298.15  -7817.776+128.418925*T-28.4096529*T*LN(T)
+       +0.012338888*T**2-8.381598E-6*T**3;
+       544.55  Y  +29293.369-379.605174*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1)+1.66309E+25*T**(-9);
+       800.00  Y  -11085.609+182.955328*T-36.041*T*LN(T)
+       +7.4641E-3*T**2-1.05047E-6*T**3+5175*T**(-1)+1.66309E+25*T**(-9);
+      1200.00  Y  -7580.864+124.770814*T-27.196*T*LN(T)+1.66309E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQBI    298.15  +11246.017-20.636399*T+GHSERBI-5.9608E-19*T**7;
+       544.55  Y  +40629.667-400.415652*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1);
+       800.00  Y  +250.689+162.14485*T-36.041*T*LN(T)
+       +0.0074641*T**2-1.05047E-6*T**3+5175*T**(-1);
+      1200.00  Y  +3755.434+103.960336*T-27.196*T*LN(T);
+      3000.00 N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+$PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 91Din !
+$PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Djaballah, L. Bennour, F. Bouharkat, A. Belgacem-Bouzida,
+$ Modelling Simul. Mater. Sci. Eng., 13, 361-69(2005).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The dataset presented by 05Dja is incomplete. It only contains the liquid
+$ interaction.
+$
+$ The shape of the liquid miscibility gap is not correctly reproduced.
+$
+ PAR  L(LIQUID,BI,ZN;0),,               +17731-8.078*T
+             +0.044*T*LN(T);,,                                        N 05Dja !
+ PAR  L(LIQUID,BI,ZN;1),,               -1988-3.497*T
+             -0.158*T*LN(T);,,                                        N 05Dja !
+ PAR  L(LIQUID,BI,ZN;2),,               +3104+0.066*T
+             -0.162*T*LN(T);,,                                        N 05Dja !
+ PAR  L(LIQUID,BI,ZN;3),,               -10834+11.299*T
+             +0.29*T*LN(T);,,                                         N 05Dja !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  BI-ZN(TDB -* +LIQ +HCP_A3 +RHOM_A7 ;G5 C_S:LIQ/ZN MAJ:LIQ/BI
+  ;P3 TMM:200/1000 STP:0.999/690) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  88Che2 'P.-Y. Chevalier, Thermochim. Acta, 132, 111-16(1988),
+          SGTE unary database V.5.0, 2009; Bi' 
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  05Dja  'Y. Djaballah, L. Bennour, F. Bouharkat, A. Belgacem-Bouzida,
+          Modelling Simul. Mater. Sci. Eng., 13, 361-69(2005); Bi-Zn'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

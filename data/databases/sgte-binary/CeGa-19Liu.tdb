@@ -1,0 +1,201 @@
+$
+$ Database for Ce-Ga from J. Liu et al. 2019.
+$
+$ J. Liu, F. Li, J. Liu, X. Zhang, T. Ahmad, T. Liang,
+$ Monatsh. Chem., 150, 1225-33(2019).
+$
+$ Dataset created 2023.05.28 by Bengt Hallstedt.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CE   FCC_A1                    140.12      7280.16    69.454  ! 
+ ELEMENT GA   ORTHORHOMBIC_GA            69.72      5572.0     40.7271 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CE GA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CE% GA : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CE% GA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CE GA : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : CE : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE CE3GA_L12 % 2 3 1 !
+ CONST CE3GA_L12 : CE : GA : !
+$
+$ Prototype Ba5Si3 (tP32, P4/ncc)
+$
+ PHASE CE3GA2 % 2 3 2 !
+ CONST CE3GA2 : CE : GA : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE CEGA_B33 % 2 1 1 !
+ CONST CEGA_B33 : CE : GA : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE CEGA2_C32 % 2 1 2 !
+ CONST CEGA2_C32 : CE% GA : CE GA% : !
+$
+$ Prototype Ga6Pu (tP14, P4/nbm)
+$
+ PHASE CEGA6_LT % 2 1 6 !
+ CONST CEGA6_LT : CE : GA : !
+$
+$ unknown structure 
+$
+ PHASE CEGA6_HT % 2 1 6 !
+ CONST CEGA6_HT : CE : GA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ce
+$
+$ HCP_A3 and DHCP added in unary 3.0
+$ HCP_A3 and DHCP revised in unary 4.4
+$
+ PAR  G(FCC_A1,CE:VA),,                 +GHSERCE;                4000 N 91Din !
+ PAR  G(BCC_A2,CE:VA),,                 +GBCCCE;                 4000 N 91Din !
+ PAR  G(HCP_A3,CE:VA),,                 +GHSERCE+300;            4000 N Frank !
+$PAR  G(HCP_A3,CE:VA),,                 +GHSERCE+50000;          4000 N 96SGUN !
+ PAR  G(DHCP,CE),,                      +GHSERCE
+             -122.539+0.433*T;                                   4000 N 99Gsc !
+$PAR  G(DHCP,CE),,                      +GHSERCE-190+0.56886*T;  4000 N 96SGUN !
+ PAR  G(LIQUID,CE),,                    +GLIQCE;                 4000 N 91Din !
+$
+ PAR  G(CEGA2_C32,CE:CE),,              +3*GHSERCE+150729.9;,,        N 19Liu !
+$
+ FUNCTION GHSERCE   298.15  -7160.519+84.23022*T-22.3664*T*LN(T)
+       -0.0067103*T**2-3.20773E-07*T**3-18117*T**(-1);
+      1000.00  Y  -79678.506+659.4604*T-101.32248*T*LN(T)
+       +0.026046487*T**2-1.930297E-06*T**3+11531707*T**(-1);
+      2000.00  Y  -14198.639+190.370192*T-37.6978*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCCE    298.15  -1354.69-5.21501*T-7.7305867*T*LN(T)
+       -0.029098402*T**2+4.784299E-06*T**3-196303*T**(-1);
+      1000.00  Y  -12101.106+187.449688*T-37.6142*T*LN(T);
+      1072.00  Y  -11950.375+186.333811*T-37.4627992*T*LN(T)
+       -5.7145E-05*T**2+2.348E-09*T**3-25897*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQCE    298.15  +4117.865-11.423898*T-7.5383948*T*LN(T)
+       -0.02936407*T**2+4.827734E-06*T**3-198834*T**(-1);
+      1000.00  Y  -6730.605+183.023193*T-37.6978*T*LN(T);
+      4000.00  N !
+ FUNCTION GDHCPCE   298.15  +GHSERCE-122.539+0.433*T;                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ PAR  G(CEGA2_C32,GA:GA),,              +3*GHSERGA+30702.9;,,         N 19Liu !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GHCPGA    298.15  +GHSERGA+4500-9.5*T;                       6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Liu, F. Li, J. Liu, X. Zhang, T. Ahmad, T. Liang,
+$ Monatsh. Chem., 150, 1225-33(2019).
+$
+$ Checked against paper. Checked at 6000K.
+$
+ PAR  L(LIQUID,CE,GA;0),,               -253596.1+63.8096*T
+             -0.0013*T*LN(T)-0.0049*T**2;,,                           N 19Liu !
+ PAR  L(LIQUID,CE,GA;1),,               +81990.8-0.4089*T;,,          N 19Liu !
+ PAR  L(LIQUID,CE,GA;2),,               -31446.3;,,                   N 19Liu !
+ PAR  L(LIQUID,CE,GA;3),,               +31966.8;,,                   N 19Liu !
+$
+ PAR  L(FCC_A1,CE,GA:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(BCC_A2,CE,GA:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(CE3GA_L12,CE:GA),,              +3*GHSERCE+GHSERGA
+             -201588+66.9976*T;,,                                     N 19Liu !
+ PAR  G(CE3GA2,CE:GA),,                 +3*GHSERCE+2*GHSERGA
+             -325250.5+47.153*T;,,                                    N 19Liu !
+ PAR  G(CEGA_B33,CE:GA),,               +GHSERCE+GHSERGA
+             -151497.2+20.2644*T;,,                                   N 19Liu !
+$
+ PAR  G(CEGA2_C32,CE:GA),,              +GHSERCE+2*GHSERGA
+             -282056.7+40.8372*T;,,                                   N 19Liu !
+ PAR  G(CEGA2_C32,GA:CE),,              +GHSERGA+2*GHSERCE+30700.2;,, N 19Liu !
+ PAR  L(CEGA2_C32,CE,GA:GA;0),,         -155057.1-9.8859*T;,,         N 19Liu !
+$
+ PAR  G(CEGA6_LT,CE:GA),,               +GHSERCE+6*GHSERGA
+             -398328+72.4304*T;,,                                     N 19Liu !
+ PAR  G(CEGA6_HT,CE:GA),,               +GHSERCE+6*GHSERGA
+             -365232+28.1995*T;,,                                     N 19Liu !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  Frank  'Peter Franke, unpublished, SGTE unary database V.4.4, 2001; Ce'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99Gsc  'K.A. Gschneidner, Jr., V.K. Pecharsky, J. Phase Equilib.,
+          20, 612-14(1999), SGTE unary database V.4.4, 2001; Ce'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  19Liu  'J. Liu, F. Li, J. Liu, X. Zhang, T. Ahmad, T. Liang,
+          Monatsh. Chem., 150, 1225-33(2019); Ce-Ga'
+!

@@ -1,0 +1,219 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "B",
+    "O"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "B": {
+          "energy": -2840.6466075344792,
+          "phase": "ALPHA_RHOMBO_B"
+        },
+        "O": {
+          "energy": -30548.985278293712,
+          "phase": "O2GAS"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -555264.8519640078
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -204.0589009550718
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "ALPHA_RHOMBO_B",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -494424.690644253,
+          "right": {
+            "phase": "B6O",
+            "x": 0.14285714285714285
+          },
+          "slope": -494424.690644253,
+          "x_hi": 0.14285714285714285,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -24721.226389865056,
+            "slope": -382216.2672349524
+          },
+          "entropy": {
+            "intercept": -21.895729190396093,
+            "slope": -50.788796622299145
+          },
+          "intercept": -18193.01473174843,
+          "kind": "two_phase",
+          "left": {
+            "phase": "B6O",
+            "x": 0.14285714285714285
+          },
+          "mu_a_rel": -18193.01473174843,
+          "mu_b_rel": -385266.6022537624,
+          "right": {
+            "phase": "B2O3",
+            "x": 0.6000000000000001
+          },
+          "slope": -367073.587522014,
+          "x_hi": 0.6000000000000001,
+          "x_lo": 0.14285714285714285
+        },
+        {
+          "enthalpy": {
+            "intercept": -635127.4668270915,
+            "slope": 635127.4668270915
+          },
+          "entropy": {
+            "intercept": -130.922517909439,
+            "slope": 130.922517909439
+          },
+          "intercept": -596092.9181123923,
+          "kind": "two_phase",
+          "left": {
+            "phase": "B2O3",
+            "x": 0.6000000000000001
+          },
+          "mu_a_rel": -596092.9181123923,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "O2GAS",
+            "x": 1.0
+          },
+          "slope": 596092.9181123923,
+          "x_hi": 1.0,
+          "x_lo": 0.6000000000000001
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ALPHA_RHOMBO_B",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -70632.09866346471,
+          "energy_per_atom": -70632.09866346471,
+          "enthalpy": -79323.55028057254,
+          "entries_at_x": 1,
+          "entropy": -29.151271565010255,
+          "formula": "",
+          "nsites": null,
+          "phase": "B6O",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.14285714285714285
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -238437.16724495686,
+          "energy_per_atom": -238437.16724495686,
+          "enthalpy": -254050.98673083654,
+          "entries_at_x": 1,
+          "entropy": -52.369007163775585,
+          "formula": "",
+          "nsites": null,
+          "phase": "B2O3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6000000000000001
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "O2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "BO-23Pha",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:17:55Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/BO-23Pha.tdb",
+    "source_sha256": "52cca70a9ed43da190c170a7e77b8f7d3647107841981daddb0cc29f9283cc7e"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "B-O",
+  "x_element": "O"
+}

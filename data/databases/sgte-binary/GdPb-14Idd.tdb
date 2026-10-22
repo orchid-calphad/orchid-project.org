@@ -1,0 +1,234 @@
+$
+$ Database for Gd-Pb from A. Iddaoudi et al. 2014.
+$
+$ A. Iddaoudi, C. Servant, N. Selhaoui, S. Kardellass, K. Mahdouk, L. Bouirden,
+$ J. Alloys Compd., 589, 192-99(2014).
+$
+$ Dataset created 2018.06.22 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ The hcp interaction seems quite improbable.
+$
+$ There is a huge hcp phase field above 2733 K.
+$
+$ Invariant equilibria differ by up to 2 K, probably because of insufficient
+$ accuracy of the compound compositions.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GD   HCP_A3                    157.25      9087.648   68.0894 ! 
+ ELEMENT PB   FCC_A1                    207.2       6870.      64.80   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GD PB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GD PB% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GD% PB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GD% PB : VA : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE GD5PB3_D88 % 2 5 3 !
+ CONST GD5PB3_D88 : GD% PB : PB : !
+$
+$ Prototype Ge4Sm5 (oP36, Pnma)
+$
+ PHASE GD5PB4_LT % 2 5 4 !
+ CONST GD5PB4_LT : GD : PB : !
+$
+$ unknown structure 
+$
+ PHASE GD5PB4_HT % 2 5 4 !
+ CONST GD5PB4_HT : GD : PB : !
+$
+$ unknown structure
+$
+ PHASE GD11PB10 % 2 11 10 !
+ CONST GD11PB10 : GD : PB : !
+$
+$ unknown structure
+$
+ PHASE GD6PB7 % 2 6 7 !
+ CONST GD6PB7 : GD : PB : !
+$
+$ unknown structure
+$
+ PHASE GDPB2 % 2 1 2 !
+ CONST GDPB2 : GD : PB : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE GDPB3_L12 % 2 1 3 !
+ CONST GDPB3_L12 : GD : PB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Gd
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ Small correction made to top two temperature ranges of bcc_A2 to ensure 
+$ continuity in Gibbs energy, AD, Dec 2002
+$ FCC_A1 added in unary 4.4
+$
+$ FCC_A1 from 03Cac not included in unary
+$
+ PAR  G(HCP_A3,GD:VA)           200.00  +GHSERGD;                3600 N 95She2 !
+ PAR  TC(HCP_A3,GD:VA)          200.00    293.4;                 3600 N 95She2 !
+ PAR  BM(HCP_A3,GD:VA)          200.00      3.0;                 3600 N 95She2 !
+$PAR  TC(HCP_A3,GD:VA)          200.00    291.8;                 3600 N 91Din !
+$PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 91Din !
+ PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+500;            3600 N 00Zin !
+$PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD
+$            +1800-0.831451*T;                                   3600 N 03Cac !
+ PAR  G(BCC_A2,GD:VA)           200.00  +GBCCGD;                 3600 N 95She2 !
+ PAR  G(LIQUID,GD)              200.00  +GLIQGD;                 3600 N 95She2 !
+$
+ FUNCTION GHSERGD   200.00  -6834.5855+97.13101*T-24.7214131*T*LN(T)
+       -0.00285240521*T**2-3.14674076E-07*T**3-8665.73348*T**(-1);
+      1000.00  Y  -6483.25362+95.6919924*T-24.6598297*T*LN(T)
+       -0.00185225011*T**2-6.61211607E-07*T**3;
+      1508.15  Y  -123124.992+699.125537*T-101.800197*T*LN(T)
+       +0.0150644246*T**2-6.39165948E-07*T**3+29356890.3*T**(-1);
+      3600.00  N !
+ FUNCTION GBCCGD    200.00  +3233.80866-2.11184585*T+GHSERGD;
+      1000.00  Y  +152792.743-1349.58873*T+180.097094*T*LN(T)
+       -0.119550229*T**2+1.17915728E-05*T**3-22038836*T**(-1);
+      1508.15  Y  -15783.7618+202.222183*T-38.960425*T*LN(T);
+      1586.15  Y  -19850.5562+224.818035*T-41.904333*T*LN(T)
+       +8.58222759E-04*T**2-3.77570269E-08*T**3+995428.573*T**(-1);
+      3600.00  N !
+ FUNCTION GLIQGD    200.00  +13060.0262-8.32179974*T+GHSERGD;
+      1000.00  Y  +146262.037-1208.70685*T+159.352082*T*LN(T)
+       -0.108247135*T**2+1.06945505E-05*T**3-19678357*T**(-1);
+      1508.15  Y  -5397.314+192.336215*T-38.5075*T*LN(T);
+      3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Pb
+$
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 3.0
+$ RHOMBOHEDRAL_A7, TETRAGONAL_A6 and TET_ALPHA1_A6 revised in unary 4.1
+$ RHOMBO_A10 added in unary 5.0
+$
+ PAR  G(FCC_A1,PB:VA),,                 +GHSERPB;                2100 N 91Din !
+ PAR  G(BCC_A2,PB:VA),,                 +GHSERPB+2400-1.1*T;     2100 N 91Din !
+ PAR  G(HCP_A3,PB:VA),,                 +GHSERPB+300+T;          2100 N 91Din !
+$PAR  G(BCT_A5,PB),,                    +GHSERPB+489+3.52*T;     2100 N 91Din !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+4493.235;       2100 N 98Boa !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+473.23+3.5531*T
+$            -0.0396834*T*LN(T)+2.1489E-05*T**2;                 2100 N 96SGUN !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB
+$            +1903.3-2.0602*T;                                   2100 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB+183.2+0.45314*T
+$            -0.0396834*T*LN(T)+2.149E-06*T**2;                  2100 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+300+T;          2100 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+4900+3.52*T;    2100 N 96SGUN !
+$PAR  G(RHOMBO_A10,PB),,                +GHSERPB+10;             2100 N 09SGUN !
+ PAR  G(LIQUID,PB),,                    +GLIQPB;                 2100 N 91Din !
+$
+ PAR  G(GD5PB3_D88,PB:PB),,             +8*GHSERPB+40000;,,           N 14Idd !
+$
+ FUNCTION GHSERPB   298.15  -7650.085+101.700244*T-24.5242231*T*LN(T)
+       -0.00365895*T**2-2.4395E-07*T**3;
+       600.61  Y  -10531.095+154.243182*T-32.4913959*T*LN(T)
+       +0.00154613*T**2+8.05448E+25*T**(-9);
+      1200.00  Y  +4157.616+53.139072*T-18.9640637*T*LN(T)
+       -0.002882943*T**2+9.8144E-08*T**3-2696755*T**(-1)+8.05448E+25*T**(-9);
+      2100.00  N !
+ FUNCTION GLIQPB    298.15  +4672.124-7.750683*T+GHSERPB-6.019E-19*T**7;
+       600.61  Y  +4853.137-8.067136*T+GHSERPB-8.05448E+25*T**(-9);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A. Iddaoudi, C. Servant, N. Selhaoui, S. Kardellass, K. Mahdouk, L. Bouirden,
+$ J. Alloys Compd., 589, 192-99(2014).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The hcp interaction seems quite improbable.
+$
+$ There is a huge hcp phase field above 2733 K.
+$
+$ Invariant equilibria differ by up to 2 K, probably because of insufficient
+$ accuracy of the compound compositions.
+$
+ PAR  L(LIQUID,GD,PB;0),,               -136233+2.561*T;,,            N 14Idd !
+ PAR  L(LIQUID,GD,PB;1),,               -35487+33.406*T;,,            N 14Idd !
+ PAR  L(LIQUID,GD,PB;2),,               +36790-2.576*T;,,             N 14Idd !
+$
+ PAR  L(FCC_A1,GD,PB:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,GD,PB:VA;0),,            +15169-61.892*T;,,            N 14Idd !
+$
+ PAR  L(BCC_A2,GD,PB:VA;0),,            -65441-11.393*T;,,            N 14Idd !
+ PAR  L(BCC_A2,GD,PB:VA;1),,            +975;,,                       N 14Idd !
+$
+ PAR  G(GD5PB3_D88,GD:PB),,             +5*GHSERGD+3*GHSERPB
+             -384440+11.84*T;,,                                       N 14Idd !
+ PAR  L(GD5PB3_D88,GD,PB:PB;0),,        -240+23.992*T;,,              N 14Idd !
+ PAR  L(GD5PB3_D88,GD,PB:PB;1),,        -318752;,,                    N 14Idd !
+$
+ PAR  G(GD5PB4_LT,GD:PB),,              +5*GHSERGD+4*GHSERPB
+             -488196+37.008*T;,,                                      N 14Idd !
+ PAR  G(GD5PB4_HT,GD:PB),,              +5*GHSERGD+4*GHSERPB
+             -486333+35.901*T;,,                                      N 14Idd !
+ PAR  G(GD11PB10,GD:PB),,               +11*GHSERGD+10*GHSERPB
+             -1200444+137.088*T;,,                                    N 14Idd !
+ PAR  G(GD6PB7,GD:PB),,                 +6*GHSERGD+7*GHSERPB
+             -817557+154.479*T;,,                                     N 14Idd !
+ PAR  G(GDPB2,GD:PB),,                  +GHSERGD+2*GHSERPB
+             -142689+19.311*T;,,                                      N 14Idd !
+ PAR  G(GDPB3_L12,GD:PB),,              +GHSERGD+3*GHSERPB
+             -140804+7.296*T;,,                                       N 14Idd !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95She2 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-02,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Gd'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Zin  'M. Zinkevich, N. Mattern, H. J Seifert,
+          J. Phase Equilib., 21, 385-94(2000),
+          SGTE unary database V.4.4, 2001; Gd'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Gd'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  14Idd  'A. Iddaoudi, C. Servant, N. Selhaoui, S. Kardellass, K. Mahdouk,
+          L. Bouirden, J. Alloys Compd., 589, 192-99(2014); Gd-Pb'
+!

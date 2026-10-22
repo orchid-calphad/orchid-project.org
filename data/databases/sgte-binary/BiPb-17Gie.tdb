@@ -1,0 +1,165 @@
+$
+$ Database for Bi-Pb from W. Gierlotka and Y.-C. Tung 2017.
+$
+$ W. Gierlotka, Y.-C. Tung, J. Phase Equilib. Diffus., 38, 814-28(2017).
+$
+$ Dataset created 2019.11.16 by Bengt Hallstedt.
+$ 2023.02.24: Unary Bi changed from V4.4 to V5.0.
+$
+$ The RHOMBOHEDRAL_A7 interaction is improbable.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BI   RHOMBOHEDRAL_A7           208.98      6426.6     56.735  !
+ ELEMENT PB   FCC_A1                    207.2       6870.      64.80   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : BI PB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : BI PB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : BI PB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : BI PB : VA: !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : BI% PB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Bi
+$
+$ RHOMBOHEDRAL_A7 and LIQUID modified in unary 5.0
+$ DIAMOND_A4 added in unary 5.0
+$
+ PAR  G(RHOMBOHEDRAL_A7,BI),,           +GHSERBI;                3000 N 09SGUN !
+ PAR  G(FCC_A1,BI:VA),,                 +GHSERBI+9900-12.5*T;    3000 N 91Din !
+ PAR  G(BCC_A2,BI:VA),,                 +GHSERBI+11297-13.9*T;   3000 N 91Din !
+ PAR  G(HCP_A3,BI:VA),,                 +GHSERBI+9900-11.8*T;    3000 N 91Din !
+$PAR  G(DIAMOND_A4,BI),,                +GHSERBI
+$            +11296.8+9.253655*T;                                3000 N 88Che2 !
+$PAR  G(BCT_A5,BI),,                    +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,BI),,             +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TET_ALPHA1_A6,BI),,             +GHSERBI+4234;           3000 N 91Din !
+ PAR  G(LIQUID,BI),,                    +GLIQBI;                 3000 N 09SGUN ! 
+$
+ FUNCTION GHSERBI   298.15  -7817.776+128.418925*T-28.4096529*T*LN(T)
+       +0.012338888*T**2-8.381598E-6*T**3;
+       544.55  Y  +29293.369-379.605174*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1)+1.66309E+25*T**(-9);
+       800.00  Y  -11085.609+182.955328*T-36.041*T*LN(T)
+       +7.4641E-3*T**2-1.05047E-6*T**3+5175*T**(-1)+1.66309E+25*T**(-9);
+      1200.00  Y  -7580.864+124.770814*T-27.196*T*LN(T)+1.66309E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQBI    298.15  +11246.017-20.636399*T+GHSERBI-5.9608E-19*T**7;
+       544.55  Y  +40629.667-400.415652*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1);
+       800.00  Y  +250.689+162.14485*T-36.041*T*LN(T)
+       +0.0074641*T**2-1.05047E-6*T**3+5175*T**(-1);
+      1200.00  Y  +3755.434+103.960336*T-27.196*T*LN(T);
+      3000.00 N !
+$ ------------------------------------------------------------------------------
+$ Pb
+$
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 3.0
+$ RHOMBOHEDRAL_A7, TETRAGONAL_A6 and TET_ALPHA1_A6 revised in unary 4.1
+$ RHOMBO_A10 added in unary 5.0
+$
+ PAR  G(FCC_A1,PB:VA),,                 +GHSERPB;                2100 N 91Din !
+ PAR  G(BCC_A2,PB:VA),,                 +GHSERPB+2400-1.1*T;     2100 N 91Din !
+ PAR  G(HCP_A3,PB:VA),,                 +GHSERPB+300+T;          2100 N 91Din !
+$PAR  G(BCT_A5,PB),,                    +GHSERPB+489+3.52*T;     2100 N 91Din !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+4493.235;       2100 N 98Boa !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+473.23+3.5531*T
+$            -0.0396834*T*LN(T)+2.1489E-05*T**2;                 2100 N 96SGUN !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB
+$            +1903.3-2.0602*T;                                   2100 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB+183.2+0.45314*T
+$            -0.0396834*T*LN(T)+2.149E-06*T**2;                  2100 N 91Din !
+ PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+300+T;          2100 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+4900+3.52*T;    2100 N 96SGUN !
+$PAR  G(RHOMBO_A10,PB),,                +GHSERPB+10;             2100 N 09SGUN !
+ PAR  G(LIQUID,PB),,                    +GLIQPB;                 2100 N 91Din !
+$
+ FUNCTION GHSERPB   298.15  -7650.085+101.700244*T-24.5242231*T*LN(T)
+       -0.00365895*T**2-2.4395E-07*T**3;
+       600.61  Y  -10531.095+154.243182*T-32.4913959*T*LN(T)
+       +0.00154613*T**2+8.05448E+25*T**(-9);
+      1200.00  Y  +4157.616+53.139072*T-18.9640637*T*LN(T)
+       -0.002882943*T**2+9.8144E-08*T**3-2696755*T**(-1)+8.05448E+25*T**(-9);
+      2100.00  N !
+ FUNCTION GLIQPB    298.15  +4672.124-7.750683*T+GHSERPB-6.019E-19*T**7;
+       600.61  Y  +4853.137-8.067136*T+GHSERPB-8.05448E+25*T**(-9);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ W. Gierlotka, Y.-C. Tung, J. Phase Equilib. Diffus., 38, 814-28(2017).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The RHOMBOHEDRAL_A7 interaction is improbable.
+$
+ PAR  L(LIQUID,BI,PB;0),,               -4340.36-2.896*T;,,           N 17Gie !
+ PAR  L(LIQUID,BI,PB;1),,               -67.21;,,                     N 17Gie !
+$
+ PAR  L(FCC_A1,BI,PB:VA;0),,            -3494.67-0.219*T;,,           N 17Gie !
+ PAR  L(FCC_A1,BI,PB:VA;1),,            +4106.62;,,                   N 17Gie !
+$
+ PAR  L(HCP_A3,BI,PB:VA;0),,            -10949.08+8.198*T;,,          N 17Gie !
+ PAR  L(HCP_A3,BI,PB:VA;1),,            -5555.85+20.608*T;,,          N 17Gie !
+$
+ PAR  L(RHOMBOHEDRAL_A7,BI,PB;0),,      +399520.69;,,                 N 17Gie !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,BI,PB:VA;0),,            -3494.67-0.219*T;,,           N Same !
+ PAR  L(BCC_A2,BI,PB:VA;1),,            +4106.62;,,                   N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  BI-PB(TDB -* +LIQ +FCC_A1 +HCP_A3 +RHOM_A7 ;P3 TMM:200/800 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che2 'P.-Y. Chevalier, Thermochim. Acta, 132, 111-16(1988),
+          SGTE unary database V.5.0, 2009; Bi' 
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  17Gie  'W. Gierlotka, Y.-C. Tung,
+          J. Phase Equilib. Diffus., 38, 814-28(2017); Bi-Pb'
+!

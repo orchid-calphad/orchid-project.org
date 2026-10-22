@@ -1,0 +1,212 @@
+$
+$ Database for Ga-Ni from J. Groebner et al. 1999
+$
+$ J. Groebner, R. Wenzel, G.G. Fischer, R. Schmid-Fetzer,
+$ J. Phase Equilib., 20, 615-25(1999).
+$
+$ Dataset created 2016.10.15 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ The fcc interaction is misprinted in the paper. The enthalpies of Ga4Ni3 and
+$ Ga3Ni5 had to be adjusted due to rounding errors. Remaining differences
+$ in invariant equilibria are less than 5 K.
+$
+$ There is an inverse miscibility gap with a minimum at 5454 K and x(Ni)=0.55.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_A11           69.72      5572.0     40.7271 ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA NI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GA NI% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GA NI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GA NI : VA : !
+$
+$ alpha-Ga (oC8, Cmce)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Prototype Ga4Ni (cI40, I23)
+$
+ PHASE GA4NI % 2 4 1 !
+ CONST GA4NI : GA : NI : !
+$
+$ Prototype Al3Ni2 (hP5, P-3m1)
+$
+ PHASE GA3NI2_D513 % 2 3 2 !
+ CONST GA3NI2_D513 : GA : NI : !
+$
+$ Prototype Ga4Ni3 (cI112, Ia-3d)
+$
+ PHASE GA4NI3 % 2 4 3 !
+ CONST GA4NI3 : GA : NI : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE GANI_B2 % 2 0.5 0.5 !
+ CONST GANI_B2 : GA% NI : GA NI% : !
+$
+$ Prototype Ga9Ni13 (mC44, C2/m) low-T
+$ Prototype InNi2 (hP6, P6_3/mmc, B8_2) high-T
+$
+ PHASE GA2NI3 % 2 2 3 !
+ CONST GA2NI3 : GA : NI : !
+$
+$ Prototype Ga3Pt5 (oC16, Cmmm)
+$
+ PHASE GA3NI5 % 2 3 5 !
+ CONST GA3NI5 : GA : NI : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE GANI3_L12 % 2 1 3 !
+ CONST GANI3_L12 : GA : NI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ PAR  G(GANI_B2,GA:GA),,                +GHSERGA+1000;,,              N 99Gro !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(GANI_B2,NI:NI),,                +GHSERNI+1000;,,              N 99Gro !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Groebner, R. Wenzel, G.G. Fischer, R. Schmid-Fetzer,
+$ J. Phase Equilib., 20, 615-25(1999).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The fcc interaction is misprinted in the paper. The enthalpies of Ga4Ni3 and
+$ Ga3Ni5 had to be adjusted due to rounding errors. Remaining differences
+$ in invariant equilibria are less than 5 K.
+$
+$ There is an inverse miscibility gap with a minimum at 5454 K and x(Ni)=0.55.
+$
+ PAR  L(LIQUID,GA,NI;0),,               -124833.53+39.51717*T;,,      N 99Gro !
+$
+$ Original parameter in paper below
+$PAR  L(FCC_A1,GA,NI:VA;0),,            -136000+40*T;,,               N 99Gro !
+ PAR  L(FCC_A1,GA,NI:VA;0),,            -130000+40*T;,,               N 99Gro !
+$
+ PAR  G(GA4NI,GA:NI),,                  +4*GHSERGA+GHSERNI
+             -121800.95+20.74425*T;,,                                 N 99Gro !
+ PAR  G(GA3NI2_D513,GA:NI),,            +3*GHSERGA+2*GHSERNI
+             -168410.6-1.5388*T;,,                                    N 99Gro !
+ PAR  G(GA4NI3,GA:NI),,                 +4*GHSERGA+3*GHSERNI
+             -250120+9.66553*T;,,                                     N 99Gro !
+$
+ PAR  G(GANI_B2,GA:NI),,                +0.5*GHSERGA+0.5*GHSERNI
+             -38526.08+2.75189*T;,,                                   N 99Gro !
+ PAR  G(GANI_B2,NI:GA),,                +0.5*GHSERNI+0.5*GHSERGA
+             +10000;,,                                                N 99Gro !
+ PAR  L(GANI_B2,GA,NI:GA;0),,           -10000;,,                     N 99Gro !
+ PAR  L(GANI_B2,GA,NI:NI;0),,           -8000;,,                      N 99Gro !
+$
+ PAR  G(GA2NI3,GA:NI),,                 +2*GHSERGA+3*GHSERNI
+             -186093.3+22.26435*T;,,                                  N 99Gro !
+ PAR  G(GA3NI5,GA:NI),,                 +3*GHSERGA+5*GHSERNI
+             -286815+35.43952*T;,,                                    N 99Gro !
+ PAR  G(GANI3_L12,GA:NI),,              +GHSERGA+3*GHSERNI
+             -111206.24+12.44952*T;,,                                 N 99Gro !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,GA,NI:VA;0),,            -130000+40*T;,,               N Same !
+ PAR  L(HCP_A3,GA,NI:VA;0),,            -130000+40*T;,,               N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  99Gro  'J. Groebner, R. Wenzel, G.G. Fischer, R. Schmid-Fetzer,
+          J. Phase Equilib., 20, 615-25(1999); Ga-Ni'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

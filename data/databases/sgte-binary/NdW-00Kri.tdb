@@ -1,0 +1,151 @@
+$
+$ Database for Nd-W from N. Krishnamurthy et al. 2000.
+$
+$ N. Krishnamurthy, T. Kundu, A. Awasthi, S.P. Garg,
+$ Z. Metallkd., 91, 234-40(2000).
+$
+$ Dataset created 2025.02.11 by Bengt Hallstedt.
+$
+$ The liquid interaction was refitted to approximately match measured
+$ liquid solubilities. The discrepancy probably originates from differences
+$ in elemental W.
+$
+$ The solid interactions were set to 1.5 times the liquid interaction. This
+$ should be revised when there are data.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT ND   DHCP                      144.24      7133.72    71.0862 ! 
+ ELEMENT W    BCC_A2                    183.85      4970.0     32.6176 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : ND W : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : ND W : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : ND W : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : ND W : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : ND : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nd
+$
+$ DHCP and LIQUID modified in unary 3.0 (upper/lower T interval added)
+$ FCC_A1 added in unary 3.0
+$ HCP_A3 added in unary 4.4
+$
+ PAR  G(DHCP,ND),,                      +GHSERND;                1800 N 91Din !
+ PAR  G(BCC_A2,ND:VA),,                 +GBCCND;                 1800 N 91Din !
+ PAR  G(FCC_A1,ND:VA),,                 +GHSERND+500;            1800 N SGCOST !
+ PAR  G(HCP_A3,ND:VA),,                 +GHSERND
+             +1500-0.415725*T;                                   1800 N 00Nor2 !
+ PAR  G(LIQUID,ND),,                    +GLIQND;                 1800 N 91Din !
+$
+ FUNCTION GHSERND   298.15  -8402.93+111.10239*T-27.0858*T*LN(T)
+       +5.56125E-04*T**2-2.6923E-06*T**3+34887*T**(-1);
+       900.00  Y  -6984.083+83.662617*T-22.7536*T*LN(T)
+       -0.00420402*T**2-1.802E-06*T**3;
+      1128.00  Y  -225610.846+1673.04075*T-238.182873*T*LN(T)
+       +0.078615997*T**2-6.048207E-06*T**3+38810350*T**(-1);
+      1799.00  Y  -25742.331+276.257088*T-48.7854*T*LN(T);
+      1800.00  N !
+ FUNCTION GBCCND    298.15  +1437.295-0.546281*T+GHSERND;
+       400.00  Y  +7312.2-153.033976*T+14.9956777*T*LN(T)
+       -0.050479*T**2+7.287217E-06*T**3-831810*T**(-1);
+      1128.00  Y  -18030.266+239.677322*T-44.5596*T*LN(T);
+      1289.00  Y  +334513.017-2363.9199*T+311.409193*T*LN(T)
+       -0.156030778*T**2+1.2408421E-05*T**3-64319604*T**(-1);
+      1800.00  N !
+ FUNCTION GLIQND    298.15  +5051.743-1.585076*T+GHSERND;
+       300.00  Y  +5350.01-86.593963*T+5.357301*T*LN(T)
+       -0.046955463*T**2+6.860782E-06*T**3-374380*T**(-1);
+      1128.00  Y  -16335.232+268.625903*T-48.7854*T*LN(T);
+      1799.00  Y  +9407.099-7.631185*T+GHSERND;
+      1800.00  N !
+$ ------------------------------------------------------------------------------
+$ W
+$
+ PAR  G(BCC_A2,W:VA),,                  +GHSERWW;,,                   N 91Din !
+ PAR  G(FCC_A1,W:VA),,                  +GHSERWW+19300+0.63*T;,,      N 91Din !
+ PAR  G(HCP_A3,W:VA),,                  +GHSERWW+14750;,,             N 91Din !
+ PAR  G(LIQUID,W),,                     +GLIQWW;,,                    N 91Din !
+$
+ FUNCTION GHSERWW   298.15  -7646.311+130.4*T-24.1*T*LN(T)
+       -0.001936*T**2+2.07E-07*T**3+44500*T**(-1)-5.33E-11*T**4;
+      3695.00  Y  -82868.801+389.362335*T-54*T*LN(T)+1.528621E+33*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQWW    298.15  +52160.584-14.10999*T+GHSERWW-2.713468E-24*T**7;
+      3695.00  Y  -30436.051+375.175*T-54*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCWW    298.15  +GHSERWW+19300+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ N. Krishnamurthy, T. Kundu, A. Awasthi, S.P. Garg,
+$ Z. Metallkd., 91, 234-40(2000).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The liquid interaction was refitted to approximately match measured
+$ liquid solubilities. The discrepancy probably originates from differences
+$ in elemental W.
+$
+$ The solid interactions were set to 1.5 times the liquid interaction. This
+$ should be revised when there are data.
+$
+$PAR  L(LIQUID,ND,W;0),,                +114900;,,                    N 00Kri !
+ PAR  L(LIQUID,ND,W;0),,                +104500;,,                    N 00Kri !
+$
+ PAR  L(BCC_A2,ND,W:VA;0),,             +157000;,,                    N 25Hal !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,ND,W:VA;0),,             +157000;,,                    N 25Hal !
+ PAR  L(HCP_A3,ND,W:VA;0),,             +157000;,,                    N 25Hal !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  00Kri  'N. Krishnamurthy, T. Kundu, A. Awasthi, S.P. Garg,
+          Z. Metallkd., 91, 234-40(2000); Nd-W'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000; Nd, Sc'
+  25Hal  'B. Hallstedt, dummy solid interaction, 2025; Nd-W'
+!

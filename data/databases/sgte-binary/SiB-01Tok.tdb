@@ -1,0 +1,180 @@
+$
+$ Database for Si-B from T. Tokunaga et al. 2001.
+$
+$ T. Tokunaga, K. Nishio, M. Hasebe, J. Phase Equilib., 22, 291-99(2001).
+$
+$ Dataset created 2023.11.19 by Bengt Hallstedt.
+$
+$ There is a very large inverse miscibility gap with a minimum at 2216 K and
+$ x(B)=0.24.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B SI : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : B SI : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 1 1 !
+ CONST BETA_RHOMBO_B : B SI : !
+$
+$ Prototype B13C2 (hR15, R-3m)
+$
+ PHASE SIB3_D1G % 2 1 3 !
+ CONST SIB3_D1G : SI : B : !
+$
+$ Prototype SiB6 (oP280, Pnnm)
+$
+ PHASE SIB6 % 2 1 6 !
+ CONST SIB6 : SI : B : !
+$
+$ Pearson hR*, R-3m
+$
+ PHASE SIB24 % 2 0.041 0.959 !
+ CONST SIB24 : SI : B : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$ DIAMOND_A4 from 01Tok and 03Tok not included in unary
+$
+ PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+$PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+$PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+$PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(DIAMOND_A4,B),,                 +GHSERBB+47392.8485;,,        N 01Tok !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+50000;,,             N 03Tok !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+$ BETA_RHOMBO_B from 01Tok and 03Tok not included in unary
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+$PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+$PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+$PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(BETA_RHOMBO_B,SI),,             +GHSERSI+158015.507;     3600 N 01Tok !
+$PAR  G(BETA_RHOMBO_B,SI),,             +GHSERSI+50000;          3600 N 03Tok !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ T. Tokunaga, K. Nishio, M. Hasebe, J. Phase Equilib., 22, 291-99(2001).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There is a very large inverse miscibility gap with a minimum at 2216 K and
+$ x(B)=0.24.
+$
+ PAR  L(LIQUID,B,SI;0),,                -71930.0565+44.0920406*T;,,   N 01Tok !
+ PAR  L(LIQUID,B,SI;1),,                +14604.7688-12.8769647*T;,,   N 01Tok !
+ PAR  L(LIQUID,B,SI;2),,                +25520.828-9.33436576*T;,,    N 01Tok !
+$
+ PAR  L(DIAMOND_A4,B,SI;0),,            +ZERO;,,                      N 01Tok !
+ PAR  L(BETA_RHOMBO_B,B,SI;0),,         -148575.313;,,                N 01Tok !
+$
+ PAR  G(SIB3_D1G,SI:B),,                +GHSERSI+3*GHSERBB
+             -73784.9817+26.5154715*T;,,                              N 01Tok !
+ PAR  G(SIB6,SI:B),,                    +GHSERSI+6*GHSERBB
+             -146960.856+52.7249801*T;,,                              N 01Tok !
+ PAR  G(SIB24,SI:B),,                   +0.041*GHSERSI+0.959*GHSERBB
+             -8376.47461+2.47079248*T;,,                              N 01Tok !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  B-SI(TDB -* +LIQ +SIB3_D1G +SIB6 +SIB24 +BETA_RHO +DIAM
+  ;P3 TMM:300/2500 STP:.9/1000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Tok  'T. Tokunaga, K. Nishio, M. Hasebe,
+          J. Phase Equilib., 22, 291-99(2001); B, Si, Si-B'
+  03Tok  'T. Tokunaga, K. Nishio, H. Ohtani, M. Hasebe,
+          Mater. Trans. (JIM), 44, 1651-54(2003); B, Si, Si-B'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

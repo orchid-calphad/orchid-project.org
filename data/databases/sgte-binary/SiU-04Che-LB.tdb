@@ -1,0 +1,238 @@
+$
+$ Database for Si-U from P.-Y. Chevalier and E. Fischer 2004
+$ (included in LB vol. 4)
+$
+$ P.-Y. Chevalier, E. Fischer, unpublished work, 2004.
+$
+$ Dataset created 2016.03.25 by Bengt Hallstedt.
+$ 2019.02.17: Changed phase name SIU3_LT to SIU3_D0C
+$ 2021.02.05: Modified for use with GES6.
+$
+$ 04Che used absurd parameters for SIU3_L12 to avoid its restabilisation
+$ at low and high temperature. Ditto for SIU3_LT.
+$
+$ There is a double inverse miscibility gap with minima at 4085 K, x(U)=0.13
+$ and 4075 K, x(U)=0.74.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SI U : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SI U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SI U% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SI U : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : SI U% : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : SI U% : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE SI3U_L12 % 2 3 1 !
+ CONST SI3U_L12 : SI : U : !
+$
+$ Prototype Si2Th (tI12, I4_1/amd)
+$
+ PHASE SI2U_CC % 2 47 25 !
+ CONST SI2U_CC : SI : U : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE SI5U3_C32 % 2 5 3 !
+ CONST SI5U3_C32 : SI : U : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE SIU_B27 % 2 0.511 0.489 !
+ CONST SIU_B27 : SI : U : !
+$
+$ Prototype Si2U3 (tP10, P4/mbm)
+$
+ PHASE SI2U3_D5A % 2 2 3 !
+ CONST SI2U3_D5A : SI : U : !
+$
+$ Prototype SiU3 (tI16, I4/mcm)
+$
+ PHASE SIU3_D0C % 2 1 3 !
+ CONST SIU3_D0C : SI : U : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE SIU3_L12 % 2 1 3 !
+ CONST SIU3_L12 : SI : U : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Si
+$
+$ ORTHORHOMBIC_A20 and TETRAGONAL_U from 04Che4 not included in unary
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(ORTHORHOMBIC_A20,SI),,          +GHSERSI+16000;          3600 N 04Che4 !
+ PAR  G(TETRAGONAL_U,SI),,              +GHSERSI+15000;          3600 N 04Che4 !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not in unary
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+ PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQUU    298.15  +GHSERUU+12355.5-10.3239*T;                3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From from P.-Y. Chevalier and E. Fischer 2004 (included in LB vol. 4)
+$
+$ P.-Y. Chevalier, E. Fischer, unpublished work, 2004.
+$
+$ Checked against LB. Checked at 6000 K.
+$
+$ 04Che used absurd parameters for SIU3_L12 to avoid its restabilisation
+$ at low and high temperature. Ditto for SIU3_LT.
+$
+$ There is a double inverse miscibility gap with minima at 4085 K, x(U)=0.13
+$ and 4075 K, x(U)=0.74.
+$
+ PAR  L(LIQUID,SI,U;0),,                -229188.72+71.26748*T;,,      N 04Che4 !
+ PAR  L(LIQUID,SI,U;1),,                -71680.68+16.02059*T;,,       N 04Che4 !
+ PAR  L(LIQUID,SI,U;2),,                +29215.76;,,                  N 04Che4 !
+ PAR  L(LIQUID,SI,U;3),,                +19253.76;,,                  N 04Che4 !
+$
+ PAR  L(BCC_A2,SI,U:VA;0),,             -85340.58+14.38743*T;,,       N 04Che4 !
+ PAR  L(ORTHORHOMBIC_A20,SI,U;0),,      -66160.28;,,                  N 04Che4 !
+ PAR  L(TETRAGONAL_U,SI,U;0),,          -68261.94;,,                  N 04Che4 !
+$
+ PAR  G(SI3U_L12,SI:U),,                +4*GSI3U;,,                   N 04Che4 !
+ PAR  G(SI2U_CC,SI:U),,                 +72*GSI2U;,,                  N 04Che4 !
+ PAR  G(SI5U3_C32,SI:U),,               +8*GSI5U3;,,                  N 04Che4 !
+ PAR  G(SIU_B27,SI:U),,                 +GSIU;,,                      N 04Che4 !
+ PAR  G(SI2U3_D5A,SI:U),,               +5*GSI2U3;,,                  N 04Che4 !
+ PAR  G(SIU3_D0C,SI:U),,                +4*GSIU3L;,,                  N 04Che4 !
+ PAR  G(SIU3_L12,SI:U),,                +4*GSIU3H;,,                  N 04Che4 !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,SI,U:VA;0),,             -85340.58+14.38743*T;,,       N Same !
+ PAR  L(HCP_A3,SI,U:VA;0),,             -85340.58+14.38743*T;,,       N Same !
+$
+ FUNCTION GSI3U     298.15  -43294.09+166.29855*T-28.293678*T*LN(T)
+       -0.0008059375*T**2+6.666666666E-11*T**3+258345*T**(-1);
+      4000.00  N !
+ FUNCTION GSI2U     298.15  -54050.57+173.10667*T-29.623039*T*LN(T)
+       -0.000676167*T**2-3E-11*T**3+280336.5*T**(-1);
+      4000.00  N !
+ FUNCTION GSI5U3    298.15  -54469.54+176.32209*T-30.28693*T*LN(T)
+       -0.00060668*T**2+291834*T**(-1);
+      4000.00  N !
+ FUNCTION GSIU      298.15  -52709.68+186.04196*T-32.279559*T*LN(T)
+       -0.00040794*T**2+325306*T**(-1);
+      4000.00  N !
+ FUNCTION GSI2U3    298.15  -47003.79+191.31689*T-33.873664*T*LN(T)
+       -0.000242672*T**2+351874*T**(-1);
+      4000.00  N !
+ FUNCTION GSIU3L    298.15  -29033.43+113.72038*T-22.87175*T*LN(T)
+       -0.00797675*T**2+29037.5*T**(-1);
+      2000.00  Y  +100000;
+      4000.00  N !
+ FUNCTION GSIU3H    298.15  +100000;
+       600.00  Y  -36083.2+224.51373*T-39.035*T*LN(T);
+      2000.00  Y  +100000;
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  SI-U(TDB -* +LIQUID +BCC_A2 +DIAMOND_A4 +ORTHO_A20 +SI2U3_D5A +SI2U_CC
+  +SI3U_L12 +SI5U3_C32 +SIU_B27 +SIU3_L12 +SIU3_D0C +TETRAGONAL_U
+  ;P3 TMM:300/3000 STP:.5/2500/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr'
+  04Che4 'P.-Y. Chevalier, E. Fischer, unpublished work, 2004; Si, Si-U'
+!

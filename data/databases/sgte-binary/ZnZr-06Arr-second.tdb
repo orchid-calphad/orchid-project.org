@@ -1,0 +1,239 @@
+$
+$ Database for Zn-Zr from R. Arroyave and Z.-K. Liu 2006
+$
+$ R. Arroyave, Z.-K. Liu, Calphad, 30, 1-13(2006).
+$
+$ Dataset created 2013.06.01 by Bengt Hallstedt.
+$ 2021.02.07: Modified for use with GES6.
+$
+$ This is model 2 from their paper (associate liquid)
+$
+$ The fit is claimed to be better with the associate. In contrast to model 1
+$ (standard Redlich-Kister liquid) there is no inverse liquid miscibility gap.
+$
+$ The Zn2Zr3 phase was only tentatively included.
+$
+$ The gas phase is stable above about 1173 K at 1 bar, but not included here.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+ ELEMENT ZR   HCP_A3                     91.22      5566.27    39.1809 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  ZN2ZR                              ZN2ZR1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : ZN ZN2ZR ZR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : ZN ZR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : ZN ZR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : ZN ZR% : VA : !
+$
+$ Prototype Zn22Zr (cF184, Fd-3m)
+$
+ PHASE ZN22ZR % 2 22 1 !
+ CONST ZN22ZR : ZN : ZR : !
+$
+$ Prototype Zn39Zr5 (mC88, C2/m)
+$
+ PHASE ZN39ZR5 % 2 39 5 !
+ CONST ZN39ZR5 : ZN : ZR : !
+$
+$ Prototype Al3Zr (tI16, I4/mmm)
+$
+ PHASE ZN3ZR_D023 % 2 3 1 !
+ CONST ZN3ZR_D023 : ZN : ZR : !
+$
+$ Prototype ? (c**)
+$
+ PHASE ZN3ZR_HT % 2 3 1 !
+ CONST ZN3ZR_HT : ZN : ZR : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE ZN2ZR_C15 % 2 2 1 !
+ CONST ZN2ZR_C15 : ZN : ZR : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE ZNZR_B2 % 2 1 1 !
+ CONST ZNZR_B2 : ZN : ZR : !
+$
+$ Unknown structure
+$
+ PHASE ZN2ZR3 % 2 2 3 !
+ CONST ZN2ZR3 : ZN : ZR : !
+$
+$ Prototype CuZr2 (tI6, I4/mmm)
+$
+ PHASE ZNZR2 % 2 1 2 !
+ CONST ZNZR2 : ZN : ZR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Zr
+$
+$ CUB_A13, CBCC_A12, ORTHORHOMBIC_A20 and TETRAGONAL_U added in unary 4.1
+$
+ PAR  G(HCP_A3,ZR:VA)           130.00  +GHSERZR;,,                   N 91Din !
+ PAR  G(BCC_A2,ZR:VA)           130.00  +GBCCZR;,,                    N 91Din !
+$PAR  G(OMEGA,ZR)               130.00  +GOMEZR;,,                    N 91Din !
+ PAR  G(FCC_A1,ZR:VA)           130.00  +GHSERZR+7600-0.9*T;,,        N 91Din !
+$PAR  G(CBCC_A12,ZR:VA)         130.00  +GHSERZR+4602.2;,,            N 99SGUN !
+$PAR  G(CUB_A13,ZR:VA)          130.00  +GHSERZR+7531.2;,,            N 99SGUN !
+$PAR  G(ORTHORHOMBIC_A20,ZR)    130.00  +GBCCZR+5000;,,               N 99SGUN !
+$PAR  G(TETRAGONAL_U,ZR)        130.00  +GBCCZR+5000;,,               N 99SGUN !
+ PAR  G(LIQUID,ZR)              130.00  +GLIQZR;,,                    N 91Din !
+$
+ FUNCTION GHSERZR   130.00  -7827.595+125.64905*T-24.1618*T*LN(T)
+       -0.00437791*T**2+34971*T**(-1);
+      2128.00  Y  -26085.921+262.724183*T-42.144*T*LN(T)-1.342896E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GBCCZR    130.00  -525.539+124.9457*T-25.607406*T*LN(T)
+       -3.40084E-04*T**2-9.729E-09*T**3+25233*T**(-1)-7.6143E-11*T**4;
+      2128.00  Y  -4620.034+1.55998*T+GHSERZR+1.4103476E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GOMEZR    130.00  -8878.082+144.432234*T-26.8556*T*LN(T)
+       -0.002799446*T**2+38376*T**(-1);
+      2128.00  Y  -3414.603+2.566675*T+GHSERZR+8.517346E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQZR    130.00  +18147.69-9.080812*T+GHSERZR+1.6275E-22*T**7;
+      2128.00  Y  -8281.26+253.812609*T-42.144*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From R. Arroyave and Z.-K. Liu 2006
+$
+$ This is model 2 from their paper (associate liquid)
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The fit is claimed to be better with the associate. In contrast to model 1
+$ (standard Redlich-Kister liquid) there is no inverse liquid miscibility gap.
+$
+$ The Zn2Zr3 phase was only tentatively included.
+$
+$ The gas phase is stable above about 1173 K at 1 bar, but not included here.
+$
+ PAR  G(LIQUID,ZN2ZR),,                 +2*GLIQZN+GLIQZR
+             -108771+65.669*T;,,                                      N 06Arr !
+ PAR  L(LIQUID,ZN2ZR,ZR;0),,            -91796+52.355*T;,,            N 06Arr !
+ PAR  L(LIQUID,ZN2ZR,ZR;1),,            -48871+63.087*T;,,            N 06Arr !
+$
+ PAR  L(BCC_A2,ZN,ZR:VA;0),,            -87151+49.726*T;,,            N 06Arr !
+ PAR  L(BCC_A2,ZN,ZR:VA;1),,            -52190+29.305*T;,,            N 06Arr !
+$
+ PAR  L(HCP_A3,ZN,ZR:VA;0),,            -7673+1.2*T;,,                N 06Arr !
+$
+ PAR  G(ZN22ZR,ZN:ZR),,                 +22*GHSERZN+GHSERZR
+             -135332+22.31*T;,,                                       N 06Arr !
+ PAR  G(ZN39ZR5,ZN:ZR),,                +39*GHSERZN+5*GHSERZR
+             -717024+273.988*T;,,                                     N 06Arr !
+ PAR  G(ZN3ZR_D023,ZN:ZR),,             +3*GHSERZN+GHSERZR
+             -104272+35.008*T;,,                                      N 06Arr !
+ PAR  G(ZN3ZR_HT,ZN:ZR),,               +3*GHSERZN+GHSERZR
+             -91012+23.796*T;,,                                       N 06Arr !
+ PAR  G(ZN2ZR_C15,ZN:ZR),,              +2*GHSERZN+GHSERZR
+             -90201+30.816*T;,,                                       N 06Arr !
+ PAR  G(ZNZR_B2,ZN:ZR),,                +GHSERZN+GHSERZR
+             -58148+21.456*T;,,                                       N 06Arr !
+ PAR  G(ZN2ZR3,ZN:ZR),,                 +2*GHSERZN+3*GHSERZR
+             -96750+24.75*T;,,                                        N 06Arr !
+ PAR  G(ZNZR2,ZN:ZR),,                  +GHSERZN+2*GHSERZR
+             -51018+13.962*T;,,                                       N 06Arr !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,ZN,ZR:VA;0),,            -7673+1.2*T;,,             N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  06Arr  'R. Arroyave, Z.-K. Liu, Calphad, 30, 1-13(2006); Zn-Zr'
+!

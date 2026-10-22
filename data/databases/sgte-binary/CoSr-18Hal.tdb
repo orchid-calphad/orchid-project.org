@@ -1,0 +1,128 @@
+$
+$ Database for Co-Sr from B. Hallstedt 2018.
+$
+$ B. Hallstedt, unpublished, 2018.
+$
+$ Dataset created 2018.07.26 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ This is only a rough guess, based on the predicted enthalphy of mixing in the
+$ liquid from Niessen et al. 1983. There are no experimental data.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT SR   FCC_A1                     87.62      6568.      55.694  ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO SR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO SR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO SR : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO SR : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCO    298.15  +GHSERCO+427.59-0.615248*T;                6000 N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Sr
+$
+ PAR  G(FCC_A1,SR:VA;0),,               +GHSERSR;                3000 N 91Din !
+ PAR  G(BCC_A2,SR:VA;0),,               +GBCCSR;                 3000 N 91Din !
+ PAR  G(HCP_A3,SR:VA),,                 +GHSERSR+250+0.7*T;      3000 N 91Din !
+ PAR  G(LIQUID,SR;0),,                  +GLIQSR;                 3000 N 91Din !
+$
+ FUNCTION GHSERSR   298.15  -7532.367+107.183879*T-23.905*T*LN(T)
+       -4.61225E-3*T**2-1.67477E-07*T**3-2055*T**(-1);
+       820.00  Y  -13380.102+153.196104*T-30.0905432*T*LN(T)
+       -3.251266E-3*T**2+1.84189E-07*T**3+850134*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCSR    298.15  -6779.234+116.583654*T-25.6708365*T*LN(T)
+       -3.126762E-3*T**2+2.2965E-7*T**3+27649*T**(-1);
+       820.00  Y  -6970.594+122.067301*T-26.57*T*LN(T)
+       -1.9493E-3*T**2-1.7895E-8*T**3+16495*T**(-1);
+      1050.00  Y  +8168.357+0.423037*T-9.7788593*T*LN(T)
+       -9.539908E-3*T**2+5.20221E-7*T**3-2414794*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQSR    298.15   +2194.997-10.118994*T-5.0668978*T*LN(T)
+       -3.1840595E-2*T**2+4.981237E-06*T**3-265559*T**(-1);
+      1050.00  Y  -10855.29+213.406219*T-39.463*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ B. Hallstedt, unpublished, 2018.
+$
+$ This only a rough guess, based on the predicted enthalphy of mixing in the
+$ liquid from Niessen et al. 1983. There are no experimental data.
+$
+ PAR  L(LIQUID,CO,SR;0),,               +40000;,,                     N 83Nie !
+$
+ PAR  L(FCC_A1,CO,SR:VA;0),,            +50000;,,                     N 18Hal2 !
+ PAR  L(BCC_A2,CO,SR:VA;0),,            +50000;,,                     N 18Hal2 !
+ PAR  L(HCP_A3,CO,SR:VA;0),,            +50000;,,                     N 18Hal2 !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  83Nie  'A.K. Niessen, F.R. de Boer, R. Boom, P.F. de Chatel, W.C.M. Mattens,
+          A.R. Miedema, Calphad, 7, 51-70(1983); Co-Sr'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  18Hal2 'B. Hallstedt, estimated interaction, 2018; Co-Sr'
+!

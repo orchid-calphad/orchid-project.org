@@ -1,0 +1,205 @@
+$
+$ Database for Hg-Pb from A. Maitre et al. 2002 (Included in LB Vol. 3)
+$
+$ A. Maitre, J.M. Fiorani, M. Vilasi, J. Phase Equilib., 23, 329-38(2002).
+$
+$ Dataset created 2016.02.15 by Bengt Hallstedt.
+$ 2021.01.17: Modified for use with GES6.
+$
+$ The L2 interaction for the liquid is missing in the parameter table in 02Mai.
+$ The L1 interaction for fcc is given as a second L0 interaction with the wrong
+$ sign for the T-independent term.
+$ The parameters for HGPB2_L10 are for 3 mol atoms, not for one mol as written
+$ in the table.
+$
+$ There is an inverse miscibility gap with a minimum at 4074 K and x(Pb)=0.17.
+$
+$ There should be no need for a subregular interaction for RHOMBO_A10.
+$
+$ Hg was not included in HCP_A3 by 02Mai.
+$
+$ Added 2 kJ/mol to the HCP_A3 interaction to avoid hcp as a stable phase,
+$ B. Hallstedt, Feb. 2016.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT HG   LIQUID                    200.59      9342.      75.90   ! 
+ ELEMENT PB   FCC_A1                    207.2       6870.      64.80   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : HG PB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : HG PB% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : HG PB : VA : !
+$
+$ Prototype Hg (hR1, R-3m)
+$
+ PHASE RHOMBO_A10 % 1 1 !
+ CONST RHOMBO_A10 : HG PB : !
+$
+$ Prototype AuCu (tP4, P4/mmm)
+$
+ PHASE HGPB2_L10 % 2 1 2 !
+ CONST HGPB2_L10 : HG : PB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEFINITION % SEQ * !
+ TYPE_DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE_DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Hg
+$
+$ HCP_A3 and TETRAGONAL_A6 added in unary 4.1
+$ FCC_A1 added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 from 06Gie are not included in unary
+$ The value for HCP_A3 from 06Gie is not acceptable
+$
+ PAR  G(LIQUID,HG)              200.00  +GHSERHG;                2000 N 91Din !
+ PAR  G(RHOMBO_A10,HG)          200.00  +GRHOHG;                 2000 N 91Din !
+ PAR  G(FCC_A1,HG:VA)           200.00  +GHSERHG+5+8.368*T;      2000 N 02Mai !
+ PAR  G(HCP_A3,HG:VA)           200.00  +GRHOHG+200+0.7*T;       2000 N 95Yan !
+$PAR  G(TETRAGONAL_A6,HG)       200.00  +GRHOHG
+$            +208.68+1.765592*T;                                 2000 N 95Yan !
+$
+ FUNCTION GHSERHG   200.00  +82356.855-3348.19466*T+618.193308*T*LN(T)
+       -2.0282337*T**2+0.00118398213*T**3-2366612*T**(-1);
+       234.32  Y  -8961.207+135.232291*T-32.257*T*LN(T)
+       +0.0097977*T**2-3.20695E-06*T**3+6670*T**(-1);
+       400.00  Y  -7970.627+112.33345*T-28.414*T*LN(T)
+       +0.00318535*T**2-1.077802E-06*T**3-41095*T**(-1);
+       700.00  Y  -7161.338+90.797305*T-24.87*T*LN(T)
+       -0.00166775*T**2+8.737E-09*T**3-27495*T**(-1);
+      2000.00  N !
+ FUNCTION GRHOHG    200.00  -10668.401+123.274598*T-28.847*T*LN(T)
+       +0.01699705*T**2-2.4555667E-05*T**3+13330*T**(-1);
+       234.32  Y  -11425.394+135.928158*T-30.2091*T*LN(T)
+       +0.00107555*T**2-2.28298E-07*T**3+35545*T**(-1);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Pb
+$
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 3.0
+$ RHOMBOHEDRAL_A7, TETRAGONAL_A6 and TET_ALPHA1_A6 revised in unary 4.1
+$ RHOMBO_A10 added in unary 5.0
+$
+ PAR  G(FCC_A1,PB:VA),,                 +GHSERPB;                2100 N 91Din !
+ PAR  G(BCC_A2,PB:VA),,                 +GHSERPB+2400-1.1*T;     2100 N 91Din !
+ PAR  G(HCP_A3,PB:VA),,                 +GHSERPB+300+T;          2100 N 91Din !
+$PAR  G(BCT_A5,PB),,                    +GHSERPB+489+3.52*T;     2100 N 91Din !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+4493.235;       2100 N 98Boa !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+473.23+3.5531*T
+$            -0.0396834*T*LN(T)+2.1489E-05*T**2;                 2100 N 96SGUN !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB
+$            +1903.3-2.0602*T;                                   2100 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB+183.2+0.45314*T
+$            -0.0396834*T*LN(T)+2.149E-06*T**2;                  2100 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+300+T;          2100 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+4900+3.52*T;    2100 N 96SGUN !
+ PAR  G(RHOMBO_A10,PB),,                +GHSERPB+10;             2100 N 09SGUN !
+ PAR  G(LIQUID,PB),,                    +GLIQPB;                 2100 N 91Din !
+$
+ FUNCTION GHSERPB   298.15  -7650.085+101.700244*T-24.5242231*T*LN(T)
+       -0.00365895*T**2-2.4395E-07*T**3;
+       600.61  Y  -10531.095+154.243182*T-32.4913959*T*LN(T)
+       +0.00154613*T**2+8.05448E+25*T**(-9);
+      1200.00  Y  +4157.616+53.139072*T-18.9640637*T*LN(T)
+       -0.002882943*T**2+9.8144E-08*T**3-2696755*T**(-1)+8.05448E+25*T**(-9);
+      2100.00  N !
+ FUNCTION GLIQPB    298.15  +4672.124-7.750683*T+GHSERPB-6.019E-19*T**7;
+       600.61  Y  +4853.137-8.067136*T+GHSERPB-8.05448E+25*T**(-9);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From A. Maitre et al. 2002 (Included in LB Vol. 3)
+$
+$ A. Maitre, J.M. Fiorani, M. Vilasi, J. Phase Equilib., 23, 329-38(2002).
+$
+$ Checked against LB and paper. Checked at 6000K.
+$
+$ The L2 interaction for the liquid is missing in the parameter table in 02Mai.
+$ The L1 interaction for fcc is given as a second L0 interaction with the wrong
+$ sign for the T-independent term.
+$ The parameters for HGPB2_L10 are for 3 mol atoms, not for one mol as written
+$ in the table.
+$
+$ There is an inverse miscibility gap with a minimum at 4074 K and x(Pb)=0.17.
+$
+$ There should be no need for a subregular interaction for RHOMBO_A10.
+$
+$ Hg was not included in HCP_A3 by 02Mai.
+$
+$ Added 2 kJ/mol to the HCP_A3 interaction to avoid hcp as a stable phase,
+$ B. Hallstedt, Feb. 2016.
+$
+ PAR  L(LIQUID,HG,PB;0),,               -8612.2+127.4453*T
+             -16.61802*T*LN(T);,,                                     N 02Mai !
+ PAR  L(LIQUID,HG,PB;1),,               +15149.5-148.9481*T
+             +19.89227*T*LN(T);,,                                     N 02Mai !
+ PAR  L(LIQUID,HG,PB;2),,               +472.1+1.3775*T;,,            N 02Mai !
+$
+ PAR  L(FCC_A1,HG,PB:VA;0),,            -334.4-0.3419*T;,,            N 02Mai !
+ PAR  L(FCC_A1,HG,PB:VA;1),,            +7785.4-19.6686*T;,,          N 02Mai !
+$
+ PAR  L(RHOMBO_A10,HG,PB;0),,           +124785.3;,,                  N 02Mai !
+ PAR  L(RHOMBO_A10,HG,PB;1),,           -119158.5;,,                  N 02Mai !
+$
+ PAR  G(HGPB2_L10,HG:PB),,              +GRHOHG+2*GHSERPB
+             -1330.1-9.1808*T;,,                                      N 02Mai !
+$
+$ Metastable
+$
+$PAR  L(HCP_A3,HG,PB:VA;0),,            -334.4-0.3419*T;,,            N Same !
+ PAR  L(HCP_A3,HG,PB:VA;0),,            +1700-0.3419*T;,,             N 16Hal !
+ PAR  L(HCP_A3,HG,PB:VA;1),,            +7785.4-19.6686*T;,,          N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  HG-PB(TDB -* +LIQUID +FCC_A1 +RHOMBO_A10 +HGPB2_L10 ;P3 TMM:200/1000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Yan  'J. Yang, N.J. Silk, A. Watson, A.W. Bryant, T.G. Chart, B.B. Argent,
+          Calphad, 19, 415-30(1995), SGTE unary database V.4.1, 1999; Cd, Hg'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  02Mai  'A. Maitre, J.M. Fiorani, M. Vilasi, J. Phase Equilib.,
+          23, 329-38(2002), SGTE unary database V.5.0, 2009; Hg, Hg-Pb'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  16Hal  'B. Hallstedt, added interaction for HCP_A3, 2016; Hg-Pb'
+!

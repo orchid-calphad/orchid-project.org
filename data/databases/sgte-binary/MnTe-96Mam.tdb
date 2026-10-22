@@ -1,0 +1,196 @@
+$
+$ Database for Mn-Te from M.N. Mamontov 1996.
+$
+$ M.N. Mamontov, Inorg. Mater., 32, 1190-94(1996).
+$
+$ Dataset created 2018.11.25 by Bengt Hallstedt.
+$ 2021.01.30: Modified for use with GES6.
+$
+$ The liquid model is not convincing.
+$
+$ The phase diagram is only approximately reproduced. There are mistakes
+$ in the liquid parameters.
+$
+$ There is an inverse miscibility gap with a minimum at 2279 K and x(Te)=0.70.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  MNTE                               MN1TE1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MN MNTE TE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MN : VA : !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$ The phase is named HEXAGONAL_A8 in the SGTE unary database and
+$ TRIGONAL_A8 in LB.
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : TE : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : MN : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN : VA : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc)
+$
+ PHASE MNTE_B81 % 2 1 1 !
+ CONST MNTE_B81 : MN : TE : !
+$
+$ Prototype beta-FeS2 (cP12, Pa-3)
+$
+ PHASE MNTE2_C2 % 2 1 2 !
+ CONST MNTE2_C2 : MN : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+$ FCC_A1 and BCC_A2 from 18Arv not included in unary
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                2000 N 95Dav !
+$PAR  G(FCC_A1,TE:VA),,                 +GHSERTE+35700;          2000 N 18Arv !
+$PAR  G(BCC_A2,TE:VA),,                 +GHSERTE+25600;          2000 N 18Arv !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 2000 N 95Dav !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M.N. Mamontov, Inorg. Mater., 32, 1190-94(1996).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ The liquid model is not convincing.
+$
+$ The phase diagram is only approximately reproduced. There are mistakes
+$ in the liquid parameters.
+$
+$ There is an inverse miscibility gap with a minimum at 2279 K and x(Te)=0.70.
+$
+ PAR  G(LIQUID,MNTE),,                  +GLIQMN+GLIQTE
+             -15844.5-67.002*T;,,                                     N 96Mam !
+ PAR  L(LIQUID,MN,TE;0),,               -52897.95;,,                  N 96Mam !
+ PAR  L(LIQUID,MN,TE;1),,               +25433.05;,,                  N 96Mam !
+ PAR  L(LIQUID,MN,MNTE;0),,             +688737.4-461.7119*T;,,       N 96Mam !
+ PAR  L(LIQUID,MN,MNTE;1),,             +9.4717*T;,,                  N 96Mam !
+ PAR  L(LIQUID,MNTE,TE;0),,             -49052.2+10.27395*T;,,        N 96Mam !
+ PAR  L(LIQUID,MNTE,TE;1),,             -11.74465*T;,,                N 96Mam !
+$
+ PAR  G(MNTE_B81,MN:TE),,               +GLIQMN+GLIQTE
+             -145770+23.75*T;,,                                       N 96Mam !
+ PAR  G(MNTE2_C2,MN:TE),,               +GLIQMN+2*GLIQTE
+             -178258+51.823*T;,,                                      N 96Mam !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  96Mam  'M.N. Mamontov, Inorg. Mater., 32, 1190-94(1996); Mn-Te'
+  18Arv  'C.-M. Arvhult, C. Gueneau, S. Gosse, M. Selleby,
+          J. Alloys Compd., 767, 883-93(2018); Te'
+!

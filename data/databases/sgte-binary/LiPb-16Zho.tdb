@@ -1,0 +1,229 @@
+$
+$ Database for Li-Pb from C. Zhou et al. 2016
+$
+$ C. Zhou, C. Guo, C. Li, Z. Du, J. Nucl. Mater., 477, 95-101(2016).
+$
+$ Dataset created 2016.03.29 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT LI   BCC_A2                      6.941     4632.00    29.12   ! 
+ ELEMENT PB   FCC_A1                    207.2       6870.      64.80   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  LI4PB                              LI0.8PB0.2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : LI LI4PB PB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LI PB% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : LI% PB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : LI PB : VA: !
+$
+$ Prototype Li17Pb4 (cF420, F-43m), also Li22Pb5
+$
+ PHASE LI4PB % 2 4 1 !
+ CONST LI4PB : LI : PB : !
+$
+$ Prototype Li7Pb2 (hP9, P-3m1)
+$
+ PHASE LI7PB2 % 2 7 2 !
+ CONST LI7PB2 : LI : LI PB% : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE LI3PB_D03 % 2 3 1 !
+ CONST LI3PB_D03 : LI : PB : !
+$
+$ Prototype Li8Pb3 (hR11, R-3m)
+$
+ PHASE LI5PB2 % 2 5 2 !
+ CONST LI5PB2 : LI : PB : !
+$
+$ Prototype alpha-LiPb (hR2, R-3m)
+$
+ PHASE LIPB_ALPHA % 2 1 1 !
+ CONST LIPB_ALPHA : LI% PB : LI PB% : !
+$
+$ Prototype CsCl (cP2, Pm-3m), beta-LiPb
+$
+ PHASE LIPB_B2 % 2 1 1 !
+ CONST LIPB_B2 : LI% PB : LI PB% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Li
+$
+ PAR  G(BCC_A2,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(FCC_A1,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(HCP_A3,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(LIQUID,LI)              200.00  +GLIQLI;                 3000 N 91Din !
+$
+ PAR  G(LI7PB2,LI:LI)           200.00  +9*GHSERLI+45000;        3000 N 16Zho !
+ PAR  G(LIPB_ALPHA,LI:LI)       200.00  +2*GHSERLI+10000;        3000 N 16Zho !
+ PAR  G(LIPB_B2,LI:LI)          200.00  +2*GHSERLI+10000;        3000 N 16Zho !
+$
+ FUNCTION GHSERLI   200.00  -10583.817+217.637482*T-38.940488*T*LN(T)
+       +0.035466931*T**2-1.9869816E-05*T**3+159994*T**(-1);
+       453.60  Y  -559579.123+10547.8799*T-1702.88865*T*LN(T)
+       +2.25832944*T**2-5.71066077E-04*T**3+33885874*T**(-1);
+       500.00  Y  -9062.994+179.278285*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQLI    200.00  +2700.205-5.795621*T+GHSERLI;
+       250.00  Y  +12015.027-362.187078*T+61.6104424*T*LN(T)
+       -0.182426463*T**2+6.3955671E-05*T**3-559968*T**(-1);
+       453.60  Y  -6057.31+172.652183*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+       500.00  Y  +3005.684-6.626102*T+GHSERLI;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Pb
+$
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 3.0
+$ RHOMBOHEDRAL_A7, TETRAGONAL_A6 and TET_ALPHA1_A6 revised in unary 4.1
+$ RHOMBO_A10 added in unary 5.0
+$
+ PAR  G(FCC_A1,PB:VA),,                 +GHSERPB;                2100 N 91Din !
+ PAR  G(BCC_A2,PB:VA),,                 +GHSERPB+2400-1.1*T;     2100 N 91Din !
+ PAR  G(HCP_A3,PB:VA),,                 +GHSERPB+300+T;          2100 N 91Din !
+$PAR  G(BCT_A5,PB),,                    +GHSERPB+489+3.52*T;     2100 N 91Din !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+4493.235;       2100 N 98Boa !
+$PAR  G(TETRAGONAL_A6,PB),,             +GHSERPB+473.23+3.5531*T
+$            -0.0396834*T*LN(T)+2.1489E-05*T**2;                 2100 N 96SGUN !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB
+$            +1903.3-2.0602*T;                                   2100 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,PB),,             +GHSERPB+183.2+0.45314*T
+$            -0.0396834*T*LN(T)+2.149E-06*T**2;                  2100 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+300+T;          2100 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,PB),,           +GHSERPB+4900+3.52*T;    2100 N 96SGUN !
+$PAR  G(RHOMBO_A10,PB),,                +GHSERPB+10;             2100 N 09SGUN !
+ PAR  G(LIQUID,PB),,                    +GLIQPB;                 2100 N 91Din !
+$
+ PAR  G(LIPB_ALPHA,PB:PB),,             +2*GHSERPB+10000;        2100 N 16Zho !
+ PAR  G(LIPB_B2,PB:PB),,                +2*GHSERPB+10000;        2100 N 16Zho !
+$
+ FUNCTION GHSERPB   298.15  -7650.085+101.700244*T-24.5242231*T*LN(T)
+       -0.00365895*T**2-2.4395E-07*T**3;
+       600.61  Y  -10531.095+154.243182*T-32.4913959*T*LN(T)
+       +0.00154613*T**2+8.05448E+25*T**(-9);
+      1200.00  Y  +4157.616+53.139072*T-18.9640637*T*LN(T)
+       -0.002882943*T**2+9.8144E-08*T**3-2696755*T**(-1)+8.05448E+25*T**(-9);
+      2100.00  N !
+ FUNCTION GLIQPB    298.15  +4672.124-7.750683*T+GHSERPB-6.019E-19*T**7;
+       600.61  Y  +4853.137-8.067136*T+GHSERPB-8.05448E+25*T**(-9);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Zhou, C. Guo, C. Li, Z. Du, J. Nucl. Mater., 477, 95-101(2016).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  G(LIQUID,LI4PB),,                 +0.8*GLIQLI+0.2*GLIQPB
+             -27871.8+3.2114*T;,,                                     N 16Zho !
+ PAR  L(LIQUID,LI,LI4PB;0),,            +11515.3;,,                   N 16Zho !
+ PAR  L(LIQUID,LI,LI4PB;1),,            -833.8;,,                     N 16Zho !
+ PAR  L(LIQUID,LI,LI4PB;2),,            +2127.8;,,                    N 16Zho !
+ PAR  L(LIQUID,LI4PB,PB;0),,            -25172.5;,,                   N 16Zho !
+ PAR  L(LIQUID,LI4PB,PB;1),,            -9297.2-9.9687*T;,,           N 16Zho !
+ PAR  L(LIQUID,LI4PB,PB;2),,            -3695.5;,,                    N 16Zho !
+$
+ PAR  L(FCC_A1,LI,PB:VA;0),,            +ZERO;,,                      N 16Zho !
+ PAR  L(FCC_A1,LI,PB:VA;1),,            +54970;,,                     N 16Zho !
+$
+ PAR  L(BCC_A2,LI,SN:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(LI4PB,LI:PB),,                  +4*GHSERLI+GHSERPB
+             -173960+33.92*T;,,                                       N 16Zho !
+$
+ PAR  G(LI7PB2,LI:PB),,                 +7*GHSERLI+2*GHSERPB
+             -313510+43.03*T;,,                                       N 16Zho !
+ PAR  L(LI7PB2,LI:LI,PB;0),,            -107000;,,                    N 16Zho !
+$
+ PAR  G(LI3PB_D03,LI:PB),,              +3*GHSERLI+GHSERPB
+             -139151+16*T;,,                                          N 16Zho !
+ PAR  G(LI5PB2,LI:PB),,                 +5*GHSERLI+2*GHSERPB
+             -242918+22*T;,,                                          N 16Zho !
+$
+ PAR  G(LIPB_ALPHA,LI:PB),,             +GHSERLI+GHSERPB
+             -67718+17.5*T;,,                                         N 16Zho !
+ PAR  G(LIPB_ALPHA,PB:LI),,             +GHSERPB+GHSERLI
+             +87718-17.5*T;,,                                         N 16Zho !
+ PAR  L(LIPB_ALPHA,LI,PB:LI;0),,        +5000;,,                      N 16Zho !
+ PAR  L(LIPB_ALPHA,LI,PB:PB;0),,        +5000;,,                      N 16Zho !
+ PAR  L(LIPB_ALPHA,LI:LI,PB;0),,        -79902.9;,,                   N 16Zho !
+ PAR  L(LIPB_ALPHA,PB:LI,PB;0),,        -79902.9;,,                   N 16Zho !
+$
+ PAR  G(LIPB_B2,LI:PB),,                +GHSERLI+GHSERPB
+             -63354+8.5*T;,,                                          N 16Zho !
+ PAR  G(LIPB_B2,PB:LI),,                +GHSERPB+GHSERLI
+             +83354-8.5*T;,,                                          N 16Zho !
+ PAR  L(LIPB_B2,LI,PB:LI;0),,           -1200+15*T;,,                 N 16Zho !
+ PAR  L(LIPB_B2,LI,PB:PB;0),,           -1200+15*T;,,                 N 16Zho !
+ PAR  L(LIPB_B2,LI:LI,PB;0),,           -91300+15*T;,,                N 16Zho !
+ PAR  L(LIPB_B2,PB:LI,PB;0),,           -91300+15*T;,,                N 16Zho !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,LI,PB:VA;0),,            +ZERO;,,                      N Same !
+ PAR  L(HCP_A3,LI,PB:VA;1),,            +54970;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  05Yin  'F. Yin, X. Su, Z. Li, J. Wang,
+          J. Alloys Compd., 393, 105-8(2005); Li-Sn'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  16Zho  'C. Zhou, C. Guo, C. Li, Z. Du,
+          J. Nucl. Mater., 477, 95-101(2016); Li-Pb'
+!

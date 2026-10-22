@@ -1,0 +1,229 @@
+$
+$ Database for Mg-Pr from C. Guo and Z. Du 2005
+$
+$ C. Guo, Z. Du, J. Alloys Compd., 399, 183-88(2005).
+$
+$ Dataset created 2018.01.15 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$
+$ Invariant equilibria involving MgPr_B2 differ by up to 10 K.
+$
+$ There is huge inverse DHCP phase field above 1446 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+ ELEMENT PR   DHCP                      140.9077    7418.232   73.9313 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MG PR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MG PR : VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MG PR% : VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MG% PR : VA% : !
+$
+$ Prototype alpha-La (SB A3', hP4, P6_3/mmc)
+$
+ PHASE DHCP %A 1 1 !
+ CONST DHCP : MG PR% : !
+$
+$ Prototype Mn12Th (tI26, I4/mmm)
+$
+ PHASE MG12PR_D2B % 2 12 1 !
+ CONST MG12PR_D2B : MG : PR : !
+$
+$ Prototype Ce5Mg41 (tI92, I4/m)
+$
+ PHASE MG41PR5 % 2 41 5 !
+ CONST MG41PR5 : MG% PR : MG PR% : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE MG3PR_D03 % 2 3 1 !
+ CONST MG3PR_D03 : MG : MG PR% : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE MG2PR_C15 % 2 2 1 !
+ CONST MG2PR_C15 : MG : PR : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE MGPR_B2 % 2 1 1 !
+ CONST MGPR_B2 : MG% PR : MG PR% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+$ DHCP from 04Guo (included in SGSOL 5.0; this value is not particularly good)
+$ not included in unary
+$ DHCP from 05Guo not included in unary
+$
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+$PAR  G(DHCP,MG),,                      +GHSERMG+5000;           3000 N 04Guo !
+ PAR  G(DHCP,MG),,                      +GHSERMG+3000;           3000 N 05Guo !
+$PAR  G(CBCC_A12,MG:VA),,               +GHSERMG
+$            +4602.4-3.011*T;                                    3000 N 91Din !
+$PAR  G(CUB_A13,MG:VA),,                +GHSERMG+5000-3*T;       3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(MG41PR5,MG:MG),,                +46*GHSERMG+138000;,,         N 05Guo !
+ PAR  G(MG3PR_D03,MG:MG),,              +4*GBCCMG;,,                  N 05Guo !
+ PAR  G(MGPR_B2,MG:MG),,                +2*GBCCMG;,,                  N 05Guo !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCMG    298.15  +GHSERMG+3100-2.1*T;                       3000 N !
+$ ------------------------------------------------------------------------------
+$ Pr
+$
+$ FCC_A1 and HCP_A3 from 99Du not included in unary
+$ FCC_A1 from 04Du (used in SGSOL 5.0; this value is ABSURD!!!)
+$ not included in unary
+$ FCC_A1 from 09Wan4 not included in unary (this is not a good value)
+$ HCP_A3 from 05Guo not included in unary
+$
+ PAR  G(DHCP,PR),,                      +GHSERPR;                3800 N 91Din !
+ PAR  G(BCC_A2,PR:VA),,                 +GBCCPR;                 3800 N 91Din !
+ PAR  G(FCC_A1,PR:VA),,                 +GHSERPR+5000;           3800 N 99Du2 !
+$PAR  G(FCC_A1,PR:VA),,                 +GHSERPR+312707;         3800 N 04Du2 !
+$PAR  G(FCC_A1,PR:VA),,                 +GHSERPR+25000;          3800 N 09Wan4 !
+$PAR  G(HCP_A3,PR:VA),,                 +GHSERPR+5000;           3800 N 99Du2 !
+ PAR  G(HCP_A3,PR:VA),,                 +GHSERPR+3000;           3800 N 05Guo !
+ PAR  G(LIQUID,PR),,                    +GLIQPR;                 3800 N 91Din !
+$
+ PAR  G(MG41PR5,PR:PR),,                +46*GHSERPR+138000;,,         N 05Guo !
+ PAR  G(MGPR_B2,PR:PR),,                +2*GBCCPR;,,                  N 05Guo !
+$
+ FUNCTION GHSERPR   298.15  -18803.379+356.587384*T-68.9176*T*LN(T)
+       +0.072929*T**2-2.5184333E-05*T**3+507385*T**(-1);
+       500.00  Y  -7246.848+82.427384*T-22.8909*T*LN(T)
+       -0.00497126*T**2-1.22951E-06*T**3;
+       800.00  Y  +95411.023-1073.55111*T+146.764*T*LN(T)
+       -0.1288205*T**2+1.5592233E-05*T**3-11588800*T**(-1);
+      1068.00  Y  -481663.131+4234.33311*T-606.120311*T*LN(T)
+       +0.305181506*T**2-3.0994702E-05*T**3+70926840*T**(-1);
+      1204.00  Y  -20014.678+227.685155*T-42.9697*T*LN(T);
+      3800.00  N !
+ FUNCTION GBCCPR    298.15  -2863.651+28.274853*T-13.7470527*T*LN(T)
+       -0.02284377*T**2+3.542468E-06*T**3-87486*T**(-1);
+      1068.00  Y  -11985.919+188.657121*T-38.451*T*LN(T);
+      1204.00  Y  +953.224+100.826281*T-26.6824313*T*LN(T)
+       -0.004106833*T**2+1.76214E-07*T**3-2473024*T**(-1);
+      3800.00  N !
+ FUNCTION GLIQPR    298.15  +3848.961-29.099465*T-4.7344931*T*LN(T)
+       -0.035119723*T**2+5.427467E-06*T**3-207406*T**(-1);
+      1068.00  Y  -10539.574+219.508805*T-42.9697*T*LN(T);
+      3800.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Guo, Z. Du, J. Alloys Compd., 399, 183-88(2005).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Invariant equilibria involving MgPr_B2 differ by up to 10 K.
+$
+$ There is huge inverse DHCP phase field above 1446 K.
+$
+ PAR  L(LIQUID,MG,PR;0),,               -41498.5+13.8631*T;,,         N 05Guo !
+ PAR  L(LIQUID,MG,PR;1),,               -38739.5+27.3855*T;,,         N 05Guo !
+$
+ PAR  L(BCC_A2,MG,PR:VA;0),,            -38026.2+9.9371*T;,,          N 05Guo !
+ PAR  L(BCC_A2,MG,PR:VA;1),,            -21211.4+6.7926*T;,,          N 05Guo !
+ PAR  L(BCC_A2,MG,PR:VA;2),,            -6663;,,                      N 05Guo !
+$
+ PAR  L(HCP_A3,MG,PR:VA;0),,            -10000;,,                     N 05Guo !
+$
+ PAR  L(DHCP,MG,PR;0),,                 +29823.8-48.1977*T;,,         N 05Guo !
+ PAR  L(DHCP,MG,PR;1),,                 +55403-55.3231*T;,,           N 05Guo !
+$
+ PAR  G(MG12PR_D2B,MG:PR),,             +12*GHSERMG+GHSERPR
+             -62312.3+11.2821*T;,,                                    N 05Guo !
+$
+ PAR  G(MG41PR5,MG:PR),,                +41*GHSERMG+5*GHSERPR
+             -309380.3+59.4724*T;,,                                   N 05Guo !
+ PAR  G(MG41PR5,PR:MG),,                +41*GHSERPR+5*GHSERMG
+             +309380.3-59.4724*T;,,                                   N 05Guo !
+ PAR  L(MG41PR5,MG,PR:MG;0),,           +10000-10*T;,,                N 05Guo !
+ PAR  L(MG41PR5,MG,PR:PR;0),,           +10000-10*T;,,                N 05Guo !
+ PAR  L(MG41PR5,MG:MG,PR;0),,           -10000+10*T;,,                N 05Guo !
+ PAR  L(MG41PR5,PR:MG,PR;0),,           -10000+10*T;,,                N 05Guo !
+$
+ PAR  G(MG3PR_D03,MG:PR),,              +3*GHSERMG+GHSERPR
+             -58572.7+11.2785*T;,,                                    N 05Guo !
+ PAR  L(MG3PR_D03,MG:MG,PR;0),,         +12500-9*T;,,                 N 05Guo !
+ PAR  L(MG3PR_D03,MG:MG,PR;1),,         -8526.2+2.4214*T;,,           N 05Guo !
+$
+ PAR  G(MG2PR_C15,MG:PR),,              +2*GHSERMG+GHSERPR
+             -34760.9-2.537*T;,,                                      N 05Guo !
+$
+ PAR  G(MGPR_B2,MG:PR),,                +GHSERMG+GHSERPR
+             -31763.3+6.348*T;,,                                      N 05Guo !
+ PAR  G(MGPR_B2,PR:MG),,                +GHSERMG+GHSERPR
+             -31763.3+6.348*T;,,                                      N 05Guo !
+ PAR  L(MGPR_B2,MG,PR:MG;0),,           -5874.8+15.4166*T;,,          N 05Guo !
+ PAR  L(MGPR_B2,MG:MG,PR;0),,           -5874.8+15.4166*T;,,          N 05Guo !
+ PAR  L(MGPR_B2,MG,PR:MG;1),,           +7000.5+2.109*T;,,            N 05Guo !
+ PAR  L(MGPR_B2,MG:MG,PR;1),,           +7000.5+2.109*T;,,            N 05Guo !
+ PAR  L(MGPR_B2,MG,PR:PR;0),,           +12269.5+1.8054*T;,,          N 05Guo !
+ PAR  L(MGPR_B2,PR:MG,PR;0),,           +12269.5+1.8054*T;,,          N 05Guo !
+ PAR  L(MGPR_B2,MG,PR:PR;1),,           +5427.5+0.0245*T;,,           N 05Guo !
+ PAR  L(MGPR_B2,PR:MG,PR;1),,           +5427.5+0.0245*T;,,           N 05Guo !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,MG,PR:VA;0),,            -10000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Du2  'Z. Du, D. Wang, W. Zhang,
+          J. Alloys Compd., 284, 206-12(1999); Ni, Pr'
+  04Du2  'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004); Pr'
+  04Guo  'C. Guo, Z. Du, J. Alloys Compd., 385, 109-13(2004); La, Mg'
+  05Guo  'C. Guo, Z. Du, J. Alloys Compd., 399, 183-88(2005); Mg, Pr, Mg-Pr'
+  09Wan4 'C.P. Wang, Z. Lin, X.J. Liu,
+          J. Alloys Compd., 469, 123-28(2009); Mn, Pr'
+!

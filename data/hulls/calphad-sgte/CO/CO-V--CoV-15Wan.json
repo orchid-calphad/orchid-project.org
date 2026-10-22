@@ -1,0 +1,687 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 9,
+    "intervals": 8,
+    "vertices": 9
+  },
+  "elements": [
+    "CO",
+    "V"
+  ],
+  "flags": [
+    "has_intermediate_phases",
+    "solution_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "CO": {
+          "energy": -8956.449391245658,
+          "phase": "HCP_A3"
+        },
+        "V": {
+          "energy": -9209.853396891784,
+          "phase": "BCC_A2"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                0.0,
+                -1151.1974640227204,
+                137.32228804195086,
+                -4.67764387938098
+              ]
+            ],
+            "knots": [
+              0.0,
+              0.03161129015397399
+            ],
+            "max_abs_error": 0.003353763067707405
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                0.0,
+                -0.8361746979896816,
+                0.029363123187135853,
+                0.00031395820736657143
+              ]
+            ],
+            "knots": [
+              0.0,
+              0.03161129015397399
+            ],
+            "max_abs_error": 6.447776004836481e-06
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              0.0,
+              -901.8919778169947,
+              128.5676728636122,
+              -4.771250518914599
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.0,
+            0.03161129015397399
+          ],
+          "max_abs_error": 0.0015228305695131894,
+          "phase": "HCP_A3",
+          "x_hi": 0.03161129015397399,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -251.80259021886388,
+            "slope": -24255.58165790001
+          },
+          "entropy": {
+            "intercept": -0.17827058585195,
+            "slope": 17.028295517793936
+          },
+          "intercept": -198.65121504710305,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3",
+            "x": 0.03161129015397399
+          },
+          "mu_a_rel": -198.65121504710305,
+          "mu_b_rel": -29531.219181577406,
+          "right": {
+            "phase": "CO3V",
+            "x": 0.20758417275667215
+          },
+          "slope": -29332.567966530303,
+          "x_hi": 0.20758417275667215,
+          "x_lo": 0.03161129015397399
+        },
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                -5286.877443405948,
+                -2469.2089665754015,
+                875.4644100103895,
+                24.31009991052008
+              ]
+            ],
+            "knots": [
+              0.20758417275667215,
+              0.3024986276459363
+            ],
+            "max_abs_error": 0.250135457059514
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                -0.8899799539251116,
+                -0.0011561399063288505,
+                -0.2971596032634244,
+                0.08932713436985862
+              ],
+              [
+                -1.0989685627250063,
+                -0.32748981332894017,
+                -0.062156518585688936,
+                0.016843075207892078
+              ]
+            ],
+            "knots": [
+              0.20758417275667215,
+              0.2550414062774099,
+              0.3024986276459363
+            ],
+            "max_abs_error": 0.003236462435313725
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              -5021.529920143181,
+              -617.1301332408913,
+              80.48234736950843,
+              -5.402537072941129
+            ],
+            [
+              -5563.580243087505,
+              -472.375121021099,
+              65.56777890858166,
+              -1.3043651123020936
+            ],
+            [
+              -5971.691950312323,
+              -345.1532663238244,
+              61.81891779692057,
+              -0.3955116247478827
+            ],
+            [
+              -6255.4218104639785,
+              -222.7022076492664,
+              60.678026822639296,
+              -0.05714080626960083
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.20758417275667215,
+            0.23131279582738473,
+            0.2550414062774099,
+            0.2787700167274351,
+            0.3024986276459363
+          ],
+          "max_abs_error": 0.13813928372837836,
+          "phase": "CO3V",
+          "x_hi": 0.3024986276459363,
+          "x_lo": 0.20758417275667215
+        },
+        {
+          "enthalpy": {
+            "intercept": -4725.222618259597,
+            "slope": -7044.955206524787
+          },
+          "entropy": {
+            "intercept": 4.330561467608541,
+            "slope": -2.333385399761537
+          },
+          "intercept": -6016.379519827076,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CO3V",
+            "x": 0.3024986276459363
+          },
+          "mu_a_rel": -6016.379519827076,
+          "mu_b_rel": -12365.635869413007,
+          "right": {
+            "phase": "SIGMA_OLD",
+            "x": 0.4694955946889772
+          },
+          "slope": -6349.256349585931,
+          "x_hi": 0.4694955946889772,
+          "x_lo": 0.3024986276459363
+        },
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                -8032.798052504158,
+                -1768.2094099808974,
+                3110.8254788488384,
+                -85.04900564385662
+              ]
+            ],
+            "knots": [
+              0.4694955946889772,
+              0.7073870681199336
+            ],
+            "max_abs_error": 0.004215928154735593
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                -2.512615880062982,
+                -0.1382752004526261,
+                0.019552038772962507,
+                -0.0006730199706276169
+              ],
+              [
+                -2.632012061713273,
+                -0.10118916874059002,
+                0.017392399376847736,
+                -0.0008424014512403294
+              ],
+              [
+                -2.716651232528255,
+                -0.0689301003436183,
+                0.014693356237522763,
+                -0.0010839787771986728
+              ],
+              [
+                -2.7719719554115487,
+                -0.04279299843499405,
+                0.011227554834526827,
+                -0.001465093024578052
+              ],
+              [
+                -2.8050024920365937,
+                -0.024729100180625536,
+                0.006561601664085398,
+                -0.002137233959057877
+              ],
+              [
+                -2.8253072245121915,
+                -0.018009668079788235,
+                -0.00018181063957434934,
+                -0.0035112040555154087
+              ],
+              [
+                -2.8470099072870703,
+                -0.02888550831986002,
+                -0.010959153662818535,
+                -0.007058469557258293
+              ],
+              [
+                -2.893913038827007,
+                -0.07190354310830352,
+                -0.029701028612007158,
+                -0.021983647887990038
+              ]
+            ],
+            "knots": [
+              0.4694955946889772,
+              0.49923201937777106,
+              0.5289684539354675,
+              0.558704888493164,
+              0.5884413230508605,
+              0.618177757608557,
+              0.6479141921662535,
+              0.6776506267239499,
+              0.7073870681199336
+            ],
+            "max_abs_error": 0.0004337456332774714
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              -7283.661627863396,
+              -179.7993546943622,
+              42.763452446911714,
+              0.04478421128672494
+            ],
+            [
+              -7420.652745899557,
+              -94.13843797486767,
+              42.90859022992305,
+              0.09529145789559657
+            ],
+            [
+              -7471.787302186609,
+              -8.035827722495075,
+              43.21452716506188,
+              0.16731361681253532
+            ],
+            [
+              -7436.441289127227,
+              78.89447856118264,
+              43.74906110116589,
+              0.28094675254888557
+            ],
+            [
+              -7313.51680271233,
+              167.23423263279014,
+              44.64142768963018,
+              0.48134663168286806
+            ],
+            [
+              -7101.159795758227,
+              257.959289659908,
+              46.15128810589988,
+              0.8924632668339427
+            ],
+            [
+              -6796.156754725586,
+              352.9302411972993,
+              48.86842958362496,
+              1.9493542105826123
+            ],
+            [
+              -6392.40872973408,
+              456.4892322416532,
+              53.959775178280665,
+              6.39673323655154
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.4694955946889772,
+            0.49923201937777106,
+            0.5289684539354675,
+            0.558704888493164,
+            0.5884413230508605,
+            0.618177757608557,
+            0.6479141921662535,
+            0.6776506267239499,
+            0.7073870681199336
+          ],
+          "max_abs_error": 0.12927979822325142,
+          "phase": "SIGMA_OLD",
+          "x_hi": 0.7073870681199336,
+          "x_lo": 0.4694955946889772
+        },
+        {
+          "enthalpy": {
+            "intercept": -21006.01158600383,
+            "slope": 20117.38868021122
+          },
+          "entropy": {
+            "intercept": 6.066296821482945,
+            "slope": -5.736485558195788
+          },
+          "intercept": -22814.677983328926,
+          "kind": "two_phase",
+          "left": {
+            "phase": "SIGMA_OLD",
+            "x": 0.7073870681199336
+          },
+          "mu_a_rel": -22814.677983328926,
+          "mu_b_rel": -986.956133941705,
+          "right": {
+            "phase": "COV3_A15",
+            "x": 0.75
+          },
+          "slope": 21827.72184938722,
+          "x_hi": 0.75,
+          "x_lo": 0.7073870681199336
+        },
+        {
+          "enthalpy": {
+            "intercept": -23676.90414061467,
+            "slope": 23678.57875302568
+          },
+          "entropy": {
+            "intercept": 7.0369167944706925,
+            "slope": -7.0306455221794515
+          },
+          "intercept": -25774.96088288616,
+          "kind": "two_phase",
+          "left": {
+            "phase": "COV3_A15",
+            "x": 0.75
+          },
+          "mu_a_rel": -25774.96088288616,
+          "mu_b_rel": -0.19516742262931075,
+          "right": {
+            "phase": "BCC_A2",
+            "x": 0.9999212299510076
+          },
+          "slope": 25774.76571546353,
+          "x_hi": 0.9999212299510076,
+          "x_lo": 0.75
+        },
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                -0.19055039743978447,
+                0.19059078217847564,
+                0.00018681007724319354,
+                -0.00022719481593430624
+              ]
+            ],
+            "knots": [
+              0.9999212299510076,
+              1.0
+            ],
+            "max_abs_error": 3.259106373776355e-05
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                -1.8253160676409003e-05,
+                1.8026928297127067e-05,
+                -1.662657058794095e-05,
+                1.6852802967222885e-05
+              ]
+            ],
+            "knots": [
+              0.9999212299510076,
+              1.0
+            ],
+            "max_abs_error": 2.4179954335085207e-06
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              -0.18510821758185125,
+              0.18521605302460892,
+              0.005144023225037625,
+              -0.005251858667795289
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.9999212299510076,
+            1.0
+          ],
+          "max_abs_error": 0.0007535163886717433,
+          "phase": "BCC_A2",
+          "x_hi": 1.0,
+          "x_lo": 0.9999212299510076
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -1125.8915319982552,
+          "energy_per_atom": -1125.8915319982552,
+          "enthalpy": -1018.5528198601505,
+          "entries_at_x": 1,
+          "entropy": 0.3600158045886488,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.03161129015397399
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -6287.628071208157,
+          "energy_per_atom": -6287.628071208157,
+          "enthalpy": -5286.877443405948,
+          "entries_at_x": 1,
+          "entropy": 3.3565340526654524,
+          "formula": "",
+          "nsites": null,
+          "phase": "CO3V",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.20758417275667215
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -7937.020852149068,
+          "energy_per_atom": -7937.020852149068,
+          "enthalpy": -6856.311900060438,
+          "entries_at_x": 1,
+          "entropy": 3.624715586411611,
+          "formula": "",
+          "nsites": null,
+          "phase": "CO3V",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3024986276459363
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -8997.327405508688,
+          "energy_per_atom": -8997.327405508688,
+          "enthalpy": -8032.798052504158,
+          "entries_at_x": 1,
+          "entropy": 3.2350473017089207,
+          "formula": "",
+          "nsites": null,
+          "phase": "SIGMA_OLD",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.4694955946889772
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -7374.029820553484,
+          "energy_per_atom": -7374.029820553484,
+          "enthalpy": -6775.230989280074,
+          "entries_at_x": 1,
+          "entropy": 2.008381121158486,
+          "formula": "",
+          "nsites": null,
+          "phase": "SIGMA_OLD",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.7073870681199336
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -6443.886596288508,
+          "energy_per_atom": -6443.886596288508,
+          "enthalpy": -5917.970075845414,
+          "entries_at_x": 1,
+          "entropy": 1.763932652836104,
+          "formula": "",
+          "nsites": null,
+          "phase": "COV3_A15",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.75
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -2.225446980799461,
+          "energy_per_atom": -2.225446980799461,
+          "enthalpy": -0.19055039743978447,
+          "entries_at_x": 1,
+          "entropy": 0.006825076583471201,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.9999212299510076
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "CoV-15Wan",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:27:16Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/CoV-15Wan.tdb",
+    "source_sha256": "806d7a1de1b823d0674861c13ba0934f60c89b00e1bc7703800d0e90fbd696ee"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "CO-V",
+  "x_element": "V"
+}

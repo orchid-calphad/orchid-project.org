@@ -1,0 +1,155 @@
+$
+$ Database for Nb-U from X.J. Liu et al. 2008.
+$
+$ X.J. Liu, Z.S. Li, J. Wang, C.P. Wang, J. Nucl. Mater., 380, 99-104(2008).
+$
+$ Dataset created 2023.04.23 by Bengt Hallstedt.
+$
+$ Large liquid and bcc interactions with many parameters.
+$
+$ Inverse miscibility gap with a minimum at 3279 K and x(U)=0.26.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NB   BCC_A2                     92.9064    5220.0     36.27   ! 
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NB U : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NB U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 1.5 !
+ CONST BCC_A2 : NB% U% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : NB U : VA : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : NB U% : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : NB U% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Nb
+$
+$ ORTHORHOMBIC_A20 and TETRAGONAL_U from 08Liu not included in unary
+$
+ PAR  G(BCC_A2,NB:VA),,                 +GHSERNB;,,                   N 91Din !
+ PAR  G(FCC_A1,NB:VA),,                 +GHSERNB+13500+1.7*T;,,       N 91Din !
+ PAR  G(HCP_A3,NB:VA),,                 +GHSERNB+10000+2.4*T;,,       N 91Din !
+ PAR  G(ORTHORHOMBIC_A20,NB),,          +GHSERNB+25000;,,             N 08Liu !
+ PAR  G(TETRAGONAL_U,NB),,              +GHSERNB+15000;,,             N 08Liu !
+ PAR  G(LIQUID,NB),,                    +GLIQNB;,,                    N 91Din !
+$
+ FUNCTION GHSERNB   298.15  -8519.353+142.045475*T-26.4711*T*LN(T)
+       +2.03475E-04*T**2-3.5012E-07*T**3+93399*T**(-1);
+      2750.00  Y  -37669.3+271.720843*T-41.77*T*LN(T)+1.528238E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQNB    298.15  +29781.555-10.816418*T+GHSERNB-3.06098E-23*T**7;
+      2750.00  Y  -7499.398+260.756148*T-41.77*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not included in unary
+$ CUB_A13 from 08Liu not included in unary
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+ PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+$PAR  G(CUB_A13,U:VA),,                 +GHSERUU+5000;           3000 N 08Liu !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQUU    298.15  +GHSERUU+12355.5-10.3239*T;                3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X.J. Liu, Z.S. Li, J. Wang, C.P. Wang, J. Nucl. Mater., 380, 99-104(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Large liquid and bcc interactions with many parameters.
+$
+$ Inverse miscibility gap with a minimum at 3279 K and x(U)=0.26.
+$
+ PAR  L(LIQUID,NB,U;0),,                +39836.8-41.2*T;,,            N 08Liu !
+ PAR  L(LIQUID,NB,U;1),,                -149230.3+47.2*T
+             +4.66*T*LN(T);,,                                         N 08Liu !
+ PAR  L(LIQUID,NB,U;2),,                -38091.3-4.33*T;,,            N 08Liu !
+$
+ PAR  L(BCC_A2,NB,U:VA;0),,             +17706.2-23.099*T;,,          N 08Liu !
+ PAR  L(BCC_A2,NB,U:VA;1),,             -54699.5+30.02*T;,,           N 08Liu !
+ PAR  L(BCC_A2,NB,U:VA;2),,             -42938.27+9.6*T;,,            N 08Liu !
+ PAR  L(BCC_A2,NB,U:VA;3),,             -28942+11.06*T;,,             N 08Liu !
+$
+ PAR  L(ORTHORHOMBIC_A20,NB,U;0),,      -5000;,,                      N 08Liu !
+ PAR  L(TETRAGONAL_U,NB,U;0),,          +4018.4;,,                    N 08Liu !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,NB,U:VA;0),,             +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,NB,U:VA;0),,             +UN_ASS;,,                    N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr'
+  08Liu  'X.J. Liu, Z.S. Li, J. Wang, C.P. Wang,
+          J. Nucl. Mater., 380, 99-104(2008); Mn, Nb, U, Nb-U'
+!

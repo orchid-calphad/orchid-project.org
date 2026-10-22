@@ -1,0 +1,213 @@
+{
+  "counts": {
+    "above_hull": 26,
+    "entries": 65,
+    "intervals": 4,
+    "vertices": 5
+  },
+  "elements": [
+    "EU",
+    "HG"
+  ],
+  "flags": [
+    "degenerate_vertices",
+    "has_intermediate_compounds",
+    "mp_agreement_not_comparable",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-8138",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -1.346121474966268,
+          "right": {
+            "phase": "oqmd-17212",
+            "x": 0.5
+          },
+          "slope": -1.346121474966268,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -1.0411325699999991,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-17212",
+            "x": 0.5
+          },
+          "mu_a_rel": -1.0411325699999991,
+          "mu_b_rel": -0.30498890496626874,
+          "right": {
+            "phase": "oqmd-17213",
+            "x": 0.6666666666666666
+          },
+          "slope": 0.7361436650337304,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.5
+        },
+        {
+          "intercept": -1.1665290299999977,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-17213",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -1.1665290299999977,
+          "mu_b_rel": -0.24229067496626966,
+          "right": {
+            "phase": "oqmd-1787127",
+            "x": 0.75
+          },
+          "slope": 0.9242383550337281,
+          "x_hi": 0.75,
+          "x_lo": 0.6666666666666666
+        },
+        {
+          "intercept": -1.8934010548988063,
+          "kind": "two_phase",
+          "left": {
+            "phase": "oqmd-1787127",
+            "x": 0.75
+          },
+          "mu_a_rel": -1.8934010548988063,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "oqmd-1214799",
+            "x": 1.0
+          },
+          "slope": 1.8934010548988063,
+          "x_hi": 1.0,
+          "x_lo": 0.75
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Eu"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -1.8875732,
+          "entries_at_x": 19,
+          "formula": "Eu1",
+          "nsites": 1,
+          "phase": "oqmd-8138",
+          "phase_kind": "structure",
+          "spacegroup_number": 229,
+          "spacegroup_symbol": "Im-3m",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.673060737483134,
+          "energy_per_atom": -1.79632925,
+          "entries_at_x": 5,
+          "formula": "Eu1 Hg1",
+          "nsites": 2,
+          "phase": "oqmd-17212",
+          "phase_kind": "structure",
+          "spacegroup_number": 221,
+          "spacegroup_symbol": "Pm-3m",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.550370126644179,
+          "energy_per_atom": -1.41887041,
+          "entries_at_x": 3,
+          "formula": "Eu1 Hg2",
+          "nsites": 3,
+          "phase": "oqmd-17213",
+          "phase_kind": "structure",
+          "spacegroup_number": 191,
+          "spacegroup_symbol": "P6/mmm",
+          "theoretical": false,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.47335026372470157,
+          "energy_per_atom": -1.2144664325,
+          "entries_at_x": 5,
+          "formula": "Eu1 Hg3",
+          "nsites": 16,
+          "phase": "oqmd-1787127",
+          "phase_kind": "structure",
+          "spacegroup_number": 62,
+          "spacegroup_symbol": "Pnma",
+          "theoretical": true,
+          "x": 0.75
+        },
+        {
+          "collinear": false,
+          "degenerate": [
+            {
+              "energy": 0.0,
+              "phase": "oqmd-ref-Hg"
+            }
+          ],
+          "energy": 0.0,
+          "energy_per_atom": -0.297553515517241,
+          "entries_at_x": 23,
+          "formula": "Hg1",
+          "nsites": 29,
+          "phase": "oqmd-1214799",
+          "phase_kind": "structure",
+          "spacegroup_number": 217,
+          "spacegroup_symbol": "I-43m",
+          "theoretical": true,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "is_stable is derived by the extraction, not an upstream flag, so comparing it against a hull recomputed from the same energies tests the derivation rather than the data",
+    "max_abs_delta_energy_above_hull": 2.2435358570938035e-09,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "derived",
+    "mp_release": "qmdb_v1_8_022026",
+    "observed_at": "2026-09-05T17:02:03Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "2a9393262c52ec35600424236c352a4cdb3291c8b25c1c6588f5e62abe8e0d8d",
+    "stability_tol": 0.0001,
+    "thermo_type": "standard"
+  },
+  "reference": {
+    "kind": "dft_fitted_elemental_reference_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "EU-HG",
+  "x_element": "HG"
+}

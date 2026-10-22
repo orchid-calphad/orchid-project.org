@@ -1,0 +1,247 @@
+$
+$ Database for Np-O from A.L. Smith et al. 2016.
+$
+$ A.L. Smith, J.-Y. Colle, O. Benes, R.J.M. Konings, B. Sundman, C. Gueneau,
+$ J. Chem. Thermodyn., 103, 257-75(2016).
+$
+$ Dataset created 2024.03.20 by Bengt Hallstedt.
+$
+$ In the paper a different expression for Np(g) is used. That expression
+$ contains T**4 and T**5 terms. Here the SGSUB expression is used. It might
+$ not be better, but it does not explode over 4000 K.
+$
+$ With the parameters in the paper the congruent melting temperature and
+$ solubility range of NpO2 were too small. One parameter was corrected.
+$ The remaining error is about 7 K in the congruent melting temperature.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NP   ORTHO_AC                  237.0482    6606.536   50.4590 ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  NP+3                               NP/+3 !
+ SPECIE  NP+4                               NP/+4 !
+ SPECIE  NPO                                NP1O1 !
+ SPECIE  NPO2                               NP1O2 !
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : NP+4 : O-2 VA O : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NP : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NP : VA : !
+$
+$ Prototype alpha-Np (oP8, Pnma)
+$
+ PHASE ORTHO_AC % 1 1 !
+ CONST ORTHO_AC : NP : !
+$
+$ Prototype beta-Np (tP4, P4/nmm)
+$
+ PHASE TETRAG_AD % 1 1 !
+ CONST TETRAG_AD : NP : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE NPO2_C1:I % 2 1 2 !
+ CONST NPO2_C1:I : NP+3 NP+4 : O-2 VA : !
+$
+$ Prototype Np2O5 (mP28, P2/c)
+$
+ PHASE NP2O5 % 2 2 5 !
+ CONST NP2O5 : NP : O : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : NP NPO NPO2 O O2 O3 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Np
+$
+$ HCP_A3 from 14Xio not in unary
+$
+ PAR  G(ORTHO_AC,NP),,                  +GHSERNP;                4000 N 91Din !
+ PAR  G(TETRAG_AD,NP),,                 +GTETNP;                 4000 N 91Din !
+ PAR  G(BCC_A2,NP:VA),,                 +GBCCNP;                 4000 N 91Din !
+$PAR  G(HCP_A3,NP:VA),,                 +GHSERNP+19000;          4000 N 14Xio !
+ PAR  G(LIQUID,NP),,                    +GLIQNP;                 4000 N 91Din !
+$
+ PAR  G(GAS,NP),,                       +F13304T+RTLNP;,,             N 97SUB !
+ PAR  G(ION,NP+4:VA),,                  +GLIQNP;                 4000 N 91Din !
+$
+ FUNCTION GHSERNP   298.15  +241.888-57.531347*T+4.0543*T*LN(T)
+       -0.04127725*T**2-402857*T**(-1);
+       553.00  Y  -57015.112+664.27337*T-102.523*T*LN(T)
+       +0.0284592*T**2-2.483917E-06*T**3+4796910*T**(-1);
+      1799.00  Y  -12092.736+255.780866*T-45.3964*T*LN(T);
+      4000.00  N !
+ FUNCTION GTETNP    298.15  -10157.32+183.829213*T-34.11*T*LN(T)
+       -0.0161186*T**2+4.98465E-06*T**3+532825*T**(-1);
+       555.00  Y  -7873.688+207.01896*T-39.33*T*LN(T);
+       856.00  Y  +19027.98-46.64846*T-3.4265*T*LN(T)
+       -0.01921045*T**2+1.52726E-06*T**3-3564640*T**(-1);
+      1999.00  Y  -3978.084+0.926171*T+GHSERNP;
+      4000.00  N !
+ FUNCTION GBCCNP    298.15  -3224.664+174.911817*T-35.177*T*LN(T)
+       -0.00251865*T**2+5.14743E-07*T**3+302225*T**(-1);
+       856.00  Y  -2366.486+180.807719*T-36.401*T*LN(T);
+       917.00  Y  +50882.281-297.324358*T+30.7734*T*LN(T)
+       -0.0343483*T**2+2.707217E-06*T**3-7500100*T**(-1);
+      1999.00  Y  -2786.95-1.007779*T+GHSERNP;
+      4000.00  N !
+ FUNCTION GLIQNP    298.15  -4627.18+160.024959*T-31.229*T*LN(T)
+       -0.0163885*T**2+2.941883E-06*T**3+439915*T**(-1);
+       917.00  Y  -7415.255+247.671446*T-45.3964*T*LN(T);
+      4000.00  N !
+$ Np(g)
+ FUNCTION F13304T   298.15  +459509.329-69.6673486*T-19.143*T*LN(T)
+       +1.664E-04*T**2-1.550035E-06*T**3-42365*T**(-1);
+       700.00  Y  +464195.895-142.938506*T-7.773*T*LN(T)
+       -0.01171145*T**2+7.19933333E-07*T**3-389045*T**(-1);
+      1500.00  Y  +457477.601-71.0938871*T-18.083*T*LN(T)
+       -0.00556585*T**2+8.027E-08*T**3+183330*T**(-1);
+      2600.00  Y  +491332.84-274.090696*T+8.639*T*LN(T)
+       -0.01422805*T**2+5.8216E-07*T**3-6696365*T**(-1);
+      4200.00  Y  +101617.987+923.921155*T-135.609*T*LN(T)
+       +0.00958715*T**2-1.57381667E-07*T**3+1.9152485E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+ PAR  G(ION,O),,                        +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A.L. Smith, J.-Y. Colle, O. Benes, R.J.M. Konings, B. Sundman, C. Gueneau,
+$ J. Chem. Thermodyn., 103, 257-75(2016).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ In the paper a different expression for Np(g) is used. That expression
+$ contains T**4 and T**5 terms. Here the SGSUB expression is used. It might
+$ not be better, but it does not explode over 4000 K.
+$
+$ With the parameters in the paper the congruent melting temperature and
+$ solubility range of NpO2 were too small. One parameter was corrected.
+$ The remaining error is about 7 K in the congruent melting temperature.
+$
+ PAR  G(ION,NP+4:O-2),,                 -1879608.3+570*T
+             -132*T*LN(T);,,                                          N 16Smi !
+ PAR  L(ION,NP+4:O-2,VA;0),,            +392179-534.4*T;,,            N 16Smi !
+ PAR  L(ION,NP+4:O-2,VA;1),,            -330000;,,                    N 16Smi !
+$
+ PAR  G(NPO2_C1,NP+3:O-2),,             +GNPO15+0.5*GHSEROO
+             +1.12467*R*T;,,                                          N 16Smi !
+ PAR  G(NPO2_C1,NP+4:O-2),,             +GNPO2S;,,                    N 16Smi !
+ PAR  G(NPO2_C1,NP+3:VA),,              +GNPO15-1.5*GHSEROO
+             +1.12467*R*T;,,                                          N 16Smi !
+ PAR  G(NPO2_C1,NP+4:VA),,              +GNPO2S-2*GHSEROO;,,          N 16Smi !
+$
+ PAR  G(NP2O5,NP:O),,                   -2205958.9+451.36*T
+             -99.2*T*LN(T)-0.0493*T**2;,,                             N 16Smi !
+$
+ PAR  G(GAS,NPO),,                      +GNPOG+RTLNP;,,               N 16Smi !
+ PAR  G(GAS,NPO2),,                     +GNPO2G+RTLNP;,,              N 16Smi !
+$
+ FUNCTION GNPO2S    298.15  -1101900+409.09157*T-71.608*T*LN(T)
+       -0.0079225*T**2+450324*T**(-1);
+      4000.00  N !
+$FUNCTION GNPO15    298.15  +0.75*GNPO2S+0.25*GHSERNP+152539.3
+$      -64.3*T;
+$     4000.00  N !
+$ Corrected parameter below
+ FUNCTION GNPO15    298.15  +0.75*GNPO2S+0.25*GHSERNP+152539.3
+       -73.5*T;
+      4000.00  N !
+ FUNCTION GNPOG     298.15  -23737.373+23.6932071*T-40.73102*T*LN(T)
+       -0.002534515*T**2-9.31391667E-07*T**3+197552.5*T**(-1)
+       +2.71718333E-10*T**4;  
+      1400.00  Y  -37203.4191+117.398183*T-53.06105*T*LN(T)
+       -7.2306E-04*T**2+3.2164E-07*T**3+2560795*T**(-1)
+       -3.02156667E-11*T**4;
+      4000.00  N !
+ FUNCTION GNPO2G    298.15  -492292.844+121.221111*T-56.33269*T*LN(T)
+       -0.020019715*T**2+9.16285E-06*T**3+366402.5*T**(-1)
+       -1.91906917E-09*T**4;  
+      1000.00  Y  -493581.448+188.906305*T-68.29804*T*LN(T)
+       +0.004517016*T**2-9.09885833E-07*T**3+185016.85*T**(-1)
+       -5.52373E-11*T**4;
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Lin    'Linear combination of lattice stabilities'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, 1992.'
+  97SUB  'SGTE Substance Database, 1997.'
+  14Xio  'W. Xiong, W. Xie, D. Morgan,
+          J. Nuclear Mater., 452, 569-77(2014); Np, Zr'
+  16Smi  'A.L. Smith, J.-Y. Colle, O. Benes, R.J.M. Konings, B. Sundman,
+          C. Gueneau, J. Chem. Thermodyn., 103, 257-75(2016); Np-O'
+!

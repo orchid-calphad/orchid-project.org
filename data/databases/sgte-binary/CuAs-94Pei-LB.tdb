@@ -1,0 +1,192 @@
+$
+$ Database for Cu-As from B. Pei et al. 1994 (included in LB Vol. 1)
+$
+$ B. Pei, B. Bjorkman, B. Jansson, B. Sundman, Z. Metallkd., 85, 178-84(1994).
+$
+$ Dataset created 2011.01.08 by Bengt Hallstedt.
+$ 2018.06.21: Phase name CU3AS changed to CU3AS_D06.
+$ 2020.12.26: Modified for use with GES6.
+$ 2021.09.05: ION order fixed for GES6.
+$
+$ The original dataset does not contain Cu+2 in the ionic liquid. This is added
+$ in the LB database. The addition of Cu+2 results in very strange inverse
+$ miscibility gaps with minima around 2500 K close to Cu and at almost pure As.
+$
+$ The LB tables have been calculated using an incorrect expression for GHSERCU.
+$ Invariant equilibria are up to 0.2 K lower than in LB because of this.
+$
+$ The original parameters have been rounded in the LB database. This causes
+$ changes by less than 0.1 K. The present dataset contains the original
+$ (not rounded) parameters from the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AS   RHOMBOHEDRAL_A7            74.922     5117.032   35.6895 ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  AS-3                               AS/-3 !
+ SPECIE  CU+1                               CU/+1 !
+ SPECIE  CU+2                               CU/+2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU AS : !
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : CU+1 : AS-3 VA AS : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AS CU : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AS CU : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AS CU : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : AS : !
+$
+$ Prototype Mg (hP2, P6_3/mmc)
+$
+ PHASE CU8AS_A3 % 2 8 1 !
+ CONST CU8AS_A3 : CU : AS : !
+$
+$ Prototype HoH3 (hP24, P-3c1), prototype Cu3As suggested in LB binary
+$
+ PHASE CU3AS_D06 % 2 3 1 !
+ CONST CU3AS_D06 : CU VA : AS : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE CU12AS5_D03 % 2 12 5 !
+ CONST CU12AS5_D03 : CU : AS : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ As
+$
+$ RED_P added in unary 4.4
+$
+ PAR  G(RHOMBOHEDRAL_A7,AS),,           +GHSERAS;                1200 N 91Din !
+ PAR  G(FCC_A1,AS:VA),,                 +GHSERAS+24874-14.74*T;  1200 N 91Din !
+ PAR  G(BCC_A2,AS:VA),,                 +GHSERAS+24874-16.1*T;   1200 N 91Din !
+ PAR  G(HCP_A3,AS:VA),,                 +GHSERAS+24874-14*T;     1200 N 91Din !
+$PAR  G(RED_P,AS),,                     +GHSERAS+5782-3.85466*T; 1200 N 01SGUN !
+ PAR  G(LIQUID,AS),,                    +GHSERAS
+             +24442.9-22.424679*T;                               1200 N 91Din !
+$
+ PAR  G(ION,AS),,                       +GLIQAS;                 1200 N 91Din !
+$
+ PAR  G(CU3AS_D06,VA:AS),,              +GHCPAS;,,                    N 94Pei2 !
+$
+ FUNCTION GHSERAS   298.15  -7270.447+122.211069*T-23.3144*T*LN(T)
+       -0.00271613*T**2+11600*T**(-1);
+      1090.00  Y  -10454.913+163.457433*T-29.216037*T*LN(T);
+      1200.00  N !
+ FUNCTION GLIQAS    298.15  +GHSERAS+24442.9-22.424679*T;              6000 N !
+ FUNCTION GHCPAS    298.15  +GHSERAS+24874-14*T;                       6000 N !
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ PAR  G(ION,CU+1:VA),,                  +GLIQCU;                 3200 N 91Din !
+$PAR  G(ION,CU+2:VA),,                  +GLIQ2CU;,,                   N 03Hal1 !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+ FUNCTION GLIQ2CU   298.15  +3*GLIQCU-2*GCU2OLIQ+16236-20*T;           6000 N !
+ FUNCTION GCU2OLIQ  298.15  -38315+102.66*T-22.57*T*LN(T);             6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From from B. Pei et al. 1994 (included in LB Vol. 1)
+$
+$ B. Pei, B. Bjorkman, B. Jansson, B. Sundman, Z. Metallkd., 85, 178-84(1994).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ The original dataset does not contain Cu+2 in the ionic liquid. This is added
+$ in the LB database. The addition of Cu+2 results in very strange inverse
+$ miscibility gaps with minima around 2500 K close to Cu and at almost pure As.
+$
+$ The LB tables have been calculated using an incorrect expression for GHSERCU.
+$ Invariant equilibria are up to 0.2 K lower than in LB because of this.
+$
+$ The original parameters have been rounded in the LB database. This causes
+$ changes by less than 0.1 K. The present dataset contains the original
+$ (not rounded) parameters from the paper.
+$
+ PAR  G(ION,CU+1:AS-3),,                +3*GLIQCU+GLIQAS
+             -24415.24-37.9127*T;,,                                   N 94Pei2 !
+$PAR  G(ION,CU+2:AS-3),,                +UN_ASS;,,                    N !
+ PAR  L(ION,CU+1:AS-3,VA;0),,           +1496.07;,,                   N 94Pei2 !
+ PAR  L(ION,CU+1:AS-3,AS;0),,           +49866.38-67.2782*T;,,        N 94Pei2 !
+$
+ PAR  L(FCC_A1,AS,CU:VA;0),,            -2036.09-39.6996*T;,,         N 94Pei2 !
+ PAR  L(FCC_A1,AS,CU:VA;1),,            +6268.91;,,                   N 94Pei2 !
+$
+ PAR  G(CU8AS_A3,CU:AS),,               +8*GHSERCU+GHSERAS
+             +16774.76-75.0225*T;,,                                   N 94Pei2 !
+$
+ PAR  G(CU3AS_D06,CU:AS),,              +3*GHSERCU+GHSERAS
+             +19104.91-73.873*T;,,                                    N 94Pei2 !
+ PAR  L(CU3AS_D06,CU,VA:AS;0),,         -18101.25+60.3181*T;,,        N 94Pei2 !
+$
+ PAR  G(CU12AS5_D03,CU:AS),,            +12*GHSERCU+5*GHSERAS
+             +88679.55-328.6817*T;,,                                  N 94Pei2 !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AS-CU(TDB -* +ION +FCC_A1 +CU12AS5_D03 +CU3AS +CU8AS_A3 +RHOMB_A7
+  ;P3 TMM:300/1400) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Pei2 'B. Pei, B. Bjorkman, B. Jansson, B. Sundman,
+          Z. Metallkd., 85, 178-84(1994); Cu-As'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  03Hal1 'B. Hallstedt, L.J. Gauckler, Calphad, 27, 177-91(2003); Cu-O'
+!

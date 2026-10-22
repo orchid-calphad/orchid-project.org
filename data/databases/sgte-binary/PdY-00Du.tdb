@@ -1,0 +1,242 @@
+$
+$ Database for Pd-Y from Z. Du et al. 2000.
+$
+$ Z. Du, H. Yang, C. Li, J. Alloys Compd., 297, 185-91(2000).
+$
+$ Dataset created 2018.02.25 by Bengt Hallstedt.
+$ 2021.02.03: Modified for use with GES6.
+$
+$ The interaction parameters and lattice stability for fcc-Y from 00Du are
+$ not acceptable. This is also the case for PdY-B33 and PdY-B2.
+$
+$ Invariant equilibria differ by up to 2 K.
+$
+$ There is an inverse miscibility gap with a minimum at 4417 K and x(Y)=0.13.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+ ELEMENT Y    HCP_A3                     88.9059    5983.457   44.7875 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PD Y : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PD% Y : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PD Y% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : PD Y% : VA : !
+$
+$ Unknown structure
+$
+ PHASE PD7Y % 2 7 1 !
+ CONST PD7Y : PD : Y : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE PD3Y_L12 % 2 3 1 !
+ CONST PD3Y_L12 : PD : PD Y% : !
+$
+$ Unknown structure
+$
+ PHASE PD2Y % 2 2 1 !
+ CONST PD2Y : PD : Y : !
+$
+$ Unknown structure
+$
+ PHASE PD3Y2_LT % 2 3 2 !
+ CONST PD3Y2_LT : PD : Y : !
+$
+$ Unknown structure
+$
+ PHASE PD3Y2_HT % 2 3 2 !
+ CONST PD3Y2_HT : PD : Y : !
+$
+$ Prototype Pd4Pu3 (hR14, R-3)
+$
+ PHASE PD4Y3 % 2 4 3 !
+ CONST PD4Y3 : PD : Y : !
+$
+$ Prototype CrB (oC8, Cmcm), low T
+$
+ PHASE PDY_B33 % 2 1 1 !
+ CONST PDY_B33 : PD% Y : Y : !
+$
+$ Prototype CsCl (cP2, Pm-3m), high T
+$
+ PHASE PDY_B2 % 2 1 1 !
+ CONST PDY_B2 : PD% Y : Y : !
+$
+$ Prototype Er3Ni2 (hR15, R-3)
+$
+ PHASE PD2Y3 % 2 2 3 !
+ CONST PD2Y3 : PD : Y : !
+$
+$ Prototype Dy5Pd2 (cF144, Fd-3m)
+$
+ PHASE PD2Y5 % 2 2 5 !
+ CONST PD2Y5 : PD : Y : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE PDY3_D011 % 2 1 3 !
+ CONST PDY3_D011 : PD : Y : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ PAR  G(PD3Y_L12,PD:PD),,               +4*GHSERPD+10492;,,           N 00Du !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Y
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ FCC_A1 added in unary 4.1
+$ The value from 00Du is absurd
+$
+ PAR  G(HCP_A3,Y:VA)            100.00  +GHSERYY;                3700 N 95She3 !
+ PAR  G(BCC_A2,Y:VA)            100.00  +GBCCYY;                 3700 N 95She3 !
+$PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+6000;           3700 N Frie2 !
+ PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+199766;         3700 N 00Du !
+ PAR  G(LIQUID,Y)               100.00  +GLIQYY;                 3700 N 95She3 !
+$
+ PAR  G(PDY_B33,Y:Y),,                  +2*GHSERYY+306191;,,          N 00Du !
+ PAR  G(PDY_B2,Y:Y),,                   +2*GHSERYY
+             +366767-15.453*T;,,                                      N 00Du !
+$
+ FUNCTION GHSERYY   100.00  -8011.09379+128.572856*T-25.6656992*T*LN(T)
+       -0.00175716414*T**2-4.17561786E-07*T**3+26911.509*T**(-1);
+      1000.00  Y  -7179.74574+114.497104*T-23.4941827*T*LN(T)
+       -0.0038211802*T**2-8.2534534E-08*T**3;
+      1795.15  Y  -67480.7761+382.124727*T-56.9527111*T*LN(T)
+       +0.00231774379*T**2-7.22513088E-08*T**3+18077162.6*T**(-1);
+      3700.00  N !
+ FUNCTION GBCCYY    100.00  -833.658863+123.667346*T-25.5832578*T*LN(T)
+       -0.00237175965*T**2+9.10372497E-09*T**3+27340.0687*T**(-1);
+      1000.00  Y  -1297.79829+134.528352*T-27.3038477*T*LN(T)
+       -5.41757644E-04*T**2-3.05012175E-07*T**3;
+      1795.15  Y  +15389.4975+0.981325399*T-8.88296647*T*LN(T)
+       -0.00904576576*T**2+4.02944768E-07*T**3-2542575.96*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQYY    100.00  +2098.50738+119.41873*T-24.6467508*T*LN(T)
+       -0.00347023463*T**2-8.12981167E-07*T**3+23713.7332*T**(-1);
+      1000.00  Y  +7386.44846+19.4520171*T-9.0681627*T*LN(T)
+       -0.0189533369*T**2+1.7595327E-06*T**3;
+      1795.15  Y  -12976.5957+257.400783*T-43.0952*T*LN(T);
+      3700.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. Du, H. Yang, C. Li, J. Alloys Compd., 297, 185-91(2000).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The interaction parameters and lattice stability for fcc-Y from 00Du are
+$ not acceptable. This is also the case for PdY-B33 and PdY-B2.
+$
+$ Invariant equilibria differ by up to 2 K.
+$
+$ There is an inverse miscibility gap with a minimum at 4417 K and x(Y)=0.13.
+$
+ PAR  L(LIQUID,PD,Y;0),,                -351248+31.479*T;,,           N 00Du !
+ PAR  L(LIQUID,PD,Y;1),,                -261969+97.507*T;,,           N 00Du !
+$
+ PAR  L(FCC_A1,PD,Y:VA;0),,             -699921+70.141*T;,,           N 00Du !
+ PAR  L(BCC_A2,PD,Y:VA;0),,             +100000;,,                    N 00Du !
+ PAR  L(HCP_A3,PD,Y:VA;0),,             +100000;,,                    N 00Du !
+$
+ PAR  G(PD7Y,PD:Y),,                    +7*GHSERPD+GHSERYY
+             -465505+103.545*T;,,                                     N 00Du !
+$
+ PAR  G(PD3Y_L12,PD:Y),,                +3*GHSERPD+GHSERYY
+             -384317+50.046*T;,,                                      N 00Du !
+ PAR  L(PD3Y_L12,PD:PD,Y;0),,           -51789;,,                     N 00Du !
+$
+ PAR  G(PD2Y,PD:Y),,                    +2*GHSERPD+GHSERYY
+             -283002+24.568*T;,,                                      N 00Du !
+ PAR  G(PD3Y2_LT,PD:Y),,                +3*GHSERPD+2*GHSERYY
+             -464736+27.61*T;,,                                       N 00Du !
+ PAR  G(PD3Y2_HT,PD:Y),,                +3*GHSERPD+2*GHSERYY
+             -461862+25.429*T;,,                                      N 00Du !
+ PAR  G(PD4Y3,PD:Y),,                   +4*GHSERPD+3*GHSERYY
+             -646108+30.777*T;,,                                      N 00Du !
+$
+ PAR  G(PDY_B33,PD:Y),,                 +GHSERPD+GHSERYY
+             -181437+8.527*T;,,                                       N 00Du !
+ PAR  L(PDY_B33,PD,Y:Y;0),,             -277205;,,                    N 00Du !
+$
+ PAR  G(PDY_B2,PD:Y),,                  +GHSERPD+GHSERYY
+             -181166+8.29*T;,,                                        N 00Du !
+ PAR  L(PDY_B2,PD,Y:Y;0),,              -315275;,,                    N 00Du !
+$
+ PAR  G(PD2Y3,PD:Y),,                   +2*GHSERPD+3*GHSERYY
+             -439067+68.86*T;,,                                       N 00Du !
+ PAR  G(PD2Y5,PD:Y),,                   +2*GHSERPD+5*GHSERYY
+             -479842+95.807*T;,,                                      N 00Du !
+ PAR  G(PDY3_D011,PD:Y),,               +GHSERPD+3*GHSERYY
+             -249018+55.58*T;,,                                       N 00Du !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  Frie2  'Suzana Fries and Leo Lukas, unpublished,
+          SGTE unary database V.4.1, 1999; Y'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95She3 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-03,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Y'
+  00Du   'Z. Du, H. Yang, C. Li, J. Alloys Compd., 297, 185-91(2000); Pd-Y'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+!

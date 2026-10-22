@@ -1,0 +1,137 @@
+{
+  "counts": {
+    "above_hull": 5,
+    "entries": 12,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "CO",
+    "PA"
+  ],
+  "flags": [
+    "has_intermediate_compounds",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaaaaacc",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -1.3025899249999995,
+          "right": {
+            "phase": "mp-aaabxfbz",
+            "x": 0.25
+          },
+          "slope": -1.3025899249999995,
+          "x_hi": 0.25,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.4341966416666665,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaabxfbz",
+            "x": 0.25
+          },
+          "mu_a_rel": -0.4341966416666665,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "mp-aaaaapxc",
+            "x": 1.0
+          },
+          "slope": 0.4341966416666665,
+          "x_hi": 1.0,
+          "x_lo": 0.25
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -7.108317795,
+          "entries_at_x": 8,
+          "formula": "Co",
+          "nsites": 2,
+          "phase": "mp-aaaaaacc",
+          "phase_kind": "structure",
+          "spacegroup_number": 194,
+          "spacegroup_symbol": "P6_3/mmc",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.32564748124999987,
+          "energy_per_atom": -8.0355519925,
+          "entries_at_x": 1,
+          "formula": "PaCo3",
+          "nsites": 4,
+          "phase": "mp-aaabxfbz",
+          "phase_kind": "structure",
+          "spacegroup_number": 221,
+          "spacegroup_symbol": "Pm-3m",
+          "theoretical": true,
+          "x": 0.25
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -9.51466466,
+          "entries_at_x": 3,
+          "formula": "Pa",
+          "nsites": 1,
+          "phase": "mp-aaaaapxc",
+          "phase_kind": "structure",
+          "spacegroup_number": 225,
+          "spacegroup_symbol": "Fm-3m",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": true,
+    "comparable_note": "",
+    "max_abs_delta_energy_above_hull": 8.881784197001252e-16,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "upstream_flag",
+    "mp_release": "2026.04.13",
+    "observed_at": "2026-09-01T20:54:47Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "b6deba8ecf1b67211b3d89cd33a5f98a1939d4bcd92db561818195e55187492a",
+    "stability_tol": 0.0001,
+    "thermo_type": "GGA_GGA+U"
+  },
+  "reference": {
+    "kind": "dft_elemental_ground_state_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "CO-PA",
+  "x_element": "PA"
+}

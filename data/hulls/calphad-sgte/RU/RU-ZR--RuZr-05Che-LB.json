@@ -1,0 +1,180 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "RU",
+    "ZR"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "RU": {
+          "energy": -8531.377748321494,
+          "phase": "HCP_A3"
+        },
+        "ZR": {
+          "energy": -11681.783918740377,
+          "phase": "HCP_A3"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -137299.99145091118
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -14.226059187901512
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3#1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -133058.49190403835,
+          "right": {
+            "phase": "RUZR_B2",
+            "x": 0.5
+          },
+          "slope": -133058.49190403835,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -137299.99145091118,
+            "slope": 137299.99145091118
+          },
+          "entropy": {
+            "intercept": -14.226059187901512,
+            "slope": 14.226059187901512
+          },
+          "intercept": -133058.49190403835,
+          "kind": "two_phase",
+          "left": {
+            "phase": "RUZR_B2",
+            "x": 0.5
+          },
+          "mu_a_rel": -133058.49190403835,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "HCP_A3#2",
+            "x": 1.0
+          },
+          "slope": 133058.49190403835,
+          "x_hi": 1.0,
+          "x_lo": 0.5
+        }
+      ],
+      "phase_instances": {
+        "HCP_A3#1": "HCP_A3",
+        "HCP_A3#2": "HCP_A3"
+      },
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3#1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -66529.24595201918,
+          "energy_per_atom": -66529.24595201918,
+          "enthalpy": -68649.99572545559,
+          "entries_at_x": 1,
+          "entropy": -7.113029593950756,
+          "formula": "",
+          "nsites": null,
+          "phase": "RUZR_B2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3#2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "RuZr-05Che-LB",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:00:10Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/RuZr-05Che-LB.tdb",
+    "source_sha256": "5b8a10c1760f63f110d2832696dedc7c6fab1b17af0e52f5a7a25bd30475c74c"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "RU-ZR",
+  "x_element": "ZR"
+}

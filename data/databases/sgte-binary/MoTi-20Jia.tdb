@@ -1,0 +1,194 @@
+$
+$ Database for Mo-Ti from C. Jiang et al. 2020.
+$
+$ C. Jiang, R.D. Mariani, C.A. Adkins, Materialia, 10, 100701(2020).
+$
+$ Dataset created 2023.10.20 by Bengt Hallstedt.
+$
+$ A number of low temperature compounds predicted using DFT.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MO TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MO TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MO TI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MO TI% : VA : !
+$
+$ Prototype unknown (mC*, C2/m)
+$
+ PHASE MO9TI % 2 9 1 !
+ CONST MO9TI : MO : TI : !
+$
+$ Prototype unknown (mP*, P2/m)
+$
+ PHASE MO7TI % 2 7 1 !
+ CONST MO7TI : MO : TI : !
+$
+$ Prototype unknown (oC12, Cmmm)
+$
+ PHASE MO5TI % 2 5 1 !
+ CONST MO5TI : MO : TI : !
+$
+$ Prototype unknown (hR5, R-3m)
+$
+ PHASE MO4TI % 2 4 1 !
+ CONST MO4TI : MO : TI : !
+$
+$ Prototype unknown (tI*, I4/mmm)
+$
+ PHASE MO2TI % 2 2 1 !
+ CONST MO2TI : MO : TI : !
+$
+$ Prototype unknown (hR*, R-3m)
+$
+ PHASE MO3TI2 % 2 3 2 !
+ CONST MO3TI2 : MO : TI : !
+$
+$ Prototype unknown (hR8, R-3m)
+$
+ PHASE MOTI % 2 1 1 !
+ CONST MOTI : MO : TI : !
+$
+$ Prototype unknown (mC*, C2/m)
+$
+ PHASE MOTI2 % 2 1 2 !
+ CONST MOTI2 : MO : TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCTI    298.15  +GHSERTI+6000-0.1*T;                       4000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Jiang, R.D. Mariani, C.A. Adkins, Materialia, 10, 100701(2020).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ A number of low temperature compounds predicted using DFT.
+$
+ PAR  L(LIQUID,MO,TI;0),,               -32611.34-2.8105*T;,,         N 20Jia !
+ PAR  L(LIQUID,MO,TI;1),,               +8382.03-10.998*T;,,          N 20Jia !
+$
+ PAR  L(BCC_A2,MO,TI:VA;0),,            -43423.99+3.9914*T;,,         N 20Jia !
+ PAR  L(BCC_A2,MO,TI:VA;1),,            -25154.59;,,                  N 20Jia !
+ PAR  L(BCC_A2,MO,TI:VA;2),,            -8461.4;,,                    N 20Jia !
+$
+ PAR  L(HCP_A3,MO,TI:VA;0),,            +42303.82;,,                  N 20Jia !
+$
+ PAR  G(MO9TI,MO:TI),,                  +9*GHSERMO+GHSERTI
+             -77238.94+15.7338*T;,,                                   N 20Jia !
+ PAR  G(MO7TI,MO:TI),,                  +7*GHSERMO+GHSERTI
+             -76400.1+14.7459*T;,,                                    N 20Jia !
+ PAR  G(MO5TI,MO:TI),,                  +5*GHSERMO+GHSERTI
+             -72277.2+12.2865*T;,,                                    N 20Jia !
+ PAR  G(MO4TI,MO:TI),,                  +4*GHSERMO+GHSERTI
+             -68206.34+10.6005*T;,,                                   N 20Jia !
+ PAR  G(MO2TI,MO:TI),,                  +2*GHSERMO+GHSERTI
+             -45823.91+4.9637*T;,,                                    N 20Jia !
+ PAR  G(MO3TI2,MO:TI),,                 +3*GHSERMO+2*GHSERTI
+             -73697.11+2.7907*T;,,                                    N 20Jia !
+ PAR  G(MOTI,MO:TI),,                   +GHSERMO+GHSERTI
+             -27523.68+0.9979*T;,,                                    N 20Jia !
+ PAR  G(MOTI2,MO:TI),,                  +GHSERMO+2*GHSERTI
+             -29937.46-3.508*T;,,                                     N 20Jia !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,MO,TI:VA;0),,            +42303.82;,,                  N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Lin    'Linear combination of lattice stabilities'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  20Jia  'C. Jiang, R.D. Mariani, C.A. Adkins,
+          Materialia, 10, 100701(2020); Mo-Ti'
+!

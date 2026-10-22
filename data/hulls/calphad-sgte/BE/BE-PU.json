@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "BE",
+    "PU"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "BE": {
+          "energy": -2832.441822138533,
+          "phase": "HCP_A3"
+        },
+        "PU": {
+          "energy": -16237.54696896856,
+          "phase": "ALPHA_PU"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -151199.80227687847
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -0.14005376994930785
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -151158.04524536818,
+          "right": {
+            "phase": "BE13PU_D23",
+            "x": 0.07142857142857142
+          },
+          "slope": -151158.04524536818,
+          "x_hi": 0.07142857142857142,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -11630.754021298344,
+            "slope": 11630.754021298344
+          },
+          "entropy": {
+            "intercept": -0.010773366919177527,
+            "slope": 0.010773366919177527
+          },
+          "intercept": -11627.541941951398,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BE13PU_D23",
+            "x": 0.07142857142857142
+          },
+          "mu_a_rel": -11627.541941951398,
+          "mu_b_rel": -1.8189894035458565e-12,
+          "right": {
+            "phase": "ALPHA_PU",
+            "x": 1.0
+          },
+          "slope": 11627.541941951396,
+          "x_hi": 1.0,
+          "x_lo": 0.07142857142857142
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -10797.003231812012,
+          "energy_per_atom": -10797.003231812012,
+          "enthalpy": -10799.98587691989,
+          "entries_at_x": 1,
+          "entropy": -0.010003840710664846,
+          "formula": "",
+          "nsites": null,
+          "phase": "BE13PU_D23",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.07142857142857142
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ALPHA_PU",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "BePu-16Hua",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:18:19Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/BePu-16Hua.tdb",
+    "source_sha256": "69b3a8a86d81e94343331396aea20d1e74a77436e26494f5db403e5179e24dff"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "BE-PU",
+  "x_element": "PU"
+}

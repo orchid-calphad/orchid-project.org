@@ -1,0 +1,220 @@
+$
+$ Database for Cd-Pu from Y.X. Huang et al. 2016.
+$
+$ Y.X. Huang, Y. Lu, Q. He, Y. Wang, W. Fang, X.J. Liu, J.P. Jia, C.P. Wang,
+$ Calphad, 52, 120-24(2016).
+$
+$ Dataset created 2019.10.19 by Bengt Hallstedt.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CD   HCP_A3                    112.41      6247.      51.80   ! 
+ ELEMENT PU   ALPHA_PU                  244.        6902.0     54.4610 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CD PU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m), delta
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CD PU% : VA : !
+$
+$ Bcc (cI2, Im-3m), epsilon
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CD PU% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CD : VA : !
+$
+$ Prototype In (tI2, I4/mmm), delta-prime
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : PU : !
+$
+$ Prototype alpha-Pu (mP16, P2_1/m)
+$
+ PHASE ALPHA_PU % 1 1 !
+ CONST ALPHA_PU : PU : !
+$
+$ Prototype beta-Pu (mC34, C2/m)
+$
+ PHASE BETA_PU % 1 1 !
+ CONST BETA_PU : PU : !
+$
+$ Prototype gamma-Pu (oF8, Fddd)
+$
+ PHASE GAMMA_PU % 1 1 !
+ CONST GAMMA_PU : PU : !
+$
+$ Prototype BaHg11 (cP36, Pm-3m)
+$
+ PHASE CD11PU_D2E % 2 11 1 !
+ CONST CD11PU_D2E : CD : PU : !
+$
+$ Prototype Cd6Y (cI184, Im-3)
+$
+ PHASE CD6PU % 2 6 1 !
+ CONST CD6PU : CD : PU : !
+$
+$ unknown structure
+$
+ PHASE CD4PU % 2 4 1 !
+ CONST CD4PU : CD : PU : !
+$
+$ unknown structure
+$
+ PHASE CD2PU % 2 2 1 !
+ CONST CD2PU : CD : PU : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cd
+$
+$ FCC_A1 and TETRAGONAL_A6 added in unary 3.0
+$ BCT_A5 and RHOMBO_A10 added in unary 4.1
+$ BCC_A2 added in unary 5.0
+$
+$ FCC_A1 from 04Che not included in unary
+$ BCC_A2 and HCP_IM_A3 from 19Fis not included in unary
+$
+ PAR  G(HCP_A3,CD:VA),,                 +GHSERCD;                1600 N 91Din !
+$PAR  G(HCP_IM_A3,CD),,                 +GHSERCD+3100-2.12*T;    1600 N 19Fis !
+ PAR  G(FCC_A1,CD:VA),,                 +GHSERCD+892.3-0.92*T;   1600 N 93Zak !
+$PAR  G(FCC_A1,CD:VA),,                 +GLIQCD-5300+9.5*T;      1600 N 04Che2 !
+ PAR  G(BCC_A2,CD:VA),,                 +GHSERCD+1000;           1600 N 04Che1 !
+$PAR  G(BCC_A2,CD:VA),,                 +GHSERCD+3500-2.12*T;    1600 N 19Fis !
+$PAR  G(TETRAGONAL_A6,CD),,             +GHSERCD+892.3-0.92*T;   1600 N 93Zak !
+$PAR  G(BCT_A5,CD),,                    +5000;                   1600 N 95Yan !
+$PAR  G(RHOMBO_A10,CD),,                +800-0.62*T;             1600 N 95Yan !
+ PAR  G(LIQUID,CD),,                    +GLIQCD;                 1600 N 91Din !
+$
+ FUNCTION GHSERCD   298.15  -7083.469+99.506198*T-22.0442408*T*LN(T)
+       -0.006273908*T**2-6966*T**(-1);
+       594.22  Y  -20064.971+256.812233*T-45.1611543*T*LN(T)
+       +0.008832011*T**2-8.99604E-07*T**3+1241290*T**(-1);
+      1500.00  Y  -9027.489+148.20548*T-29.7064*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQCD    298.15  +6128.444-10.296916*T+GHSERCD;
+       400.00  Y  +21716.884-371.046869*T+53.1313898*T*LN(T)
+       -0.115159917*T**2+2.8899781E-05*T**3-1271815*T**(-1);
+       594.22  Y  -3252.303+138.251107*T-29.7064*T*LN(T);
+      1500.00  Y  +5775.186-9.954373*T+GHSERCD;
+      1600.00  N !
+ FUNCTION GBCCCD    298.15  +GHSERCD+1000;                             6000 N !
+$ ------------------------------------------------------------------------------
+$ Pu
+$
+ PAR  G(ALPHA_PU,PU),,                  +GHSERPU;                3000 N 91Din !
+ PAR  G(BCC_A2,PU:VA),,                 +GBCCPU;                 3000 N 91Din !
+ PAR  G(BETA_PU,PU),,                   +GBETPU;                 3000 N 91Din !
+ PAR  G(FCC_A1,PU:VA),,                 +GFCCPU;                 3000 N 91Din !
+ PAR  G(GAMMA_PU,PU),,                  +GGAMPU;                 3000 N 91Din !
+ PAR  G(TETRAGONAL_A6,PU),,             +GTETPU;                 3000 N 91Din !
+ PAR  G(LIQUID,PU),,                    +GHSERPU
+             +6608.1-12.5133*T;                                  3000 N 91Din !
+$
+ FUNCTION GHSERPU   298.15  -7396.309+80.301382*T-18.1258*T*LN(T)
+       -0.02241*T**2;
+       400.00  Y  -16605.962+236.786603*T-42.4187*T*LN(T)
+       -0.00134493*T**2+2.63443E-07*T**3+579325*T**(-1);
+       944.00  Y  -14462.156+232.961553*T-42.248*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCPU    298.15  -1358.984+116.603882*T-27.094*T*LN(T)
+       -0.009105*T**2+2.061667E-06*T**3+20863*T**(-1);
+       745.00  Y  -2890.817+156.878957*T-33.72*T*LN(T);
+       956.00  Y  +29313.619-132.788248*T+6.921*T*LN(T)
+       -0.02023305*T**2+1.426922E-06*T**3-4469245*T**(-1);
+      2071.00  Y  -938.429-5.539698*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GBETPU    298.15  -4873.654+123.249151*T-27.416*T*LN(T)
+       -0.00653*T**2;
+       679.50  Y  +2435.094+43.566585*T-15.7351*T*LN(T)
+       -0.0154772*T**2+1.524942E-06*T**3-864940*T**(-1);
+      1464.00  Y  +503.094-4.739938*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GFCCPU    298.15  -3920.781+127.586536*T-28.4781*T*LN(T)
+       -0.0054035*T**2;
+       990.00  Y  +3528.208+41.52572*T-15.7351*T*LN(T)
+       -0.0154772*T**2+1.524942E-06*T**3-864940*T**(-1);
+      1464.00  Y  +1596.208-6.780803*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GGAMPU    298.15  -16766.303+419.402655*T-77.5802*T*LN(T)
+       +0.0816415*T**2-2.8103833E-05*T**3+574825*T**(-1);
+       487.90  Y  -2942.77+88.325069*T-22.0233*T*LN(T)-0.0114795*T**2;
+       593.90  Y  -9336.967+160.314641*T-32.3405*T*LN(T)
+       -0.0070383*T**2+6.92887E-07*T**3+630600*T**(-1);
+      1179.00  Y  +2026.406-6.829936*T+GHSERPU;
+      3000.00  N !
+ FUNCTION GTETPU    298.15  -496.178+54.586547*T-16.43*T*LN(T)
+       -0.024006*T**2+5.166667E-06*T**3-158470*T**(-1);
+       736.00  Y  -6122.307+173.35008*T-35.56*T*LN(T);
+       757.00  Y  +3982.078+63.890352*T-19.756*T*LN(T)
+       -0.00937295*T**2+6.59882E-07*T**3-1112565*T**(-1);
+      2157.00  Y  -738.383-4.905143*T+GHSERPU;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y.X. Huang, Y. Lu, Q. He, Y. Wang, W. Fang, X.J. Liu, J.P. Jia, C.P. Wang,
+$ Calphad, 52, 120-24(2016).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+ PAR  L(LIQUID,CD,PU;0),,               +12200-20*T;,,                N 16Hua !
+ PAR  L(LIQUID,CD,PU;1),,               -68000+17.8*T;,,              N 16Hua !
+ PAR  L(LIQUID,CD,PU;2),,               -25800+4*T;,,                 N 16Hua !
+$
+ PAR  L(FCC_A1,CD,PU:VA;0),,            +50000;,,                     N 16Hua !
+ PAR  L(BCC_A2,CD,PU:VA;0),,            +60000;,,                     N 16Hua !
+$
+ PAR  G(CD11PU_D2E,CD:PU),,             +11*GHSERCD+GHSERPU
+             -133800+22.8*T;,,                                        N 16Hua !
+ PAR  G(CD6PU,CD:PU),,                  +6*GHSERCD+GHSERPU
+             -134400+30.8*T;,,                                        N 16Hua !
+ PAR  G(CD4PU,CD:PU),,                  +4*GHSERCD+GHSERPU
+             -115000+27*T;,,                                          N 16Hua !
+ PAR  G(CD2PU,CD:PU),,                  +2*GHSERCD+GHSERPU
+             -59955+0.15*T;,,                                         N 16Hua !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Zak  'W. Zakulski, Z. Moser, K. Rzyman, H.L. Lukas, S.G. Fries,
+          M. Sukiennik, R. Kaczmarczyk, R. Castanet,
+          J. Phase Equilib., 14, 184-96(1993),
+          SGTE unary database V.3.0, 1996; Cd'
+  95Yan  'J. Yang, N.J. Silk, A. Watson, A.W. Bryant, T.G. Chart, B.B. Argent,
+          Calphad, 19, 415-30(1995), SGTE unary database V.4.1, 1999; Cd, Hg'
+  04Che1 'P.-Y. Chevalier, unpublished, Thermodata, 2004,
+          SGTE unary database V.5.0, 2009; Cd'
+  04Che2 'P.-Y. Chevalier, unpublished, Thermodata, 2004; Cd'
+  16Hua  'Y.X. Huang, Y. Lu, Q. He, Y. Wang, W. Fang, X.J. Liu, J.P. Jia,
+          C.P. Wang, Calphad, 52, 120-24(2016); Cd-Pu'
+  19Fis  'E. Fischer, K. Gajavalli, G. Mikaelian, P. Benigni, J. Rogez,
+          A. Decreton, M. Barrachin, Calphad, 64, 292-305(2019); Cd'
+!

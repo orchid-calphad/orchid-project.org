@@ -1,0 +1,203 @@
+$
+$ Database for Mn-C from J. Miettinen et al. 2019.
+$
+$ J. Miettinen, V.-V. Visuri, T. Fabritius, Acta Univ. Ouluensis, C 704(2019).
+$
+$ Dataset created 2023.04.01 by Bengt Hallstedt.
+$
+$ Modified from 10 Dju. Simplified description with substitutional models
+$ for fcc and bcc.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C MN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN C : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN C : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MN : C VA% : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : MN : C VA% : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE CEMENTITE_D011 % 2 3 1 !
+ CONST CEMENTITE_D011 : MN : C : !
+$
+$ Prototype Cr7C3 (oP40, Pnma)
+$
+ PHASE M7C3_D101 % 2 7 3 !
+ CONST M7C3_D101 : MN : C : !
+$
+$ Prototype Cr23C6 (cF116, Fm-3m)
+$
+ PHASE M23C6_D84 % 3 20 3 6 !
+ CONST M23C6_D84 : MN : MN : C : !
+$
+$ Prototype Mn5C2 (mC28, C2/c), Haegg carbide, chi
+$
+ PHASE M5C2 % 2 5 2 !
+ CONST M5C2 : MN : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ PAR  G(FCC_A1,C:VA),,                  +GHSERCC+155005+13.703*T;,,   N 19Mie !
+ PAR  G(BCC_A2,C:VA),,                  +GHSERCC+107350+35.764*T;,,   N 19Mie !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Miettinen, V.-V. Visuri, T. Fabritius, Acta Univ. Ouluensis, C 704(2019).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 10 Dju. Simplified description with substitutional models
+$ for fcc and bcc.
+$
+ PAR  L(LIQUID,C,MN;0),,                -179183+43.8449*T;,,          N 10Dju !
+ PAR  L(LIQUID,C,MN;1),,                +6313;,,                      N 10Dju !
+ PAR  L(LIQUID,C,MN;2),,                +23281;,,                     N 10Dju !
+$
+ PAR  L(BCC_A2,C,MN:VA;0),,             -155000;,,                    N 19Mie !
+$
+ PAR  L(FCC_A1,C,MN:VA;0),,             -245200+3.5*T;,,              N 19Mie !
+ PAR  L(FCC_A1,C,MN:VA;2),,             +45000;,,                     N 19Mie !
+$
+ PAR  G(HCP_A3,MN:C),,                  +GHSERMN+0.5*GHSERCC
+             -9000-1.0651*T;,,                                        N 10Dju !
+ PAR  L(HCP_A3,MN:C,VA;0),,             -5006;,,                      N 10Dju !
+$
+ PAR  G(CBCC_A12,MN:C),,                +GHSERMN+GHSERCC
+             +27.46525*T;,,                                           N 10Dju !
+ PAR  L(CBCC_A12,MN:C,VA;0),,           -52204;,,                     N 10Dju !
+$
+ PAR  G(CUB_A13,MN:C),,                 +GHSERMN+GHSERCC+2607;,,      N 10Dju !
+ PAR  L(CUB_A13,MN:C,VA;0),,            -10175;,,                     N 10Dju !
+$
+ PAR  G(M23C6_D84,MN:MN:C),,            +GMN23C6;,,                   N 10Dju !
+ PAR  G(CEMENTITE_D011,MN:C),,          +GMN3C;,,                     N 10Dju !
+ PAR  G(M5C2,MN:C),,                    +GMN5C2;,,                    N 10Dju !
+ PAR  G(M7C3_D101,MN:C),,               +GMN7C3;,,                    N 10Dju !
+$
+ FUNCTION GMN23C6   298.15  +23*GHSERMN+6*GHSERCC-310473+53.86*T;      6000 N !
+ FUNCTION GMN3C     298.15  +3*GHSERMN+GHSERCC-39644+3.04*T;           6000 N !
+ FUNCTION GMN5C2    298.15  +5*GHSERMN+2*GHSERCC-73954+6.36*T;         6000 N !
+ FUNCTION GMN7C3    298.15  +7*GHSERMN+3*GHSERCC-106695+9.36*T;        6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  C-MN(TDB -* +LIQ +GRAPH +FCC_A1 +BCC_A2 +HCP_A3 +CBCC_A12 +CUB_A13
+  +M23C6_D84 +CEMEN_D011 +M5C2 +M7C3_D101 ;P3 TMM:300/2000 STP:.65/1800) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  90Hua1 'W. Huang, Scand. J. Metall., 19, 26-32(1990); Mn-C,'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  10Dju  'D. Djurovic, B. Hallstedt, J. von Appen, R. Dronskowski,
+          Calphad, 34, 279-85(2010); Mn-C'
+  19Mie  'J. Miettinen, V.-V. Visuri, T. Fabritius,
+          Acta Univ. Ouluensis, C 704(2019); Mn-C'
+!

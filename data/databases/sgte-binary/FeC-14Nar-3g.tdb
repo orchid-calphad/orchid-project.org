@@ -1,0 +1,334 @@
+$
+$ Database for Fe-C from R. Naraghi et al. 2014.
+$
+$ R. Naraghi, M. Selleby, J. Agren, Calphad, 46, 148-58(2014).
+$
+$ Dataset created 2020.09.11 by Bengt Hallstedt.
+$
+$ The dataset was created based on the tdb from the authors in the
+$ supplemental material. It would not have been possible to construct the
+$ present tdb from the information in the paper only.
+$
+$ Includes models for metastable Fe5C2, Fe2C (eta) and bct (martensite).
+$
+$ Note! The "p" value in the magnetic models has been changed.
+$
+$ There is an inverse miscibility gap with a minimum at 3948 K and x(C)=0.44.
+$
+$ BCT_Z1 is stable at x(C)=0.5 below 364 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 0.01 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT FE   BCC_A2                     55.847     4489.0     27.2797 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C FE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : FE : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : FE : C VA% : !
+$
+$ Tetragonal martensite (Zener ordered)
+$
+ PHASE BCT_Z1 %B 3 1 1 2 !
+ CONST BCT_Z1 : FE : C VA% : C VA% : !
+$
+$ alpha-double-prime (Fe8C)
+$
+ PHASE BCT_Z2 %B 3 1 0.125 2.875 !
+ CONST BCT_Z2 : FE : C% VA : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE CEMENTITE_D011 %A 2 3 1 !
+ CONST CEMENTITE_D011 : FE : C : !
+$
+$ Prototype Mn5C2 (mC28, C2/c)
+$
+ PHASE M5C2 %A 2 5 2 !
+ CONST M5C2 : FE : C : !
+$
+$ Prototype Fe2C-eta (oP6, Pnnm)
+$
+ PHASE M2C_ETA %A 2 2 1 !
+ CONST M2C_ETA : FE : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.25 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.37 !
+ FUNCTION ZERO        0.01  0;                                         6000 N !
+ FUNCTION UN_ASS      0.01  0;                                         6000 N !
+ FUNCTION R           0.01  +8.31451;                                  6000 N !
+ FUNCTION TINV      298.15  +T**(-1);                                  6000 N !
+ FUNCTION RTINV     298.15  +R**(-1)*TINV;                             6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+$ The function definitions from the tdb of 14Nar are used here. This can be
+$ written more shorthand using the new standard keywords THETA and GD in
+$ Thermo-Calc.
+$
+$ The 91Din expressions are kept above 298.15 K.
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 14Nar !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 14Nar !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC     0.01  -28725-0.001786*T**2-2.1662E-05*T**3
+       +3.0953E-11*T**5+GEINVC;
+       298.15  Y -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC      0.01  -18646+0.001807*T**2-1.3059E-05*T**3
+       +1.975E-11*T**5+GEINVD;
+       298.15  Y  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GEINV1C     0.01  +1-EXP(-2219.2*TINV);                      6000 N !
+ FUNCTION GEINV2C     0.01  +LOG(GEINV1C);                             6000 N !
+ FUNCTION GEINV3C     0.01  +3*R*T*GEINV2C;                            6000 N !
+ FUNCTION GEINVC      0.01  +3328.8*R+GEINV3C;                         6000 N !
+ FUNCTION GEINV1D     0.01  +1-EXP(-1571.63*TINV);                     6000 N !
+ FUNCTION GEINV2D     0.01  +LOG(GEINV1D);                             6000 N !
+ FUNCTION GEINV3D     0.01  +3*R*T*GEINV2D;                            6000 N !
+ FUNCTION GEINVD      0.01  +2357.445*R+GEINV3D;                       6000 N !
+$ ------------------------------------------------------------------------------
+$ Fe
+$
+$ The function definitions from the tdb of 11Xio are used here. This can be
+$ written more shorthand using the new standard keywords THETA and GD in
+$ Thermo-Calc. (See e.g. new-Fe.tdb in elements).
+$
+ PAR  G(BCC_A2,FE:VA),,                 +GHSERFE;,,                   N 01Che !
+ PAR  TC(BCC_A2,FE:VA),,                 1043.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,FE:VA),,                    2.22;,,                   N 91Din !
+ PAR  G(BCT_Z1,FE:VA:VA),,              +GHSERFE;,,                   N 01Che !
+ PAR  TC(BCT_Z1,FE:VA:VA),,              1043.00;,,                   N 91Din !
+ PAR  BM(BCT_Z1,FE:VA:VA),,                 2.22;,,                   N 91Din !
+ PAR  G(BCT_Z2,FE:VA:VA),,              +GHSERFE;,,                   N 01Che !
+ PAR  TC(BCT_Z2,FE:VA:VA),,              1043.00;,,                   N 91Din !
+ PAR  BM(BCT_Z2,FE:VA:VA),,                 2.22;,,                   N 91Din !
+ PAR  G(FCC_A1,FE:VA),,                 +GFCCFE;,,                    N 01Che !
+ PAR  TC(FCC_A1,FE:VA),,                 -201.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,FE:VA),,                   -2.10;,,                   N 91Din !
+ PAR  G(LIQUID,FE),,                    +GLIQFE;,,                    N 01Che !
+ PAR  TC(LIQUID,FE),,                     200.00;,,                   N 01Che !
+ PAR  BM(LIQUID,FE),,                       1.70;,,                   N 01Che !
+$
+ FUNCTION GHSERFE     0.01  +GGBCCL+8927.2831-9.7228331*T;
+      1811.00  Y  +GGBCCH+8927.2831-9.7228331*T;
+      6000.00  N !
+ FUNCTION GFCCFE      0.01  +GGFCCL+249.14486-4.4119139*T;
+      1811.00  Y  +GGFCCH+249.14486-4.4119139*T;
+      6000.00  N !
+ FUNCTION GLIQFE      0.01  +7103.20801-0.0019730116*T**2
+       +1392.1182-8.2584018*T+GEIN245+G2STLIQ;
+      6000.00  N !
+ FUNCTION GGBCCL      0.01  -8410.26596-0.0032390815*T**2
+       -3.3191338E-14*T**5+GEIN309;
+      6000.00  N !
+ FUNCTION GGBCCH      0.01  -33208.4173+165.40504*T-21.0474823*T*LN(T)
+       -2.7818280E+18*T**(-5)+4.2811788E+37*T**(-11)+GEIN309;
+      6000.00  N !
+ FUNCTION GEIN3091    0.01  +1-EXP(-309*TINV);                         6000 N !
+ FUNCTION GEIN3092    0.01  +LOG(GEIN3091);                            6000 N !
+ FUNCTION GEIN3093    0.01  +3*R*T*GEIN3092;                           6000 N !
+ FUNCTION GEIN309     0.01  +463.5*R+GEIN3093;                         6000 N !
+ FUNCTION GGFCCL      0.01  -2615.00904-0.0027933375*T**2
+       -2.1239087E-14*T**5+GEIN309+G2STFCC;
+      6000.00  N !
+ FUNCTION GGFCCH      0.01  -32389.5438+168.31394*T-20.9834791*T*LN(T)
+      +9.2444598E+18*T**(-5)-1.4750509E+37*T**(-11)+GEIN309+G2STFCC;
+      6000.00  N !
+ FUNCTION G2STFCC1    0.01  +9023.52375-2.49522260*T;                  6000 N !
+ FUNCTION G2STFCC2    0.01  -G2STFCC1*RTINV;                           6000 N !
+ FUNCTION G2STFCC3    0.01  +1+EXP(G2STFCC2);                          6000 N !
+ FUNCTION G2STFCC4    0.01  +LOG(G2STFCC3);                            6000 N !
+ FUNCTION G2STFCC     0.01  -R*T*G2STFCC4;                             6000 N !
+ FUNCTION GEIN2451    0.01  +1-EXP(-245*TINV);                         6000 N !
+ FUNCTION GEIN2452    0.01  +LOG(GEIN2451);                            6000 N !
+ FUNCTION GEIN2453    0.01  +3*R*T*GEIN2452;                           6000 N !
+ FUNCTION GEIN245     0.01  +367.5*R+GEIN2453;                         6000 N !
+ FUNCTION G2STLIQ1    0.01  +42754.9478-7.624*T-1.08230446*T*LN(T);    6000 N !
+ FUNCTION G2STLIQ2    0.01  -G2STLIQ1*RTINV;                           6000 N !
+ FUNCTION G2STLIQ3    0.01  +1+EXP(G2STLIQ2);                          6000 N !
+ FUNCTION G2STLIQ4    0.01  +LOG(G2STLIQ3);                            6000 N !
+ FUNCTION G2STLIQ     0.01  -R*T*G2STLIQ4;                             6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Naraghi, M. Selleby, J. Agren, Calphad, 46, 148-58(2014).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The dataset was created based on the tdb from the authors in the
+$ supplemental material. It would not have been possible to construct the
+$ present tdb from the information in the paper only.
+$
+$ Includes models for metastable Fe5C2, Fe2C (eta) and bct (martensite).
+$
+$ Note! The "p" value in the magnetic models has been changed.
+$
+$ There is an inverse miscibility gap with a minimum at 3948 K and x(C)=0.44.
+$
+$ BCT_Z1 is stable at x(C)=0.5 below 364 K.
+$
+ PAR  L(LIQUID,C,FE;0),,                -102958+18.236*T;,,           N 14Nar !
+ PAR  L(LIQUID,C,FE;1),,                +87869-34.089*T;,,            N 14Nar !
+ PAR  L(LIQUID,C,FE;2),,                +111085-50.533*T;,,           N 14Nar !
+$
+ PAR  G(BCC_A2,FE:C),,                  +GFEC3;,,                     N 14Nar !
+ PAR  TC(BCC_A2,FE:C),,                  1043.00;,,                   N 14Nar !
+ PAR  BM(BCC_A2,FE:C),,                     2.22;,,                   N 14Nar !
+ PAR  L(BCC_A2,FE:C,VA;0),,             +LFECVA;,,                    N 14Nar !
+$
+ PAR  G(BCT_Z1,FE:C:C),,                +GFEC3;,,                     N 14Nar !
+ PAR  TC(BCT_Z1,FE:C:C),,                1043.00;,,                   N 14Nar !
+ PAR  BM(BCT_Z1,FE:C:C),,                   2.22;,,                   N 14Nar !
+ PAR  G(BCT_Z1,FE:C:VA),,               +0.66666667*GHSERFE
+             +0.33333333*GFEC3+0.22222222*LFECVA
+             -1146502+2911.105*T;,,                                   N 14Nar !
+ PAR  TC(BCT_Z1,FE:C:VA),,               1043.00;,,                   N 14Nar !
+ PAR  BM(BCT_Z1,FE:C:VA),,                  2.22;,,                   N 14Nar !
+ PAR  G(BCT_Z1,FE:VA:C),,               +0.33333333*GHSERFE
+             +0.66666667*GFEC3+0.22222222*LFECVA
+             -1146502+2911.105*T;,,                                   N 14Nar !
+ PAR  TC(BCT_Z1,FE:VA:C),,               1043.00;,,                   N 14Nar !
+ PAR  BM(BCT_Z1,FE:VA:C),,                  2.22;,,                   N 14Nar !
+ PAR  L(BCT_Z1,FE:C,VA:*;0),,           +0.11111111*LFECVA
+             +1146502-2911.105*T;,,                                   N 14Nar !
+ PAR  L(BCT_Z1,FE:*:C,VA;0),,           +0.44444444*LFECVA
+             +1146502-2911.105*T;,,                                   N 14Nar !
+$
+ PAR  G(BCT_Z2,FE:C:C),,                +GFEC3;,,                     N 14Nar !
+ PAR  TC(BCT_Z2,FE:C:C),,                1043.00;,,                   N 14Nar !
+ PAR  BM(BCT_Z2,FE:C:C),,                   2.22;,,                   N 14Nar !
+ PAR  G(BCT_Z2,FE:C:VA),,               +0.95833333*GHSERFE
+             +0.04166667*GFEC3+0.03993056*LFECVA
+             -28797+52.983*T;,,                                       N 14Nar !
+ PAR  TC(BCT_Z2,FE:C:VA),,               1043.00;,,                   N 14Nar !
+ PAR  BM(BCT_Z2,FE:C:VA),,                  2.22;,,                   N 14Nar !
+ PAR  G(BCT_Z2,FE:VA:C),,               +0.04166667*GHSERFE
+             +0.95833333*GFEC3+0.03993056*LFECVA
+             -28797+52.983*T;,,                                       N 14Nar !
+ PAR  TC(BCT_Z2,FE:VA:C),,               1043.00;,,                   N 14Nar !
+ PAR  BM(BCT_Z2,FE:VA:C),,                  2.22;,,                   N 14Nar !
+ PAR  L(BCT_Z2,FE:C,VA:*;0),,           +0.00173611*LFECVA
+             +28797-52.983*T;,,                                       N 14Nar !
+ PAR  L(BCT_Z2,FE:*:C,VA;0),,           +0.91840278*LFECVA
+             +28797-52.983*T;,,                                       N 14Nar !
+$
+ PAR  G(FCC_A1,FE:C),,                  +GFCCFE+GHSERCC
+             +72729-15.212*T;,,                                       N 14Nar !
+ PAR  TC(FCC_A1,FE:C),,                  -201.00;,,                   N 14Nar !
+ PAR  BM(FCC_A1,FE:C),,                    -2.10;,,                   N 14Nar !
+ PAR  L(FCC_A1,FE:C,VA;0),,             -30532;,,                     N 14Nar !
+$
+ PAR  G(CEMENTITE_D011,FE:C),,          +GFECEM;,,                    N 14Nar !
+ PAR  TC(CEMENTITE_D011,FE:C),,           485.00;,,                   N 14Nar !
+ PAR  BM(CEMENTITE_D011,FE:C),,             2.44;,,                   N 14Nar !
+$
+ PAR  G(M5C2,FE:C),,                    +GPOLYHA+GEINVHA+GMDOINHA
+             +0.33333333*GHSERCC+2554;,,                              N 14Nar !
+ PAR  TC(M5C2,FE:C),,                     520.00;,,                   N 14Nar !
+ PAR  BM(M5C2,FE:C),,                       6.839;,,                  N 14Nar !
+$
+ PAR  G(M2C_ETA,FE:C),,                 +GPOLYET+GEINVET+GMDOINET
+             +0.33333333*GHSERCC+3904.8;,,                            N 14Nar !
+ PAR  TC(M2C_ETA,FE:C),,                  663.00;,,                   N 14Nar !
+ PAR  BM(M2C_ETA,FE:C),,                    1.278;,,                  N 14Nar !
+$
+ FUNCTION GFEC3       0.01  +GHSERFE+3*GHSERCC+162505+184.465*T;       6000 N !
+ FUNCTION LFECVA      0.01  +150000-290*T;                             6000 N !
+$
+ FUNCTION GFECEM      0.01  +4*GMPOLYCE+4*GMEINVCE+GMDOINCE;           6000 N !
+ FUNCTION GMPOLYCE    0.01  -1900-0.002808*T**2;                       6000 N !
+ FUNCTION GMEINV1C    0.01  +1-EXP(-320.91*TINV);                      6000 N !
+ FUNCTION GMEINV2C    0.01  +LOG(GMEINV1C);                            6000 N !
+ FUNCTION GMEINV3C    0.01  +3*R*T*GMEINV2C;                           6000 N !
+ FUNCTION GMEINVCE    0.01  +481.365*R+GMEINV3C;                       6000 N !
+ FUNCTION PCE         0.01  +0.25;                                     6000 N !
+ FUNCTION TCCE        0.01  +485;                                      6000 N !
+ FUNCTION DCE         0.01  +0.33471979+0.49649686*PCE**(-1)
+       -0.49649686;
+      6000.00  N !
+ FUNCTION PDCE        0.01  +PCE*DCE;                                  6000 N !
+ FUNCTION GMDOIN5C    0.01  +TCCE*PDCE**(-1);                          6000 N !
+ FUNCTION GMDOIN4C    0.01  +T-0.38438376*GMDOIN5C;                    6000 N !
+ FUNCTION GMDOIN3C    0.01  +1+2.44;                                   6000 N !
+ FUNCTION GMDOIN2C    0.01  +1*LOG(GMDOIN3C);                          6000 N !
+ FUNCTION GMDOIN1C    0.01  +GMDOIN2C*GMDOIN4C;                        6000 N !
+ FUNCTION GMDOINCE    0.01  -R*GMDOIN1C;                               6000 N !
+$
+ FUNCTION GEINVHA     0.01  +6.66666667*GMEINVCE;                      6000 N !
+ FUNCTION GPOLYHA     0.01  +6.66666667*GMPOLYCE;                      6000 N !
+ FUNCTION PHA         0.01  +0.25;                                     6000 N !
+ FUNCTION TCHA        0.01  +520;                                      6000 N !
+ FUNCTION BMHA        0.01  -1+1*EXP(1.66666667*GMDOIN2C);             6000 N !
+ FUNCTION DHA         0.01  +0.33471979+0.49649686*PHA**(-1)
+       -0.49649686;
+      6000.00  N !
+ FUNCTION PDHA        0.01  +PHA*DHA;                                  6000 N !
+ FUNCTION GMDOIN5H    0.01  +TCHA*PDHA**(-1);                          6000 N !
+ FUNCTION GMDOIN4H    0.01  +T-0.38438376*GMDOIN5H;                    6000 N !
+ FUNCTION GMDOIN3H    0.01  +1+BMHA;                                   6000 N !
+ FUNCTION GMDOIN2H    0.01  +1*LN(GMDOIN3H);                           6000 N !
+ FUNCTION GMDOIN1H    0.01  +GMDOIN2H*GMDOIN4H;                        6000 N !
+ FUNCTION GMDOINHA    0.01  -R*GMDOIN1H;                               6000 N !
+$
+ FUNCTION GEINVET     0.01  +2.66666667*GMEINVCE;                      6000 N !
+ FUNCTION GPOLYET     0.01  +2.66666667*GMPOLYCE;                      6000 N !
+ FUNCTION PET         0.01  +0.25;                                     6000 N !
+ FUNCTION TCET        0.01  +663;                                      6000 N !
+ FUNCTION BMET        0.01  -1+1*EXP(0.66666666*GMDOIN2C);             6000 N !
+ FUNCTION DET         0.01  +0.33471979+0.49649686*PET**(-1)
+       -0.49649686;
+      6000.00  N !
+ FUNCTION PDET        0.01  +PET*DET;                                  6000 N !
+ FUNCTION GMDOIN5E    0.01  +TCET*PDET**(-1);                          6000 N !
+ FUNCTION GMDOIN4E    0.01  +T-0.38438376*GMDOIN5E;                    6000 N !
+ FUNCTION GMDOIN3E    0.01  +1+BMET;                                   6000 N !
+ FUNCTION GMDOIN2E    0.01  +1*LN(GMDOIN3E);                           6000 N !
+ FUNCTION GMDOIN1E    0.01  +GMDOIN2E*GMDOIN4E;                        6000 N !
+ FUNCTION GMDOINET    0.01  -R*GMDOIN1E;                               6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  01Che  'Q. Chen, B. Sundman, J. Phase Equilib., 22, 631-44(2001); Fe'
+  11Xio  'W. Xiong, P. Hedstrom, M. Selleby, J. Odqvist, M. Thuvander, Q. Chen,
+          Calphad, 35, 355-66(2011); Cr-Fe'
+  14Nar  'R. Naraghi, M. Selleby, J. Agren, Calphad, 46, 148-58(2014); Fe-C'
+!

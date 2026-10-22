@@ -1,0 +1,137 @@
+{
+  "counts": {
+    "above_hull": 7,
+    "entries": 16,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "CL",
+    "CO"
+  ],
+  "flags": [
+    "has_intermediate_compounds",
+    "theoretical_vertices"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaaabhuu",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -2.9453921050000016,
+          "right": {
+            "phase": "mp-aaabnptq",
+            "x": 0.3333333333333333
+          },
+          "slope": -2.9453921050000016,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -1.4726960525000008,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaabnptq",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -1.4726960525000008,
+          "mu_b_rel": -2.220446049250313e-16,
+          "right": {
+            "phase": "mp-aaaaaacc",
+            "x": 1.0
+          },
+          "slope": 1.4726960525000006,
+          "x_hi": 1.0,
+          "x_lo": 0.3333333333333333
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -1.84853666,
+          "entries_at_x": 2,
+          "formula": "Cl2",
+          "nsites": 4,
+          "phase": "mp-aaaabhuu",
+          "phase_kind": "structure",
+          "spacegroup_number": 64,
+          "spacegroup_symbol": "Cmce",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.9817973683333339,
+          "energy_per_atom": -4.583594406666667,
+          "entries_at_x": 4,
+          "formula": "CoCl2",
+          "nsites": 3,
+          "phase": "mp-aaabnptq",
+          "phase_kind": "structure",
+          "spacegroup_number": 164,
+          "spacegroup_symbol": "P-3m1",
+          "theoretical": true,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -7.108317795,
+          "entries_at_x": 8,
+          "formula": "Co",
+          "nsites": 2,
+          "phase": "mp-aaaaaacc",
+          "phase_kind": "structure",
+          "spacegroup_number": 194,
+          "spacegroup_symbol": "P6_3/mmc",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": true,
+    "comparable_note": "",
+    "max_abs_delta_energy_above_hull": 1.1102230246251565e-15,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "upstream_flag",
+    "mp_release": "2026.04.13",
+    "observed_at": "2026-09-01T20:54:47Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "b6deba8ecf1b67211b3d89cd33a5f98a1939d4bcd92db561818195e55187492a",
+    "stability_tol": 0.0001,
+    "thermo_type": "GGA_GGA+U"
+  },
+  "reference": {
+    "kind": "dft_elemental_ground_state_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "CL-CO",
+  "x_element": "CO"
+}

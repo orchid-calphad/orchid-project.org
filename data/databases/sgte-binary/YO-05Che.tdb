@@ -1,0 +1,368 @@
+$
+$ Database for Y-O from M. Chen et al. 2005.
+$
+$ M. Chen, B. Hallstedt, L.J. Gauckler, Calphad, 29, 103-13(2005).
+$
+$ Dataset created 2010.02.21 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$ 2024.08.16: Renamed from 04Che to 05Che.
+$
+$ Modified from 04Che using an H-R2O3 model for H-Y2O3 instead of a fluorite
+$ model. There is also a minor change of liquid Y2O3.
+$
+$ The high-temperature form of Y2O3 was incorrectly assumed to have
+$ fluorite structure in the original paper. This was corrected in 05Che1.
+$
+$ The bcc + liquid + C_R2O3 equilibrium is at 1834 K instead of 1832 K.
+$ The congruent melting point of bcc is at 1947 instead of 1946 K.
+$
+$ Using the 1:3 model for bcc results in stable bcc for x(O)>0.6 in a large
+$ temperature interval.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT Y    HCP_A3                     88.9059    5983.457   44.7875 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  Y+3                                Y/+3 !
+ SPECIE  Y2O                                O1Y2 !
+ SPECIE  YO                                 O1Y1 !
+ SPECIE  Y2O2                               O2Y2 !
+ SPECIE  YO2                                O2Y1 !
+ SPECIE  YO1.5                              O1.5Y1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : Y+3 : O-2 VA : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : Y : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : Y : O VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$ Note! Not the standard bcc model
+$
+ PHASE BCC_A2 %B 2 1 1.5 !
+ CONST BCC_A2 : Y : O VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : Y : O VA% : !
+$
+$ Prototype Mn2O3 (cI80, Ia-3)
+$ This is cubic Y2O3
+$
+ PHASE C_R2O3_D53:I % 3 2 3 1 !
+ CONST C_R2O3_D53:I : Y Y+3% : O-2% VA : O-2 VA% : !
+$
+$ Prototype H-La2O3 (hP10, P6_3/mmc)
+$ This is H-Y2O3
+$
+ PHASE H_R2O3:I % 3 2 3 1 !
+ CONST H_R2O3:I : Y Y+3% : O-2% VA : O-2 VA% : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : O O2% O3 Y Y2O YO Y2O2 YO2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Y
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ FCC_A1 added in unary 4.1
+$
+ PAR  G(HCP_A3,Y:VA)            100.00  +GHSERYY;                3700 N 95She3 !
+ PAR  G(BCC_A2,Y:VA)            100.00  +GBCCYY;                 3700 N 95She3 !
+ PAR  G(FCC_A1,Y:VA)            100.00  +GHSERYY+6000;           3700 N Frie2 !
+ PAR  G(LIQUID,Y)               100.00  +GLIQYY;                 3700 N 95She3 !
+$
+ PAR  G(ION,Y+3:VA)             100.00  +GLIQYY;                 3700 N 95She3 !
+$
+ PAR  G(GAS,Y),,                        +F14722T+RTLNP;,,             N 94SUB !
+$
+ FUNCTION GHSERYY   100.00  -8011.09379+128.572856*T-25.6656992*T*LN(T)
+       -0.00175716414*T**2-4.17561786E-07*T**3+26911.509*T**(-1);
+      1000.00  Y  -7179.74574+114.497104*T-23.4941827*T*LN(T)
+       -0.0038211802*T**2-8.2534534E-08*T**3;
+      1795.15  Y  -67480.7761+382.124727*T-56.9527111*T*LN(T)
+       +0.00231774379*T**2-7.22513088E-08*T**3+18077162.6*T**(-1);
+      3700.00  N !
+ FUNCTION GBCCYY    100.00  -833.658863+123.667346*T-25.5832578*T*LN(T)
+       -0.00237175965*T**2+9.10372497E-09*T**3+27340.0687*T**(-1);
+      1000.00  Y  -1297.79829+134.528352*T-27.3038477*T*LN(T)
+       -5.41757644E-04*T**2-3.05012175E-07*T**3;
+      1795.15  Y  +15389.4975+0.981325399*T-8.88296647*T*LN(T)
+       -0.00904576576*T**2+4.02944768E-07*T**3-2542575.96*T**(-1);
+      3700.00  N !
+ FUNCTION GLIQYY    100.00  +2098.50738+119.41873*T-24.6467508*T*LN(T)
+       -0.00347023463*T**2-8.12981167E-07*T**3+23713.7332*T**(-1);
+      1000.00  Y  +7386.44846+19.4520171*T-9.0681627*T*LN(T)
+       -0.0189533369*T**2+1.7595327E-06*T**3;
+      1795.15  Y  -12976.5957+257.400783*T-43.0952*T*LN(T);
+      3700.00  N !
+$ Y(g)
+ FUNCTION F14722T   298.15  +413926.156+43.942359*T-34.19791*T*LN(T)
+       +0.0122297*T**2-2.14534333E-06*T**3+97071.5*T**(-1);
+       700.00  Y  +417505.307-13.2762864*T-25.29082*T*LN(T)
+       +0.002768476*T**2-3.169895E-07*T**3-157006.6*T**(-1);
+      2000.00  Y  +439627.78-100.082079*T-14.64876*T*LN(T)
+       +0.001182233*T**2-3.39037833E-07*T**3-7693105*T**(-1);
+      3300.00  Y  +656873.926-957.210194*T+92.15071*T*LN(T)
+       -0.022050485*T**2+6.04918167E-07*T**3-90137500*T**(-1);
+      5500.00  Y  -81672.0087+877.446829*T-122.4532*T*LN(T)
+       +0.005666115*T**2-6.61492667E-08*T**3+3.865857E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ M. Chen, B. Hallstedt, L.J. Gauckler, Calphad, 29, 103-13(2005).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Modified from 04Che using an H-R2O3 model for H-Y2O3 instead of a fluorite
+$ model. There is also a minor change of liquid Y2O3.
+$
+$ The high-temperature form of Y2O3 was incorrectly assumed to have
+$ fluorite structure in the original paper. This was corrected in 05Che1.
+$
+$ The bcc + liquid + C_R2O3 equilibrium is at 1834 K instead of 1832 K.
+$ The congruent melting point of bcc is at 1947 instead of 1946 K.
+$
+$ Using the 1:3 model for bcc results in stable bcc for x(O)>0.6 in a large
+$ temperature interval.
+$
+ PAR  G(ION,Y+3:O-2),,                  +2*GLIQYY+3*GHSEROO
+             -1824330+245.9*T;,,                                      N 05Che1 !
+$PAR  G(ION,Y+3:O-2),,                  +2*GLIQYY+3*GHSEROO
+$            -1824600+246*T;,,                                        N 04Che !
+ PAR  L(ION,Y+3:O-2,VA;0),,             +6900;,,                      N 04Che !
+ PAR  L(ION,Y+3:O-2,VA;1),,             -17000;,,                     N 04Che !
+$ Parameters below for 3 interstitial sites
+$PAR  G(BCC_A2,Y:O),,                   +GBCCYY+3*GHSEROO
+$            -1863000+320*T;,,                                        N 09Hal !
+$PAR  L(BCC_A2,Y:O,VA;0),,              +57860-58.63;,,               N 09Hal !
+$ Parameters below for 1 interstitial site
+$PAR  G(BCC_A2,Y:O),,                   +GBCCYY+GHSEROO
+$            -584760+67.9*T;,,                                        N 09Hal !
+$PAR  L(BCC_A2,Y:O,VA;0),,              -24000+14.2;,,                N 09Hal !
+$ Parameters below for 1.5 interstitial sites
+ PAR  G(BCC_A2,Y:O),,                   +GBCCYY+1.5*GHSEROO
+             -899200+123*T;,,                                         N 04Che !
+ PAR  L(BCC_A2,Y:O,VA;0),,              -5000;,,                      N 04Che !
+$
+ PAR  G(HCP_A3,Y:O),,                   +GHSERYY+0.5*GHSEROO
+             -303600+37.5*T;,,                                        N 04Che !
+ PAR  L(HCP_A3,Y:O,VA;0),,              +3500;,,                      N 04Che !
+$
+ PAR  G(C_R2O3_D53,Y:VA:VA),,           +2*GHSERYY+245600;,,          N 04Che !
+ PAR  G(C_R2O3_D53,Y:O-2:O-2),,         +2*GHSERYY+4*GHSEROO
+             +345600+15.87691*T;,,                                    N 04Che !
+ PAR  G(C_R2O3_D53,Y:O-2:VA),,          +2*GHSERYY+3*GHSEROO
+             +245600;,,                                               N 04Che !
+ PAR  G(C_R2O3_D53,Y:VA:O-2),,          +2*GHSERYY+GHSEROO
+             +345600+15.87691*T;,,                                    N 04Che !
+ PAR  G(C_R2O3_D53,Y+3:O-2:VA),,        +2*GCCYO15;,,                 N 04Che !
+ PAR  G(C_R2O3_D53,Y+3:VA:VA),,         +2*GCCYO15-3*GHSEROO;,,       N 04Che !
+ PAR  G(C_R2O3_D53,Y+3:VA:O-2),,        +2*GCCYO15-2*GHSEROO
+             +100000+15.87691*T;,,                                    N 04Che !
+ PAR  G(C_R2O3_D53,Y+3:O-2:O-2),,       +2*GCCYO15+GHSEROO
+             +100000+15.87691*T;,,                                    N 04Che !
+$
+ PAR  G(H_R2O3,Y:VA:VA),,               +2*GHSERYY+245600;,,          N 05Che1 !
+ PAR  G(H_R2O3,Y:O-2:O-2),,             +2*GHSERYY+245600
+             +4*GHSEROO+100000+15.87691*T;,,                          N 05Che1 !
+ PAR  G(H_R2O3,Y:O-2:VA),,              +2*GHSERYY+245600
+             +3*GHSEROO;,,                                            N 05Che1 !
+ PAR  G(H_R2O3,Y:VA:O-2),,              +2*GHSERYY+245600
+             +GHSEROO+100000+15.87691*T;,,                            N 05Che1 !
+ PAR  G(H_R2O3,Y+3:O-2:VA),,            +2*GHHYO15;,,                 N 05Che1 !
+ PAR  G(H_R2O3,Y+3:VA:VA),,             +2*GHHYO15-3*GHSEROO;,,       N 05Che1 !
+ PAR  G(H_R2O3,Y+3:VA:O-2),,            +2*GHHYO15-2*GHSEROO
+             +15.87691*T+100000;,,                                    N 05Che1 !
+ PAR  G(H_R2O3,Y+3:O-2:O-2),,           +2*GHHYO15+GHSEROO
+             +15.87691*T+100000;,,                                    N 05Che1 !
+$
+ PAR  G(GAS,Y2O),,                      +F12945T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,YO),,                       +F12929T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,Y2O2),,                     +F13270T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,YO2),,                      +F13266T+RTLNP;,,             N 94SUB !
+$
+$ Metastable
+$
+$PAR  G(FLUORITE_C1,Y:O-2),,            +GHSERYY+2*GHSEROO
+$            +122800;,,                                               N 04Che !
+$PAR  G(FLUORITE_C1,Y:VA),,             +GHSERYY+122800;,,            N 04Che !
+$PAR  G(FLUORITE_C1,Y+3:O-2),,          +GFFYO15+0.5*GHSEROO
+$            +9.3511*T;,,                                             N 05Che1 !
+$PAR  G(FLUORITE_C1,Y+3:VA),,           +GFFYO15-1.5*GHSEROO
+$            +9.3511*T;,,                                             N 05Che1 !
+$
+$PAR  G(A_R2O3_D52,Y+3:O-2:VA),,        +2*GAAYO15;,,                 N 05Che1 !
+$PAR  G(A_R2O3_D52,Y+3:VA:VA),,         +2*GAAYO15-3*GHSEROO;,,       N 05Che1 !
+$PAR  G(A_R2O3_D52,Y+3:VA:O-2),,        +2*GAAYO15-2*GHSEROO
+$            +100000+15.87691*T;,,                                    N 05Che1 !
+$PAR  G(A_R2O3_D52,Y+3:O-2:O-2),,       +2*GAAYO15+GHSEROO
+$            +100000+15.87691*T;,,                                    N 05Che1 !
+$
+$PAR  G(B_R2O3,Y+3:O-2:VA),,            +2*GBBYO15;,,                 N 05Che1 !
+$PAR  G(B_R2O3,Y+3:VA:VA),,             +2*GBBYO15-3*GHSEROO;,,       N 05Che1 !
+$PAR  G(B_R2O3,Y+3:VA:O-2),,            +2*GBBYO15-2*GHSEROO
+$            +100000+15.87691*T;,,                                    N 05Che1 !
+$PAR  G(B_R2O3,Y+3:O-2:O-2),,           +2*GBBYO15+GHSEROO
+$            +100000+15.87691*T;,,                                    N 05Che1 !
+$
+$PAR  G(X_R2O3,Y+3:O-2:VA),,            +2*GXXYO15;,,                 N 08Hal2 !
+$PAR  G(X_R2O3,Y+3:VA:VA),,             +2*GXXYO15-3*GHSEROO;,,       N 08Hal2 !
+$PAR  G(X_R2O3,Y+3:VA:O-2),,            +2*GXXYO15-2*GHSEROO
+$            +100000+15.87691*T;,,                                    N 08Hal2 !
+$PAR  G(X_R2O3,Y+3:O-2:O-2),,           +2*GXXYO15+GHSEROO
+$            +100000+15.87691*T;,,                                    N 08Hal2 !
+$
+$PAR  G(ZRO2_MONO,Y+3:O-2),,            +GMMYO15+0.5*GHSEROO
+$            +9.3511*T;,,                                             N 04Che !
+$PAR  G(ZRO2_MONO,Y+3:VA),,             +GMMYO15-1.5*GHSEROO
+$            +9.3511*T;,,                                             N 04Che !
+$
+$PAR  G(ZRO2_TETR,Y+3:O-2),,            +GMTYO15+0.5*GHSEROO
+$            +9.3511*T;,,                                             N 04Che !
+$PAR  G(ZRO2_TETR,Y+3:VA),,             +GMTYO15-1.5*GHSEROO
+$            +9.3511*T;,,                                             N 04Che !
+$
+ FUNCTION GCCYO15   298.15  -990900+381.86*T-62.85*T*LN(T)
+       -0.0025*T**2+1172000*T**(-1)-5.9E+07*T**(-2);
+      6000.00  N !
+ FUNCTION GAAYO15   298.15  +GCCYO15+10584-3.3*T;                      6000 N !
+ FUNCTION GBBYO15   298.15  +GCCYO15+5654-2.034*T;                     6000 N !
+ FUNCTION GHHYO15   298.15  +GCCYO15+12500-4.808*T;                    6000 N !
+ FUNCTION GXXYO15   298.15  +GCCYO15+21450-8.1*T;                      6000 N !
+$ Original function below
+$FUNCTION GXXYO15   298.15  +GCCYO15+20000-8.1*T;                      6000 N !
+ FUNCTION GMMYO15   298.15  +GCCYO15+32700+20*T;                       6000 N !
+ FUNCTION GMTYO15   298.15  +GCCYO15+15000;                            6000 N !
+$ GFFYO15 = GXXYO15 in 05Che4 (PhD Thesis)
+ FUNCTION GFFYO15   298.15  +GCCYO15+20000-8.1*T;                      6000 N !
+$ Old function from 04Che (Y-Zr-O)
+$FUNCTION GFFYO15   298.15  +GCCYO15+13630-5*T-0.0003*T**2;            6000 N !
+$ Y2O(g):
+ FUNCTION F12945T   298.15  -18834.6011+47.2728187*T-49.14357*T*LN(T)
+       -0.007582635*T**2+1.2067E-06*T**3+211591.55*T**(-1);
+       900.00  Y  -23590.8983+106.946886*T-58.08361*T*LN(T)
+       -2.2921245E-05*T**2+7.790445E-10*T**3+695520*T**(-1);
+      6000.00  N !
+$ YO(g):
+ FUNCTION F12929T   298.15  -55980.1334-24.7804591*T-30.58571*T*LN(T)
+       -0.005797885*T**2+9.044075E-07*T**3+92955.75*T**(-1);
+       900.00  Y  -62402.7508+43.7949244*T-40.60318*T*LN(T)
+       +0.0014897095*T**2-1.41268333E-07*T**3+896318.5*T**(-1);
+      3100.00  Y  +22970.3078-236.507016*T-6.632106*T*LN(T)
+       -0.004295709*T**2+3.30261667E-08*T**3-38281150*T**(-1);
+      5900.00  Y  +78439.9263-450.3653*T+19.37683*T*LN(T)
+       -0.00859432*T**2+1.53217517E-07*T**3-45013010*T**(-1);
+      9600.00  Y  -949291.433+1103.17067*T-151.1803*T*LN(T)
+       +0.004000447*T**2-2.13031E-08*T**3+1.118062E+09*T**(-1);
+     10000.00  N !
+$ Y2O2(g):
+ FUNCTION F13270T   298.15  -575737.712+51.4042333*T-49.55549*T*LN(T)
+       -0.030210885*T**2+5.27799667E-06*T**3+255509.3*T**(-1);
+       700.00  Y  -591679.029+265.724012*T-82.06371*T*LN(T)
+       -2.6169375E-04*T**2+1.0952625E-08*T**3+1742125.5*T**(-1);
+      4500.00  Y  -594803.763+277.512452*T-83.52789*T*LN(T)
+       +4.9195245E-05*T**2-1.17628333E-09*T**3+3139224*T**(-1);
+      6000.00  N !
+$ YO2(g):
+ FUNCTION F13266T   298.15  -453353.172+38.0172466*T-44.87379*T*LN(T)
+       -0.011836705*T**2+2.00650833E-06*T**3+281931.45*T**(-1);
+       800.00  Y  -459941.788+124.969156*T-58.0167*T*LN(T)
+       -3.724498E-05*T**2+1.29613517E-09*T**3+910973.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  O-Y(TDB -* +ION +GAS +BCC_A2 +HCP_A3 +H_R2O3 +C_R2O3_D53
+  ;P3 TMM:300/3000 STP:.9/1800/2/-1 STP:.99/1800/2 STP:0.3/1800/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  Frie2  'Suzana Fries and Leo Lukas, unpublished,
+          SGTE unary database V.4.1, 1999; Y'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  94SUB  'SGTE Substance Database, version 1994'
+  95She3 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-03,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Y'
+  04Che  'M. Chen, B. Hallstedt, L. J. Gauckler,
+          Solid State Ionics, 170, 255-74(2004); Y-O, Y-Zr-O'
+  05Che1 'M. Chen, B. Hallstedt, L.J. Gauckler,
+          Calphad, 29, 103-13(2005); La-O, La-Y-O'
+  08Hal2 'B. Hallstedt, modification of X-Y2O3, 2008; La-Y-O'
+  09Hal  'B. Hallstedt, changed model for bcc, 2009; Y-O'
+!

@@ -1,0 +1,220 @@
+$
+$ Database for Au-Pr from Z. Du et al. 2004
+$
+$ Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004).
+$
+$ Dataset created 2010.07.16 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ Wrong sign for the subregular liquid interaction in the paper.
+$ 
+$ There is a large stability region for DHCP above 3536 K. This covers an
+$ inverse liquid miscibility gap.
+$
+$ The lattice stability for fcc-Pr is absurd and the lattice stability for
+$ dhcp-Au is not very probable.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AU   FCC_A1                    196.9665    6016.592   47.4884 ! 
+ ELEMENT PR   DHCP                      140.9077    7418.232   73.9313 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AU PR : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AU% PR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AU PR : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AU : VA : !
+$
+$ Prototype alpha-La (SB A3', hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : AU PR% : !
+$
+$ Prototype Au6Pr (mC28, C2/c)
+$
+ PHASE AU6PR % 2 6 1 !
+ CONST AU6PR : AU : PR : !
+$
+$ Prototype Ag51Gd14 (hP68, P6/m)
+$
+ PHASE AU51PR14 % 2 51 14 !
+ CONST AU51PR14 : AU : PR : !
+$
+$ Prototype Au36Nd17 (tP106, P4/nmm)
+$
+ PHASE AU36PR17 % 2 36 17 !
+ CONST AU36PR17 : AU : PR : !
+$
+$ Prototype Hg2K (oI12, Imma)
+$
+ PHASE AU2PR % 2 2 1 !
+ CONST AU2PR : AU : PR : !
+$
+$ Prototype Pd4Pu3 (hR14, R-3)
+$
+ PHASE AU4PR3 % 2 4 3 !
+ CONST AU4PR3 : AU : PR : !
+$
+$ Prototype FeB (oP8, Pnma), alpha-AuPr
+$
+ PHASE AUPR_B27 % 2 1 1 !
+ CONST AUPR_B27 : AU : PR : !
+$
+$ Prototype CrB (oC8, Cmcm), beta-AuPr
+$
+ PHASE AUPR_B33 % 2 1 1 !
+ CONST AUPR_B33 : AU : PR : !
+$
+$ Prototype CsCl (cP2, Pm-3m), gamma-AuPr
+$
+ PHASE AUPR_B2 % 2 1 1 !
+ CONST AUPR_B2 : AU : PR : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE AUPR2_C37 % 2 1 2 !
+ CONST AUPR2_C37 : AU : PR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Au
+$
+$ DHCP added in unary 5.0
+$
+$ DHCP replaced by the value from 92Ans in SGSOL 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems. The value for DHCP from 92Ans was used to model these systems,
+$ thus this value must be included in the unary database and not the 04Du
+$ value.
+$
+ PAR  G(FCC_A1,AU:VA),,                 +GHSERAU;                3200 N 91Din !
+ PAR  G(HCP_A3,AU:VA),,                 +GHSERAU+240.75+1.6*T;   3200 N 91Din !
+ PAR  G(BCC_A2,AU:VA),,                 +GHSERAU+4250-1.1*T;     3200 N 91Din !
+$PAR  G(DHCP,AU),,                      +GHSERAU+125+0.79*T;     3200 N 92Ans !
+ PAR  G(DHCP,AU),,                      +GHSERAU+5000;           3200 N 04Du1 !
+ PAR  G(LIQUID,AU),,                    +GHSERAU
+             +12552-9.385866*T;                                  3200 N 91Din !
+$
+ FUNCTION GHSERAU   298.15  -6938.856+106.830098*T-22.75455*T*LN(T)
+       -0.00385924*T**2+3.79625E-07*T**3-25097*T**(-1);
+       929.40  Y  -93586.481+1021.69543*T-155.706745*T*LN(T)
+       +0.08756015*T**2-1.1518713E-05*T**3+10637210*T**(-1);
+      1337.33  Y  +314067.829-2016.37825*T+263.252259*T*LN(T)
+       -0.118216828*T**2+8.923844E-06*T**3-67999832*T**(-1);
+      1735.80  Y  -12133.783+165.272524*T-30.9616*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Pr
+$
+$ FCC_A1 from 04Du (used in SGSOL 5.0; this value is ABSURD!!!)
+$ not included in unary
+$
+ PAR  G(DHCP,PR),,                      +GHSERPR;                3800 N 91Din !
+ PAR  G(BCC_A2,PR:VA),,                 +GBCCPR;                 3800 N 91Din !
+ PAR  G(FCC_A1,PR:VA),,                 +GHSERPR+312707;         3800 N 04Du2 !
+ PAR  G(LIQUID,PR),,                    +GLIQPR;                 3800 N 91Din !
+$
+ FUNCTION GHSERPR   298.15  -18803.379+356.587384*T-68.9176*T*LN(T)
+       +0.072929*T**2-2.5184333E-05*T**3+507385*T**(-1);
+       500.00  Y  -7246.848+82.427384*T-22.8909*T*LN(T)
+       -0.00497126*T**2-1.22951E-06*T**3;
+       800.00  Y  +95411.023-1073.55111*T+146.764*T*LN(T)
+       -0.1288205*T**2+1.5592233E-05*T**3-11588800*T**(-1);
+      1068.00  Y  -481663.131+4234.33311*T-606.120311*T*LN(T)
+       +0.305181506*T**2-3.0994702E-05*T**3+70926840*T**(-1);
+      1204.00  Y  -20014.678+227.685155*T-42.9697*T*LN(T);
+      3800.00  N !
+ FUNCTION GBCCPR    298.15  -2863.651+28.274853*T-13.7470527*T*LN(T)
+       -0.02284377*T**2+3.542468E-06*T**3-87486*T**(-1);
+      1068.00  Y  -11985.919+188.657121*T-38.451*T*LN(T);
+      1204.00  Y  +953.224+100.826281*T-26.6824313*T*LN(T)
+       -0.004106833*T**2+1.76214E-07*T**3-2473024*T**(-1);
+      3800.00  N !
+ FUNCTION GLIQPR    298.15  +3848.961-29.099465*T-4.7344931*T*LN(T)
+       -0.035119723*T**2+5.427467E-06*T**3-207406*T**(-1);
+      1068.00  Y  -10539.574+219.508805*T-42.9697*T*LN(T);
+      3800.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Wrong sign for the subregular liquid interaction in the paper.
+$ 
+$ There is a large stability region for DHCP above 3536 K. This covers an
+$ inverse liquid miscibility gap.
+$
+$ The lattice stability for fcc-Pr is absurd and the lattice stability for
+$ dhcp-Au is not very probable.
+$
+ PAR  L(LIQUID,AU,PR;0),,               -275364.3+70.1158*T;,,        N 04Du2 !
+ PAR  L(LIQUID,AU,PR;1),,               -80614.4+8.4092*T;,,          N 04Du2 !
+$
+ PAR  L(FCC_A1,AU,PR:VA;0),,            -535766.5;,,                  N 04Du2 !
+ PAR  L(BCC_A2,AU,PR:VA;0),,            -133124+16.0381*T;,,          N 04Du2 !
+ PAR  L(DHCP,AU,PR;0),,                 -107147.3;,,                  N 04Du2 !
+$
+ PAR  G(AU6PR,AU:PR),,                  +6*GHSERAU+GHSERPR
+             -337719.8+93.4173*T;,,                                   N 04Du2 !
+ PAR  G(AU51PR14,AU:PR),,               +51*GHSERAU+14*GHSERPR
+             -3605295.8+520.8005*T;,,                                 N 04Du2 !
+ PAR  G(AU36PR17,AU:PR),,               +36*GHSERAU+17*GHSERPR
+             -3152655.4+264.7191*T;,,                                 N 04Du2 !
+ PAR  G(AU2PR,AU:PR),,                  +2*GHSERAU+GHSERPR
+             -201520.5+30.8941*T;,,                                   N 04Du2 !
+ PAR  G(AU4PR3,AU:PR),,                 +4*GHSERAU+3*GHSERPR
+             -515929.8+87.672*T;,,                                    N 04Du2 !
+ PAR  G(AUPR_B27,AU:PR),,               +GHSERAU+GHSERPR
+             -149632+26.3862*T;,,                                     N 04Du2 !
+ PAR  G(AUPR_B33,AU:PR),,               +GHSERAU+GHSERPR
+             -149275.6+25.8865*T;,,                                   N 04Du2 !
+ PAR  G(AUPR_B2,AU:PR),,                +GHSERAU+GHSERPR
+             -147744.3+24.9252*T;,,                                   N 04Du2 !
+ PAR  G(AUPR2_C37,AU:PR),,              +GHSERAU+2*GHSERPR
+             -207113.9+74.0907*T;,,                                   N 04Du2 !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  04Du1  'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004),
+          SGTE unary database V.5.0, 2009; Au'
+  04Du2  'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004); Pr, Au-Pr'
+!

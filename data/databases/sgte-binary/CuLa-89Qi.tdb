@@ -1,0 +1,167 @@
+$
+$ Database for Cu-La from G. Qi et al. 1989.
+$
+$ G. Qi, K. Itagaki, S. an Mey, P.J. Spencer, Z. Metallkd., 80, 883-87(1989).
+$
+$ Dataset created 2020.10.31 by Bengt Hallstedt.
+$
+$ Pre-SGTE element data used in the paper.
+$
+$ Invariant equilibria differ by up to 11 K, less in the Cu-rich part.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT LA   DHCP                      138.9055    6665.112   56.9024 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU LA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% LA% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU LA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : LA : !
+$
+$ Prototype Cu6La (mP28, P2_1/c), low T
+$ and prototype CeCu6 (oP28, Pnma), high T
+$
+ PHASE CU6LA % 2 6 1 !
+ CONST CU6LA : CU : LA : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE CU5LA_D2D % 2 5 1 !
+ CONST CU5LA_D2D : CU : LA : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE CU2LA_C32 % 2 2 1 !
+ CONST CU2LA_C32 : CU : LA : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE CULA_B27 % 2 1 1 !
+ CONST CULA_B27 : CU : LA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ La
+$
+ PAR  G(DHCP,LA),,                      +GHSERLA;                4000 N 91Din !
+ PAR  G(FCC_A1,LA:VA),,                 +GFCCLA;                 4000 N 91Din !
+ PAR  G(BCC_A2,LA:VA),,                 +GBCCLA;                 4000 N 91Din !
+ PAR  G(LIQUID,LA),,                    +GLIQLA;                 4000 N 91Din !
+$
+ FUNCTION GHSERLA   298.15  -7968.403+120.284604*T-26.34*T*LN(T)
+       -0.001295165*T**2;
+       550.00  Y  -3381.413+59.06113*T-17.1659411*T*LN(T)
+       -0.008371705*T**2+6.8932E-07*T**3-399448*T**(-1);
+      2000.00  Y  -15608.882+181.390071*T-34.3088*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCLA    298.15  -6109.797+89.878761*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+      1134.00  Y  -124598.976+955.878375*T-139.346741*T*LN(T)
+       +0.042032405*T**2-3.066199E-06*T**3+20994153*T**(-1);
+      2000.00  Y  +3009.496-2.846081*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GBCCLA    298.15  -3952.161+88.072353*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+       800.00  Y  +321682.673-3565.08252*T+513.440708*T*LN(T)
+       -0.387295093*T**2+4.9547989E-05*T**3-36581228*T**(-1);
+      1134.00  Y  -16377.894+218.492988*T-39.5388*T*LN(T);
+      1193.00  Y  -136609.91+1123.34397*T-163.413074*T*LN(T)
+       +0.053968535*T**2-4.056395E-06*T**3+21167204*T**(-1);
+      2000.00  Y  +7402.894-6.553756*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GLIQLA    298.15  +5332.653+18.23012*T-11.0188191*T*LN(T)
+       -0.020171603*T**2+2.93775E-06*T**3-133541*T**(-1);
+      1134.00  Y  -3942.004+171.018431*T-34.3088*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ G. Qi, K. Itagaki, S. an Mey, P.J. Spencer, Z. Metallkd., 80, 883-87(1989).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Pre-SGTE element data used in the paper.
+$
+$ Invariant equilibria differ by up to 11 K, less in the Cu-rich part.
+$
+ PAR  L(LIQUID,CU,LA;0),,               -89563.3+255.950113*T
+             -29.862133*T*LN(T);,,                                    N 89Qi !
+ PAR  L(LIQUID,CU,LA;1),,               -22098.3-61.355663*T
+             +7.214833*T*LN(T);,,                                     N 89Qi !
+ PAR  L(LIQUID,CU,LA;2),,               -91291.4+442.339298*T
+             -52.882908*T*LN(T);,,                                    N 89Qi !
+$
+ PAR  L(FCC_A1,CU,LA:VA;0),,            +100000;,,                    N !
+ PAR  L(BCC_A2,CU,LA:VA;0),,            +100000;,,                    N !
+$
+ PAR  G(CU6LA,CU:LA),,                  +7*GCU6LA;,,                  N 89Qi !
+ PAR  G(CU5LA_D2D,CU:LA),,              +6*GCU5LA;,,                  N 89Qi !
+ PAR  G(CU2LA_C32,CU:LA),,              +3*GCU2LA;,,                  N 89Qi !
+ PAR  G(CULA_B27,CU:LA),,               +2*GCULA;,,                   N 89Qi !
+$
+ FUNCTION GCU6LA    298.15  -20678.5+168.6866*T-30.1715*T*LN(T);       6000 N !
+ FUNCTION GCU5LA    298.15  -23726.2+181.53524*T-31.78614*T*LN(T);     6000 N !
+ FUNCTION GCU2LA    298.15  -22643.8+128.74274*T-25.49563*T*LN(T);     6000 N !
+ FUNCTION GCULA     298.15  -17990.9+70.40306*T-17.59363*T*LN(T);      6000 N !
+$------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  89Qi   'G. Qi, K. Itagaki, S. an Mey, P.J. Spencer,
+          Z. Metallkd., 80, 883-87(1989); Cu-La'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+!

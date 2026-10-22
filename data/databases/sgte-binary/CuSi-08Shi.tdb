@@ -1,0 +1,158 @@
+$
+$ Database for Cu-Si from D. Shin et al. 2008
+$
+$ D. Shin, J.E. Saal, Z.-K. Liu, Calphad, 32, 520-26(2008).
+$
+$ Dataset created 2009.12.20 by Bengt Hallstedt.
+$ 2020.12.06: Modified for use with GES6.
+$
+$ BCC_A2 is stable as beta at about CU85SI15 and HCP_A3 is stable as
+$ kappa at about CU87SI13.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU SI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype beta-Mn (cP20, P4_132), gamma
+$
+ PHASE CU56SI11_A13 % 2 0.8358 0.1642 !
+ CONST CU56SI11_A13 : CU : SI : !
+$
+$ Pearson tP* (delta)
+$
+ PHASE CU33SI7 % 2 0.825 0.175 !
+ CONST CU33SI7 : CU : SI : !
+$
+$ Prototype Cu15Si4 (cI76, I-43d), epsilon
+$
+ PHASE CU15SI4 % 2 0.7895 0.2105 !
+ CONST CU15SI4 : CU : SI : !
+$
+$ Pearson hR* and/or o** (R-3m, R-3, ?)
+$ eta, eta-prime and eta-double-prime, also Cu3Si
+$
+ PHASE CU19SI6 % 2 0.76 0.24 !
+ CONST CU19SI6 : CU : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ D. Shin, J.E. Saal, Z.-K. Liu, Calphad, 32, 520-26(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ BCC_A2 is stable as beta at about CU85SI15 and HCP_A3 is stable as
+$ kappa at about CU87SI13.
+$
+ PAR  L(LIQUID,CU,SI;0),,               -39729+4.278*T;,,             N 08Shi !
+ PAR  L(LIQUID,CU,SI;1),,               -49747+15.454*T;,,            N 08Shi !
+ PAR  L(LIQUID,CU,SI;2),,               -35111+8.311*T;,,             N 08Shi !
+$
+ PAR  L(BCC_A2,CU,SI:VA;0),,            -26485+15.151*T;,,            N 08Shi !
+ PAR  L(BCC_A2,CU,SI:VA;1),,            -85212-11.583*T;,,            N 08Shi !
+$
+ PAR  L(FCC_A1,CU,SI:VA;0),,            -41305+26.591*T;,,            N 08Shi !
+ PAR  L(FCC_A1,CU,SI:VA;1),,            -37829-33.805*T;,,            N 08Shi !
+$
+ PAR  L(HCP_A3,CU,SI:VA;0),,            -30194+7.381*T;,,             N 08Shi !
+ PAR  L(HCP_A3,CU,SI:VA;1),,            -62319-6.517*T;,,             N 08Shi !
+$
+ PAR  G(CU56SI11_A13,CU:SI),,           +0.8358*GHSERCU+0.1642*GHSERSI
+             -4014-3.978*T;,,                                         N 08Shi !
+ PAR  G(CU33SI7,CU:SI),,                +0.825*GHSERCU+0.175*GHSERSI
+             -2660-5.594*T;,,                                         N 08Shi !
+ PAR  G(CU15SI4,CU:SI),,                +0.7895*GHSERCU+0.2105*GHSERSI
+             -5142-3.909*T;,,                                         N 08Shi !
+ PAR  G(CU19SI6,CU:SI),,                +0.76*GHSERCU+0.24*GHSERSI
+             -5065-4.508*T;,,                                         N 08Shi !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CU-SI(TDB -* +LIQUID +FCC_A1 +BCC_A2 +HCP_A3 +CU4SI +CU19SI6 +CU33SI7
+  +CU56SI11 +DIAMOND ;P3 TMM:300/2300 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  08Shi  'D. Shin, J.E. Saal, Z.-K. Liu, Calphad, 32, 520-26(2008); Cu-Si'
+!

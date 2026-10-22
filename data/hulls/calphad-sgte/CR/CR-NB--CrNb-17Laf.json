@@ -1,0 +1,180 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "CR",
+    "NB"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "CR": {
+          "energy": -7019.328319250156,
+          "phase": "BCC_A2"
+        },
+        "NB": {
+          "energy": -10813.90037244681,
+          "phase": "BCC_A2"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -11416.63214047665
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 7.203647528927523
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BCC_A2#1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -13564.399651226395,
+          "right": {
+            "phase": "C15_LAVES",
+            "x": 0.33333330665529526
+          },
+          "slope": -13564.399651226395,
+          "x_hi": 0.33333330665529526,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -5708.315384948322,
+            "slope": 5708.315384948322
+          },
+          "entropy": {
+            "intercept": 3.601823332060617,
+            "slope": -3.6018233320606172
+          },
+          "intercept": -6782.199011402196,
+          "kind": "two_phase",
+          "left": {
+            "phase": "C15_LAVES",
+            "x": 0.33333330665529526
+          },
+          "mu_a_rel": -6782.199011402196,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "BCC_A2#2",
+            "x": 1.0
+          },
+          "slope": 6782.199011402196,
+          "x_hi": 1.0,
+          "x_lo": 0.33333330665529526
+        }
+      ],
+      "phase_instances": {
+        "BCC_A2#1": "BCC_A2",
+        "BCC_A2#2": "BCC_A2"
+      },
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2#1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -4521.466188537228,
+          "energy_per_atom": -4521.466188537228,
+          "enthalpy": -3805.543742252203,
+          "entries_at_x": 1,
+          "entropy": 2.401215650796658,
+          "formula": "",
+          "nsites": null,
+          "phase": "C15_LAVES",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.33333330665529526
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2#2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "CrNb-17Laf",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:28:47Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/CrNb-17Laf.tdb",
+    "source_sha256": "22b23d29a6033b0964655ebe70410f0623ef58b9b95a3d70c98240666ecd12be"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "CR-NB",
+  "x_element": "NB"
+}

@@ -1,0 +1,547 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 10,
+    "intervals": 9,
+    "vertices": 10
+  },
+  "elements": [
+    "CS",
+    "O"
+  ],
+  "flags": [
+    "gas_on_hull",
+    "has_intermediate_phases",
+    "solution_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "CS": {
+          "energy": -25411.31986583884,
+          "phase": "BCC_A2"
+        },
+        "O": {
+          "energy": -30548.979789840952,
+          "phase": "O2GAS"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -132100.26260632623
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 642.1940696200301
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BCC_A2",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -323570.4244635383,
+          "right": {
+            "phase": "ION",
+            "x": 0.009859918402852452
+          },
+          "slope": -323570.4244635383,
+          "x_hi": 0.009859918402852452,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                -1302.4978102937575,
+                -14056.488312682593,
+                -32.160981889623145,
+                3.3693549026629626
+              ],
+              [
+                -15387.777749963314,
+                -14110.708056195617,
+                -22.272640530638455,
+                7.022569493019546
+              ],
+              [
+                -29513.735877196545,
+                -14134.194832916955,
+                -1.5428208109387924,
+                13.719397551512884
+              ],
+              [
+                -43635.75413337293,
+                -14096.129473456602,
+                38.992992668305305,
+                26.048712537978645
+              ]
+            ],
+            "knots": [
+              0.009859918402852452,
+              0.05062338903945881,
+              0.09138687197807732,
+              0.13215035491669586,
+              0.17291382683367562
+            ],
+            "max_abs_error": 0.25237388435198227
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                5.871718690535643,
+                -17.875614371776216,
+                -1.0977072375043626,
+                -0.323390286528749
+              ]
+            ],
+            "knots": [
+              0.009859918402852452,
+              0.17291382683367562
+            ],
+            "max_abs_error": 0.0016728945115769278
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              -3053.1507378769606,
+              -12724.084917961902,
+              -11.095122780634483,
+              4.5961400423384475
+            ],
+            [
+              -15783.734638577163,
+              -12732.492230316559,
+              2.536906589208229,
+              8.465883005483192
+            ],
+            [
+              -28505.22407929903,
+              -12702.03050034627,
+              27.69255326068378,
+              15.32189760725305
+            ],
+            [
+              -41164.24012877736,
+              -12600.687426200828,
+              73.19383342468063,
+              27.5535440826352
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.009859918402852452,
+            0.05062338903945881,
+            0.09138687197807732,
+            0.13215035491669586,
+            0.17291382683367562
+          ],
+          "max_abs_error": 0.24758581317291828,
+          "phase": "ION",
+          "x_hi": 0.17291382683367562,
+          "x_lo": 0.009859918402852452
+        },
+        {
+          "enthalpy": {
+            "intercept": 7342.852923761551,
+            "slope": -375965.8554542146
+          },
+          "entropy": {
+            "intercept": 30.184413312063654,
+            "slope": -230.06136961711914
+          },
+          "intercept": -1656.6299052301838,
+          "kind": "two_phase",
+          "left": {
+            "phase": "ION",
+            "x": 0.17291382683367562
+          },
+          "mu_a_rel": -1656.6299052301838,
+          "mu_b_rel": -309029.68800810096,
+          "right": {
+            "phase": "CS4O",
+            "x": 0.2
+          },
+          "slope": -307373.05810287077,
+          "x_hi": 0.2,
+          "x_lo": 0.17291382683367562
+        },
+        {
+          "enthalpy": {
+            "intercept": 2645.37699473431,
+            "slope": -352478.47580907843
+          },
+          "entropy": {
+            "intercept": 17.222883365802197,
+            "slope": -165.25371988581188
+          },
+          "intercept": -2489.625680779529,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CS4O",
+            "x": 0.2
+          },
+          "mu_a_rel": -2489.625680779529,
+          "mu_b_rel": -305697.70490590355,
+          "right": {
+            "phase": "CS3O",
+            "x": 0.25
+          },
+          "slope": -303208.07922512403,
+          "x_hi": 0.25,
+          "x_lo": 0.2
+        },
+        {
+          "enthalpy": {
+            "intercept": 4084.3038572750083,
+            "slope": -358234.1832592412
+          },
+          "entropy": {
+            "intercept": 29.664552891773567,
+            "slope": -215.02039798969736
+          },
+          "intercept": -4760.182587407398,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CS3O",
+            "x": 0.25
+          },
+          "mu_a_rel": -4760.182587407398,
+          "mu_b_rel": -298886.03418601997,
+          "right": {
+            "phase": "CS2O_C19",
+            "x": 0.3333333333333333
+          },
+          "slope": -294125.85159861256,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.25
+        },
+        {
+          "enthalpy": {
+            "intercept": -150955.31154588686,
+            "slope": 106884.66295024437
+          },
+          "entropy": {
+            "intercept": -46.06081549835936,
+            "slope": 12.15570718070144
+          },
+          "intercept": -137222.27940505094,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CS2O_C19",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -137222.27940505094,
+          "mu_b_rel": -33961.84055073287,
+          "right": {
+            "phase": "CS2O2",
+            "x": 0.5
+          },
+          "slope": 103260.43885431807,
+          "x_hi": 0.5,
+          "x_lo": 0.3333333333333333
+        },
+        {
+          "enthalpy": {
+            "intercept": -148635.57436796138,
+            "slope": 102245.1885943934
+          },
+          "entropy": {
+            "intercept": -33.03479216466486,
+            "slope": -13.89633948668757
+          },
+          "intercept": -138786.25108406658,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CS2O2",
+            "x": 0.5
+          },
+          "mu_a_rel": -138786.25108406658,
+          "mu_b_rel": -32397.868871717248,
+          "right": {
+            "phase": "CSO2_C11A",
+            "x": 0.6666666666666666
+          },
+          "slope": 106388.38221234933,
+          "x_hi": 0.6666666666666666,
+          "x_lo": 0.5
+        },
+        {
+          "enthalpy": {
+            "intercept": -178992.91901103064,
+            "slope": 147781.2055589973
+          },
+          "entropy": {
+            "intercept": 67.30927742804118,
+            "slope": -164.41244387574662
+          },
+          "intercept": -199061.18007620107,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CSO2_C11A",
+            "x": 0.6666666666666666
+          },
+          "mu_a_rel": -199061.18007620107,
+          "mu_b_rel": -2260.4043756499887,
+          "right": {
+            "phase": "CSO3",
+            "x": 0.75
+          },
+          "slope": 196800.77570055108,
+          "x_hi": 0.75,
+          "x_lo": 0.6666666666666666
+        },
+        {
+          "enthalpy": {
+            "intercept": -272628.0593671306,
+            "slope": 272628.0593671306
+          },
+          "entropy": {
+            "intercept": -224.00022191507517,
+            "slope": 224.00022191507517
+          },
+          "intercept": -205842.393203151,
+          "kind": "two_phase",
+          "left": {
+            "phase": "CSO3",
+            "x": 0.75
+          },
+          "mu_a_rel": -205842.393203151,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "O2GAS",
+            "x": 1.0
+          },
+          "slope": 205842.393203151,
+          "x_hi": 1.0,
+          "x_lo": 0.75
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "BCC_A2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -3190.37798278682,
+          "energy_per_atom": -3190.37798278682,
+          "enthalpy": -1302.4978102937575,
+          "entries_at_x": 1,
+          "entropy": 6.331981125249243,
+          "formula": "",
+          "nsites": null,
+          "phase": "ION",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.009859918402852452
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -54805.681647367295,
+          "energy_per_atom": -54805.681647367295,
+          "enthalpy": -57666.84190162324,
+          "entries_at_x": 1,
+          "entropy": -9.59637851502913,
+          "formula": "",
+          "nsites": null,
+          "phase": "ION",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.17291382683367562
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -63131.24152580434,
+          "energy_per_atom": -63131.24152580434,
+          "enthalpy": -67850.31816708138,
+          "entries_at_x": 1,
+          "entropy": -15.82786061136018,
+          "formula": "",
+          "nsites": null,
+          "phase": "CS4O",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.2
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -78291.64548706054,
+          "energy_per_atom": -78291.64548706054,
+          "enthalpy": -85474.2419575353,
+          "entries_at_x": 1,
+          "entropy": -24.090546605650772,
+          "formula": "",
+          "nsites": null,
+          "phase": "CS3O",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.25
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -102802.13312027825,
+          "energy_per_atom": -102802.13312027825,
+          "enthalpy": -115327.09056247206,
+          "entries_at_x": 1,
+          "entropy": -42.008913104792214,
+          "formula": "",
+          "nsites": null,
+          "phase": "CS2O_C19",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -85592.0599778919,
+          "energy_per_atom": -85592.0599778919,
+          "enthalpy": -97512.98007076466,
+          "entries_at_x": 1,
+          "entropy": -39.98296190800864,
+          "formula": "",
+          "nsites": null,
+          "phase": "CS2O2",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -67860.66294250035,
+          "energy_per_atom": -67860.66294250035,
+          "enthalpy": -80472.11530503244,
+          "entries_at_x": 1,
+          "entropy": -42.299018489123235,
+          "formula": "",
+          "nsites": null,
+          "phase": "CSO2_C11A",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.6666666666666666
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -51460.59830078775,
+          "energy_per_atom": -51460.59830078775,
+          "enthalpy": -68157.01484178266,
+          "entries_at_x": 1,
+          "entropy": -56.00005547876879,
+          "formula": "",
+          "nsites": null,
+          "phase": "CSO3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.75
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "O2GAS",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "CsO-15Gue",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:30:22Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/CsO-15Gue.tdb",
+    "source_sha256": "5219d7e34c2f9d747da82c88e4744644fccf0b1155da2778af483725a55b4ebe"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "CS-O",
+  "x_element": "O"
+}

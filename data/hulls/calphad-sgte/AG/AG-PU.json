@@ -1,0 +1,218 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "AG",
+    "PU"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "AG": {
+          "energy": -12686.286487522635,
+          "phase": "FCC_A1"
+        },
+        "PU": {
+          "energy": -16237.548425943123,
+          "phase": "ALPHA_PU"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -30169.763276927995
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 23.276045856324117
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -37109.516348991005,
+          "right": {
+            "phase": "AG51PU14",
+            "x": 0.2153846153846154
+          },
+          "slope": -37109.516348991005,
+          "x_hi": 0.2153846153846154,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": 681.568234482459,
+            "slope": -33334.18722273941
+          },
+          "entropy": {
+            "intercept": 11.316779089853643,
+            "slope": -29.26614277513922
+          },
+          "intercept": -2692.529451157394,
+          "kind": "two_phase",
+          "left": {
+            "phase": "AG51PU14",
+            "x": 0.2153846153846154
+          },
+          "mu_a_rel": -2692.529451157394,
+          "mu_b_rel": -27301.016205489075,
+          "right": {
+            "phase": "AG2PU",
+            "x": 0.3333333333333333
+          },
+          "slope": -24608.48675433168,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.2153846153846154
+        },
+        {
+          "enthalpy": {
+            "intercept": -15644.741259646016,
+            "slope": 15644.741259646016
+          },
+          "entropy": {
+            "intercept": 2.342097247210855,
+            "slope": -2.3420972472108548
+          },
+          "intercept": -16343.03755390193,
+          "kind": "two_phase",
+          "left": {
+            "phase": "AG2PU",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -16343.03755390193,
+          "mu_b_rel": -1.8189894035458565e-12,
+          "right": {
+            "phase": "ALPHA_PU",
+            "x": 1.0
+          },
+          "slope": 16343.037553901928,
+          "x_hi": 1.0,
+          "x_lo": 0.3333333333333333
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -7992.818905936525,
+          "energy_per_atom": -7992.818905936525,
+          "enthalpy": -6498.10285964603,
+          "entries_at_x": 1,
+          "entropy": 5.013302184439041,
+          "formula": "",
+          "nsites": null,
+          "phase": "AG51PU14",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.2153846153846154
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -10895.358369267953,
+          "energy_per_atom": -10895.358369267953,
+          "enthalpy": -10429.827506430678,
+          "entries_at_x": 1,
+          "entropy": 1.5613981648072368,
+          "formula": "",
+          "nsites": null,
+          "phase": "AG2PU",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "ALPHA_PU",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "AgPu-20Zho",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:00:44Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/AgPu-20Zho.tdb",
+    "source_sha256": "3a0aa8760514e86a3258ad522d4f103f936212a84d58afa4b224a040b9981db7"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "AG-PU",
+  "x_element": "PU"
+}

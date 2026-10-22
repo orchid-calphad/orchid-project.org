@@ -1,0 +1,181 @@
+$
+$ Database for Re-Ti from C.L. Zacherl et al. 2012
+$
+$ C.L. Zacherl, S.-L. Shang, A. Saengdeejing, Z.-K. Liu,
+$ Calphad, 38, 71-80(2012).
+$
+$ Dataset created 2012.01.30 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ The optimised temperature dependence of the bcc phase is improbable.
+$
+$ The Re24Ti5 chi phase is modelled as a stoichiometric compound.
+$
+$ The stability of ReTi is unclear. One version with and one without ReTi is
+$ provided in the paper. The version without ReTi fits experimental data better.
+$ According to ab initio calculation an orthorhombic structure of the MoTi
+$ type is more stable than B2.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT RE   HCP_A3                    186.207     5333.      36.4820 ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : RE TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : RE TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : RE TI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : RE% TI% : VA : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE RE24TI5_A12 % 2 24 5 !
+ CONST RE24TI5_A12 : RE : TI : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE RETI_B2 % 2 1 1 !
+ CONST RETI_B2 : RE : TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Re
+$
+$ HCP_A3 and LIQUID revised in unary 3.0
+$ BCC_A2 revised in unary 4.4
+$
+ PAR  G(HCP_A3,RE:VA),,                 +GHSERRE;,,                   N 96Arb !
+ PAR  G(FCC_A1,RE:VA),,                 +GHSERRE+11000-1.5*T;,,       N 91Din !
+ PAR  G(BCC_A2,RE:VA),,                 +GHSERRE+17000-3.7*T;,,       N 01SGUN !
+$PAR  G(BCC_A2,RE:VA),,                 +GHSERRE+29200-6*T;,,         N 91Din !
+ PAR  G(LIQUID,RE),,                    +GLIQRE;,,                    N 96Arb !
+$
+ FUNCTION GHSERRE   298.15  -7695.279+128.421589*T-24.348*T*LN(T)
+       -0.00253505*T**2+1.92818E-07*T**3+32915*T**(-1);
+      1200.00  Y  -15775.998+194.667426*T-33.586*T*LN(T)
+       +0.00224565*T**2-2.81835E-07*T**3+1376270*T**(-1);
+      2400.00  Y  -70882.739+462.110749*T-67.956*T*LN(T)
+       +0.01184945*T**2-7.88955E-07*T**3+18075200*T**(-1);
+      3458.00  Y  +346325.888-1211.37186*T+140.831655*T*LN(T)
+       -0.033764567*T**2+1.053726E-06*T**3-1.34548866E+08*T**(-1);
+      5000.00  Y  -78564.296+346.997842*T-49.519*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQRE    298.15  +23820.883-6.34538*T+GHSERRE;
+      2000.00  Y  +568842.665-2527.83846*T+314.178898*T*LN(T)
+       -0.08939817*T**2+3.92854E-06*T**3-1.63100987E+08*T**(-1);
+      3458.00  Y  -39044.888+335.723691*T-49.519*T*LN(T);
+      5000.00  Y  +39519.408-11.274151*T+GHSERRE;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCTI    298.15  +GHSERTI+6000-0.1*T;                       4000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C.L. Zacherl, S.-L. Shang, A. Saengdeejing, Z.-K. Liu,
+$ Calphad, 38, 71-80(2012).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The optimised temperature dependence of the bcc phase is improbable.
+$
+$ The Re24Ti5 chi phase is modelled as a stoichiometric compound.
+$
+$ The stability of ReTi is unclear. One version with and one without ReTi is
+$ provided in the paper. The version without ReTi fits experimental data better.
+$ According to ab initio calculation an orthorhombic structure of the MoTi
+$ type is more stable than B2.
+$
+ PAR  L(LIQUID,RE,TI;1),,               +25000;,,                     N 12Zac !
+ PAR  L(LIQUID,RE,TI;2),,               -15000;,,                     N 12Zac !
+$
+ PAR  L(BCC_A2,RE,TI:VA;0),,            -190000+75*T;,,               N 12Zac !
+$
+ PAR  L(HCP_A3,RE,TI:VA;0),,            +22386+5.5*T;,,               N 12Zac !
+$
+ PAR  G(RE24TI5_A12,RE:TI),,            -815725+3890.42*T
+             -730.68*T*LN(T)-0.01387*T**2+1714300*T**(-1);,,          N 12Zac !
+ PAR  G(RETI_B2,RE:TI),,                -90388+267.207*T
+             -48.635*T*LN(T)-0.00463*T**2+151680*T**(-1);,,           N 12Zac !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,RE,TI:VA;0),,            +22386+5.5*T;,,               N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Arb  'J.W. Arblaster, Calphad, 20, 343-52(1996),
+          SGTE unary database V.3.0, 1996; Re'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  12Zac  'C.L. Zacherl, S.-L. Shang, A. Saengdeejing, Z.-K. Liu,
+          Calphad, 38, 71-80(2012); Re-Ti'
+!

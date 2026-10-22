@@ -1,0 +1,162 @@
+$
+$ Database for Cu-Eu from L.G. Zhang et al. 2007
+$
+$ L.G. Zhang, L.B. Liu, H.S. Liu, Z.P. Jin, Calphad, 31, 264-68(2007).
+$
+$ Dataset created 2017.12.03 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ Much too large lattice stability for fcc-Eu from 01Du used.
+$
+$ There are some mismatches for the invariant equilibria. The largest
+$ difference is for the eutectic, which is 7 K higher here. There are also
+$ differences for the compositions. There is probably a misprint in the
+$ liquid interaction, or a different version of the tdb was used for
+$ calculations in the paper. There is a fix in SGSOL (checked in sgsol-Dec16c),
+$ but this fixes only the eutectic temperature, not the other invariant
+$ temperatures or compositions.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT EU   BCC_A2                    151.96      8004.0     80.79304! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU EU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% EU : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU EU% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU : VA : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE CU5EU_D2D % 2 5 1 !
+ CONST CU5EU_D2D : CU : EU : !
+$
+$ Prototype Hg2K (oI12, Imma), prototype CeCu2 in paper
+$
+ PHASE CU2EU % 2 2 1 !
+ CONST CU2EU : CU : EU : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE CUEU_B27 % 2 1 1 !
+ CONST CUEU_B27 : CU : EU : !
+$
+$ Prototype Ca2Cu (oP12, Pnma)
+$
+ PHASE CUEU2 % 2 1 2 !
+ CONST CUEU2 : CU : EU : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Eu
+$
+$ BCC_A2 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+$ FCC_A1 from SGSOL 5.0 not included in unary (this value is absurd!)
+$
+ PAR  G(BCC_A2,EU:VA),,                 +GHSEREU;                1900 N 91Din !
+ PAR  G(FCC_A1,EU:VA),,                 +GHSEREU+180000;         1901 N 01Du !
+ PAR  G(LIQUID,EU),,                    +GLIQEU;                 1900 N 91Din !
+$
+ FUNCTION GHSEREU   298.15  -9864.965+135.836737*T-32.8418896*T*LN(T)
+       +0.00931735*T**2-4.006564E-06*T**3+102717*T**(-1);
+      1095.00  Y  -287423.476+2174.733036*T-309.3571009*T*LN(T)
+       +0.114530917*T**2-8.809866E-06*T**3+48455305*T**(-1);
+      1900.00  Y  -13663.125+182.113799*T-38.11624*T*LN(T);
+      1901.00  N !
+ FUNCTION GLIQEU    298.15  +8382.505-7.175215*T+GHSEREU;
+       400.00  Y  +10972.726-103.688201*T+4.3501554*T*LN(T)
+       -0.036811218*T**2+5.452934E-06*T**3-646908*T**(-1);
+      1095.00  Y  -6890.641+175.517247*T-38.11624*T*LN(T);
+      1900.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ L.G. Zhang, L.B. Liu, H.S. Liu, Z.P. Jin, Calphad, 31, 264-68(2007).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Much too large lattice stability for fcc-Eu from 01Du used.
+$
+$ There are some mismatches for the invariant equilibria. The largest
+$ difference is for the eutectic, which is 7 K higher here. There are also
+$ differences for the compositions. There is probably a misprint in the
+$ liquid interaction, or a different version of the tdb was used for
+$ calculations in the paper. There is a fix in SGSOL (checked in sgsol-Dec16c),
+$ but this fixes only the eutectic temperature, not the other invariant
+$ temperatures or compositions.
+$
+ PAR  L(LIQUID,CU,EU;0),,               -25402.86+89.739*T
+             -11.941*T*LN(T);,,                                       N 07Zha !
+ PAR  L(LIQUID,CU,EU;1),,               -15903.788+12.691*T;,,        N 07Zha !
+ PAR  L(LIQUID,CU,EU;2),,               -11787.219;,,                 N 07Zha !
+$
+ PAR  L(FCC_A1,CU,EU:VA;0),,            +5000;,,                      N 07Zha !
+ PAR  L(BCC_A2,CU,EU:VA;0),,            +30000;,,                     N 07Zha !
+$
+ PAR  G(CU5EU_D2D,CU:EU),,              +5*GHSERCU+GHSEREU
+             -26181.21-7.422*T;,,                                     N 07Zha !
+ PAR  G(CU2EU,CU:EU),,                  +2*GHSERCU+GHSEREU
+             -17904.975+0.705*T;,,                                    N 07Zha !
+ PAR  G(CUEU_B27,CU:EU),,               +GHSERCU+GHSEREU
+             -12270.654+2.274*T;,,                                    N 07Zha !
+ PAR  G(CUEU2,CU:EU),,                  +GHSERCU+2*GHSEREU
+             -17737.101+9.468*T;,,                                    N 07Zha !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  01Du   'Z. Du, Y. He, J. Alloys Compd., 327, 127-31(2001); Eu'
+  07Zha  'L.G. Zhang, L.B. Liu, H.S. Liu, Z.P. Jin,
+          Calphad, 31, 264-68(2007); Cu-Eu'
+!

@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "AU",
+    "ND"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "AU": {
+          "energy": -14158.667206687367,
+          "phase": "FCC_A1"
+        },
+        "ND": {
+          "energy": -21194.350936169954,
+          "phase": "DHCP"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -420882.35304425255
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 199.15551857071864
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -480260.57090611226,
+          "right": {
+            "phase": "AU36ND17",
+            "x": 0.32075471698113206
+          },
+          "slope": -480260.57090611226,
+          "x_hi": 0.32075471698113206,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -198750.0000486748,
+            "slope": 198750.0000486748
+          },
+          "entropy": {
+            "intercept": 94.04566154728379,
+            "slope": -94.04566154728379
+          },
+          "intercept": -226789.71403899742,
+          "kind": "two_phase",
+          "left": {
+            "phase": "AU36ND17",
+            "x": 0.32075471698113206
+          },
+          "mu_a_rel": -226789.71403899742,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "DHCP",
+            "x": 1.0
+          },
+          "slope": 226789.71403899742,
+          "x_hi": 1.0,
+          "x_lo": 0.32075471698113206
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -154045.84349818694,
+          "energy_per_atom": -154045.84349818694,
+          "enthalpy": -135000.00003306213,
+          "entries_at_x": 1,
+          "entropy": 63.880071994381446,
+          "formula": "",
+          "nsites": null,
+          "phase": "AU36ND17",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.32075471698113206
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "DHCP",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "AuNd-15Wan",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:16:52Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/AuNd-15Wan.tdb",
+    "source_sha256": "6bf31c7211e037108261d43fe69d54775cc00e4a434924708472c230b14ef5d8"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "AU-ND",
+  "x_element": "ND"
+}

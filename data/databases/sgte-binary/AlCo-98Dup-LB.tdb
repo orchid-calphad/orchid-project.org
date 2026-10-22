@@ -1,0 +1,294 @@
+$
+$ Database for Al-Co from N. Dupin and I. Ansara 1998 (included in LB Vol. 1).
+$ Originally in N. Dupin, Thesis, LTPCM, France, 1995.
+$
+$ N. Dupin, I. Ansara, Rev. Metall. CIT, 95, 1121-29(1998).
+$
+$ Dataset created 2013.07.07 by Bengt Hallstedt.
+$ 2020.04.21: Corrected magnetic interaction for HCP_A3.
+$ 2020.04.21: Modified for use with GES6.
+$
+$ This dataset is a modified version included in LBall-v7+fun. It uses a
+$ symmetric add-on model for the B2_BCC phase. There are also parameters for
+$ the L12_FCC phase (which is not stable). The calculations in the printed LB
+$ were done with the original 98Dup dataset.
+$
+$ There are differences in invariant equilibria up to 3.5 K compared to the
+$ printed LB, except the congruent melting point of B2_BCC which is 41 K lower
+$ than in LB. With LBall-v7+fun there is an additional shift of the Al-rich
+$ B2 boundary. In LBall-v7+fun the contribution from L(A2_BCC,VA,*:VA;0) was
+$ not subtracted from L(A2_BCC,CO,VA:VA;0).
+$
+$ There is a narrow inverse stability range of B2_BCC with a minimum at
+$ 3809 K and x(Co)=0.41.
+$
+$ The hcp interaction will need to be revised. Currently hcp is far less
+$ stable than fcc or bcc. L(HCP_A3,AL,CO:VA) will need to be in the order of
+$ -100000 J/mol instead of -1830 J/mol.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL CO : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL CO : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL CO : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2 (except Va)
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : AL CO VA : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : AL% CO VA : AL CO% VA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL CO : VA : !
+$
+$ Prototype Al5Co2 (hP28, P6_3/mmc)
+$
+ PHASE AL5CO2_D811 % 2 5 2 !
+ CONST AL5CO2_D811 : AL : CO : !
+$
+$ Unknown structure
+$
+ PHASE AL3CO % 2 3 1 !
+ CONST AL3CO : AL : CO : !
+$
+$ Prototype Al13Fe4 (mC102, C2/m)
+$
+ PHASE AL13CO4 % 2 13 4 !
+ CONST AL13CO4 : AL : CO : !
+$
+$ Prototype Al9Co2 (mP22, P2_1/c)
+$
+ PHASE AL9CO2 % 2 9 2 !
+ CONST AL9CO2 : AL : CO : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ DEFAULT-COM REJECT_PHASE BCC_A2 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(A2_BCC,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  L(A2_BCC,AL,VA:VA;0),,            +GB2ALVA+LB2ALVA;,,           N 99Dup1 !
+ PAR  G(B2_BCC,VA:AL:VA),,              +0.5*GB2ALVA-0.5*LB2ALVA;,,   N 99Dup1 !
+ PAR  G(B2_BCC,AL:VA:VA),,              +0.5*GB2ALVA-0.5*LB2ALVA;,,   N 99Dup1 !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$
+$ In the original 99Dup publication GB2ALVA=10-0.001*T and LB2ALVA=100000.
+$ In 97Ans GB2ALVA=1000-T
+$ In LBall-v7+fun.tdb LB2ALVA=150000
+$ and in AlFeNiTi-bosse-0701.TDB LB2ALVA=200000
+ FUNCTION GB2ALVA   298.15  +10000-T;                                  6000 N !
+ FUNCTION LB2ALVA   298.15  +150000;                                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(A2_BCC,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(A2_BCC,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(A2_BCC,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+$ Probably intended expression from 99Dup2 below
+ PAR  L(A2_BCC,CO,VA:VA;0),,            +135000;,,                    N 99Dup2 !
+$ Effective expression in LBall-v7+fun.tdb below
+$PAR  L(A2_BCC,CO,VA:VA;0),,            +135000+100*T;,,              N 99Dup2 !
+ PAR  G(B2_BCC,VA:CO:VA),,              +67500;,,                     N 99Dup2 !
+ PAR  G(B2_BCC,CO:VA:VA),,              +67500;,,                     N 99Dup2 !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+ FUNCTION GBCCCO    298.15  +GHSERCO+2938-0.7138*T;                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(A2_BCC,VA:VA),,                 +ZERO;,,                      N 01Sun !
+$PAR  L(A2_BCC,VA,*:VA;0),,             +LB2VA;,,                     N 01Sun !
+$
+$FUNCTION LB2VA     298.15  +100*T;                                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From N. Dupin and I. Ansara 1998 (included in LB Vol. 1). Originally in
+$ N. Dupin, Thesis, LTPCM, France, 1995.
+$
+$ N. Dupin, I. Ansara, Rev. Metall. CIT, 95, 1121-29(1998).
+$
+$ Checked aginst LB. Checked at 6000 K.
+$
+$ This dataset is a modified version included in LBall-v7+fun. It uses a
+$ symmetric add-on model for the B2_BCC phase. There are also parameters for
+$ the L12_FCC phase (which is not stable). The calculations in the printed LB
+$ were done with the original 98Dup dataset.
+$
+$ There are differences in invariant equilibria up to 3.5 K compared to the
+$ printed LB, except the congruent melting point of B2_BCC which is 41 K lower
+$ than in LB. With LBall-v7+fun there is an additional shift of the Al-rich
+$ B2 boundary. In LBall-v7+fun the contribution from L(A2_BCC,VA,*:VA;0) was
+$ not subtracted from L(A2_BCC,CO,VA:VA;0).
+$
+$ There is a narrow inverse stability range of B2_BCC with a minimum at
+$ 3809 K and x(Co)=0.41.
+$
+$ The hcp interaction will need to be revised. Currently hcp is far less
+$ stable than fcc or bcc. L(HCP_A3,AL,CO:VA) will need to be in the order of
+$ -100000 J/mol instead of -1830 J/mol.
+$
+ PAR  L(LIQUID,AL,CO;0),,               -152470+40.259*T;,,           N 98Dup !
+ PAR  L(LIQUID,AL,CO;1),,               -57527.5+27.0453*T;,,         N 98Dup !
+ PAR  L(LIQUID,AL,CO;2),,               +30494-8.0518*T;,,            N 98Dup !
+ PAR  L(LIQUID,AL,CO;3),,               +24655-11.591*T;,,            N 98Dup !
+$
+ PAR  L(FCC_A1,AL,CO:VA;0),,            -122840+22.925*T;,,           N 98Dup !
+ PAR  L(FCC_A1,AL,CO:VA;2),,            +24568-4.585*T;,,             N 98Dup !
+ PAR  TC(FCC_A1,AL,CO:VA;0),,           -1830;,,                      N 98Dup !
+ PAR  TC(FCC_A1,AL,CO:VA;1),,            +970;,,                      N 98Dup !
+ PAR  BM(FCC_A1,AL,CO:VA;0),,             +10;,,                      N 98Dup !
+$
+ PAR  L(BCC_A2,AL,CO:VA;0),,            +GB2ALCO+LB2ALCO;,,           N 99Dup2 !
+ PAR  L(A2_BCC,AL,CO:VA;0),,            +GB2ALCO+LB2ALCO;,,           N 99Dup2 !
+$
+ PAR  G(B2_BCC,AL:CO:VA),,              +0.5*GB2ALCO-0.5*LB2ALCO;,,   N 99Dup2 !
+ PAR  G(B2_BCC,CO:AL:VA),,              +0.5*GB2ALCO-0.5*LB2ALCO;,,   N 99Dup2 !
+ PAR  TC(B2_BCC,AL:CO:VA),,              -600;,,                      N 99Dup2 !
+ PAR  TC(B2_BCC,CO:AL:VA),,              -600;,,                      N 99Dup2 !
+$
+ PAR  TC(HCP_A3,AL,CO:VA;0),,           -1830;,,                      N 98Dup !
+ PAR  TC(HCP_A3,AL,CO:VA;1),,            +970;,,                      N 98Dup !
+ PAR  BM(HCP_A3,AL,CO:VA;0),,             +10;,,                      N 98Dup !
+$
+ PAR  G(AL5CO2_D811,AL:CO),,            +5*GHSERAL+2*GHSERCO
+             -335100+81.65*T;,,                                       N 98Dup !
+ PAR  G(AL3CO,AL:CO),,                  +3*GHSERAL+GHSERCO
+             -174490+41.735*T;,,                                      N 98Dup !
+ PAR  G(AL13CO4,AL:CO),,                +13*GHSERAL+4*GHSERCO
+             -711760+170.4*T;,,                                       N 98Dup !
+ PAR  G(AL9CO2,AL:CO),,                 +9*GHSERAL+2*GHSERCO
+             -391800+103.77*T;,,                                      N 98Dup !
+$
+$ Metastable
+$
+$PAR  G(L12_FCC,AL:CO),,                +AL3CO;,,                     N 00Dup5 !
+$PAR  G(L12_FCC,CO:AL),,                +ALCO3;,,                     N 00Dup5 !
+$PAR  TC(L12_FCC,AL:CO),,               +TCA3O;,,                     N 00Dup5 !
+$PAR  TC(L12_FCC,CO:AL),,               +TCAO3;,,                     N 00Dup5 !
+$PAR  L(L12_FCC,AL,CO:AL;0),,           -1.5*ALCO3+1.5*AL2CO2
+$            +1.5*AL3CO;,,                                            N 00Dup5 !
+$PAR  L(L12_FCC,AL,CO:AL;1),,           +0.5*ALCO3-1.5*AL2CO2
+$            +1.5*AL3CO;,,                                            N 00Dup5 !
+$PAR  L(L12_FCC,AL,CO:CO;0),,           +1.5*ALCO3+1.5*AL2CO2
+$            -1.5*AL3CO;,,                                            N 00Dup5 !
+$PAR  L(L12_FCC,AL,CO:CO;1),,           -1.5*ALCO3+1.5*AL2CO2
+$            -0.5*AL3CO;,,                                            N 00Dup5 !
+$PAR  TC(L12_FCC,AL,CO:AL;0),,          -1.5*TCAO3+1.5*TCA2O2
+$            +1.5*TCA3O;,,                                            N 00Dup5 !
+$PAR  TC(L12_FCC,AL,CO:AL;1),,          +0.5*TCAO3-1.5*TCA2O2
+$            +1.5*TCA3O;,,                                            N 00Dup5 !
+$PAR  TC(L12_FCC,AL,CO:CO;0),,          +1.5*TCAO3+1.5*TCA2O2
+$            -1.5*TCA3O;,,                                            N 00Dup5 !
+$PAR  TC(L12_FCC,AL,CO:CO;1),,          -1.5*TCAO3+1.5*TCA2O2
+$            -0.5*TCA3O;,,                                            N 00Dup5 !
+$
+ FUNCTION GB2ALCO   298.15  -138500+34.62*T;                           6000 N !
+ FUNCTION LB2ALCO   298.15  +45590-32.39*T;                            6000 N !
+$
+$FUNCTION U1ALCO    298.15  +3685-4.19*T;                              6000 N !
+$FUNCTION ALCO3     298.15  +3*U1ALCO;                                 6000 N !
+$FUNCTION AL2CO2    298.15  +4*U1ALCO;                                 6000 N !
+$FUNCTION AL3CO     298.15  +3*U1ALCO;                                 6000 N !
+$FUNCTION TCA3O     298.15  -1500;                                     6000 N !
+$FUNCTION TCA2O2    298.15  -1500;                                     6000 N !
+$FUNCTION TCAO3     298.15  -1500;                                     6000 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-CO(TDB -* +LIQ +AL13CO4 +AL3CO +AL5CO2_D811 +AL9CO2
+  +A2_BCC +B2_BCC +FCC_A1 +HCP_A3 ;G5 C_S:FCC_L12/CO:AL:VA
+  ;P3 TMM:300/2000 STP:0.8/1200/1 STP:0.6/900/1 ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Dup  'N. Dupin, I. Ansara, Rev. Metall. CIT, 95, 1121-29(1998); Al-Co'
+  99Dup1 'N. Dupin, I. Ansara, Z. Metallkd., 90, 76-85(1999); Al-Ni'
+  99Dup2 'N. Dupin, unpublished revision, 1999; Al-Co'
+  00Dup5 'N. Dupin, unpublished revision, 2000; Al-Co'
+  01Sun  'B Sundman, fix to avoid BCC with just Va (in LB1-v2).'
+!

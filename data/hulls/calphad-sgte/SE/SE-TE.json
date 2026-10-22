@@ -1,0 +1,168 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 2,
+    "intervals": 1,
+    "vertices": 2
+  },
+  "elements": [
+    "SE",
+    "TE"
+  ],
+  "flags": [
+    "no_intermediate_phases",
+    "solution_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "SE": {
+          "energy": -12512.01808381437,
+          "phase": "HEXAGONAL_A8"
+        },
+        "TE": {
+          "energy": -14675.240604688506,
+          "phase": "HEXAGONAL_A8"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                0.0,
+                -914.0998916705857,
+                914.0998710940978,
+                2.057648794107081e-05
+              ]
+            ],
+            "knots": [
+              0.0,
+              1.0
+            ],
+            "max_abs_error": 2.3655964497493187e-05
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                0.0,
+                20.810197274835684,
+                -20.81019444194682,
+                -2.832888863935068e-06
+              ]
+            ],
+            "knots": [
+              0.0,
+              1.0
+            ],
+            "max_abs_error": 2.3963126559500836e-05
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              0.0,
+              -7118.660209163009,
+              7118.659343960557,
+              0.0008652024525872548
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.0,
+            1.0
+          ],
+          "max_abs_error": 0.0071210100518328545,
+          "phase": "HEXAGONAL_A8",
+          "x_hi": 1.0,
+          "x_lo": 0.0
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HEXAGONAL_A8",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HEXAGONAL_A8",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "SeTe-21Fik",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T01:00:50Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/SeTe-21Fik.tdb",
+    "source_sha256": "5d5099e229e713058f24807fd9721204c8e0cf50b8ffd4f77b4d0c03ea626fd9"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "SE-TE",
+  "x_element": "TE"
+}

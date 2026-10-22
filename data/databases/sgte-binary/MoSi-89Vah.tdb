@@ -1,0 +1,168 @@
+$
+$ Database for Mo-Si from C. Vahlas et al. 1989
+$
+$ C. Vahlas, P.-Y. Chevalier, E. Blanquet, Calphad, 13, 273-92(1989).
+$
+$ Dataset created 2010.02.13 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$
+$ Bcc + Liquid + Mo5Si3 is at 2319 K instead of 2312 K and
+$ Bcc + Mo3Si + Mo5Si3 is at 2262 K instead of 2293 K.
+$ The other invariant equilibria are correctly reproduced.
+$
+$ The differences come from changes in Bcc-Si and Liq-Mo since their work.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MO SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MO SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MO% SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MO SI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype MoSi2 (tI6, I4/mmm)
+$
+ PHASE MOSI2_C11B % 2 1 2 !
+ CONST MOSI2_C11B : MO : SI : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE M3SI_A15 % 2 3 1 !
+ CONST M3SI_A15 : MO : SI : !
+$
+$ Prototype Si3W5 (tI32, I4/mcm)
+$
+ PHASE M5SI3_D8M % 2 5 3 !
+ CONST M5SI3_D8M : MO : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Vahlas, P.-Y. Chevalier, E. Blanquet, Calphad, 13, 273-92(1989).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Bcc + Liquid + Mo5Si3 is at 2318 K instead of 2312 K and
+$ Bcc + Mo3Si + Mo5Si3 is at 2262 K instead of 2293 K.
+$ The other invariant equilibria are correctly reproduced.
+$
+$ The differences come from changes in Bcc-Si and Liq-Mo since their work.
+$
+ PAR  L(LIQUID,MO,SI;0),,               -135276.2+1.772195*T;,,       N 89Vah !
+ PAR  L(LIQUID,MO,SI;1),,               -47107.9+33.71028*T;,,        N 89Vah !
+ PAR  L(LIQUID,MO,SI;2),,               +75846.6-30.9*T;,,            N 89Vah !
+$
+ PAR  L(BCC_A2,MO,SI:VA;0),,            -70899.6;,,                   N 89Vah !
+$
+ PAR  G(M3SI_A15,MO:SI),,               +3*GHSERMO+GHSERSI
+             -118840.8-2.03828*T;,,                                   N 89Vah !
+ PAR  G(MOSI2_C11B,MO:SI),,             +GHSERMO+2*GHSERSI
+             -139547.1-8.49708*T;,,                                   N 89Vah !
+ PAR  G(M5SI3_D8M,MO:SI),,              +5*GHSERMO+3*GHSERSI
+             -296067.2-30.294*T;,,                                    N 89Vah !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,MO,SI:VA;0),,            -70899.6;,,                   N Same !
+ PAR  L(HCP_A3,MO,SI:VA;0),,            -70899.6;,,                   N Same !
+$
+ FUNCTION GMO3SI    298.15  -39940.78+150.83071*T-26.260529*T*LN(T)
+       +0.5380211E-3*T**2-0.457131E-6*T**3+159265*T**(-1);
+      6000.00 N !
+ FUNCTION GMO5SI3   298.15  -48230.28+148.34434*T-26.078027*T*LN(T)
+       +0.3235301E-3*T**2-0.396771E-6*T**3+174382*T**(-1);
+      6000.00 N !
+ FUNCTION GMOSI2    298.15  -52358.28+146.62405*T-24.788623*T*LN(T)
+       -0.6491781E-3*T**2-0.216351E-6*T**3+180226*T**(-1);
+      6000.00 N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  MO-SI(TDB -* +LIQUID +BCC_A2 +DIAMOND +M3SI_A15 +M5SI3_D8M +MOSI2_C11B
+  ;P3 TMM:300/5000 STP:.5/2000/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Lin    'Linear combination of lattice stabilities'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  NIST   'NIST-Ni0209 Database, Ursula Kattner, 2002'
+  89Vah  'C. Vahlas, P.-Y. Chevalier, E. Blanquet,
+          Calphad, 13, 273-92(1989); Mo-Si'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+!

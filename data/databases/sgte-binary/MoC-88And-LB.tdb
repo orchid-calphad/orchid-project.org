@@ -1,0 +1,175 @@
+$
+$ Database for Mo-C from J.-O. Andersson 1988 (included in LB Vol. 2)
+$
+$ J.-O. Andersson, Calphad, 12, 1-8(1988).
+$
+$ Dataset created 2010.02.13 by Bengt Hallstedt.
+$ 2021.01.31: Modified for use with GES6.
+$
+$ BCC_A2 is stable above 5400 K at x(C) about 0.55. There is no inverse
+$ miscibility gap in the liquid.
+$
+$ Shim et al. 1996 claim that a negative L(BCC_A2,MO:C,VA;0) is necessary
+$ in order to describe Mo-Ti-C, but this brings the C-solubility in bcc-Mo
+$ far beyond all experimental data. This parameter is in TCFE, but not in LB.
+$
+$ CEMENTITE_D011 is stable above 3100K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C MO : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MO : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MO : C VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MO : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE_A9 % 1 1 !
+ CONST GRAPHITE_A9 : C : !
+$
+$ Prototype TiAs (hP8, P6_3/mmc, SB: B_i)
+$
+ PHASE MC_ETA % 2 1 1 !
+ CONST MC_ETA : MO : C% VA : !
+$
+$ Prototype WC (hP2, P-6m2, SB: B_h)
+$
+ PHASE MC_SHP % 2 1 1 !
+ CONST MC_SHP : MO : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE_A9,C),,                +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ PAR  G(MC_ETA,MO:VA),,                 +GHSERMO+15200+0.63*T;,,      N 88And1 !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From J.-O. Andersson 1988 (included in LB Vol. 2)
+$
+$ J.-O. Andersson, Calphad, 12, 1-8(1988).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ BCC_A2 is stable above 5400 K at x(C) about 0.55. There is no inverse
+$ miscibility gap in the liquid.
+$
+$ Shim et al. 1996 claim that a negative L(BCC_A2,MO:C,VA;0) is necessary
+$ in order to describe Mo-Ti-C, but this brings the C-solubility in bcc-Mo
+$ far beyond all experimental data. This parameter is in TCFE, but not in LB.
+$
+$ CEMENTITE_D011 is stable above 3100K.
+$
+ PAR  L(LIQUID,C,MO;0),,                -217800+38.41*T;,,            N 88And1 !
+ PAR  L(LIQUID,C,MO;1),,                +30000;,,                     N 88And1 !
+ PAR  L(LIQUID,C,MO;2),,                +47000;,,                     N 88And1 !
+$
+ PAR  G(BCC_A2,MO:C),,                  +GHSERMO+3*GHSERCC
+             +331000-75*T;,,                                          N 88And1 !
+$PAR  L(BCC_A2,MO:C,VA;0),,             -50000;,,                     N 96Shi !
+$
+ PAR  G(FCC_A1,MO:C),,                  +GHSERMO+GHSERCC
+             -7500-8.3*T-750000*T**(-1);,,                            N 88And1 !
+ PAR  L(FCC_A1,MO:C,VA;0),,             -41300;,,                     N 88And1 !
+$
+ PAR  G(HCP_A3,MO:C),,                  +GHSERMO+0.5*GHSERCC
+             -24150-3.625*T-163000*T**(-1);,,                         N 88And1 !
+ PAR  L(HCP_A3,MO:C,VA;0),,             +4150;,,                      N 88And1 !
+$
+ PAR  G(MC_ETA,MO:C),,                  +GHSERMO+GHSERCC
+             -9100-5.35*T-750000*T**(-1);,,                           N 88And1 !
+ PAR  L(MC_ETA,MO:C,VA;0),,             -59500;,,                     N 88And1 !
+$
+ PAR  G(MC_SHP,MO:C),,                  +GHSERMO+GHSERCC
+             -32983+2.5*T;,,                                          N 88And1 !
+$
+$ metastable
+$
+$PAR  G(CEMENTITE_D011,MO:C),,          +3*GHSERMO+GHSERCC
+$            +77000-57.4*T;,,                                         N 88And2 !
+$PAR  G(M7C3_D101,MO:C),,               +7*GHSERMO+3*GHSERCC
+$            -140415+24.24*T;,,                                       N 92Qiu !
+$PAR  G(M3C2_D510,MO:C),,               +3*GHSERMO+2*GHSERCC+27183;,, N 92Qiu !
+$PAR  G(KSI_CARBIDE,MO:C),,             +3*GHSERMO+GHSERCC
+$            +167009-33*T;,,                                          N 88And2 !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  C-MO(TDB -* +LIQ +BCC_A2 +GRAP +MC_ETA +MC_SHP +FCC_A1 +HCP_A3
+  ;G5 C_S:FCC_A1/MO:C C_S:HCP_A3/MO:C ;P3 TMM:300/3500 STP:.62/2000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  88And1 'J.-O. Andersson, Calphad, 12, 1-8(1988); Mo-C'
+  88And2 'J.-O. Andersson, Calphad, 12, 9-23(1988); Fe-Mo-C'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Qiu  'C. Qiu, ISIJ Int., 32, 1117-27(1992); Cr-Fe-Mo-C'
+  96Shi  'J.-H. Shim et al.,
+          Metall. Mater. Trans. B, 27B, 955-66(1996); Mo-Ti-C'
+!

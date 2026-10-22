@@ -1,0 +1,231 @@
+$
+$ Database for Ho-Ni from S. Kardellass et al. 2015.
+$
+$ S. Kardellass, C. Servant, N. Selhaoui,
+$ J. Thermal Anal. Calorim., 119, 1225-34(2015).
+$
+$ Dataset created 2018.09.29 by Bengt Hallstedt.
+$ 2021.01.17: Modified for use with GES6.
+$
+$ Interactions in fcc and hcp should probably be negative.
+$
+$ Invariant equilibria differ by up to 6 K.
+$
+$ There is an inverse miscibility gap with a minimum at 4906 K and x(Ni)=0.47.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT HO   HCP_A3                    164.9304    7995.624   75.0191 ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : HO NI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : HO NI% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : HO NI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : HO% NI : VA : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE HO3NI_D011 % 2 3 1 !
+ CONST HO3NI_D011 : HO : NI : !
+$
+$ Prototype Dy3Ni2 (mC20, C2/m)
+$
+ PHASE HO3NI2_LT % 2 3 2 !
+ CONST HO3NI2_LT : HO : NI : !
+$
+$ Prototype Er3Ni2 (hR15, R-3)
+$
+ PHASE HO3NI2_HT % 2 3 2 !
+ CONST HO3NI2_HT : HO : NI : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE HONI_B27 % 2 1 1 !
+ CONST HONI_B27 : HO : NI : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE HONI2_C15 % 2 1 2 !
+ CONST HONI2_C15 : HO : HO NI% : !
+$
+$ Prototype Ni3Pu (hR12, R-3m)
+$
+ PHASE HONI3 % 2 1 3 !
+ CONST HONI3 : HO : NI : !
+$
+$ Prototype Co7Gd2 (hR18, R-3m)
+$
+ PHASE HO2NI7 % 2 2 7 !
+ CONST HO2NI7 : HO : NI : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE HONI5_D2D % 2 1 5 !
+ CONST HONI5_D2D : HO : NI : !
+$
+$ Prototype Ni17Th2 (hP38, P6_3/mmc)
+$
+ PHASE HO2NI17 % 2 2 17 !
+ CONST HO2NI17 : HO : NI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ho
+$
+$ BCC_A2 and LIQUID revised in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+$ FCC_A1 from 03Cac and 09Wan not included in unary; 03Cac to be preferred
+$
+ PAR  G(HCP_A3,HO:VA),,                 +GHSERHO;                3001 N 91Din !
+$PAR  G(FCC_A1,HO:VA),,                 +GHSERHO+5000;           3001 N 09Wan1 !
+ PAR  G(FCC_A1,HO:VA),,                 +GHSERHO
+             +2000-0.831451*T;                                   3001 N 03Cac !
+ PAR  G(BCC_A2,HO:VA),,                 +GHSERHO
+             +4380-2.494353*T;                                   3001 N 00Nor1 !
+ PAR  G(LIQUID,HO),,                    +GLIQHO;                 3001 N 00Nor1 !
+$
+ PAR  G(HONI2_C15,HO:HO),,              +3*GHSERHO+30000;,,           N 15Kar !
+$
+ FUNCTION GHSERHO   298.15  -7612.429+86.593171*T-23.4879*T*LN(T)
+       -0.00827315*T**2+2.375467E-06*T**3;
+       600.00  Y  -10917.688+182.475691*T-39.6932*T*LN(T)
+       +0.01820065*T**2-4.829733E-06*T**3;
+       900.00  Y  +46646.188-421.474473*T+48.0595*T*LN(T)
+       -0.0424634*T**2+3.233133E-06*T**3-7185900*T**(-1);
+      1200.00  Y  +27786.061-156.162846*T+8.28608*T*LN(T)
+       -0.01082725*T**2-1.112352E-06*T**3-6183850*T**(-1);
+      1703.00  Y  -825364.662+4248.379056*T-558.9506818*T*LN(T)
+       +0.139111904*T**2-6.824652E-06*T**3+2.19952973E+08*T**(-1);
+      3000.00  Y  -17149.229+235.898104*T-43.932*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQHO    298.15  +17383.4216-9.992194*T+GHSERHO;
+      1000.00  Y  +124827.5326-994.683024*T+127.9577778*T*LN(T)
+       -0.088196514*T**2+8.008222E-6*T**3-15727191*T**(-1);  
+      1703.00  Y  -9688.5314+230.793918*T-43.932*T*LN(T);  
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Kardellass, C. Servant, N. Selhaoui,
+$ J. Thermal Anal. Calorim., 119, 1225-34(2015).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Interactions in fcc and hcp should probably be negative.
+$
+$ Invariant equilibria differ by up to 6 K.
+$
+$ There is an inverse miscibility gap with a minimum at 4906 K and x(Ni)=0.47.
+$
+ PAR  L(LIQUID,HO,NI;0),,               -152328.01+9.36494*T;,,       N 15Kar !
+ PAR  L(LIQUID,HO,NI;1),,               +16.262819+9.9093534*T;,,     N 15Kar !
+ PAR  L(LIQUID,HO,NI;2),,               +86874.186-55.10028*T;,,      N 15Kar !
+$
+ PAR  L(FCC_A1,HO,NI:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(HCP_A3,HO,NI:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(HO3NI_D011,HO:NI),,             +3*GHSERHO+GHSERNI
+             -97642.7964+9.29314516*T;,,                              N 15Kar !
+ PAR  G(HO3NI2_LT,HO:NI),,              +3*GHSERHO+2*GHSERNI
+             -195944.355+24.517054*T;,,                               N 15Kar !
+$ Original parameter below
+$PAR  G(HO3NI2_HT,HO:NI),,              +3*GHSERHO+2*GHSERNI
+$            -147233.26-67.137735*T;,,                                N 15Kar !
+$ Corrected parameter below
+ PAR  G(HO3NI2_HT,HO:NI),,              +3*GHSERHO+2*GHSERNI
+             -147676-22.3*T;,,                                        N 15Kar !
+ PAR  G(HONI_B27,HO:NI),,               +GHSERHO+GHSERNI
+             -98306.986+15.6141322*T;,,                               N 15Kar !
+$
+ PAR  G(HONI2_C15,HO:NI),,              +GHSERHO+2*GHSERNI
+             -131768.994+14.067*T;,,                                  N 15Kar !
+ PAR  L(HONI2_C15,HO:HO,NI;0),,         -96000+24*T;,,                N 15Kar !
+$
+ PAR  G(HONI3,HO:NI),,                  +GHSERHO+3*GHSERNI
+             -165876.212+21.4632316*T;,,                              N 15Kar !
+ PAR  G(HO2NI7,HO:NI),,                 +2*GHSERHO+7*GHSERNI
+             -366072.453+54.4489677*T;,,                              N 15Kar !
+ PAR  G(HONI5_D2D,HO:NI),,              +GHSERHO+5*GHSERNI
+             -213418.272+34.5791814*T;,,                              N 15Kar !
+ PAR  G(HO2NI17,HO:NI),,                +2*GHSERHO+17*GHSERNI
+             -436525.703+73.5550857*T;,,                              N 15Kar !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  00Nor1 'S. Norgren, J. Phase Equilib., 21, 148-56(2000),
+          SGTE unary database V.4.4, 2001; Er, Ho'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Dy, Gd, Ho'
+  09Wan1 'C.P. Wang, H.L. Zhang, S.L. Wang, Z. Lin, X.J. Liu, A.T. Tang,
+          F.S. Pan, J. Alloys Compd., 481, 291-95(2009); Ho'
+  15Kar  'S. Kardellass, C. Servant, N. Selhaoui,
+          J. Thermal Anal. Calorim., 119, 1225-34(2015); Ho-Ni'
+!

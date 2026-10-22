@@ -1,0 +1,168 @@
+$
+$ Database for Au-Bi from J. Wang et al. 2007.
+$
+$ J. Wang, F.G. Meng, H.S. Liu, L.B. Liu, Z.P. Jin,
+$ J. Electron. Mater., 36, 568-77(2007).
+$
+$ Dataset created 2019.10.03 by Bengt Hallstedt.
+$ 2023.02.24: Unary Bi changed from V4.4 to V5.0.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AU   FCC_A1                    196.9665    6016.592   47.4884 ! 
+ ELEMENT BI   RHOMBOHEDRAL_A7           208.98      6426.6     56.735  !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AU BI : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AU% BI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AU BI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AU BI : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : AU BI% : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE AU2BI_C15 % 2 2 1 !
+ CONST AU2BI_C15 : AU : BI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Au
+$
+$ DHCP added in unary 5.0
+$ DHCP replaced by the value from 92Ans in SGSOL 5.0
+$
+$ RHOMBOHEDRAL_A7 from 07Wan not included in unary
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems. The value for DHCP from 92Ans was used to model these systems,
+$ thus this value must be included in the unary database and not the 04Du
+$ value.
+$
+ PAR  G(FCC_A1,AU:VA),,                 +GHSERAU;                3200 N 91Din !
+ PAR  G(HCP_A3,AU:VA),,                 +GHSERAU+240.75+1.6*T;   3200 N 91Din !
+ PAR  G(BCC_A2,AU:VA),,                 +GHSERAU+4250-1.1*T;     3200 N 91Din !
+$PAR  G(DHCP,AU),,                      +GHSERAU+125+0.79*T;     3200 N 92Ans !
+$PAR  G(DHCP,AU),,                      +GHSERAU+5000;           3200 N 04Du !
+ PAR  G(RHOMBOHEDRAL_A7,AU),,           +GHSERAU+15000;          3200 N 07Wan !
+ PAR  G(LIQUID,AU),,                    +GHSERAU
+             +12552-9.385866*T;                                  3200 N 91Din !
+$
+ FUNCTION GHSERAU   298.15  -6938.856+106.830098*T-22.75455*T*LN(T)
+       -0.00385924*T**2+3.79625E-07*T**3-25097*T**(-1);
+       929.40  Y  -93586.481+1021.69543*T-155.706745*T*LN(T)
+       +0.08756015*T**2-1.1518713E-05*T**3+10637210*T**(-1);
+      1337.33  Y  +314067.829-2016.37825*T+263.252259*T*LN(T)
+       -0.118216828*T**2+8.923844E-06*T**3-67999832*T**(-1);
+      1735.80  Y  -12133.783+165.272524*T-30.9616*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Bi
+$
+$ RHOMBOHEDRAL_A7 and LIQUID modified in unary 5.0
+$ DIAMOND_A4 added in unary 5.0
+$
+ PAR  G(RHOMBOHEDRAL_A7,BI),,           +GHSERBI;                3000 N 09SGUN !
+ PAR  G(FCC_A1,BI:VA),,                 +GHSERBI+9900-12.5*T;    3000 N 91Din !
+ PAR  G(BCC_A2,BI:VA),,                 +GHSERBI+11297-13.9*T;   3000 N 91Din !
+ PAR  G(HCP_A3,BI:VA),,                 +GHSERBI+9900-11.8*T;    3000 N 91Din !
+$PAR  G(DIAMOND_A4,BI),,                +GHSERBI
+$            +11296.8+9.253655*T;                                3000 N 88Che2 !
+$PAR  G(BCT_A5,BI),,                    +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,BI),,             +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TET_ALPHA1_A6,BI),,             +GHSERBI+4234;           3000 N 91Din !
+ PAR  G(LIQUID,BI),,                    +GLIQBI;                 3000 N 09SGUN ! 
+$
+ FUNCTION GHSERBI   298.15  -7817.776+128.418925*T-28.4096529*T*LN(T)
+       +0.012338888*T**2-8.381598E-6*T**3;
+       544.55  Y  +29293.369-379.605174*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1)+1.66309E+25*T**(-9);
+       800.00  Y  -11085.609+182.955328*T-36.041*T*LN(T)
+       +7.4641E-3*T**2-1.05047E-6*T**3+5175*T**(-1)+1.66309E+25*T**(-9);
+      1200.00  Y  -7580.864+124.770814*T-27.196*T*LN(T)+1.66309E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQBI    298.15  +11246.017-20.636399*T+GHSERBI-5.9608E-19*T**7;
+       544.55  Y  +40629.667-400.415652*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1);
+       800.00  Y  +250.689+162.14485*T-36.041*T*LN(T)
+       +0.0074641*T**2-1.05047E-6*T**3+5175*T**(-1);
+      1200.00  Y  +3755.434+103.960336*T-27.196*T*LN(T);
+      3000.00 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Wang, F.G. Meng, H.S. Liu, L.B. Liu, Z.P. Jin,
+$ J. Electron. Mater., 36, 568-77(2007).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,AU,BI;0),,               -2346.538+27.104*T
+             -3.835*T*LN(T);,,                                        N 07Wan !
+ PAR  L(LIQUID,AU,BI;1),,               -1868.495+0.405*T;,,          N 07Wan !
+ PAR  L(LIQUID,AU,BI;2),,               -2280.516;,,                  N 07Wan !
+$
+ PAR  L(FCC_A1,AU,BI:VA;0),,            +48000;,,                     N 88Che0 !
+ PAR  L(RHOMBOHEDRAL_A7,AU,BI;0),,      +8000;,,                      N 07Wan !
+$
+ PAR  G(AU2BI_C15,AU:BI),,              +2*GHSERAU+GHSERBI
+             +5926.758-15.807*T;,,                                    N 07Wan !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,AU,BI:VA;0),,            +48000;,,                     N Same !
+ PAR  L(HCP_A3,AU,BI:VA;0),,            +48000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AU-BI(TDB -* +LIQ +FCC_A1 +AU2BI_C15 +RHOMB_A7 ;P3 TMM:300/1400 STP:.4/600) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che0 'P.-Y. Chevalier, Thermochim. Acta, 130, 15-24(1988); Au-Bi'
+  88Che2 'P.-Y. Chevalier, Thermochim. Acta, 132, 111-16(1988),
+          SGTE unary database V.5.0, 2009; Bi' 
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992); Au'
+  04Du   'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004),
+          SGTE unary database V.5.0, 2009; Au'
+  07Wan  'J. Wang, F.G. Meng, H.S. Liu, L.B. Liu, Z.P. Jin,
+          J. Electron. Mater., 36, 568-77(2007); Au, Au-Bi'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

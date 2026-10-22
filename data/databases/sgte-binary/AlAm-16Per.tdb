@@ -1,0 +1,178 @@
+$
+$ Database for Al-Am from A. Perron et al. 2016.
+$
+$ A. Perron, P.E.A. Turchi, A. Landa, B. Oudot, B. Ravat, F. Delaunay,
+$ J. Nucl. Mater., 482, 187-200(2016).
+$
+$ Dataset created 2019.04.21 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ Max T for AlAm is 7 K too low and min T is 64 K too high. All other invariants
+$ are exactly reproduced.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT AM   DHCP                      243.        6407.00    55.3960 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL AM : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% AM% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL AM% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : AM : !
+$
+$ Prototype Al4U (oI20, Imma)
+$
+ PHASE AL4AM_D1B % 2 4 1 !
+ CONST AL4AM_D1B : AL : AM : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE AL3AM_L12 % 2 3 1 !
+ CONST AL3AM_L12 : AL : AM : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE AL2AM_C15 % 2 2 1 !
+ CONST AL2AM_C15 : AL : AM : !
+$
+$ Prototype AlPu (cI58)
+$
+ PHASE ALAM % 2 1 1 !
+ CONST ALAM : AL : AM : !
+$
+$ Prototype Pb3Sr (tP4, P4/mmm)
+$
+ PHASE ALAM3 % 2 1 3 !
+ CONST ALAM3 : AL : AM : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$ ------------------------------------------------------------------------------
+$ Am
+$
+ PAR  G(DHCP,AM),,                      +GHSERAM;                3000 N 91Din !
+ PAR  G(FCC_A1,AM:VA),,                 +GFCCAM;                 3000 N 91Din !
+ PAR  G(BCC_A2,AM:VA),,                 +GBCCAM;                 3000 N 91Din !
+ PAR  G(LIQUID,AM),,                    +GHSERAM
+             +19910.7-14.1205*T;                                 3000 N 91Din !
+$
+ FUNCTION GHSERAM   298.15  -6639.201+89.645685*T-21.1868*T*LN(T)
+       -0.00559955*T**2-5.41038E-07*T**3-30424*T**(-1);
+      1329.00  Y  -21702.938+241.107269*T-41.84*T*LN(T);
+      3000.00  N !
+ FUNCTION GFCCAM    298.15  -5224.899+99.204329*T-23.1377*T*LN(T)
+       -0.00294694*T**2-6.64773E-07*T**3-18507*T**(-1);
+      1018.00  Y  -2935.853+73.800069*T-19.4406*T*LN(T)
+       -0.005418*T**2-3.75233E-07*T**3-260435*T**(-1);
+      1548.70  Y  -476.655+0.246538*T+GHSERAM;
+      3000.00  N !
+ FUNCTION GBCCAM    298.15  +5973.805-4.531331*T+GHSERAM
+       +5E-08*T**2+5E-12*T**3;
+       999.00  Y  -7800.332+63.93115*T-15.8832*T*LN(T)
+       -0.0190671*T**2+2.291117E-06*T**3+2287195*T**(-1);
+      1339.00  Y  -13153.887+219.600832*T-39.748*T*LN(T);
+      1449.00  Y  +70352.138-326.394464*T+33.413*T*LN(T)
+       -0.02736485*T**2+1.801717E-06*T**3-17379450*T**(-1);
+      2183.60  Y  +4777.694-3.740241*T+GHSERAM;
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A. Perron, P.E.A. Turchi, A. Landa, B. Oudot, B. Ravat, F. Delaunay,
+$ J. Nucl. Mater., 482, 187-200(2016).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Max T for AlAm is 7 K too low and min T is 64 K too high. All other invariants
+$ are exactly reproduced.
+$
+ PAR  L(LIQUID,AL,AM;0),,               -50000-25*T;,,                N 16Per !
+ PAR  L(LIQUID,AL,AM;1),,               -66000+20*T;,,                N 16Per !
+ PAR  L(LIQUID,AL,AM;2),,               -45000-6*T;,,                 N 16Per !
+$
+ PAR  L(FCC_A1,AL,AM:VA;0),,            -48950;,,                     N 16Per !
+ PAR  L(BCC_A2,AL,AM:VA;0),,            -20000;,,                     N 16Per !
+$
+ PAR  G(AL4AM_D1B,AL:AM),,              +4*GHSERAL+GHSERAM
+             -207500+30*T;,,                                          N 16Per !
+ PAR  G(AL3AM_L12,AL:AM),,              +3*GHSERAL+GHSERAM
+             -200000+28*T;,,                                          N 16Per !
+ PAR  G(AL2AM_C15,AL:AM),,              +2*GHSERAL+GHSERAM
+             -144000+6*T;,,                                           N 16Per !
+ PAR  G(ALAM,AL:AM),,                   +GHSERAL+GHSERAM
+             -75400+6*T;,,                                            N 16Per !
+ PAR  G(ALAM3,AL:AM),,                  +GHSERAL+3*GHSERAM
+             -90000+20*T;,,                                           N 16Per !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  16Per  'A. Perron, P.E.A. Turchi, A. Landa, B. Oudot, B. Ravat, F. Delaunay,
+          J. Nucl. Mater., 482, 187-200(2016); Al-Am'
+!

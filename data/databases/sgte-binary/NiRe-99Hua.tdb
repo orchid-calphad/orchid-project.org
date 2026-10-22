@@ -1,0 +1,165 @@
+$
+$ Database for Ni-Re from W. Huang and Y.A. Chang 1999.
+$
+$ W. Huang, Y.A. Chang, Mater. Sci. Eng. A, 259, 110-19(1999).
+$
+$ Dataset created 2018.12.25 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ Note! This dataset uses the original 91Din description of Re, not the
+$ current SGTE description. In order to change to the current description
+$ a reoptimisation is necessary. The phase diagram is otherwise considerably
+$ different.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT RE   HCP_A3                    186.207     5333.      36.4820 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI RE : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% RE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI RE : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI RE% : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 6000 N !
+$ ------------------------------------------------------------------------------
+$ Re
+$
+$ HCP_A3 and LIQUID revised in unary 3.0
+$ BCC_A2 revised in unary 4.4
+$
+$PAR  G(HCP_A3,RE:VA),,                 +GHSERRE;,,                   N 96Arb !
+ PAR  G(HCP_A3,RE:VA),,                 +GHSERRE;,,                   N 91Din !
+ PAR  G(FCC_A1,RE:VA),,                 +GHSERRE+11000-1.5*T;,,       N 91Din !
+ PAR  G(BCC_A2,RE:VA),,                 +GHSERRE+17000-3.7*T;,,       N 01SGUN !
+$PAR  G(BCC_A2,RE:VA),,                 +GHSERRE+29200-6*T;,,         N 91Din !
+$PAR  G(LIQUID,RE),,                    +GLIQRE;,,                    N 96Arb !
+ PAR  G(LIQUID,RE),,                    +GLIQRE;,,                    N 91Din !
+$
+$ Function from 96Arb below
+$FUNCTION GHSERRE   298.15  -7695.279+128.421589*T-24.348*T*LN(T)
+$      -0.00253505*T**2+1.92818E-07*T**3+32915*T**(-1);
+$     1200.00  Y  -15775.998+194.667426*T-33.586*T*LN(T)
+$      +0.00224565*T**2-2.81835E-07*T**3+1376270*T**(-1);
+$     2400.00  Y  -70882.739+462.110749*T-67.956*T*LN(T)
+$      +0.01184945*T**2-7.88955E-07*T**3+18075200*T**(-1);
+$     3458.00  Y  +346325.888-1211.37186*T+140.831655*T*LN(T)
+$      -0.033764567*T**2+1.053726E-06*T**3-1.34548866E+08*T**(-1);
+$     5000.00  Y  -78564.296+346.997842*T-49.519*T*LN(T);
+$     6000.00  N !
+$ Function from 91Din below
+ FUNCTION GHSERRE   298.15  -7305.045+123.758773*T-23.6892641*T*LN(T)
+       -0.002723387*T**2;
+      3459.00  Y  +38514.17-65.920606*T+0.0645635*T*LN(T)
+       -0.008050184*T**2+2.19551E-7*T**3-15938253*T**(-1);
+      6000.00  N !
+$ Function from 96Arb below
+$FUNCTION GLIQRE    298.15  +23820.883-6.34538*T+GHSERRE;
+$     2000.00  Y  +568842.665-2527.83846*T+314.178898*T*LN(T)
+$      -0.08939817*T**2+3.92854E-06*T**3-1.63100987E+08*T**(-1);
+$     3458.00  Y  -39044.888+335.723691*T-49.519*T*LN(T);
+$     5000.00  Y  +39519.408-11.274151*T+GHSERRE;
+$     6000.00  N !
+$ Function from 91Din below
+ FUNCTION GLIQRE    298.25  +45296.708-11.184298*T+GHSERRE;
+      1000.00  Y  +66060.979-113.540121*T+7.4580354*T*LN(T)
+       -0.016183804*T**2+7.69496E-7*T**3-4421721*T**(-1);
+      3459.00  Y  -5301.43+328.158541*T-50*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ W. Huang, Y.A. Chang, Mater. Sci. Eng. A, 259, 110-19(1999).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Note! This dataset uses the original 91Din description of Re, not the
+$ current SGTE description. In order to change to the current description
+$ a reoptimisation is necessary. The phase diagram is otherwise considerably
+$ different.
+$
+ PAR  L(LIQUID,NI,RE;0),,               +8000;,,                      N 99Hua !
+$
+ PAR  L(FCC_A1,NI,RE:VA;0),,            +16855+8.337*T;,,             N 99Hua !
+ PAR  L(FCC_A1,NI,RE:VA;1),,            -24910;,,                     N 99Hua !
+$
+ PAR  L(HCP_A3,NI,RE:VA;0),,            +12142+9*T;,,                 N 99Hua !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,NI,RE:VA;0),,            +16855+8.337*T;,,             N Same !
+ PAR  L(BCC_A2,NI,RE:VA;1),,            -24910;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Arb  'J.W. Arblaster, Calphad, 20, 343-52(1996),
+          SGTE unary database V.3.0, 1996; Re'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  99Hua  'W. Huang, Y.A. Chang, Mater. Sci. Eng. A, 259, 110-19(1999); Ni-Re'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+!

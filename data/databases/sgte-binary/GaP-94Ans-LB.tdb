@@ -1,0 +1,237 @@
+$
+$ Database for Ga-P from I. Ansara et al. 1994 (included in LB Vol. 3)
+$
+$ I. Ansara, C. Chatillon, H.L. Lukas, T. Nishizawa, H. Ohtani, K. Ishida,
+$ M. Hillert, B. Sundman, B.B. Argent, A. Watson, T.G. Chart, T. Anderson,
+$ Calphad, 18, 177-222(1994).
+$
+$ Dataset created 2016.02.09 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_GA            69.72      5572.0     40.7271 ! 
+ ELEMENT P    WHITE_P                    30.97376   5360.0     41.09   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  GA2                                GA2 !
+ SPECIE  GAP                                GA1P1 !
+ SPECIE  P2                                 P2 !
+ SPECIE  P3                                 P3 !
+ SPECIE  P4                                 P4 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA P : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GA P : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GA P : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GA : VA : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA : !
+$
+$ Structure not well defined
+$
+ PHASE WHITE_P % 1 1 !
+ CONST WHITE_P : P : !
+$
+$ Structure not well defined
+$
+ PHASE RED_P % 1 1 !
+ CONST RED_P : P : !
+$
+$ Prototype ZnS (cF8, F-43m)
+$
+ PHASE ZINCBLENDE_B3 % 2 1 1 !
+ CONST ZINCBLENDE_B3 : GA : P : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : GA GA2 GAP P P2 P3 P4 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ PAR  G(GAS,GA),,                       +F10135T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,GA2),,                      +F10197T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+$ Ga(g)
+ FUNCTION F10135T   298.15  +259072.278+88.0130706*T-38.71057*T*LN(T)
+       +0.01053784*T**2-9.86907833E-07*T**3+338489.2*T**(-1);
+       600.00  Y  +263812.519+33.4871435*T-30.75007*T*LN(T)
+       +0.00537745*T**2-5.46534E-07*T**3-150942.65*T**(-1);
+      1400.00  Y  +270292.501-28.1810494*T-21.9834*T*LN(T)
+       +3.192416E-04*T**2-1.46299133E-08*T**3-992093*T**(-1);
+      6000.00  Y  +340110.007-140.262257*T-9.704267*T*LN(T)
+       -4.5138725E-04*T**2-1.13427367E-08*T**3-68387950*T**(-1);
+     10000.00  N !
+$ Ga2(g)
+ FUNCTION F10197T   298.15  +422882.385-36.0787973*T-33.72863*T*LN(T)
+       -0.009368525*T**2+7.62775167E-07*T**3-19520.385*T**(-1);
+      1100.00  Y  +419324.178+8.33965897*T-40.33555*T*LN(T)
+       -0.0041854135*T**2+2.679565E-08*T**3+312119.6*T**(-1);
+      2500.00  N !
+$ ------------------------------------------------------------------------------
+$ P
+$
+$ RHOMBOHEDRAL_A7 added in unary 4.4
+$
+ PAR  G(WHITE_P,P)              250.00  +GHSERPP;                3000 N 91Din !
+ PAR  G(RED_P,P)                250.00  +GREDPP;                 3000 N 91Din !
+ PAR  G(FCC_A1,P:VA)            250.00  +GREDPP+36819-13.138*T;  3000 N 91Din !
+ PAR  G(BCC_A2,P:VA)            250.00  +GREDPP+44768.8-13.26*T; 3000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,P)      250.00  +GHSERPP-188+0.12527*T;  3000 N 01SGUN !
+ PAR  G(LIQUID,P)               250.00  +GLIQPP;                 3000 N 91Din !
+$
+ PAR  G(GAS,P),,                        +F14404T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,P2),,                       +F14448T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,P3),,                       +F14471T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,P4),,                       +F14479T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERPP   250.00  -43821.799+1026.69389*T-178.426*T*LN(T)
+       +0.290708*T**2-1.04022667E-04*T**3+1632695*T**(-1);
+       317.30  Y  -9587.448+152.341487*T-28.7335301*T*LN(T)
+       +0.001715669*T**2-2.2829E-07*T**3+172966*T**(-1);
+      1000.00  Y  -8093.075+135.876831*T-26.326*T*LN(T);
+      3000.00  N !
+ FUNCTION GREDPP    250.00  -25976.559+148.672002*T-25.55*T*LN(T)
+       +0.0034121*T**2-2.418867E-06*T**3+160095*T**(-1);
+       500.00  Y  -21723.721+77.671737*T-14.368*T*LN(T)
+       -0.00957685*T**2+3.93917E-07*T**3-141375*T**(-1);
+       852.35  Y  -119408.413+1026.02962*T-149.449556*T*LN(T)
+       +0.067272364*T**2-6.651929E-06*T**3+12495943*T**(-1);
+      1500.00  Y  -16431.044+17.96235*T+GHSERPP;
+      3000.00  N !
+ FUNCTION GLIQPP    250.00  -26316.111+434.930931*T-70.7440584*T*LN(T)
+       -0.002898936*T**2+3.9049371E-05*T**3+1141147*T**(-1);
+       317.30  Y  -7232.449+133.291873*T-26.326*T*LN(T);
+      3000.00  N !
+$ P(g)
+ FUNCTION F14404T   298.15  +310152.015-21.3997112*T-21.18864*T*LN(T)
+       +3.9907815E-04*T**2-6.467185E-08*T**3+9337.96*T**(-1);
+      1900.00  Y  +332461.723-123.51155*T-8.27475*T*LN(T)
+       -0.0025407355*T**2+2.77886167E-08*T**3-6752450*T**(-1);
+      3900.00  Y  +295561.679-61.0229009*T-14.92054*T*LN(T)
+       -0.002691344*T**2+7.37562667E-08*T**3+20828775*T**(-1);
+      7000.00  Y  +105621.967+337.540131*T-60.52207*T*LN(T)
+       +0.002171204*T**2-2.32968833E-08*T**3+1.6928265E+08*T**(-1);
+     10000.00  N !
+$ P2(g)
+ FUNCTION F14448T   298.15  +133357.681+.182114942*T-32.02798*T*LN(T)
+       -0.004670767*T**2+7.28558667E-07*T**3+106826.35*T**(-1);
+       900.00  Y  +128832.659+49.3136341*T-39.23087*T*LN(T)
+       +7.156115E-04*T**2-6.82824333E-08*T**3+666443.5*T**(-1);
+      3500.00  Y  +164091.361-27.2592211*T-30.65569*T*LN(T)
+       +3.4990285E-04*T**2-1.0132875E-07*T**3-21312200*T**(-1);
+      6000.00  N !
+$ P3(g)
+ FUNCTION F14471T   298.15  +191023.012+115.134799*T-55.58992*T*LN(T)
+       -0.00549647*T**2+8.37126667E-07*T**3+291982.3*T**(-1);
+      1000.00  Y  +187367.887+160.095451*T-62.29736*T*LN(T)
+       -1.1488665E-05*T**2+3.82699333E-10*T**3+671571.5*T**(-1);
+      6000.00  N !
+$ P4(g)
+ FUNCTION F14479T   298.15  +31689.2272+246.976573*T-77.33235*T*LN(T)
+       -0.0046207025*T**2+6.76817E-07*T**3+563393*T**(-1);
+      1100.00  Y + 28520.4461+285.801742*T-83.11153*T*LN(T)
+       -6.057165E-06*T**2+1.99865333E-10*T**3+890230*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From I. Ansara et al. 1994 (included in LB Vol. 3)
+$
+$ I. Ansara, C. Chatillon, H.L. Lukas, T. Nishizawa, H. Ohtani, K. Ishida,
+$ M. Hillert, B. Sundman, B.B. Argent, A. Watson, T.G. Chart, T. Anderson,
+$ Calphad, 18, 177-222(1994).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+ PAR  L(LIQUID,GA,P;0),,                -9862;,,                      N 94Ans !
+$
+ PAR  G(ZINCBLENDE_B3,GA:P),,           +2*GB3GAPP;,,                 N 94Ans !
+$
+ PAR  G(GAS,GAP),,                      +GA1P1G+RTLNP;,,              N 00SUB !
+$
+ FUNCTION GB3GAPP   298.15  -65760.76+142.37445*T-24.7902*T*LN(T)
+       -7.113E-04*T**2+146440*T**(-1);
+      6000.00  N !
+$ GaP (g)
+ FUNCTION GA1P1G    298.15  +338723.188+4.12127639*T-37.21519*T*LN(T)
+       -9.81506E-05*T**2+8.251335E-09*T**3+85392.45*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  GA-P(TDB -* +LIQUID +GAS +ORTHO_A11 +RED_P +WHITE_P +ZINCB_B3
+  ;P3 TMM:300/2000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Ans  'I. Ansara, C. Chatillon, H.L. Lukas, T. Nishizawa, H. Ohtani,
+          K. Ishida, M. Hillert, B. Sundman, B.B. Argent, A. Watson,
+          T.G. Chart, T. Anderson, Calphad, 18, 177-222(1994); Ga-P'
+  97SUB  'SGTE substance database, version 1997'
+  00SUB  'SGTE substance database, version 2000'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

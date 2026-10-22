@@ -1,0 +1,334 @@
+$============================================================================
+$ Thermodynamic database for the Mo-Si-Y-Hf quaternary system
+$
+$ Author: Pranav P. S. Setty
+$         Department of Materials Science and Engineering
+$         The Pennsylvania State University, University Park, PA 16802, USA
+$         pvs5840@psu.edu
+$
+$ Citation: Setty, P.P.S. (2026). Thermodynamic assessment of the quaternary
+$           Mo-Si-Y-Hf system, validated by machine-learning interatomic
+$           potentials, and reactive-element co-design of a refractory
+$           silicide composite. Computational Materials Science, [in review].
+$
+$ SCOPE
+$   Elements:   MO, SI, Y, HF (with VA sublattice on BCC_A2 and HCP_A3)
+$   Phases:     20 (LIQUID, BCC_A2, HCP_A3, DIAMOND_A4, MO3SI, MO5SI3,
+$               MOSI2, HF2SI, HF5SI3, HF3SI2, HF5SI4, HFSI, HFSI2, SIY,
+$               SI4Y5, ASI5Y3, BSI5Y3, ASI2Y, BSI2Y, SI3Y5)
+$   Parameters: 65 Redlich-Kister and end-member coefficients
+$   Convention: SGTE unary lattice stabilities (Dinsdale 1991)
+$
+$ SUBSYSTEM SOURCES
+$   Unaries     : Dinsdale 1991 (SGTE), CALPHAD 15(4) 317-425
+$   Mo-Si       : Czerny et al. 2024, Adv. Eng. Mater. 26, 2302085
+$                 DOI 10.1002/adem.202302085
+$   Mo-Hf liquid: Shao 2002, Intermetallics 10(5) 429-434
+$                 DOI 10.1016/S0966-9795(02)00017-1
+$   Mo-Hf bcc   : Zhao et al. 2020, CALPHAD 69, 101766
+$                 DOI 10.1016/j.calphad.2020.101766
+$                 Note: Zhao et al. (2020) Table 4 labels the order-1 and
+$                 order-2 Redlich-Kister rows as "Mo,Zr" rather than
+$                 "Mo,Hf". This is a documented labeling typo; the Mo-Zr
+$                 parameters appear separately in Table 5 with different
+$                 values, and a sub-regular Redlich-Kister set must belong
+$                 to a single binary, confirming all three terms are Mo-Hf.
+$   Mo-Y        : Chan et al. 2010, J. Phase Equilib. Diffus. 31(5) 414-420
+$                 DOI 10.1007/s11669-010-9753-1
+$   Hf-Si       : Zhao et al. 2000, J. Phase Equilib. 21(1) 40-45
+$                 DOI 10.1361/105497100770340408
+$   Si-Y        : Zhang et al. 2019, CALPHAD 65, 282-290
+$                 DOI 10.1016/j.calphad.2019.03.009
+$   Hf-Y        : ideal mixing (no published assessment)
+$
+$ NORMALIZATION
+$   Hf-silicides are reported per mole-atom, referenced to GHSERHF (hcp)
+$   and GHSERSI (diamond).
+$   Y-silicide formation energies in the source were per-formula and have
+$   been divided by atom count (SIY/2, SI4Y5/9, *SI5Y3/8) to yield
+$   per-mole-atom values consistent with the Hf-silicides
+$   (-67 to -80 kJ/mol-atom). The per-formula basis for SIY was inferred
+$   from the published value.
+$
+$ TERNARY AND HIGHER-ORDER INTERACTIONS
+$   All ternary and quaternary excess interactions are obtained from the
+$   binary subsystems by Muggianu extrapolation. Two matrix-relevant
+$   ternary interactions (Mo-Si-Y and Mo-Si-Hf) were computed externally
+$   from special quasirandom structure (SQS) relaxations and ESPEI fits;
+$   their inclusion shifts the predicted solidus by <=5 K and leaves the
+$   phase assemblage unchanged, and they are therefore not embedded in
+$   this released database. See manuscript Section 3.5 and Supplementary
+$   Figures S14 and S15.
+$============================================================================
+
+ELEMENT /-   ELECTRON_GAS              0.0000E+00  0.0000E+00  0.0000E+00 !
+ELEMENT VA   VACUUM                    0.0000E+00  0.0000E+00  0.0000E+00 !
+ELEMENT MO   BCC_A2                    9.5940E+01  4.5890E+03  2.8560E+01 !
+ELEMENT SI   DIAMOND_A4                2.8085E+01  3.2175E+03  1.8820E+01 !
+ELEMENT HF   HCP_A3                    1.7849E+02  5.8450E+03  4.3560E+01 !
+ELEMENT Y    HCP_A3                    8.8906E+01  5.9664E+03  4.4434E+01 !
+
+ TYPE_DEFINITION % SEQ *!
+ DEFINE_SYSTEM_DEFAULT ELEMENT 2 !
+ DEFAULT_COMMAND DEF_SYS_ELEMENT VA /- !
+
+$============================================================================
+$ FUNCTION BLOCK
+$============================================================================
+
+$---- Unary SER references --------------------------------------------------
+$ Mo SER = BCC (Du-Geng [DG], SGTE) -- IDENTICAL to Czerny GHSERMO, no change
+FUNCTION GHSERMO  2.98140E+02 -7746.302+131.9197*T-23.56414*T*LN(T)
+     -.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2.89600E+03  Y  -30556.41+283.559746*T-42.63829*T*LN(T)
+     -4.849315E+33*T**(-9); 5.00000E+03  N !
+
+$ Si SER = diamond (SGTE/Czerny p.222) -- UPDATED from Du-Geng (+0.0096*T) so the
+$ BCC/LIQUID/DIAMOND Si endmembers exactly match Czerny's reference state. [v1]
+FUNCTION GHSERSI  2.98140E+02  -8162.609+137.236859*T-22.8317533*T*LN(T)
+                   -.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+                   1.68700E+03  Y
+                  -9457.642+167.281367*T-27.196*T*LN(T)
+                   -4.20369E+30*T**(-9); 3.60000E+03 N !
+
+$ Hf SER = HCP (mc_ni [MCNI], SGTE/REF:0)
+FUNCTION GHSERHF  2.73000E+02 -6987.297+110.744026*T-22.7075*T*LN(T)
+     -4.146145E-3*T**2-0.000477E-6*T**3-22590*T**(-1); 2.50600E+03  Y
+     -1446776.329+6193.609991*T-787.5363829*T*LN(T)+173.5215E-3*T**2
+     -7.575759E-6*T**3+501742495*T**(-1); 6.00000E+03  N !
+
+$ Y SER = HCP (mc_ni [MCNI], SGTE/REF:0)
+FUNCTION GHSERYY  2.73000E+02 -7347.055+117.532124*T-23.8685*T*LN(T)
+     -3.845475E-3*T**2+0.011125E-6*T**3-16486*T**(-1); 1.50000E+03  Y
+     -15802.62+229.831717*T-40.2851*T*LN(T)+6.8095E-3*T**2
+     -1.14182E-6*T**3; 1.79900E+03  Y
+     -72946.216+393.885821*T-58.2078433*T*LN(T)+2.436461E-3*T**2
+     -0.072627E-6*T**3+20866567*T**(-1); 6.00000E+03  N !
+
+$---- Phase lattice-stability functions -------------------------------------
+$ Si BCC (SGTE) -- references SGTE GHSERSI -> == Czerny G(BCC_A2,SI:VA) absolute
+FUNCTION GBCCSI   2.98140E+02 +47000-22.5*T+GHSERSI#; 6.00000E+03 N !
+
+$ Mo HCP (SGTE Dinsdale 1991 convention: +11550-0.222*T over BCC)
+FUNCTION GHCPMO   2.98150E+02 +11550-0.222*T+GHSERMO#; 6.00000E+03 N !
+
+$ Si HCP (SGTE Dinsdale 1991 convention: +49200-20.8*T over diamond)
+FUNCTION GHCPSI   2.98150E+02 +49200-20.8*T+GHSERSI#; 6.00000E+03 N !
+
+$ Hf BCC (mc_ni [MCNI], SGTE/REF:0)
+FUNCTION GHFBCC   2.73000E+02 +5370.703+103.836026*T-22.8995*T*LN(T)
+     -4.206605E-3*T**2+0.871923E-6*T**3-22590*T**(-1)-0.1446E-9*T**4;
+      2.50600E+03  Y
+     +1912456.771-8624.20573*T+1087.6141247*T*LN(T)-286.857065E-3*T**2
+     +13.427829E-6*T**3-610085091*T**(-1); 6.00000E+03  N !
+
+$ Y BCC (mc_ni [MCNI], SGTE/REF:0)
+FUNCTION GYYBCC   2.73000E+02 +5485.858-20.009726*T+2.927924*T*LN(T)
+     -4.150358E-3*T**2+0.747591E-6*T**3-37863*T**(-1)+GHSERYY#; 1.50000E+03  Y
+     +13941.422-132.309319*T+19.344524*T*LN(T)
+     -14.805333E-3*T**2+1.900536E-6*T**3-54349*T**(-1)+GHSERYY#; 1.75200E+03  Y
+     +5594.895-34.089733*T+5.265*T*LN(T)
+     -6.8095E-3*T**2+1.14182E-6*T**3+GHSERYY#; 1.79900E+03  Y
+     +177760.169-780.053385*T+98.0154419*T*LN(T)
+     -22.3552E-3*T**2+0.913936E-6*T**3-52416530*T**(-1)+GHSERYY#; 6.00000E+03  N !
+
+$---- Liquid endmember functions --------------------------------------------
+$ Mo liquid (Du-Geng [DG], SGTE) -- == Czerny G(LIQUID,MO), no change
+FUNCTION GLIQMO   2.98140E+02 +41831.347-14.694912*T+4.24519E-22*T**7
+        +GHSERMO#; 2.89600E+03  Y +34095.373-11.890046*T+4.849315E+33*T**(-9)
+        +GHSERMO#; 5.00000E+03  N !
+
+$ Si liquid -- references SGTE GHSERSI -> == Czerny G(LIQUID,SI) absolute
+FUNCTION GLIQSI   2.98140E+02 +50696.36-30.099439*T+2.09307E-21*T**7+GHSERSI#;
+                   1.68700E+03  Y
+                   +49828.165-29.559069*T+4.20369E+30*T**(-9)+GHSERSI#;
+                   3.60000E+03 N !
+
+$ Hf liquid (mc_ni [MCNI], SGTE/REF:0 -- absolute expression)
+FUNCTION GLIQHF   2.73000E+02 +20414.959+99.790933*T-22.7075*T*LN(T)
+     -4.146145E-3*T**2-0.000477E-6*T**3-22590*T**(-1); 1.00000E+03  Y
+     +49731.499-149.91739*T+12.116812*T*LN(T)-21.262021E-3*T**2
+     +1.376466E-6*T**3-4449699*T**(-1); 2.50600E+03  Y
+     -4247.217+265.470523*T-44*T*LN(T); 6.00000E+03  N !
+
+$ Y liquid (mc_ni [MCNI], SGTE/REF:0 -- absolute expression)
+FUNCTION GLIQYY   2.73000E+02 +3934.121+59.921688*T-14.8146562*T*LN(T)
+     -15.623487E-3*T**2+1.442946E-6*T**3-140695*T**(-1); 1.79900E+03  Y
+     -13337.609+258.004539*T-43.0952*T*LN(T); 6.00000E+03  N !
+
+$============================================================================
+$ PHASE DECLARATIONS
+$============================================================================
+PHASE LIQUID  %  1  1.0  !
+ CONSTITUENT LIQUID  :MO,SI,Y,HF :  !
+
+PHASE BCC_A2  %  2  1  3  !
+ CONSTITUENT BCC_A2  :MO,SI,Y,HF : VA :  !
+
+PHASE HCP_A3  %  2  1  0.5  !
+ CONSTITUENT HCP_A3  :MO,SI,Y,HF : VA :  !
+
+PHASE DIAMOND_A4  %  1  1.0  !
+ CONSTITUENT DIAMOND_A4  :SI :  !
+
+$ Czerny A.3 simplified silicide models
+PHASE MO3SI  %  2  0.77  0.23  !
+ CONSTITUENT MO3SI  :MO : SI :  !
+
+PHASE MO5SI3  %  2  0.625  0.375  !
+ CONSTITUENT MO5SI3  :MO : SI :  !
+
+PHASE MOSI2  %  2  1  2  !
+ CONSTITUENT MOSI2  :MO : SI :  !
+
+$ Hf-silicides [ZHAO 2000] -- stoichiometric line compounds (per mole-atom)
+PHASE HF2SI   %  2  0.667  0.333  !
+ CONSTITUENT HF2SI   :HF : SI :  !
+PHASE HF5SI3  %  2  0.625  0.375  !
+ CONSTITUENT HF5SI3  :HF : SI :  !
+PHASE HF3SI2  %  2  0.600  0.400  !
+ CONSTITUENT HF3SI2  :HF : SI :  !
+PHASE HF5SI4  %  2  0.556  0.444  !
+ CONSTITUENT HF5SI4  :HF : SI :  !
+PHASE HFSI    %  2  0.500  0.500  !
+ CONSTITUENT HFSI    :HF : SI :  !
+PHASE HFSI2   %  2  0.333  0.667  !
+ CONSTITUENT HFSI2   :HF : SI :  !
+
+$ Y-silicides [ZHANG 2019] -- stoichiometric (per-formula G normalized to per-atom; see header note)
+PHASE SIY     %  2  0.500   0.500   !
+ CONSTITUENT SIY     :SI : Y :  !
+PHASE SI4Y5   %  2  0.4444  0.5556  !
+ CONSTITUENT SI4Y5   :SI : Y :  !
+PHASE ASI5Y3  %  2  0.625   0.375   !
+ CONSTITUENT ASI5Y3  :SI : Y :  !
+PHASE BSI5Y3  %  2  0.625   0.375   !
+ CONSTITUENT BSI5Y3  :SI : Y :  !
+
+$ Si-Y two-sublattice phases [ZHANG 2019] -- v3.1 COMPLETION (alpha/beta-Si2Y + Si3Y5)
+PHASE ASI2Y   %  2  2       1       !
+ CONSTITUENT ASI2Y   :SI,Y : SI,Y :  !
+PHASE BSI2Y   %  2  2       1       !
+ CONSTITUENT BSI2Y   :SI,Y : SI,Y :  !
+PHASE SI3Y5   %  2  0.375   0.625   !
+ CONSTITUENT SI3Y5   :SI,Y : Y :  !
+
+$============================================================================
+$ PARAMETER BLOCK
+$============================================================================
+
+$---------------------------------------------------------------- LIQUID ----
+$ Endmembers
+PARAMETER G(LIQUID,MO;0)  2.98140E+02  +GLIQMO#;  5.00000E+03  N !  $ [DG]
+PARAMETER G(LIQUID,SI;0)  2.98140E+02  +GLIQSI#;  3.60000E+03  N !  $ [SGTE]
+PARAMETER G(LIQUID,HF;0)  2.73000E+02  +GLIQHF#;  6.00000E+03  N !  $ [MCNI/SGTE]
+PARAMETER G(LIQUID,Y;0)   2.73000E+02  +GLIQYY#;  6.00000E+03  N !  $ [MCNI/SGTE]
+$ Mo-Si interaction (4 RK terms) [CZERNY 2024]
+PARAMETER G(LIQUID,MO,SI;0)  2.98150E+02  -172591.2920+27.6145*T;  6.00000E+03  N !
+PARAMETER G(LIQUID,MO,SI;1)  2.98150E+02  +26612.6661-20.6586*T;   6.00000E+03  N !
+PARAMETER G(LIQUID,MO,SI;2)  2.98150E+02  +38731.7034;             6.00000E+03  N !
+PARAMETER G(LIQUID,MO,SI;3)  2.98150E+02  +19624.2756;             6.00000E+03  N !
+$ Mo-Hf interaction (3 RK terms) [SHAO via MCNI, REF:179]
+PARAMETER G(LIQUID,HF,MO;0)  2.73000E+02  -23413-2.27*T;          6.00000E+03  N !
+PARAMETER G(LIQUID,HF,MO;1)  2.73000E+02  +46500-28*T;            6.00000E+03  N !
+PARAMETER G(LIQUID,HF,MO;2)  2.73000E+02  -0.5*T;                 6.00000E+03  N !
+$ Mo-Y interaction (immiscible) [CHAN 2010, JPED 31(5):414-420, DOI 10.1007/s11669-010-9753-1]
+PARAMETER G(LIQUID,MO,Y;0)  2.98150E+02  +29700;             6.00000E+03  N !
+PARAMETER G(LIQUID,MO,Y;1)  2.98150E+02  +1500;              6.00000E+03  N !
+$ Hf-Si interaction [ZHAO 2000, JPE 21(1) p.40, DOI 10.1361/105497100770340408]
+PARAMETER G(LIQUID,HF,SI;0)  2.98150E+02  -177631+6.42546*T; 6.00000E+03  N !
+PARAMETER G(LIQUID,HF,SI;1)  2.98150E+02  -1830;             6.00000E+03  N !
+$ Si-Y interaction [ZHANG 2019, CALPHAD 65 p.282]
+PARAMETER G(LIQUID,SI,Y;0)  2.98150E+02  -231878.58;         6.00000E+03  N !
+PARAMETER G(LIQUID,SI,Y;1)  2.98150E+02  -22570.43+3.00*T;   6.00000E+03  N !
+PARAMETER G(LIQUID,SI,Y;2)  2.98150E+02  +75072.9-26.56*T;   6.00000E+03  N !
+$ GAPS: Hf-Y liquid interaction = ideal (no assessment; no Hf-Y compounds, arXiv:0907.5131).
+
+$---------------------------------------------------------------- BCC_A2 ----
+$ Endmembers (..)1(VA)3
+PARAMETER G(BCC_A2,MO:VA;0)  2.98140E+02  +GHSERMO#;  5.00000E+03  N !  $ [DG]
+PARAMETER G(BCC_A2,SI:VA;0)  2.98140E+02  +GBCCSI#;   6.00000E+03  N !  $ [SGTE]
+PARAMETER G(BCC_A2,HF:VA;0)  2.73000E+02  +GHFBCC#;   6.00000E+03  N !  $ [MCNI/SGTE]
+PARAMETER G(BCC_A2,Y:VA;0)   2.73000E+02  +GYYBCC#;   6.00000E+03  N !  $ [MCNI/SGTE]
+$ Mo-Si interaction (1 RK term) [CZERNY 2024]
+PARAMETER G(BCC_A2,MO,SI:VA;0)  2.98150E+02  -114632.1170+26.9372*T;  6.00000E+03  N !
+$ Mo-Hf interaction (3 RK terms) [ZHAO 2020 -- DFT-supported beta(BCC), Table 4]
+$ DOI 10.1016/j.calphad.2020.101766.
+$ Order: HF,MO. Note on Table 4: see source-attribution block in header for
+$ the documented labeling typo regarding ;1 and ;2 row identification.
+PARAMETER G(BCC_A2,HF,MO:VA;0)  2.98150E+02  -24872+8.905*T;   6.00000E+03  N !
+PARAMETER G(BCC_A2,HF,MO:VA;1)  2.98150E+02  +65515-29.9*T;    6.00000E+03  N !
+PARAMETER G(BCC_A2,HF,MO:VA;2)  2.98150E+02  +2159-5.847*T;    6.00000E+03  N !
+$ Mo-Y BCC interaction (strongly immiscible, +100 kJ -> expels Y) [CHAN 2010, DOI 10.1007/s11669-010-9753-1]
+PARAMETER G(BCC_A2,MO,Y:VA;0)  2.98150E+02  +100000;  6.00000E+03  N !
+$ GAPS: BCC Si-Hf, Si-Y, Hf-Y interactions = ideal (Si-Hf/Si-Y carried by silicide compounds; Hf-Y no data).
+
+$---------------------------------------------------------------- HCP_A3 ----
+$ Endmembers (..)1(VA)0.5 ; Hf/Y are stable references, Mo/Si metastable (SGTE)
+PARAMETER G(HCP_A3,MO:VA;0)  2.98150E+02  +GHCPMO#;   6.00000E+03  N !  $ [SGTE]
+PARAMETER G(HCP_A3,SI:VA;0)  2.98150E+02  +GHCPSI#;   6.00000E+03  N !  $ [SGTE]
+PARAMETER G(HCP_A3,HF:VA;0)  2.73000E+02  +GHSERHF#;  6.00000E+03  N !  $ [MCNI/SGTE]
+PARAMETER G(HCP_A3,Y:VA;0)   2.73000E+02  +GHSERYY#;  6.00000E+03  N !  $ [MCNI/SGTE]
+$ Mo-Y HCP interaction (immiscible, +100 kJ) [CHAN 2010, DOI 10.1007/s11669-010-9753-1]
+PARAMETER G(HCP_A3,MO,Y:VA;0)  2.98150E+02  +100000;  6.00000E+03  N !
+$ Other HCP interactions = ideal (no data).
+
+$------------------------------------------------------------- DIAMOND_A4 ---
+PARAMETER G(DIAMOND_A4,SI;0)  2.98140E+02  +GHSERSI#;  3.60000E+03  N !  $ [SGTE]
+
+$---------------------------------------------------------------- MO3SI -----
+$ Czerny A.3 simplified (Mo)0.77(Si)0.23, ABSOLUTE G per mole-atom [CZERNY 2024]
+PARAMETER G(MO3SI,MO:SI;0)  2.98150E+02  -37759.2536+149.3282*T-26.059*T*LN(T)
+   +9.6142E-4*T**2-4.8262E-7*T**3+113220*T**(-1);  6.00000E+03  N !
+
+$---------------------------------------------------------------- MO5SI3 ----
+$ Czerny A.3 simplified (Mo)0.625(Si)0.375 (GD8M), ABSOLUTE G per mole-atom [CZERNY 2024]
+PARAMETER G(MO5SI3,MO:SI;0)  2.98150E+02  -46865+143*T-25.269*T*LN(T)
+   +3.2382E-04*T**2-3.9528E-07*T**3+174540*T**(-1);  6.00000E+03  N !
+
+$---------------------------------------------------------------- MOSI2 -----
+$ Czerny (Mo)1(Si)2 C11b line compound, ABSOLUTE G per 3-atom formula unit [CZERNY 2024]
+PARAMETER G(MOSI2,MO:SI;0)  2.98150E+02  -156216.6066+444.2883*T-75.7102*T*LN(T)
+   +1.6413E-03*T**2-1.0682E-06*T**3+402589.974*T**(-1);  6.00000E+03  N !
+
+$---------------------------------------------------------------- Hf-SILICIDES [ZHAO 2000] ----
+$ Stoichiometric line compounds, per mole-atom; G relative to GHSERHF (hcp) + GHSERSI (diamond).
+PARAMETER G(HF2SI,HF:SI;0)   2.98150E+02  -63785+1.5413*T+0.667*GHSERHF#+0.333*GHSERSI#;  6.00000E+03  N !
+PARAMETER G(HF5SI3,HF:SI;0)  2.98150E+02  -68537+0.8153*T+0.625*GHSERHF#+0.375*GHSERSI#;  6.00000E+03  N !
+PARAMETER G(HF3SI2,HF:SI;0)  2.98150E+02  -76772+2.8296*T+0.600*GHSERHF#+0.400*GHSERSI#;  6.00000E+03  N !
+PARAMETER G(HF5SI4,HF:SI;0)  2.98150E+02  -74987+2.0556*T+0.556*GHSERHF#+0.444*GHSERSI#;  6.00000E+03  N !
+PARAMETER G(HFSI,HF:SI;0)    2.98150E+02  -73013+1.9597*T+0.500*GHSERHF#+0.500*GHSERSI#;  6.00000E+03  N !
+PARAMETER G(HFSI2,HF:SI;0)   2.98150E+02  -69725+10.480*T+0.333*GHSERHF#+0.667*GHSERSI#;  6.00000E+03  N !
+
+$---------------------------------------------------------------- Y-SILICIDES [ZHANG 2019] ----
+$ Stoichiometric; per-formula G NORMALIZED to per-atom (divided by atom count) -- see header note.
+$ G relative to GHSERSI (diamond) + GHSERYY (hcp). SIY normalization inferred from published per-formula value.
+PARAMETER G(SIY,SI:Y;0)     2.98150E+02  -80430.86+1.26*T+0.500*GHSERSI#+0.500*GHSERYY#;     6.00000E+03  N !
+PARAMETER G(SI4Y5,SI:Y;0)   2.98150E+02  -77663.31+0.35444*T+0.4444*GHSERSI#+0.5556*GHSERYY#; 6.00000E+03  N !
+PARAMETER G(ASI5Y3,SI:Y;0)  2.98150E+02  -69659.0+2.09125*T+0.625*GHSERSI#+0.375*GHSERYY#;   6.00000E+03  N !
+PARAMETER G(BSI5Y3,SI:Y;0)  2.98150E+02  -66990.0-1.5975*T+0.625*GHSERSI#+0.375*GHSERYY#;    6.00000E+03  N !
+$---------- Si-Y TWO-SUBLATTICE PHASES [ZHANG 2019, Table 5] -- v3.1 COMPLETION ----------
+$ alpha/beta-Si2Y: (Si,Y)2(Si,Y)1 -- end-members per FORMULA (3 atoms); pycalphad -> per-atom (/3).
+$ Si3Y5: (Si,Y)0.375(Y)0.625 -- per-atom (site ratios sum to 1). GHSERSI=diamond, GHSERYY=hcp.
+$ NOTE: source PDF unavailable; the Table-5 wildcard interaction L(Si,Y:*) and L(*:Si,Y) are
+$ expanded to BOTH 2nd-sublattice occupants at the same value (standard Muggianu expansion).
+$ Implied dHf,298 (per-atom): a-Si2Y -61.3, b-Si2Y -60.4, Si3Y5 -73.0 kJ/mol-atom (cf. -61.2/-71.1).
+PARAMETER G(ASI2Y,SI:Y;0)    2.98150E+02  -183889.00-5.26*T+2*GHSERSI#+GHSERYY#;    6.00000E+03  N !
+PARAMETER G(ASI2Y,SI:SI;0)   2.98150E+02  +61229.34+25.79*T+3*GHSERSI#;             6.00000E+03  N !
+PARAMETER G(ASI2Y,Y:SI;0)    2.98150E+02  +138760.97+5.55*T+GHSERSI#+2*GHSERYY#;    6.00000E+03  N !
+PARAMETER G(ASI2Y,Y:Y;0)     2.98150E+02  +217959.61+36.01*T+3*GHSERYY#;            6.00000E+03  N !
+PARAMETER L(ASI2Y,SI,Y:SI;0) 2.98150E+02  -615442.00;                              6.00000E+03  N !
+PARAMETER L(ASI2Y,SI,Y:Y;0)  2.98150E+02  -615442.00;                              6.00000E+03  N !
+PARAMETER L(ASI2Y,SI:SI,Y;0) 2.98150E+02  -49575.22;                               6.00000E+03  N !
+PARAMETER L(ASI2Y,Y:SI,Y;0)  2.98150E+02  -49575.22;                               6.00000E+03  N !
+PARAMETER G(BSI2Y,SI:Y;0)    2.98150E+02  -181158.00-7.05*T+2*GHSERSI#+GHSERYY#;    6.00000E+03  N !
+PARAMETER G(BSI2Y,SI:SI;0)   2.98150E+02  +60907.00+24.72*T+3*GHSERSI#;             6.00000E+03  N !
+PARAMETER G(BSI2Y,Y:SI;0)    2.98150E+02  +134777.42+5.36*T+GHSERSI#+2*GHSERYY#;    6.00000E+03  N !
+PARAMETER G(BSI2Y,Y:Y;0)     2.98150E+02  +205090.07+25.90*T+3*GHSERYY#;            6.00000E+03  N !
+PARAMETER L(BSI2Y,SI,Y:SI;0) 2.98150E+02  -585927.00;                              6.00000E+03  N !
+PARAMETER L(BSI2Y,SI,Y:Y;0)  2.98150E+02  -585927.00;                              6.00000E+03  N !
+PARAMETER L(BSI2Y,SI:SI,Y;0) 2.98150E+02  -47560.00;                               6.00000E+03  N !
+PARAMETER L(BSI2Y,Y:SI,Y;0)  2.98150E+02  -47560.00;                               6.00000E+03  N !
+PARAMETER G(SI3Y5,SI:Y;0)    2.98150E+02  -73054.19+0.41*T+0.375*GHSERSI#+0.625*GHSERYY#; 6.00000E+03  N !
+PARAMETER G(SI3Y5,Y:Y;0)     2.98150E+02  +58325.09+9.13*T+GHSERYY#;               6.00000E+03  N !
+PARAMETER L(SI3Y5,SI,Y:Y;0)  2.98150E+02  -62760.32+3.33*T;                        6.00000E+03  N !

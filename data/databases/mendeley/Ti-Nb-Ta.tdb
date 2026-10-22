@@ -1,0 +1,72 @@
+$Database file written 2019-01-23 by W.M. Bai
+$The Gibbs free energies of pure elements are not included, as they have no
+$effect on the thermodynamic factors.
+
+
+ ELEMENT VA   VACUUM                    0.0000E+00  0.0000E+00  0.0000E+00!
+ ELEMENT NB   BCC_A2                    9.2906E+01  5.2200E+03  3.6270E+01!
+ ELEMENT TA   BCC_A2                    1.8095E+02  5.6819E+03  4.1472E+01!
+ ELEMENT TI   HCP_A3                    4.7880E+01  4.8240E+03  3.0720E+01!
+
+ 
+ FUNCTION DTITI 298.15 5.91E-5*EXP(-237000*R**(-1)*T**(-1))
+   +1.47E-8*EXP(-121000*R**-1*T**-1); 6000 N !
+ FUNCTION DNBTI 298.15 3E-7*EXP(-159100*R**(-1)*T**(-1))
+   +1E-3*EXP(-305700*R**-1*T**-1); 6000 N !
+ FUNCTION DNBNB 298.15 6.5E-3*EXP(-503000*R**(-1)*T**(-1))
+   +1.15E-5*EXP(-374600*R**-1*T**-1); 6000 N !
+ FUNCTION DNBTA 298.15 1.36E-3*EXP(-511700*R**(-1)*T**(-1))
+   +2.05E-6*EXP(-382400*R**-1*T**-1); 6000 N !
+ FUNCTION DTATI 298.15 2.8E-8*EXP(-140300*R**(-1)*T**(-1))
+   +1.1e-3*EXP(-309800*R**-1*T**-1); 6000 N !
+ FUNCTION DTATA 298.15 1.89E-7*EXP(-370800*R**(-1)*T**(-1))
+   +1.16E-4*EXP(-461500*R**-1*T**-1); 6000 N !
+
+ TYPE_DEFINITION % SEQ *!
+ DEFINE_SYSTEM_DEFAULT ELEMENT 2 !
+ DEFAULT_COMMAND DEF_SYS_ELEMENT VA !
+
+ ZEROVOLUME_SPECIES VA !
+
+
+ TYPE_DEFINITION & GES A_P_D BCC_A2 MAGNETIC  -1.0    4.00000E-01 !
+ PHASE BCC_A2  %&  2 1   3 !
+    CONSTITUENT BCC_A2  :NB,TI,ZR : VA :  !
+
+   PARAMETER G(BCC_A2,NB,TI:VA;0)  298.15  +8900;    6000  N !
+   PARAMETER G(BCC_A2,TA,TI:VA;0)  298.15  +12000;   6000  N !
+   PARAMETER G(BCC_A2,TA,TI:VA;1)  298.15  -2500;    6000  N !
+   PARAMETER G(BCC_A2,NB,TA:VA;0)  298.15  +1298.03; 6000  N !  
+   
+   PARAMETER VS(BCC_A2) 298 1E-5; 6000 N   ! 
+$$************************************************************************
+$$ MOBILITY DATA
+$$************************************************************************
+
+$$---------------------------mobilities of Ti---------------------------------
+   PARAMETER MQ(BCC_A2&TI,TI:VA;0) 298 R*T*LN(DTITI);           6000 N  !
+   PARAMETER MQ(BCC_A2&TI,NB:VA;0) 298 -372297-84.1*T;          6000 N  !
+   PARAMETER MQ(BCC_A2&TI,TA:VA;0) 298 -438280.83-88.17*T;      6000 N  !
+                                                                
+   PARAMETER MQ(BCC_A2&TI,NB,TI:VA;0) 298 22545.56+22.81*T;     6000 N  !
+   PARAMETER MQ(BCC_A2&TI,TA,TI:VA;0) 298 254673.89-79.10*T;    6000 N  !
+   
+$$---------------------------mobilities of Nb---------------------------------
+   PARAMETER MQ(BCC_A2&NB,TI:VA;0) 298 R*T*LN(DNBTI);           6000 N  !
+   PARAMETER MQ(BCC_A2&NB,NB:VA;0) 298 R*T*LN(DNBNB);           6000 N  !
+   PARAMETER MQ(BCC_A2&NB,TA:VA;0) 298 R*T*LN(DNBTA);           6000 N  !
+
+   PARAMETER MQ(BCC_A2&NB,NB,TI:VA;0) 298 61036.56+6.17*T;      6000 N  !
+   PARAMETER MQ(BCC_A2&NB,NB,TA:VA;0) 298 40028.24;             6000 N  !
+   PARAMETER MQ(BCC_A2&NB,TA,TI:VA;0) 298 114439.63-48.26*T;    6000 N  !
+   
+$$---------------------------mobilities of Ta---------------------------------
+   PARAMETER MQ(BCC_A2&TA,TI:VA;0) 298 R*T*LN(DTATI);           6000 N  !
+   PARAMETER MQ(BCC_A2&TA,NB:VA;0) 298 -416495.32-76.19*T;      6000 N  !
+   PARAMETER MQ(BCC_A2&TA,TA:VA;0) 298 R*T*LN(DTATA);           6000 N  !
+   
+   PARAMETER MQ(BCC_A2&TA,TA,TI:VA;0) 298 115669.43-36.48*T;    6000 N  !
+   PARAMETER MQ(BCC_A2&TA,NB,TA:VA;0) 298 25012.47;             6000 N  !
+   PARAMETER MQ(BCC_A2&TA,NB,TI:VA;0) 298 -16164.25+78.64*T;    6000 N  !
+   
+   

@@ -1,0 +1,221 @@
+$
+$ Database for Al-Sm from S.H. Zhou and R.E. Napolitano 2008.
+$
+$ S.H. Zhou, R.E. Napolitano, Metall. Mater. Trans. A, 39A, 502-12(2008).
+$
+$ Dataset created 2019.07.27 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ Using associate liquid.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT SM   RHOMB_C19                 150.36      7573.04    69.4962 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  AL2SM                              AL2SM1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL AL2SM SM : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% SM : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL SM% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL SM : VA : !
+$
+$ Prototype alpha-Sm (hR9, R-3m)
+$
+ PHASE RHOMB_C19 % 1 1 !
+ CONST RHOMB_C19 : AL SM% : !
+$
+$ Prototype Al4Ba (tI10, I4/mmm)
+$
+ PHASE AL4SM_D13 % 2 4 1 !
+ CONST AL4SM_D13 : AL : SM : !
+$
+$ Prototype Al4U (oI20, Imma), metastable
+$
+ PHASE AL4SM_D1B % 2 4 1 !
+ CONST AL4SM_D1B : AL : SM : !
+$
+$ Prototype Al11La3 (oI28, Immm), metastable
+$
+ PHASE AL11SM3 % 2 11 3 !
+ CONST AL11SM3 : AL : SM : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE AL3SM_D019 % 2 3 1 !
+ CONST AL3SM_D019 : AL : SM : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE AL2SM_C15 % 2 2 1 !
+ CONST AL2SM_C15 : AL : SM : !
+$
+$ Prototype AlDy (oP16, Pbcm)
+$
+ PHASE ALSM % 2 1 1 !
+ CONST ALSM : AL : SM : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE ALSM2_C37 % 2 1 2 !
+ CONST ALSM2_C37 : AL : SM : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+$ RHOMB_C19 from 98Sac and 08Zho is not included in unary
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+$PAR  G(RHOMB_C19,AL),,                 +GHSERAL+10000-5*T;      2900 N 98Sac !
+ PAR  G(RHOMB_C19,AL),,                 +GHSERAL+2283.5;         2900 N 08Zho !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$ ------------------------------------------------------------------------------
+$ Sm
+$
+$ HCP_A3 added in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$
+$ FCC_A1 from 00Du (used in SGSOL 5.0; this value is absurd)
+$ not included in unary
+$ FCC_A1 from 02Zin and 08Zho not included in unary
+$ FCC_A1, CBCC_A12, CUB_A13 from 09Wan1 not included in unary
+$
+ PAR  G(RHOMB_C19,SM),,                 +GHSERSM;                2100 N 91Din !
+ PAR  G(BCC_A2,SM:VA),,                 +GBCCSM;                 2100 N 91Din !
+$PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+180946;         2100 N 00Du1 !
+$PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+5000;           2100 N 98Su1 !
+ PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+890;            2100 N 08Zho !
+$PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+1000;           2100 N 09Wan1 !
+ PAR  G(HCP_A3,SM:VA),,                 +GHSERSM
+             +69.977-0.069491*T;                                 2100 N 98Su2 !
+$PAR  G(CBCC_A12,SM:VA),,               +GHSERSM+1000;           2100 N 09Wan1 !
+$PAR  G(CUB_A13,SM:VA),,                +GHSERSM+5000;           2100 N 09Wan1 !
+ PAR  G(LIQUID,SM),,                    +GLIQSM;                 2100 N 91Din !
+$
+ FUNCTION GHSERSM   298.15  -3872.013-32.10748*T-1.6485*T*LN(T)
+       -0.050254*T**2+1.010345E-05*T**3-82168*T**(-1);
+       700.00  Y  -50078.215+627.869894*T-102.665*T*LN(T)
+       +0.0474522*T**2-7.538383E-06*T**3+3861770*T**(-1);
+      1190.00  Y  +289719.819-2744.50976*T+381.41982*T*LN(T)
+       -0.254986338*T**2+2.7512152E-05*T**3-40102102*T**(-1);
+      1345.00  Y  -23056.079+282.194375*T-50.208*T*LN(T);
+      2100.00  N !
+ FUNCTION GBCCSM    298.15  -4368.72+55.972523*T-16.9298494*T*LN(T)
+       -0.025446016*T**2+3.579527E-06*T**3+94209*T**(-1);
+      1190.00  Y  -15957.862+253.121044*T-46.9445*T*LN(T);
+      1345.00  Y  +111191.653-624.680805*T+71.6856914*T*LN(T)
+       -0.047314968*T**2+3.329865E-06*T**3-24870276*T**(-1);
+      2100.00  N !
+ FUNCTION GLIQSM    298.15  +3468.783+20.117456*T-11.6968284*T*LN(T)
+       -0.032418177*T**2+4.544272E-06*T**3+23528*T**(-1);
+      1190.00  Y  -11728.229+273.487076*T-50.208*T*LN(T);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S.H. Zhou, R.E. Napolitano, Metall. Mater. Trans. A, 39A, 502-12(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Using associate liquid.
+$
+ PAR  G(LIQUID,AL2SM),,                 +2*GLIQAL+GLIQSM
+             -144212+35.854*T;,,                                      N 08Zho !
+ PAR  L(LIQUID,AL,SM;0),,               -80524;,,                     N 08Zho !
+ PAR  L(LIQUID,AL,AL2SM;0),,            -26012;,,                     N 08Zho !
+ PAR  L(LIQUID,AL2SM,SM;0),,            -42022;,,                     N 08Zho !
+$
+ PAR  L(FCC_A1,AL,SM:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  L(BCC_A2,AL,SM:VA;0),,            -57431;,,                     N 08Zho !
+ PAR  L(BCC_A2,AL,SM:VA;1),,            +18102;,,                     N 08Zho !
+$
+ PAR  L(RHOMB_C19,AL,SM;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(AL4SM_D13,AL:SM),,              +4*GHSERAL+GHSERSM
+             -115605-31.01*T;,,                                       N 08Zho !
+ PAR  G(AL4SM_D1B,AL:SM),,              +4*GHSERAL+GHSERSM
+             -142675;,,                                               N 08Zho !
+ PAR  G(AL11SM3,AL:SM),,                +11*GHSERAL+3*GHSERSM
+             -487200+18.816*T;,,                                      N 08Zho !
+ PAR  G(AL3SM_D019,AL:SM),,             +3*GHSERAL+GHSERSM
+             -193544+33.368*T;,,                                      N 08Zho !
+ PAR  G(AL2SM_C15,AL:SM),,              +2*GHSERAL+GHSERSM
+             -165000+22.146*T;,,                                      N 08Zho !
+ PAR  G(ALSM,AL:SM),,                   +GHSERAL+GHSERSM
+             -98000+18.892*T;,,                                       N 08Zho !
+ PAR  G(ALSM2_C37,AL:SM),,              +GHSERAL+2*GHSERSM
+             -111900+26.397*T;,,                                      N 08Zho !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Sac  'A. Saccone, G. Cacciamani, D. Maccio, G. Borzone, R. Ferro,
+          Intermetallics, 6, 201-15(1998); Al'
+  98Su1  'X. Su, W. Zhang, G. Liu, Z. Du,
+          J. Alloys Compd., 267, 149-53(1998); Sm'
+  98Su2  'X. Su, W. Zhang, Z. Du, J. Alloys Compd., 278, 182-84(1998)
+          SGTE unary database V.4.4, 2001; Sm'
+  08Zho  'S.H. Zhou, R.E. Napolitano,
+          Metall. Mater. Trans. A, 39A, 502-12(2008); Al, Sm, Al-Sm'
+!

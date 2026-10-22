@@ -1,0 +1,287 @@
+$
+$ Database for Ni-Si from V.T. Witusiewicz et al. 2023.
+$
+$ V.T. Witusiewicz, O. Stryzhyboroda, S. Vinke, K. Bobzin, U. Hecht,
+$ J. Alloys Compd., 935, 168118(2023).
+$
+$ Dataset created 2023.11.24 by Bengt Hallstedt.
+$
+$ Ni3Si-L12 is modelled as a separate phase.
+$
+$ Very amibious modelling, but severly overfitted.
+$
+$ High temperature versions of Ni3Si2 and NiSi2 with very small stability
+$ ranges added.
+$
+$ There is an inverse miscibility gap with a minimum at 5118 K and x(Si)=0.46.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : NI SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : NI% SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : NI SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : NI SI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : NI SI% : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m), beta-1
+$
+ PHASE NI3SI_L12 % 2 0.75 0.25 !
+ CONST NI3SI_L12 : NI% SI : NI SI% : !
+$
+$ Prototype Ge9Pd25 (hP34, P-3), beta-2
+$
+ PHASE NI3SI_M % 2 3 1 !
+ CONST NI3SI_M : NI : NI SI% : !
+$
+$ Prototype CsCl (cP2, Pm-3m, B2) or BiF3 (cF16, Fm-3m, D0_3), beta-3
+$
+ PHASE NI3SI_H % 2 3 1 !
+ CONST NI3SI_H : NI : NI SI% : !
+$
+$ Prototype Ni31Si12 (hP43, P321), gamma
+$
+ PHASE NI5SI2 % 2 5 2 !
+ CONST NI5SI2 : NI : SI% VA : !
+$
+$ Prototype Co2Si (oP12, Pnma), delta
+$
+ PHASE NI2SI_C37 % 2 2 1 !
+ CONST NI2SI_C37 : NI : SI : !
+$
+$ Prototype Ni2Si (hP6, P6_322)
+$ The prototype is not InNi2 (with SG P6_3mmc)
+$
+ PHASE NI2SI_THETA % 3 1 1 1 !
+ CONST NI2SI_THETA : NI : NI% VA : SI% VA : !
+$
+$ Prototype Ni3Si2 (oC80, Cmc2_1), epsilon
+$
+ PHASE NI3SI2_L % 2 0.62 0.38 !
+ CONST NI3SI2_L : NI% SI : NI SI% : !
+$
+$ unknown structure
+$
+ PHASE NI3SI2_H % 2 0.61 0.39 !
+ CONST NI3SI2_H : NI% SI : NI SI% : !
+$
+$ Prototype MnP (oP8, Pnma)
+$
+ PHASE NISI_B31 % 2 1 1 !
+ CONST NISI_B31 : NI : SI : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE NISI2_C1 % 2 1 2 !
+ CONST NISI2_C1 : NI : SI : !
+$
+$ unknown structure
+$
+ PHASE NISI2_H % 2 1 2 !
+ CONST NISI2_H : NI : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+$ DIAMOND_A4 from 23Wit not in unary
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,NI),,                +GHSERNI+30000;          3600 N 23Wit !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ PAR  G(NI3SI_L12,NI:NI),,              +GHSERNI+100;,,               N 23Wit !
+ PAR  G(NI3SI_M,NI:NI),,                +4*GHSERNI+20000;,,           N 23Wit !
+ PAR  G(NI3SI_H,NI:NI),,                +4*GHSERNI+20000;,,           N 23Wit !
+ PAR  G(NI5SI2,NI:VA),,                 +5*GHSERNI+10000;,,           N 23Wit !
+ PAR  G(NI2SI_THETA,NI:NI:VA),,         +2*GHSERNI+15000;,,           N 23Wit !
+ PAR  G(NI2SI_THETA,NI:VA:VA),,         +GHSERNI+10000;,,             N 23Wit !
+ PAR  G(NI3SI2_L,NI:NI),,               +GHSERNI+25000;,,             N 23Wit !
+ PAR  G(NI3SI2_H,NI:NI),,               +GHSERNI+25000;,,             N 23Wit !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ PAR  G(NI3SI_L12,SI:SI),,              +GHSERSI+100;,,               N 23Wit !
+ PAR  G(NI3SI2_L,SI:SI),,               +GHSERSI+25000;,,             N 23Wit !
+ PAR  G(NI3SI2_H,SI:SI),,               +GHSERSI+25000;,,             N 23Wit !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ V.T. Witusiewicz, O. Stryzhyboroda, S. Vinke, K. Bobzin, U. Hecht,
+$ J. Alloys Compd., 935, 168118(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Ni3Si-L12 is modelled as a separate phase.
+$
+$ Very amibious modelling, but severly overfitted.
+$
+$ High temperature versions of Ni3Si2 and NiSi2 with very small stability
+$ ranges added.
+$
+$ There is an inverse miscibility gap with a minimum at 5118 K and x(Si)=0.46.
+$
+ PAR  L(LIQUID,NI,SI;0),,               -215947+14.7505*T;,,          N 23Wit !
+ PAR  L(LIQUID,NI,SI;1),,               -113823+0.7195*T;,,           N 23Wit !
+ PAR  L(LIQUID,NI,SI;2),,               +75325-56.2935*T;,,           N 23Wit !
+ PAR  L(LIQUID,NI,SI;3),,               +180620-79.2515*T;,,          N 23Wit !
+ PAR  L(LIQUID,NI,SI;4),,               -20128+26.1222*T;,,           N 23Wit !
+ PAR  L(LIQUID,NI,SI;5),,               -94335+51.0161*T;,,           N 23Wit !
+$
+ PAR  L(FCC_A1,NI,SI:VA;0),,            -95699.9-33.365*T;,,          N 23Wit !
+ PAR  L(FCC_A1,NI,SI:VA;1),,            -199095.4+5.766*T;,,          N 23Wit !
+ PAR  L(FCC_A1,NI,SI:VA;2),,            -29213.4+49.998*T;,,          N 23Wit !
+ PAR  TC(FCC_A1,NI,SI:VA;0),,           -3872;,,                      N 03Tok !
+$
+ PAR  L(DIAMOND_A4,NI,SI;0),,           +54400-41.2*T;,,              N 23Wit !
+$
+ PAR  G(NI3SI_L12,NI:SI),,              +0.75*GHSERNI+0.25*GHSERSI
+             -46826.6-1.1151*T;,,                                     N 23Wit !
+ PAR  G(NI3SI_L12,SI:NI),,              +0.75*GHSERSI+0.25*GHSERNI
+             +20600;,,                                                N 04Tok !
+ PAR  L(NI3SI_L12,NI,SI:NI;0),,         +50000;,,                     N 04Tok !
+ PAR  L(NI3SI_L12,NI,SI:SI;0),,         +50000;,,                     N 04Tok !
+ PAR  L(NI3SI_L12,NI:NI,SI;0),,         -2020-2.1033*T;,,             N 23Wit !
+ PAR  L(NI3SI_L12,SI:NI,SI;0),,         -2020-2.1033*T;,,             N 23Wit !
+$
+ PAR  G(NI3SI_M,NI:SI),,                +3*GHSERNI+GHSERSI
+             -183388.3-7.5724*T;,,                                    N 23Wit !
+ PAR  L(NI3SI_M,NI:NI,SI;0),,           -36586;,,                     N 23Wit !
+$
+ PAR  G(NI3SI_H,NI:SI),,                +3*GHSERNI+GHSERSI
+             -169744-17.4*T;,,                                        N 23Wit !
+ PAR  L(NI3SI_H,NI:NI,SI;0),,           -36586;,,                     N 23Wit !
+$
+ PAR  G(NI5SI2,NI:SI),,                 +5*GHSERNI+2*GHSERSI
+             -350997.5-14.6412*T;,,                                   N 23Wit !
+ PAR  G(NI2SI_C37,NI:SI),,              +2*GHSERNI+GHSERSI
+             -146504.61-15.0958*T;,,                                  N 23Wit !
+$
+ PAR  G(NI2SI_THETA,NI:NI:SI),,         +2*GHSERNI+GHSERSI
+             -123726.8-29.8534*T;,,                                   N 23Wit !
+ PAR  G(NI2SI_THETA,NI:VA:SI),,         +GHSERNI+GHSERSI
+             -78394.6-6.6652*T;,,                                     N 23Wit !
+ PAR  L(NI2SI_THETA,NI:NI,VA:SI;0),,    -32436.4+23.228*T;,,          N 23Wit !
+$
+ PAR  G(NI3SI2_L,NI:SI),,               +0.62*GHSERNI+0.38*GHSERSI
+             -47241.8-4.7156*T;,,                                     N 23Wit !
+ PAR  G(NI3SI2_L,SI:NI),,               +0.62*GHSERSI+0.38*GHSERNI
+             +5000;,,                                                 N 23Wit !
+ PAR  L(NI3SI2_L,NI,SI:SI;0),,          -46805+16.5*T;,,              N 23Wit !
+ PAR  L(NI3SI2_L,NI:NI,SI;0),,          -59500;,,                     N 23Wit !
+$
+ PAR  G(NI3SI2_H,NI:SI),,               +0.61*GHSERNI+0.39*GHSERSI
+             -44977.6-6.44241*T;,,                                    N 23Wit !
+ PAR  G(NI3SI2_H,SI:NI),,               +0.61*GHSERSI+0.39*GHSERNI
+             +5000;,,                                                 N 23Wit !
+ PAR  L(NI3SI2_H,NI,SI:SI;0),,          -49164+19.911*T;,,            N 23Wit !
+ PAR  L(NI3SI2_H,NI:NI,SI;0),,          -59500;,,                     N 23Wit !
+$
+ PAR  G(NISI_B31,NI:SI),,               +GHSERNI+GHSERSI
+             -85677.2-8.0798*T;,,                                     N 23Wit !
+ PAR  G(NISI2_C1,NI:SI),,               +GHSERNI+2*GHSERSI
+             -94790.244-3.641322*T;,,                                 N 23Wit !
+ PAR  G(NISI2_H,NI:SI),,                +GHSERNI+2*GHSERSI
+             -94783-3.647098*T;,,                                     N 23Wit !
+$
+$ metastable
+$
+ PAR  L(BCC_A2,NI,SI:VA;0),,            -120000;,,                    N 23Wit !
+$
+ PAR  L(HCP_A3,NI,SI:VA;0),,            -95699.9-33.365*T;,,          N Same !
+ PAR  L(HCP_A3,NI,SI:VA;1),,            -199095.4+5.766*T;,,          N Same !
+ PAR  L(HCP_A3,NI,SI:VA;2),,            -29213.4+49.998*T;,,          N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  03Tok  'T. Tokunaga, K. Nishio, H. Ohtani, M. Hasebe,
+          Calphad, 27, 161-68(2003); Ni-Si'
+  04Tok  'T. Tokunaga, K. Hashima, H. Ohtani, M. Hasebe,
+          Mater. Trans. JIM, 45, 1507-14(2004); Ni-Si'
+  23Wit  'V.T. Witusiewicz, O. Stryzhyboroda, S. Vinke, K. Bobzin, U. Hecht,
+          J. Alloys Compd., 935, 168118(2023); Ni, Ni-Si'
+!

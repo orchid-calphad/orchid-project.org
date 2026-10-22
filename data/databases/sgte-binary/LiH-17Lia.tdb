@@ -1,0 +1,191 @@
+$
+$ Database for Li-H from S.-M. Liang et al. 2017
+$
+$ S.-M. Liang, F. Taubert, A. Kozlov, J. Seidel, F. Mertens, R. Schmid-Fetzer,
+$ Intermetallics, 81, 32-46(2017).
+$
+$ Dataset created 2017.11.25 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$
+$ Bcc parameters added from 16Abd.
+$
+$ LiH is modelled as a separate phase. It should be modelled as part of the
+$ FCC_A1 solid solution. Solubility of H in Li is not modelled.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT H    1/2_MOLE_H2(G)              1.0079    4234.      65.285  ! 
+ ELEMENT LI   BCC_A2                      6.941     4632.00    29.12   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  H2                                 H2 !
+ SPECIE  LI2                                LI2 !
+ SPECIE  LIH                                LI1H1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : H LI LIH : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : LI : H VA% : !
+$
+$ Hcp (hP2, P6_3/mmc)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : LI : VA : !
+$
+$ Prototype NaCl (cF8, Fm-3m)
+$
+ PHASE LIH_B1 % 2 1 1 !
+ CONST LIH_B1 : LI : H : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : H H2 LI LI2 LIH : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ H
+$
+$ H is not included in unary
+$
+ PAR  G(LIQUID,H),,                     +0.5*GHSERH2
+             +8035+25*T+2*T*LN(T);,,                                  N 06Qiu !
+$
+ PAR  G(GAS,H),,                        +F10383T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,H2),,                       +GHSERH2+RTLNP;,,             N 97SUB !
+$
+$ H(g)
+ FUNCTION F10383T   298.15  +211801.621+24.4989821*T-20.78611*T*LN(T);
+      6000.00  N !
+$ H2(g)
+ FUNCTION GHSERH2   298.15  -9522.9741+78.5273879*T-31.35707*T*LN(T)
+       +0.0027589925*T**2-7.46390667E-07*T**3+56582.3*T**(-1);
+      1000.00  Y  +180.108664-15.6128256*T-17.84857*T*LN(T)
+       -0.00584168*T**2+3.14618667E-07*T**3-1280036*T**(-1);
+      2100.00  Y  -18840.1663+92.3120255*T-32.05082*T*LN(T)
+       -0.0010728235*T**2+1.14281783E-08*T**3+3561002.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Li
+$
+ PAR  G(BCC_A2,LI:VA)           200.00  +GHSERLI;                3000 N 91Din !
+ PAR  G(FCC_A1,LI:VA)           200.00  +GHSERLI-108+1.3*T;      3000 N 91Din !
+ PAR  G(HCP_A3,LI:VA)           200.00  +GHSERLI-154+2*T;        3000 N 91Din !
+ PAR  G(LIQUID,LI)              200.00  +GLIQLI;                 3000 N 91Din !
+$
+ PAR  G(GAS,LI),,                       +F12385T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,LI2),,                      +F12463T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERLI   200.00  -10583.817+217.637482*T-38.940488*T*LN(T)
+       +0.035466931*T**2-1.9869816E-05*T**3+159994*T**(-1);
+       453.60  Y  -559579.123+10547.8799*T-1702.88865*T*LN(T)
+       +2.25832944*T**2-5.71066077E-04*T**3+33885874*T**(-1);
+       500.00  Y  -9062.994+179.278285*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQLI    200.00  +2700.205-5.795621*T+GHSERLI;
+       250.00  Y  +12015.027-362.187078*T+61.6104424*T*LN(T)
+       -0.182426463*T**2+6.3955671E-05*T**3-559968*T**(-1);
+       453.60  Y  -6057.31+172.652183*T-31.2283718*T*LN(T)
+       +0.002633221*T**2-4.38058E-07*T**3-102387*T**(-1);
+       500.00  Y  +3005.684-6.626102*T+GHSERLI;
+      3000.00  N !
+$ Li(g)
+ FUNCTION F12385T   298.15  +152984.64+2.33568506*T-21.07772*T*LN(T)
+       +2.515552E-04*T**2-3.41354333E-08*T**3+7690.735*T**(-1);
+      2400.00  Y  +183390.413-110.69493*T-7.20516*T*LN(T)
+       -0.002217371*T**2+2.443155E-08*T**3-11648370*T**(-1);
+      4800.00  Y  +109652.446+17.2445126*T-21.24264*T*LN(T)
+       -0.0015038825*T**2+3.76717667E-08*T**3+50092500*T**(-1);
+      8800.00  Y  -72231.6406+344.035356*T-57.87689*T*LN(T)
+       +0.0017448465*T**2-1.58650733E-08*T**3+2.178053E+08*T**(-1);
+     10000.00  N !
+$ Li2(g)
+ FUNCTION F12463T   298.15  +203319.119+52.2617041*T-37.02637*T*LN(T)
+       -8.421915E-04*T**2-1.078653E-07*T**3+65874.15*T**(-1);
+      1100.00  Y  +200885.055+48.6776391*T-35.9057*T*LN(T)
+       -0.0039990175*T**2+5.08151333E-07*T**3+883657*T**(-1);
+      1900.00  Y  +137315.894+473.019388*T-93.02457*T*LN(T)
+       +0.018440525*T**2-1.12358533E-06*T**3+13866255*T**(-1);
+      3100.00  Y  +638944.289-1507.74849*T+153.9314*T*LN(T)
+       -0.035715045*T**2+1.10781833E-06*T**3-1.776338E+08*T**(-1);
+      5100.00  Y  -624845.177+1789.13827*T-234.2722*T*LN(T)
+       +0.0173718*T**2-2.55232167E-07*T**3+5.95322E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S.-M. Liang, F. Taubert, A. Kozlov, J. Seidel, F. Mertens, R. Schmid-Fetzer,
+$ Intermetallics, 81, 32-46(2017).
+$
+$ Checked against paper.
+$
+$ Bcc parameters added from 16Abd.
+$
+$ LiH is modelled as a separate phase. It should be modelled as part of the
+$ FCC_A1 solid solution. Solubility of H in Li is not modelled.
+$
+ PAR  G(LIQUID,LIH),,                   -96001.3+395.315*T
+             -62.342*T*LN(T);,,                                       N 17Lia !
+ PAR  L(LIQUID,LI,LIH;0),,              +18000+2*T;,,                 N 17Lia !
+ PAR  L(LIQUID,LI,LIH;1),,              -5000-2*T;,,                  N 17Lia !
+$
+ PAR  G(BCC_A2,LI:H),,                  +GHSERLI+1.5*GHSERH2
+             +500000;,,                                               N 16Abd !
+ PAR  L(BCC_A2,LI:H,VA;0),,             +418400;,,                    N 16Abd !
+$
+ PAR  G(LIH_B1,LI:H),,                  -98564+100.9179*T
+             -15.46*T*LN(T)-0.02647*T**2+1.666E-08*T**3+145800*T**(-1)
+             -2.437E-12*T**4;,,                                       N 17Lia !
+$
+ PAR  G(GAS,LIH),,                      +F10455T+RTLNP;,,             N 97SUB !
+$
+$ LiH(g)
+ FUNCTION F10455T   298.15  +131813.496-11.1190203*T-23.0257*T*LN(T)
+       -0.01084371*T**2+1.465128E-06*T**3-45002.875*T**(-1);
+       900.00  Y  +126624.805+57.2930702*T-33.31698*T*LN(T)
+       -0.0020776245*T**2+9.92572667E-08*T**3+421030.05*T**(-1);
+      3200.00  Y   +49048.7692+318.184528*T-65.04984*T*LN(T)
+       +0.0035069695*T**2-7.63721333E-08*T**3+35152355*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  06Qiu  'C. Qiu, S.M. Opalka, G.B. Olson, D.L. Anton,
+          Int. J. Mater. Res., 97, 845-53(2006); Na-H'
+  16Abd  'S. Abdessameud, M. Medraj, Calphad, 54, 54-66(2016); Li-H'
+  17Lia  'S.-M. Liang, F. Taubert, A. Kozlov, J. Seidel, F. Mertens,
+          R. Schmid-Fetzer, Intermetallics, 81, 32-46(2017); Li-H'
+!

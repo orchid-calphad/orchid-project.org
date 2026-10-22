@@ -1,0 +1,294 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 5,
+    "intervals": 4,
+    "vertices": 5
+  },
+  "elements": [
+    "BI",
+    "NI"
+  ],
+  "flags": [
+    "has_intermediate_phases",
+    "solution_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "BI": {
+          "energy": -16915.53987961124,
+          "phase": "RHOMBOHEDRAL_A7"
+        },
+        "NI": {
+          "energy": -8883.518771069395,
+          "phase": "FCC_A1"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -19732.92689591784
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 3.227149468185729
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "RHOMBOHEDRAL_A7",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -20695.10150985742,
+          "right": {
+            "phase": "BI3NI",
+            "x": 0.25
+          },
+          "slope": -20695.10150985742,
+          "x_hi": 0.25,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -5497.175702827758,
+            "slope": 2255.7759153931916
+          },
+          "entropy": {
+            "intercept": -0.14843869548402566,
+            "slope": 3.8209042501218318
+          },
+          "intercept": -5452.918705769199,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BI3NI",
+            "x": 0.25
+          },
+          "mu_a_rel": -5452.918705769199,
+          "mu_b_rel": -4336.345392549823,
+          "right": {
+            "phase": "BINI_B81",
+            "x": 0.49839563254888125
+          },
+          "slope": 1116.5733132193752,
+          "x_hi": 0.49839563254888125,
+          "x_lo": 0.25
+        },
+        {
+          "enthalpy": {
+            "entropy_form": null,
+            "hermite": [
+              [
+                -4372.906838586837,
+                -26.808803072037033,
+                0.061302333595083525,
+                0.0037506657794459386
+              ]
+            ],
+            "knots": [
+              0.49839563254888125,
+              0.4997128064719234
+            ],
+            "max_abs_error": 0.0005625071989925345
+          },
+          "entropy": {
+            "entropy_form": {
+              "R": 8.31446261815324,
+              "kind": "ideal_mixing_entropy"
+            },
+            "hermite": [
+              [
+                -4.007220223637322,
+                -0.09486599537756167,
+                -0.0035750290291261255,
+                -0.010206451362747532
+              ]
+            ],
+            "knots": [
+              0.49839563254888125,
+              0.4997128064719234
+            ],
+            "max_abs_error": 0.0005229663215606806
+          },
+          "entropy_form": {
+            "RT": 2478.957029602388,
+            "kind": "ideal_mixing"
+          },
+          "hermite": [
+            [
+              -3178.1541289093684,
+              1.475493449747548,
+              1.1271972383123625,
+              3.0468041399340677
+            ]
+          ],
+          "kind": "single_phase",
+          "knots": [
+            0.49839563254888125,
+            0.4997128064719234
+          ],
+          "max_abs_error": 0.15551206059126343,
+          "phase": "BINI_B81",
+          "x_hi": 0.4997128064719234,
+          "x_lo": 0.49839563254888125
+        },
+        {
+          "enthalpy": {
+            "intercept": -8794.249874022784,
+            "slope": 8794.249874022784
+          },
+          "entropy": {
+            "intercept": 3.292663238218407,
+            "slope": -3.292663238218407
+          },
+          "intercept": -9775.957418497597,
+          "kind": "two_phase",
+          "left": {
+            "phase": "BINI_B81",
+            "x": 0.4997128064719234
+          },
+          "mu_a_rel": -9775.957418497597,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "FCC_A1",
+            "x": 1.0
+          },
+          "slope": 9775.957418497597,
+          "x_hi": 1.0,
+          "x_lo": 0.4997128064719234
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "RHOMBOHEDRAL_A7",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -5173.775377464355,
+          "energy_per_atom": -5173.775377464355,
+          "enthalpy": -4933.23172397946,
+          "entries_at_x": 1,
+          "entropy": 0.8067873670464323,
+          "formula": "",
+          "nsites": null,
+          "phase": "BI3NI",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.25
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -4896.423443040028,
+          "energy_per_atom": -4896.423443040028,
+          "enthalpy": -4372.906838586837,
+          "entries_at_x": 1,
+          "entropy": 1.7558832951641534,
+          "formula": "",
+          "nsites": null,
+          "phase": "BINI_B81",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.49839563254888125
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -4890.786300950143,
+          "energy_per_atom": -4890.786300950143,
+          "enthalpy": -4399.6505886595,
+          "entries_at_x": 1,
+          "entropy": 1.6472772506813556,
+          "formula": "",
+          "nsites": null,
+          "phase": "BINI_B81",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.4997128064719234
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "BiNi-09Vas",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:19:14Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/BiNi-09Vas.tdb",
+    "source_sha256": "1bbdd3b0fa5e8e35d8120cc8af5766f88b261187b30572fd69e697349d535ece"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "BI-NI",
+  "x_element": "NI"
+}

@@ -1,0 +1,176 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 3,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "GE",
+    "P"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "GE": {
+          "energy": -9269.484017821229,
+          "phase": "DIAMOND_A4"
+        },
+        "P": {
+          "energy": -24276.603379997407,
+          "phase": "RED_P"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -7260.264295807843
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -1.113283290641455
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "DIAMOND_A4",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -6928.338882703101,
+          "right": {
+            "phase": "GEP",
+            "x": 0.5
+          },
+          "slope": -6928.338882703101,
+          "x_hi": 0.5,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -7260.264295807843,
+            "slope": 7260.264295807843
+          },
+          "entropy": {
+            "intercept": -1.113283290641455,
+            "slope": 1.113283290641455
+          },
+          "intercept": -6928.338882703101,
+          "kind": "two_phase",
+          "left": {
+            "phase": "GEP",
+            "x": 0.5
+          },
+          "mu_a_rel": -6928.338882703101,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "RED_P",
+            "x": 1.0
+          },
+          "slope": 6928.338882703101,
+          "x_hi": 1.0,
+          "x_lo": 0.5
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "DIAMOND_A4",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -3464.1694413515506,
+          "energy_per_atom": -3464.1694413515506,
+          "enthalpy": -3630.1321479039216,
+          "entries_at_x": 1,
+          "entropy": -0.5566416453207275,
+          "formula": "",
+          "nsites": null,
+          "phase": "GEP",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "RED_P",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "GeP-21Don",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:41:17Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/GeP-21Don.tdb",
+    "source_sha256": "e3a892ddc27c212777cacd4787f0d45cda2d7ce6dc4375cc2a69da0e1a08c3b6"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "GE-P",
+  "x_element": "P"
+}

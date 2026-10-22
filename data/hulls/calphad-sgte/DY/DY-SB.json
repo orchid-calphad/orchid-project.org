@@ -1,0 +1,218 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "DY",
+    "SB"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "DY": {
+          "energy": -22348.092122806876,
+          "phase": "HCP_A3"
+        },
+        "SB": {
+          "energy": -13572.360942124198,
+          "phase": "RHOMBOHEDRAL_A7"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -265423.38442418125
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": -3.1199566540626242
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "HCP_A3",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -264493.16934777255,
+          "right": {
+            "phase": "DY5SB3_D88",
+            "x": 0.375
+          },
+          "slope": -264493.16934777255,
+          "x_hi": 0.375,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -36732.35079940458,
+            "slope": -167470.4489591024
+          },
+          "entropy": {
+            "intercept": -0.8645739762659801,
+            "slope": -0.8144260506866772
+          },
+          "intercept": -36474.57806838094,
+          "kind": "two_phase",
+          "left": {
+            "phase": "DY5SB3_D88",
+            "x": 0.375
+          },
+          "mu_a_rel": -36474.57806838094,
+          "mu_b_rel": -203702.20590047096,
+          "right": {
+            "phase": "DYSB_B1",
+            "x": 0.5
+          },
+          "slope": -167227.62783209002,
+          "x_hi": 0.5,
+          "x_lo": 0.375
+        },
+        {
+          "enthalpy": {
+            "intercept": -240935.15055791155,
+            "slope": 240935.15055791155
+          },
+          "entropy": {
+            "intercept": -2.5435740032186374,
+            "slope": 2.5435740032186374
+          },
+          "intercept": -240176.7839688519,
+          "kind": "two_phase",
+          "left": {
+            "phase": "DYSB_B1",
+            "x": 0.5
+          },
+          "mu_a_rel": -240176.7839688519,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "RHOMBOHEDRAL_A7",
+            "x": 1.0
+          },
+          "slope": 240176.7839688519,
+          "x_hi": 1.0,
+          "x_lo": 0.5
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HCP_A3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -99184.9385054147,
+          "energy_per_atom": -99184.9385054147,
+          "enthalpy": -99533.76915906798,
+          "entries_at_x": 1,
+          "entropy": -1.169983745273484,
+          "formula": "",
+          "nsites": null,
+          "phase": "DY5SB3_D88",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.375
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -120088.39198442595,
+          "energy_per_atom": -120088.39198442595,
+          "enthalpy": -120467.57527895577,
+          "entries_at_x": 1,
+          "entropy": -1.2717870016093187,
+          "formula": "",
+          "nsites": null,
+          "phase": "DYSB_B1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.5
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "RHOMBOHEDRAL_A7",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "DySb-10Lon",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:33:32Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/DySb-10Lon.tdb",
+    "source_sha256": "f3df3a161165c0afa5acbfc260b6a369c1165bc999085813f0370fd9e32147aa"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "DY-SB",
+  "x_element": "SB"
+}

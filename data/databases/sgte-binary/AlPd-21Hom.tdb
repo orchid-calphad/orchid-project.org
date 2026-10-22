@@ -1,0 +1,268 @@
+$
+$ Database for Al-Pd from V. Homolova and A. Kroupa 2021.
+$
+$ V. Homolova, A. Kroupa, Metals, 11, 1803(2021).
+$
+$ Dataset created 2022.09.04 by Bengt Hallstedt.
+$
+$ Order-disorder model for AlPd-B2.
+$
+$ There seems to be no complete consensus on stable phases and their crystal
+$ structures in this system. The AlPd-B2 phase seems to decompose at lower
+$ temperature to form one or more other phases, one (or maybe more) of them
+$ being a distorted form of B2. 
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL PD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL PD : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL PD : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2 (except Va)
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : AL PD VA : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : AL% PD VA : AL PD% VA : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL PD : VA : !
+$
+$ Pearson hP*, P6_322
+$
+ PHASE AL4PD % 2 4 1 !
+ CONST AL4PD : AL : PD : !
+$
+$ Pearson oP*, Pna2_1
+$
+ PHASE AL3PD % 2 3 1 !
+ CONST AL3PD : AL : PD : !
+$
+$ Prototype Al21Pt8 (tI116, I4_1/a)
+$
+ PHASE AL21PD8 % 2 21 8 !
+ CONST AL21PD8 : AL : PD : !
+$
+$ Prototype Al3Ni2 (hP5, P-3m1)
+$
+ PHASE AL3PD2_D513 % 2 3 2 !
+ CONST AL3PD2_D513 : AL% PD : AL PD% : !
+$
+$ Prototype Ge3Rh5 (oP16, Pbam)
+$
+ PHASE AL3PD5 % 2 3 5 !
+ CONST AL3PD5 : AL : PD : !
+$
+$ Prototype Ga2Pd5 (oP28, Pnma)
+$
+ PHASE AL2PD5 % 2 2 5 !
+ CONST AL2PD5 : AL : AL PD% : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE ALPD2_C37 % 2 1 2 !
+ CONST ALPD2_C37 : AL% PD : AL PD% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(A2_BCC,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ PAR  L(A2_BCC,AL,VA:VA;0),,            +46912;,,                     N 09Sun !
+ PAR  G(B2_BCC,VA:AL:VA),,              +ZERO;,,                      N 09Sun !
+ PAR  G(B2_BCC,AL:VA:VA),,              +ZERO;,,                      N 09Sun !
+ PAR  G(AL3PD2_D513,AL:AL),,            +5*GHSERAL+100000;,,          N 06Li !
+ PAR  G(AL2PD5,AL:AL),,                 +7*GHSERAL+100000;,,          N 06Li !
+ PAR  G(ALPD2_C37,AL:AL),,              +3*GHSERAL+100000;,,          N 06Li !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+ FUNCTION GBCCAL    298.15  +GHSERAL+10083-4.813*T;                    2900 N !
+$
+$ With G(A2_BCC,VA:VA)=30*T the same amount must be subtracted from GB2ALVA.
+ FUNCTION GB2ALVA   298.15  +10000-T-30*T;                             6000 N !
+ FUNCTION LB2ALVA   298.15  +150000;                                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(A2_BCC,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ PAR  L(A2_BCC,PD,VA:VA;0),,            +46989+17.5*T;,,              N 21Hom !
+ PAR  L(A2_BCC,PD,VA:VA;1),,            +20000;,,                     N 21Hom !
+ PAR  G(B2_BCC,VA:PD:VA),,              +ZERO;,,                      N 21Hom !
+ PAR  G(B2_BCC,PD:VA:VA),,              +ZERO;,,                      N 21Hom !
+ PAR  G(AL3PD2_D513,PD:PD),,            +5*GHSERPD+50000;,,           N 06Li !
+ PAR  G(ALPD2_C37,PD:PD),,              +3*GHSERPD+100000;,,          N 06Li !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(A2_BCC,VA:VA),,                 +30*T;,,                      N 09Sun !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ V. Homolova, A. Kroupa, Metals, 11, 1803(2021).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There seems to be no complete consensus on stable phases and their crystal
+$ structures in this system. The AlPd-B2 phase seems to decompose at lower
+$ temperature to form one or more other phases, one (or maybe more) of them
+$ being a distorted form of B2. 
+$
+ PAR  L(LIQUID,AL,PD;0),,               -226803.7+52.2*T
+             +0.048*T*LN(T);,,                                        N 06Li !
+ PAR  L(LIQUID,AL,PD;1),,               +82765.11-17.86*T;,,          N 06Li !
+$
+ PAR  L(FCC_A1,AL,PD:VA;0),,            -164947.99+23.32*T;,,         N 06Li !
+ PAR  L(FCC_A1,AL,PD:VA;1),,            +112770.39-29.38*T;,,         N 06Li !
+$
+ PAR  L(BCC_A2,AL,PD:VA;0),,            -110580.8+25.373*T;,,         N 21Hom !
+ PAR  L(BCC_A2,AL,PD:VA;1),,            -10000+33.33*T;,,             N 21Hom !
+ PAR  L(BCC_A2,AL,PD:VA;2),,            +65384-30*T;,,                N 21Hom !
+$
+ PAR  L(A2_BCC,AL,PD:VA;0),,            -110580.8+25.373*T;,,         N 21Hom !
+ PAR  L(A2_BCC,AL,PD:VA;1),,            -10000+33.33*T;,,             N 21Hom !
+ PAR  L(A2_BCC,AL,PD:VA;2),,            +65384-30*T;,,                N 21Hom !
+$
+ PAR  G(B2_BCC,AL:PD:VA),,              -78155+4.229*T;,,             N 21Hom !
+ PAR  G(B2_BCC,PD:AL:VA),,              -78155+4.229*T;,,             N 21Hom !
+ PAR  L(B2_BCC,PD,VA:AL:VA;0),,         -130957.6+17.796*T;,,         N 21Hom !
+ PAR  L(B2_BCC,AL:PD,VA:VA;0),,         -130957.6+17.796*T;,,         N 21Hom !
+ PAR  L(B2_BCC,PD,VA:AL:VA;1),,         +6610-24.2*T;,,               N 21Hom !
+ PAR  L(B2_BCC,AL:PD,VA:VA;1),,         +6610-24.2*T;,,               N 21Hom !
+ PAR  L(B2_BCC,AL,VA:PD:VA;0),,         -138953.4+14.48*T;,,          N 21Hom !
+ PAR  L(B2_BCC,PD:AL,VA:VA;0),,         -138953.4+14.48*T;,,          N 21Hom !
+ PAR  L(B2_BCC,AL,PD:AL:VA;0),,         +5000;,,                      N 21Hom !
+ PAR  L(B2_BCC,AL:AL,PD:VA;0),,         +5000;,,                      N 21Hom !
+$
+ PAR  G(AL4PD,AL:PD),,                  +4*GHSERAL+GHSERPD
+             -172734.44+51.21*T;,,                                    N 06Li !
+ PAR  G(AL3PD,AL:PD),,                  +3*GHSERAL+GHSERPD
+             -151076.48+26.51*T;,,                                    N 06Li !
+ PAR  G(AL21PD8,AL:PD),,                +21*GHSERAL+8*GHSERPD
+             -1281100+299*T;,,                                        N 21Hom !
+$
+ PAR  G(AL3PD2_D513,AL:PD),,            +3*GHSERAL+2*GHSERPD
+             -269541.8+37.214*T;,,                                    N 21Hom !
+ PAR  G(AL3PD2_D513,PD:AL),,            +3*GHSERPD+2*GHSERAL
+             -55033.89+20.82*T;,,                                     N 06Li !
+ PAR  L(AL3PD2_D513,AL,PD:AL;0),,       -450180.01+38.01*T;,,         N 06Li !
+ PAR  L(AL3PD2_D513,AL,PD:PD;0),,       -450180.01+38.01*T;,,         N 06Li !
+ PAR  L(AL3PD2_D513,AL:AL,PD;0),,       -197701.77+139.11*T;,,        N 06Li !
+ PAR  L(AL3PD2_D513,PD:AL,PD;0),,       -197701.77+139.11*T;,,        N 06Li !
+$
+ PAR  G(AL3PD5,AL:PD),,                 +3*GHSERAL+5*GHSERPD
+             -412146+22.799*T;,,                                      N 21Hom !
+$
+ PAR  G(AL2PD5,AL:PD),,                 +2*GHSERAL+5*GHSERPD
+             -329912.86+21.86*T;,,                                    N 06Li !
+ PAR  L(AL2PD5,AL:AL,PD;0),,            -660821.07+94.89*T;,,         N 06Li !
+$
+ PAR  G(ALPD2_C37,AL:PD),,              +GHSERAL+2*GHSERPD
+             -144760.82+10.18*T-0.596*T*LN(T);,,                      N 06Li !
+ PAR  G(ALPD2_C37,PD:AL),,              +GHSERPD+2*GHSERAL
+             +23168.36+42.11*T;,,                                     N 06Li !
+ PAR  L(ALPD2_C37,AL,PD:AL;0),,         -235761.01+45.04*T;,,         N 06Li !
+ PAR  L(ALPD2_C37,AL,PD:PD;0),,         -235761.01+45.04*T;,,         N 06Li !
+ PAR  L(ALPD2_C37,AL:AL,PD;0),,         -392380.23+110.03*T;,,        N 06Li !
+ PAR  L(ALPD2_C37,PD:AL,PD;0),,         -392380.23+110.03*T;,,        N 06Li !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,AL,PD:VA;0),,            +ZERO;,,                      N 21Hom !
+ PAR  L(HCP_A3,AL,PD:VA;1),,            +ZERO;,,                      N 21Hom !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  06Li   'M. Li, C. Li, F. Wang, W. Zhang,
+          Intermetallics, 14, 39-46(2006); Al-Pd'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+  09Sun  'B. Sundman, I. Ohnuma, N. Dupin, U.R. Kattner, S.G. Fries,
+          Acta Mater., 57, 2896-2908(2009); Al-Fe'
+  21Hom  'V. Homolova, A. Kroupa, Metals, 11, 1803(2021); Al-Pd'
+!

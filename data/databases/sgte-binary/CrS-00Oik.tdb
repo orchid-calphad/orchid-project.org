@@ -1,0 +1,269 @@
+$
+$ Database for Cr-S from K. Oikawa et al. 2000.
+$
+$ K. Oikawa, H. Mitsui, H. Ohtani, K. Ishida, ISIJ Int., 40, 182-90(2000).
+$
+$ Dataset created 2018.06.16 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ This is a very simplified description of the system.
+$
+$ In the paper a two-sublattice model (not ionic!) is used for the liquid.
+$ This is converted to an associate model here. The original model is only
+$ valid for Cr-CrS. This is extended by adding S to the liquid.
+$
+$ S is modelled as interstitial in fcc and bcc. This is non-standard.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+ ELEMENT S    ORTHORHOMBIC_A16           32.06      4412.0     32.07   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CRS                                CR1S1 !
+ SPECIE  S2                                 S2 !
+ SPECIE  S3                                 S3 !
+ SPECIE  S4                                 S4 !
+ SPECIE  S5                                 S5 !
+ SPECIE  S6                                 S6 !
+ SPECIE  S7                                 S7 !
+ SPECIE  S8                                 S8 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CR CRS S : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CR : S VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CR : S VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CR : VA: !
+$
+$ Prototype alpha-S (oF128, Fddd)
+$
+ PHASE ORTHORHOMBIC_A16 % 1 1 !
+ CONST ORTHORHOMBIC_A16 : S : !
+$
+$ Prototype beta-S (mP48, P2_1/a)
+$
+ PHASE MONOCLINIC_S % 1 1 !
+ CONST MONOCLINIC_S : S : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc)
+$
+ PHASE CRS_B81 % 2 1 1 !
+ CONST CRS_B81 : CR : S : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : S S2 S3 S4 S5 S6 S7 S8 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+$PAR  G(CUB_A13,CR:VA),,                +GHSERCR+15899+0.6276*T;,,    N 91Din !
+$PAR  G(CBCC_A12,CR:VA),,               +GHSERCR+11087+2.7196*T;,,    N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCR    298.15  +GHSERCR+7284+0.163*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ S
+$
+$ FCC_A1 and BCC_A2 revised in unary 3.0
+$ ORTHORHOMBIC_A16 and LIQUID modified in unary 4.1
+$ MONOCLINIC revised in unary 4.1
+$ ORTHORHOMBIC_A16 and LIQUID revised in unary 4.4
+$
+ PAR  G(ORTHORHOMBIC_A16,S),,           +GHSERSS;                1300 N 01SGUN !
+ PAR  G(MONOCLINIC,S),,                 +GMONSS;                 1300 N 01SGUN !
+$PAR  G(FCC_A1,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(FCC_A1,S:VA),,                  +GHSERSS+30000+32*T;     1300 N 91Din !
+$PAR  G(BCC_A2,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(BCC_A2,S:VA),,                  +GHSERSS+31000+32*T;     1300 N 91Din !
+ PAR  G(LIQUID,S),,                     +GLIQSS;                 1300 N 01SGUN !
+$
+ PAR  G(GAS,S),,                        +F14852T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S2),,                       +F14964T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S3),,                       +F15022T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S4),,                       +F15041T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S5),,                       +F15047T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S6),,                       +F15052T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S7),,                       +F15057T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S8),,                       +F15061T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERSS   298.15  -5198.294+53.913855*T-10.726*T*LN(T)
+       -0.0273801*T**2+8.179537E-6*T**3; 
+       368.30  Y  -6475.706+94.182332*T-17.8693298*T*LN(T)
+       -0.010936877*T**2+1.406467E-6*T**3+36871*T**(-1); 
+      1300.00  Y  -12485.546+188.304687*T-32*T*LN(T); 
+      1301.00  N !
+ FUNCTION GMONSS    298.15  -5725.422+89.544275*T-17.413*T*LN(T)
+       -0.00993935*T**2-0.070062E-6*T**3+1250*T**(-1); 
+       388.36  Y  -7455.008+114.782945*T-21.1531404*T*LN(T)
+       -0.008566163*T**2+1.112484E-6*T**3+122167*T**(-1); 
+      1300.00  Y  -11779.415+186.699065*T-32*T*LN(T); 
+      1301.00  N !
+ FUNCTION GLIQSS    298.15  -4196.575+85.63027*T-17.413*T*LN(T)
+       -0.00993935*T**2-0.070062E-6*T**3+1250*T**(-1); 
+       335.00  Y  1790361.982-44195.451432*T+7511.6194258*T*LN(T)
+       -13.985517511*T**2+4838.738601E-6*T**3-79880891*T**(-1); 
+       388.36  Y  -876313.954+23366.872986*T-4028.756*T*LN(T)
+       +7.954595*T**2-2908.513333E-6*T**3+33980035*T**(-1); 
+       432.25  Y  454088.687-7814.670231*T+1237.001*T*LN(T)
+       -1.5607295*T**2+359.883667E-6*T**3-31765395*T**(-1); 
+       500.00  Y  18554.561-144.895285*T+16.535*T*LN(T)
+       -0.0454119*T**2+8.327402E-6*T**3-2705030*T**(-1); 
+       700.00  Y  21243.126-113.298877*T+9.944*T*LN(T)
+       -0.0288384*T**2+3.791365E-6*T**3-3507570*T**(-1); 
+       900.00  Y  16117.849-32.79523*T-2.425*T*LN(T)
+       -0.01712545*T**2+1.84974E-6*T**3-3215170*T**(-1); 
+      1300.00  Y  -6461.814+175.590536*T-32*T*LN(T); 
+      1301.00  N !
+$ S(g)
+ FUNCTION F14852T   298.15  +269797.373+2.2810296*T-25.70471*T*LN(T)
+       +0.003751372*T**2-5.48887167E-07*T**3+3450.3165*T**(-1);
+      1000.00  Y  +273925.002-38.4958652*T-19.81748*T*LN(T)
+       -2.300353E-04*T**2-1.18709967E-08*T**3-570436.5*T**(-1);
+      3400.00  Y  +257401.532-.943966729*T-24.05931*T*LN(T)
+       -5.98546E-07*T**2+2.02961167E-09*T**3+9368165*T**(-1);
+     10000.00  N !
+$ S2(g)
+ FUNCTION F14964T   298.15  +117374.548+2.98629624*T-34.09678*T*LN(T)
+       -0.002325464*T**2+1.85480167E-07*T**3+128593.6*T**(-1);
+      1000.00  Y  +117352.438+2.50383325*T-34.04744*T*LN(T)
+       -0.0021150245*T**2+9.16602333E-08*T**3+175718.45*T**(-1);
+      3400.00  Y  +124361.091+14.5182901*T-36.1923*T*LN(T)
+       -5.930925E-04*T**2-7.54259333E-09*T**3-7484105*T**(-1);
+      6000.00  N !
+$ S3(g)
+ FUNCTION F15022T   298.15  +126744.315+83.8435689*T-52.94561*T*LN(T)
+       -0.0043385055*T**2+6.68300333E-07*T**3+276938.3*T**(-1);
+      1000.00  Y  +123958.871+118.720436*T-58.16242*T*LN(T)
+       -7.29079E-06*T**2+2.42566833E-10*T**3+558805*T**(-1);
+      6000.00  N !
+$ S4(g)
+ FUNCTION F15041T   298.15  +109847.438+203.904963*T-72.67966*T*LN(T)
+       -0.009041155*T**2+1.47148883E-06*T**3+505278*T**(-1);
+       900.00  Y  +104526.08+272.793563*T-83.05028*T*LN(T)
+       -1.828101E-05*T**2+6.19803333E-10*T**3+1023588.5*T**(-1);
+      6000.00  N !
+$ S5(g)
+ FUNCTION F15047T   298.15  +106276.072+170.263399*T-74.99022*T*LN(T)
+       -0.035336475*T**2+5.76872833E-06*T**3+227070.6*T**(-1);
+       900.00  Y  +75139.8847+544.891054*T-130.537*T*LN(T)
+       +0.007879015*T**2-4.32610333E-07*T**3+3425257*T**(-1);
+      2800.00  Y  +114904.753+339.945759*T-103.9801*T*LN(T)
+       +2.25877E-05*T**2-7.925025E-10*T**3-7832715*T**(-1);
+      6000.00  N !
+$ S6(g)
+ FUNCTION F15052T   298.15  +57214.7948+523.24074*T-130.1838*T*LN(T)
+       -4.152356E-04*T**2-4.27131667E-07*T**3+779118.5*T**(-1);
+      1600.00  Y  +8925.72335+728.509037*T-155.3363*T*LN(T)
+       +0.002031178*T**2-1.776135E-08*T**3+14908280*T**(-1);
+      4200.00  Y  +43158.7838+657.511854*T-147.3935*T*LN(T)
+       +0.0015928905*T**2-3.34608333E-08*T**3-8046775*T**(-1);
+      6000.00  N !
+$ S7(g)
+ FUNCTION F15057T   298.15  +59623.0027+634.182529*T-153.2939*T*LN(T)
+       -0.003102847*T**2+3.66153167E-07*T**3+940068*T**(-1);
+      1500.00  Y  +56671.3245+666.288106*T-157.9591*T*LN(T)
+       -2.441417E-06*T**2+7.28532E-11*T**3+1284129.5*T**(-1);
+      6000.00  N !
+$ S8(g)
+ FUNCTION F15061T   298.15  +45619.0277+695.996674*T-166.1987*T*LN(T)
+       -0.0109886*T**2-1.38875683E-06*T**3+753634*T**(-1);
+       800.00  Y  +22301.584+822.41812*T-181.0091*T*LN(T)
+       -0.020252625*T**2+3.04543E-06*T**3+4785936*T**(-1);
+      1500.00  Y  +28125.3352+992.470207*T-208.7199*T*LN(T)
+       +0.006139635*T**2-2.57977667E-07*T**3-2943090*T**(-1);
+      3900.00  Y  +82396.4096+766.112131*T-180.3439*T*LN(T)
+       -2.580219E-04*T**2+5.17172833E-09*T**3-21845450*T**(-1);
+      6000.00  N !
+ FUNCTION GS2GAS    298.15  +F14964T;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Oikawa, H. Mitsui, H. Ohtani, K. Ishida, ISIJ Int., 40, 182-90(2000).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ This is a very simplified description of the system.
+$
+$ In the paper a two-sublattice model (not ionic!) is used for the liquid.
+$ This is converted to an associate model here. The original model is only
+$ valid for Cr-CrS. This is extended by adding S to the liquid.
+$
+$ S is modelled as interstitial in fcc and bcc. This is non-standard.
+$
+ PAR  G(LIQUID,CRS),,                   +GHSERCR+0.5*GS2GAS
+             -165994+36.57*T;,,                                       N 00Oik !
+ PAR  L(LIQUID,CR,CRS;0),,              +119000-57.92*T;,,            N 00Oik !
+ PAR  L(LIQUID,CR,CRS;1),,              -26466+31.71*T;,,             N 00Oik !
+$
+ PAR  G(BCC_A2,CR:S),,                  +GHSERCR+1.5*GS2GAS
+             +175941-59.67*T;,,                                       N 00Oik !
+$
+ PAR  G(CRS_B81,CR:S),,                 +GHSERCR+0.5*GS2GAS
+             -202312+56.012*T;,,                                      N 00Oik !
+$
+$ Metastable
+$
+ PAR  G(FCC_A1,CR:S),,                  +GFCCCR+0.5*GS2GAS
+             +58647-19.89*T;,,                                        N 00Oik !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  Sundm  'Bosse Sundman, unpublished, SGTE unary database V.3.0, 1996; S'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  97SUB  'SGTE substance database, version 1997'
+  00Oik  'K. Oikawa, H. Mitsui, H. Ohtani, K. Ishida,
+          ISIJ Int., 40, 182-90(2000); Cr-S'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+!

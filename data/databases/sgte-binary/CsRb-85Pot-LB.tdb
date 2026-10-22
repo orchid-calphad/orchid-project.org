@@ -1,0 +1,120 @@
+$
+$ Database for Cs-Rb from P.E. Potter and M.H. Rand 1985 (included in LB Vol. 3)
+$
+$ P.E. Potter, M.H. Rand, in: Handbook of Thermodynamic and Transport
+$ Properties of Alkali Metals, R.W. Ohse (Ed.), Blackwell Sci. Publ., 1985.	
+$
+$ Dataset created 2012.10.07 by Bengt Hallstedt.
+$ 2020.12.26: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    !
+ ELEMENT CS   BCC_A2                    132.9054    7711.000   85.23   ! 
+ ELEMENT RB   BCC_A2                     85.4678    7489.      76.78   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CS RB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CS RB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CS RB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : CS RB : VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cs
+$
+ PAR  G(BCC_A2,CS:VA)           200.00  +GHSERCS;                2000 N 91Din !
+ PAR  G(HCP_A3,CS:VA)           200.00  +GHSERCS+500+2*T;        2000 N 91Din !
+ PAR  G(FCC_A1,CS:VA)           200.00  +GHSERCS+500+1.3*T;      2000 N 91Din !
+ PAR  G(LIQUID,CS)              200.00  +GLIQCS;                 2000 N 91Din !
+$
+ FUNCTION GHSERCS   200.00  -17373.82+436.899787*T-90.5212584*T*LN(T)
+       +0.2029422*T**2-1.27907669E-04*T**3+245245*T**(-1);
+       301.59  Y  -13553.817+218.689955*T-46.7273304*T*LN(T)
+       +0.02043269*T**2-4.074846E-06*T**3+181528*T**(-1)+7.8016E+21*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQCS    200.00  +2091.141-6.931035*T+GHSERCS-3.56867E-18*T**7;
+       301.59  Y  +2099.779-6.961111*T+GHSERCS-7.8016E+21*T**(-9);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Rb
+$
+ PAR  G(BCC_A2,RB:VA)           200.00  +GHSERRB;                2100 N 91Din !
+ PAR  G(HCP_A3,RB:VA)           200.00  +GHSERRB+200+2*T;        2100 N 91Din !
+ PAR  G(FCC_A1,RB:VA)           200.00  +GHSERRB+200+1.3*T;      2100 N 91Din !
+ PAR  G(LIQUID,RB)              200.00  +GLIQRB;                 2100 N 91Din !
+$
+ FUNCTION GHSERRB   200.00  -21669.733+583.580988*T-115.282589*T*LN(T)
+       +0.26277612*T**2-1.52236932E-04*T**3+385754*T**(-1);
+       312.46  Y  -7823.397+117.050578*T-29.1775424*T*LN(T)
+       +4.12369E-04*T**2-4.6822E-07*T**3-126310*T**(-1)-5.55029E+22*T**(-9);
+       900.00  Y  -39488.142+450.974149*T-77.7006456*T*LN(T)
+       +0.033795632*T**2-4.829082E-06*T**3+3778006*T**(-1)-5.55029E+22*T**(-9);
+      1600.00  Y  -159742.511+1287.78947*T-191.262774*T*LN(T)
+       +0.08161687*T**2-8.61653E-06*T**3+27738456*T**(-1)-5.55029E+22*T**(-9);
+      2100.00  N !
+ FUNCTION GLIQRB    200.00  +2217.552-7.110486*T+GHSERRB+1.44078E-17*T**7;
+       312.46  Y  +2172.865-6.960316*T+GHSERRB+5.55029E+22*T**(-9);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From P.E. Potter and M.H. Rand 1985 (included in LB Vol. 3)
+$
+$ P.E. Potter, M.H. Rand, in: Handbook of Thermodynamic and Transport
+$ Properties of Alkali Metals, R.W. Ohse (Ed.), Blackwell Sci. Publ., 1985.	
+$
+$ Checked against LB. Checked at 6000 K.
+$
+ PAR  L(LIQUID,CS,RB;0),,               -503.42+11.40429*T;,,         N 85Pot !
+$
+ PAR  L(BCC_A2,CS,RB:VA;0),,            -810.19+14.87152*T;,,         N 85Pot !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,CS,RB:VA;0),,            -810.19+14.87152*T;,,         N Same !
+ PAR  L(HCP_A3,CS,RB:VA;0),,            -810.19+14.87152*T;,,         N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CS-RB(TDB -* +LIQUID +BCC_A2 ;P3 TMM:100/500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  85Pot  'P.E. Potter, M.H. Rand, in: Handbook of Thermodynamic and Transport
+          Properties of Alkali Metals, R.W. Ohse (Ed.),
+          Blackwell Sci. Publ., 1985; Cs-Rb'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+!

@@ -1,0 +1,184 @@
+$
+$ Database for Co-Mo from A.V. Davydov and U.R. Kattner 2003
+$ (included in LB Vol. 2)
+$
+$ A.V. Davydov, U.R. Kattner, J. Phase Equilib., 24, 209-11(2003).
+$
+$ Dataset created 2015.04.25 by Bengt Hallstedt.
+$ 2020.04.25: Modified for use with GES6.
+$
+$ The LB version has 10:4:16 sigma and 1:4:2:6 mu-phase models.
+$ Here 8:4:18 sigma and 7:2:4 mu-phase models are used.
+$ The paper also contains parameters for the 7:6 mu-phase model.
+$
+$ There is an inverse miscibility gap with a minimum at 3956 K and x(Mo)=0.41.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO MO : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% MO : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO MO% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% MO : VA : !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE CO3MO_D019 % 2 3 1  !
+ CONST CO3MO_D019 : CO : MO : !
+$
+$ Prototype Fe7W6 (hR13, R-3m)
+$
+ PHASE MU_D85 % 3 7 2 4 !
+ CONST MU_D85 : CO MO : MO : CO MO : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm)
+$
+ PHASE SIGMA_OLD % 3 8 4 18 !
+ CONST SIGMA_OLD : CO : MO : CO MO : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ PAR  G(MU_D85,MO:MO:MO),,              +13*GHSERMO+65000;,,          N 99Dav !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From A.V. Davydov and U.R. Kattner 2003 (included in LB Vol. 2)
+$
+$ A.V. Davydov, U.R. Kattner, J. Phase Equilib., 24, 209-11(2003).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The LB version has 10:4:16 sigma and 1:4:2:6 mu-phase models.
+$ Here 8:4:18 sigma and 7:2:4 mu-phase models are used.
+$ The paper also contains parameters for the 7:6 mu-phase model.
+$
+$ There is an inverse miscibility gap with a minimum at 3956 K and x(Mo)=0.41.
+$
+ PAR  L(LIQUID,CO,MO;0),,               -68756.05+31.8*T
+             +0.2*T*LN(T);,,                                          N 03Dav !
+ PAR  L(LIQUID,CO,MO;1),,               +2184.77+1.5*T;,,             N 03Dav !
+$
+ PAR  L(FCC_A1,CO,MO:VA;0),,            -29557.1+10.953*T;,,          N 99Dav !
+ PAR  L(FCC_A1,CO,MO:VA;1),,            -1382.2+15.371*T;,,           N 99Dav !
+ PAR  L(FCC_A1,CO,MO:VA;2),,            -18135.4;,,                   N 99Dav !
+ PAR  TC(FCC_A1,CO,MO:VA;0),,           -3700;,,                      N 99Dav !
+ PAR  BM(FCC_A1,CO,MO:VA;0),,              -3.578;,,                  N 99Dav !
+$
+ PAR  L(BCC_A2,CO,MO:VA;0),,            +5000+7.597*T;,,              N 03Dav !
+ PAR  L(BCC_A2,CO,MO:VA;1),,            -19208.67;,,                  N 03Dav !
+ PAR  TC(BCC_A2,CO,MO:VA;0),,           -3700;,,                      N 99Dav !
+ PAR  BM(BCC_A2,CO,MO:VA;0),,              -3.445;,,                  N 99Dav !
+$
+ PAR  L(HCP_A3,CO,MO:VA;0),,            -29315.7+23.755*T;,,          N 99Dav !
+ PAR  L(HCP_A3,CO,MO:VA;1),,            -27975.9-1.936*T;,,           N 99Dav !
+ PAR  L(HCP_A3,CO,MO:VA;2),,            +24698.3;,,                   N 99Dav !
+ PAR  TC(HCP_A3,CO,MO:VA;0),,           -1000;,,                      N 99Dav !
+$
+ PAR  G(CO3MO_D019,CO:MO),,             +3*GHSERCO+GHSERMO
+             -47009.6+20.816*T;,,                                     N 99Dav !
+$
+ PAR  G(MU_D85,CO:MO:CO),,              +11*GHSERCO+2*GHSERMO
+             -64478.6+49.936*T;,,                                     N 99Dav !
+ PAR  G(MU_D85,CO:MO:MO),,              +7*GHSERCO+6*GHSERMO
+             -105406.7+19.784*T;,,                                    N 99Dav !
+ PAR  G(MU_D85,MO:MO:CO),,              +4*GHSERCO+9*GHSERMO
+             +105928.1+30.152*T;,,                                    N 99Dav !
+ PAR  L(MU_D85,CO,MO:MO:CO;0),,         -59132.6+161*T;,,             N 03Dav !
+ PAR  L(MU_D85,CO,MO:MO:MO;0),,         -59132.6+161*T;,,             N 03Dav !
+ PAR  L(MU_D85,CO:MO:CO,MO;0),,         -117092.4+115*T;,,            N 03Dav !
+ PAR  L(MU_D85,MO:MO:CO,MO;0),,         -117092.4+115*T;,,            N 03Dav !
+$
+ PAR  G(SIGMA_OLD,CO:MO:CO),,           +26*GHSERCO+4*GHSERMO
+             -130932.67+240.554*T;,,                                  N 03Dav !
+ PAR  G(SIGMA_OLD,CO:MO:MO),,           +8*GHSERCO+22*GHSERMO
+             -87868.24+14.662*T;,,                                    N 03Dav !
+ PAR  L(SIGMA_OLD,CO:MO:CO,MO;0),,      -157492.37;,,                 N 03Dav !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CO-MO(TDB -* +LIQ +HCP_A3 +FCC_A1 +BCC_A2 +CO3MO_D019 +MU_D85 +SIGMA_D8B
+  ;P3 TMM:300/3000 STP:0.2/1000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Dav  'A.V. Davydov, U.R. Kattner,
+          J. Phase Equilib., 20, 5-16(1999); Co-Mo'
+  03Dav  'A.V. Davydov, U.R. Kattner,
+          J. Phase Equilib., 24, 209-11(2003); Co-Mo'
+!

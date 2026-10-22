@@ -1,0 +1,299 @@
+$
+$ Database for Sn-O from I. Ansara and N. Dupin 1997 (Included in LB Vol. 4)
+$
+$ I. Ansara, N. Dupin, unpublshed work, 1997.
+$
+$ Dataset created 2016.03.13 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ Neutral O is included in the ionic liquid in LBall-v7+fun.tdb. This changes
+$ the O2+SnO2(s)+SnO2(l) equilibrium from 1901 K to 1867 K. The congruent
+$ melting of SnO2 changes from 1901 K to 1886 K. The congruent evaporation
+$ of SnO2(l) changes from 2256.3 K to 2257.7 K. Other equilibria
+$ are not influenced.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  SN+2                               SN/+2 !
+ SPECIE  SN+4                               SN/+4 !
+ SPECIE  SN2                                SN2 !
+ SPECIE  SNO                                SN1O1 !
+ SPECIE  SNO2                               SN1O2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : SN+2 : O-2 VA SNO2 : !
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SN : O VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SN : O VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SN : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SN : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SN : !
+$
+$ Prototype TiO2 (tP6, P4_2/mnm)
+$
+ PHASE SNO2_C4 % 2 1 2 !
+ CONST SNO2_C4 : SN+4 : O-2 : !
+$
+$ Prototype PbO-L (tP4, P4/nmm)
+$
+ PHASE SNO_B10:I % 2 1 1 !
+ CONST SNO_B10:I : SN+2 : O-2 : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : O O2% O3 SN SN2 SNO SNO2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT_PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F12575T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F13204T+RTLNP;,,             N 94SUB !
+$
+$PAR  G(LIQUID,O),,                     +GHSEROO-2648.9+31.44*T;,,    N 91Din !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F12575T   298.15  +243206.494-20.8612587*T-21.01555*T*LN(T)
+       +1.2687055E-04*T**2-1.23131283E-08*T**3-42897.09*T**(-1);
+      2950.00  Y  +252301.423-52.0847285*T-17.21188*T*LN(T)
+       -5.413565E-04*T**2+7.64520667E-09*T**3-3973170.5*T**(-1);
+      6000.00  N !
+$ O3(g)
+ FUNCTION F13204T   298.15  +130696.944-37.9096651*T-27.58118*T*LN(T)
+     -0.02763076*T**2+4.60539333E-06*T**3+99530.45*T**(-1);
+     700.00  Y  +114760.623+176.626736*T-60.10286*T*LN(T)
+     +0.00206456*T**2-5.17486667E-07*T**3+1572175*T**(-1);
+    1300.00  Y  +49468.3958+710.094819*T-134.3696*T*LN(T)
+     +0.039707355*T**2-4.10457667E-06*T**3+12362250*T**(-1);
+    2100.00  Y  +866367.075-3566.80563*T+421.2001*T*LN(T)
+     -0.1284109*T**2+5.44768833E-06*T**3-2.1304835E+08*T**(-1);
+    2800.00  Y  +409416.384-1950.70834*T+223.4437*T*LN(T)
+     -0.0922361*T**2+4.306855E-06*T**3-21589870*T**(-1);
+    3500.00  Y  -1866338.6+6101.13383*T-764.8435*T*LN(T)
+     +0.09852775*T**2-2.59784667E-06*T**3+9.610855E+08*T**(-1);
+    4900.00  Y  +97590.0432+890.79836*T-149.9608*T*LN(T)
+     +0.01283575*T**2-3.555105E-07*T**3-2.1699975E+08*T**(-1);
+    6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+$PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ PAR  G(ION,SN+2:VA)            100.00  +GLIQSN;                 3000 N 91Din !
+$
+ PAR  G(GAS,SN),,                       +F14423T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,SN2),,                      +F14441T+RTLNP;,,             N 94SUB !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                         3000 N !
+$ Sn(g)
+ FUNCTION F14423T   298.15  +299805.017-138.265505*T-2.769934*T*LN(T)
+       -0.025123235*T**2+2.91121E-06*T**3-225080.65*T**(-1);
+       500.00  Y  +299818.158-153.051454*T+.006576569*T*LN(T)
+       -0.031759785*T**2+5.12529167E-06*T**3-157706.25*T**(-1);
+       900.00  Y  +259620.873+283.605387*T-63.72523*T*LN(T)
+       +0.0132323*T**2-8.43548E-07*T**3+4603149.5*T**(-1);
+      2000.00  Y  +305551.58+10.5671679*T-27.57385*T*LN(T)
+       +5.86253E-04*T**2-1.41879667E-08*T**3-6339225*T**(-1);
+      6600.00  Y  +330332.682-10.4578956*T-25.61849*T*LN(T)
+       +7.907715E-04*T**2-2.626045E-08*T**3-39037215*T**(-1);
+     10000.00  N !
+$ Sn2(g)
+ FUNCTION F14441T   298.15  +415023.293-24.276484*T-36.02127*T*LN(T)
+       -0.005866135*T**2+7.95920667E-07*T**3-134064.05*T**(-1);
+      1100.00  Y  +418717.2-28.8639587*T-36.06067*T*LN(T)
+       -0.003023904*T**2+1.82022167E-07*T**3-1196854*T**(-1);
+      3000.00  Y  +318814.516+319.93647*T-78.71578*T*LN(T)
+       +0.0048371295*T**2-7.82327E-08*T**3+41752485*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From I. Ansara and N. Dupin 1997 (Included in LB Vol. 4)
+$
+$ I. Ansara, N. Dupin, unpublshed work, 1997.
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ Neutral O is included in the ionic liquid in LBall-v7+fun.tdb. This changes
+$ the O2+SnO2(s)+SnO2(l) equilibrium from 1901 K to 1867 K. The congruent
+$ melting of SnO2 changes from 1901 K to 1886 K. The congruent evaporation
+$ of SnO2(l) changes from 2256.3 K to 2257.7 K. Other equilibria
+$ are not influenced.
+$
+ PAR  G(ION,SN+2:O-2),,                 +2*F12795T+55400-44.32*T;,,   N 97Ans !
+ PAR  G(ION,SNO2),,                     +F13159T
+             +23400-12.2963742*T;,,                                   N 97Ans !
+ PAR  L(ION,SN+2:O-2,VA;0),,            +140878-23.9326*T;,,          N 97Ans !
+ PAR  L(ION,SN+2:O-2,SNO2;0),,          +41200;,,                     N 97Ans !
+ PAR  L(ION,SN+2:VA,SNO2;0),,           +140878-23.9326*T;,,          N 97Ans !
+$
+ PAR  G(SNO2_C4,SN+4:O-2),,             +F13159T;,,                   N 94SUB !
+$
+ PAR  G(GAS,SNO),,                      +F12798T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,SNO2),,                     +F13162T+RTLNP;,,             N 94SUB !
+$
+$ Metastable
+$
+ PAR  G(BCC_A2,SN:O),,                  +GBCCSN+3*GHSEROO
+             -500000+180*T;,,                                         N 97Ans !
+ PAR  G(SNO_B10,SN+2:O-2),,             +F12795T;,,                   N 94SUB !
+$
+$ SnO(s)
+ FUNCTION F12795T   298.15  -294353.724+239.825132*T-43.7399*T*LN(T)
+       -0.006780115*T**2+1.76666667E-11*T**3-5*T**(-1);
+      1250.00  Y  -307834.997+379.476855*T-63*T*LN(T);
+      6000.00  N !
+$ SnO2(s)
+ FUNCTION F13159T   298.15  -608087.742+474.985631*T-76.041*T*LN(T)
+       -0.003681085*T**2-1.28166667E-10*T**3+1111933.5*T**(-1);
+      1903.00  Y  -623956.627+597.135376*T-92*T*LN(T);
+      6000.00  N !
+$ SnO(g)
+ FUNCTION F12798T   298.15  +11476.6012-18.3661002*T-31.30909*T*LN(T)
+       -0.00526408*T**2+8.15663333E-07*T**3+100608.85*T**(-1);
+       900.00  Y  +6624.42371+35.0080433*T-39.14951*T*LN(T)
+       +6.65607E-04*T**2-6.688285E-08*T**3+691051*T**(-1);
+      3300.00  Y  +37287.5486-.122580966*T-36.16144*T*LN(T)
+       +0.0022631595*T**2-2.10390833E-07*T**3-21946355*T**(-1);
+      5600.00  Y  +839171.013-1966.22127*T+193.4373*T*LN(T)
+       -0.02698769*T**2+4.88792333E-07*T**3-5.47959E+08*T**(-1);
+      6000.00  N !
+$ SnO2(g)
+ FUNCTION F13162T   298.15  -5629.61895+88.2543874*T-49.38036*T*LN(T)
+       -0.01144428*T**2+1.930165E-06*T**3+250871.75*T**(-1);
+       800.00  Y  -12088.8009+172.92657*T-62.165*T*LN(T)
+       -3.8982055E-05*T**2+1.35514117E-09*T**3+873175.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  O-SN(TDB -* +ION +GAS +BCT_A5 +SNO2_C4 +SNO_B10
+  ;G5 C_S:ION/SN+2:VA MAJ:ION/SN+2:O2SN ;P3 TMM:300/3000 STP:.9/2000 ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94SUB  'SGTE substance database, version 1994'
+  97Ans  'I. Ansara, N. Dupin, unpublshed work, 1997; Sn-O'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+!

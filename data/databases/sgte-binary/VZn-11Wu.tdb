@@ -1,0 +1,240 @@
+$
+$ Database for V-Zn from C. Wu et al. 2011.
+$
+$ C. Wu, X. Su, D. Liu, X. Wang, J. Wang, Z. Li, H. Peng,
+$ Calphad, 35, 403-10(2011).
+$
+$ Dataset created 2024.08.14 by Bengt Hallstedt.
+$
+$ V solubility in hcp-Zn not modelled.
+$
+$ The temperature dependence for the liquid and bcc interaction are improbable.
+$
+$ It was necessary to add an arbitrary positive interaction to hcp and fcc
+$ to prevent them from becoming stable.
+$
+$ The V boiling point is different from the supplemental tdb, i.e. there is
+$ some difference in V gas phase data (see below).
+$
+$ In the paper RTLNP is defined in a very strange way. The standard pressure,
+$ P_0, is used as an optimizing variable, which is plain wrong. The result is
+$ reasonably close to 100000 Pa and therefore is not completely obvious.
+$ In the paper P is multiplied by P_0 rather than divided, but as P_0 was
+$ optimized to be close to 1E-5 it doesn't really matter.
+$
+$ The function RTLNP must be defined for GES6 (in Thermo-Calc 2023b) to work
+$ properly. There is no error message when the function is missing, Poly-3
+$ simply cannot calculate equilibria with the gas phase. GES5 does not need
+$ RTLNP to be defined.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT V    BCC_A2                     50.9415    4507.0     30.89   ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : V ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : V ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : V% ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : V ZN% : VA : !
+$
+$ Prototype V4Zn5 (tI18, I4/mmm)
+$
+ PHASE V4ZN5 % 2 4 5 !
+ CONST V4ZN5 : V : ZN : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE VZN3_L12 % 2 1 3 !
+ CONST VZN3_L12 : V : ZN : !
+$
+$ Unknown structure 
+$
+ PHASE VZN16 % 2 1 16 !
+ CONST VZN16 : V : ZN : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : V ZN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ V
+$
+ PAR  G(BCC_A2,V:VA),,                  +GHSERVV;                4000 N 91Din !
+ PAR  G(FCC_A1,V:VA),,                  +GHSERVV+7500+1.7*T;     4000 N 91Din !
+ PAR  G(HCP_A3,V:VA),,                  +GHSERVV+4000+2.4*T;     4000 N 91Din !
+$PAR  G(CBCC_A12,V:VA),,                +GHSERVV+9000;           4000 N 91Din !
+$PAR  G(CUB_A13,V:VA),,                 +GHSERVV+10000;          4000 N 91Din !
+ PAR  G(LIQUID,V),,                     +GLIQVV;                 4000 N 91Din !
+$
+ PAR  G(GAS,V),,                        +F15565T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERVV   298.15  -7930.43+133.346053*T-24.134*T*LN(T)
+       -0.003098*T**2+1.2175E-07*T**3+69460*T**(-1);
+       790.00  Y  -7967.842+143.291093*T-25.9*T*LN(T)
+       +6.25E-05*T**2-6.8E-07*T**3;
+      2183.00  Y  -41689.864+321.140783*T-47.43*T*LN(T)+6.44389E+31*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQVV    298.15  +20764.117-9.455552*T+GHSERVV-5.19136E-22*T**7;
+      2183.00  Y  -19617.51+311.055983*T-47.43*T*LN(T);
+      4000.00  N !
+$ V(g)
+ FUNCTION F15565T   298.15  +511797.664-35.2535212*T-22.24944*T*LN(T)
+       +6.1413E-04*T**2-8.62467667E-07*T**3-163305.65*T**(-1);
+       600.00  Y  +511829.511-50.9981085*T-19.38998*T*LN(T)
+       -0.005134615*T**2+7.63121333E-07*T**3-68345.1*T**(-1);
+      1200.00  Y  +502467.16+47.6795887*T-33.65341*T*LN(T)
+       +0.0040905125*T**2-3.20704167E-07*T**3+1002485.5*T**(-1);
+      3500.00  Y  +659891.521-521.261732*T+36.42753*T*LN(T)
+       -0.009886465*T**2+2.055815E-07*T**3-65900100*T**(-1);
+      7000.00  Y  +225572.613+332.102043*T-60.43293*T*LN(T)
+       -2.216028E-04*T**2+2.37272833E-08*T**3+3.020267E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+$PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+$PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ PAR  G(GAS,ZN),,                       +F15669T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+$ Zn(g)
+ FUNCTION F15669T   298.15  +124152.804-21.0289705*T-20.897*T*LN(T)
+       +6.65E-05*T**2-5.58E-09*T**3+3335*T**(-1);
+      4300.00  Y  +104038.336+64.4573277*T-31.558*T*LN(T)
+       +0.00230425*T**2-8.82333333E-08*T**3+5389360*T**(-1);
+      8200.00  Y  +681283.394-922.574931*T+78.50201*T*LN(T)
+       -0.0070638*T**2+6.18466667E-08*T**3-5.65175E+08*T**(-1);
+     10000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Wu, X. Su, D. Liu, X. Wang, J. Wang, Z. Li, H. Peng,
+$ Calphad, 35, 403-10(2011).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ V solubility in hcp-Zn not modelled.
+$
+$ The temperature dependence for the liquid and bcc interaction are improbable.
+$
+$ It was necessary to add an arbitrary positive interaction to hcp and fcc
+$ to prevent them from becoming stable.
+$
+$ The V boiling point is different from the supplemental tdb, i.e. there is
+$ some difference in V gas phase data (see below).
+$
+$ In the paper RTLNP is defined in a very strange way. The standard pressure,
+$ P_0, is used as an optimizing variable, which is plain wrong. The result is
+$ reasonably close to 100000 Pa and therefore is not completely obvious.
+$ In the paper P is multiplied by P_0 rather than divided, but as P_0 was
+$ optimized to be close to 1E-5 it doesn't really matter.
+$
+$ The function RTLNP must be defined for GES6 (in Thermo-Calc 2023b) to work
+$ properly. There is no error message when the function is missing, Poly-3
+$ simply cannot calculate equilibria with the gas phase. GES5 does not need
+$ RTLNP to be defined.
+$
+ PAR  L(LIQUID,V,ZN;0),,                -20623.5+49*T;,,              N 11Wu !
+$
+ PAR  L(BCC_A2,V,ZN:VA;0),,             -1925.68+29.76*T;,,           N 11Wu !
+ PAR  L(HCP_A3,V,ZN:VA;0),,             +50000;,,                     N !
+$
+ PAR  G(V4ZN5,V:ZN),,                   +4*GHSERVV+5*GHSERZN
+             -41154.36+29.9*T;,,                                      N 11Wu !
+ PAR  G(VZN3_L12,V:ZN),,                +GHSERVV+3*GHSERZN
+             -18152.57+11.97*T;,,                                     N 11Wu !
+ PAR  G(VZN16,V:ZN),,                   +GHSERVV+16*GHSERZN
+             -18721.1+11.06*T;,,                                      N 11Wu !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,V,ZN:VA;0),,             +50000;,,                     N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database, 1998'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  97SUB  'SGTE Substance Database, version 1997'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  11Wu   'C. Wu, X. Su, D. Liu, X. Wang, J. Wang, Z. Li, H. Peng,
+          Calphad, 35, 403-10(2011); V-Zn'
+!

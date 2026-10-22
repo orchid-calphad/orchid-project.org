@@ -1,0 +1,224 @@
+$
+$ Database for Co-La from X.Y. Liu et al. 2024.
+$
+$ X.Y. Liu, P.P. Liu, C. Tan, S.Y. Yang, Y.C. Bai, J. Wang, G.H. Rao, H.Y. Zhou,
+$ Calphad, 84, 102653(2024).
+$
+$ Dataset created 2024.07.22 by Bengt Hallstedt.
+$
+$ Reoptimized from 08Wan.
+$
+$ Invariant equilibria differ by up to 5 K due to rounding errors when
+$ changing from fractional to integar compositions.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT LA   DHCP                      138.9055    6665.112   56.9024 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO LA : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% LA% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO LA% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% LA : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : LA : !
+$
+$ Prototype NaZn13 (cF112, Fm-3c)
+$
+ PHASE CO13LA_D23 %A 2 13 1 !
+ CONST CO13LA_D23 : CO : LA : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE CO5LA_D2D %A 2 5 1 !
+ CONST CO5LA_D2D : CO : LA : !
+$
+$ unknown structure 
+$
+ PHASE CO19LA5 %A 2 19 5 !
+ CONST CO19LA5 : CO : LA : !
+$
+$ Prototype Ce2Ni7 (hP36, P6_3/mmc), LT
+$ Prototype Co7Gd2 (hR18, R-3m), HT
+$
+ PHASE CO7LA2 %A 2 7 2 !
+ CONST CO7LA2 : CO : LA : !
+$
+$ Prototype La2Ni3 (oC20, Cmce)
+$
+ PHASE CO3LA2 % 2 3 2 !
+ CONST CO3LA2 : CO : LA : !
+$
+$ Pearson hP*, P6_3/mcm
+$
+ PHASE CO23LA27 % 2 23 27 !
+ CONST CO23LA27 : CO : LA : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE COLA3_D011 % 2 1 3 !
+ CONST COLA3_D011 : CO : LA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BMAG(HCP_A3,CO:VA),,                  1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BMAG(FCC_A1,CO:VA),,                  1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BMAG(BCC_A2,CO:VA),,                  1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ La
+$
+$ HCP_A3 from 24Liu not included in unary (worst suggestion so far)
+$
+ PAR  G(DHCP,LA),,                      +GHSERLA;                4000 N 91Din !
+ PAR  G(FCC_A1,LA:VA),,                 +GFCCLA;                 4000 N 91Din !
+ PAR  G(BCC_A2,LA:VA),,                 +GBCCLA;                 4000 N 91Din !
+ PAR  G(HCP_A3,LA:VA),,                 +GHSERLA+15000;          4000 N 24Liu !
+ PAR  G(LIQUID,LA),,                    +GLIQLA;                 4000 N 91Din !
+$
+ FUNCTION GHSERLA   298.15  -7968.403+120.284604*T-26.34*T*LN(T)
+       -0.001295165*T**2;
+       550.00  Y  -3381.413+59.06113*T-17.1659411*T*LN(T)
+       -0.008371705*T**2+6.8932E-07*T**3-399448*T**(-1);
+      2000.00  Y  -15608.882+181.390071*T-34.3088*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCLA    298.15  -6109.797+89.878761*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+      1134.00  Y  -124598.976+955.878375*T-139.346741*T*LN(T)
+       +0.042032405*T**2-3.066199E-06*T**3+20994153*T**(-1);
+      2000.00  Y  +3009.496-2.846081*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GBCCLA    298.15  -3952.161+88.072353*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+       800.00  Y  +321682.673-3565.08252*T+513.440708*T*LN(T)
+       -0.387295093*T**2+4.9547989E-05*T**3-36581228*T**(-1);
+      1134.00  Y  -16377.894+218.492988*T-39.5388*T*LN(T);
+      1193.00  Y  -136609.91+1123.34397*T-163.413074*T*LN(T)
+       +0.053968535*T**2-4.056395E-06*T**3+21167204*T**(-1);
+      2000.00  Y  +7402.894-6.553756*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GLIQLA    298.15  +5332.653+18.23012*T-11.0188191*T*LN(T)
+       -0.020171603*T**2+2.93775E-06*T**3-133541*T**(-1);
+      1134.00  Y  -3942.004+171.018431*T-34.3088*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X.Y. Liu, P.P. Liu, C. Tan, S.Y. Yang, Y.C. Bai, J. Wang, G.H. Rao, H.Y. Zhou,
+$ Calphad, 84, 102653(2024).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Reoptimized from 08Wan.
+$
+$ Invariant equilibria differ by up to 5 K due to rounding errors when
+$ changing from fractional to integar compositions.
+$
+ PAR  L(LIQUID,CO,LA;0),,               -32841-9*T;,,                 N 24Liu !
+ PAR  L(LIQUID,CO,LA;1),,               -3262.41989+15*T;,,           N 24Liu !
+ PAR  L(LIQUID,CO,LA;2),,               +6717.63392+T;,,              N 24Liu !
+$
+ PAR  L(FCC_A1,CO,LA:VA;0),,            +50000;,,                     N 24Liu !
+ PAR  L(BCC_A2,CO,LA:VA;0),,            +20000;,,                     N 24Liu !
+ PAR  L(HCP_A3,CO,LA:VA;0),,            +30000;,,                     N 24Liu !
+$
+ PAR  G(CO13LA_D23,CO:LA),,             +13*GHSERCO+GHSERLA
+             -118300+41.58*T;,,                                       N 24Liu !
+ PAR  TC(CO13LA_D23,CO:LA),,             1290.00;,,                   N 08Wan !
+$ 1 mole of atoms below
+$PAR  BMAG(CO13LA_D23,CO:LA),,              0.245;,,                  N 08Wan !
+ PAR  BMAG(CO13LA_D23,CO:LA),,             20.50;,,                   N 08Wan !
+$
+ PAR  G(CO5LA_D2D,CO:LA),,              +5*GHSERCO+GHSERLA
+             -67680+13.56*T;,,                                        N 24Liu !
+ PAR  TC(CO5LA_D2D,CO:LA),,               840.00;,,                   N 08Wan !
+$ 1 mole of atoms below
+$PAR  BMAG(CO5LA_D2D,CO:LA),,               0.4229;,,                 N 08Wan !
+ PAR  BMAG(CO5LA_D2D,CO:LA),,               7.30;,,                   N 08Wan !
+$
+ PAR  G(CO19LA5,CO:LA),,                +19*GHSERCO+5*GHSERLA
+             -331200+90.72*T;,,                                       N 24Liu !
+ PAR  TC(CO19LA5,CO:LA),,                 616.00;,,                   N 08Wan !
+$ 1 mole of atoms below
+$PAR  BMAG(CO19LA5,CO:LA),,                 0.0458;,,                 N 08Wan !
+ PAR  BMAG(CO19LA5,CO:LA),,                 1.93;,,                   N 08Wan !
+$
+ PAR  G(CO7LA2,CO:LA),,                 +7*GHSERCO+2*GHSERLA
+            -122598+30.6*T;,,                                         N 24Liu !
+ PAR  TC(CO7LA2,CO:LA),,                  490.00;,,                   N 08Wan !
+$ 1 mole of atoms below
+$PAR  BMAG(CO7LA2,CO:LA),,                  0.2582;,,                 N 08Wan !
+ PAR  BMAG(CO7LA2,CO:LA),,                  6.90;,,                   N 08Wan !
+$
+ PAR  G(CO3LA2,CO:LA),,                 +3*GHSERCO+2*GHSERLA
+             -65000+7.95*T;,,                                         N 24Liu !
+ PAR  G(CO23LA27,CO:LA),,               +23*GHSERCO+27*GHSERLA
+             -600000+77.25*T;,,                                       N 24Liu !
+ PAR  G(COLA3_D011,CO:LA),,             +GHSERCO+3*GHSERLA
+             -26000-6.28*T;,,                                         N 24Liu !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  08Wan  'C.P. Wang, J. Wang, X.J. Liu, I. Ohnuma, R. Kainuma, K. Ishida,
+          J. Alloys Compd., 453, 174-79(2008); Co-La'
+  24Liu  'X.Y. Liu, P.P. Liu, C. Tan, S.Y. Yang, Y.C. Bai, J. Wang, G.H. Rao,
+          H.Y. Zhou, Calphad, 84, 102653(2024); La, Co-La'
+!

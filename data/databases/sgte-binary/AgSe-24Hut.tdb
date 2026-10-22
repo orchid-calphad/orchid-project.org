@@ -1,0 +1,243 @@
+$
+$ Database for Ag-Se from Y. Hutabalian et al. 2024.
+$
+$ Y. Hutabalian, S.-W. Chen, W. Gierlotka, Calphad, 86, 102709(2024).
+$
+$ Dataset created 2025.02.06 by Bengt Hallstedt.
+$
+$ Associate liquid model with Ag2Se associates.
+$
+$ The gas phase is included in this dataset, but not in the original dataset.
+$
+$ The Gibbs energy for AG2SE_BETA is misprinted in the paper. The expression
+$ for AG2SE_ALPHA is also slightly different in the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AG   FCC_A1                    107.8682    5745.      42.55   ! 
+ ELEMENT SE   HEXAGONAL_A8               78.96      5514.512   41.9655 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  AG2                                AG2 !
+ SPECIE  AG2SE                              AG2SE1 !
+ SPECIE  SE2                                SE2 !
+ SPECIE  SE3                                SE3 !
+ SPECIE  SE4                                SE4 !
+ SPECIE  SE5                                SE5 !
+ SPECIE  SE6                                SE6 !
+ SPECIE  SE7                                SE7 !
+ SPECIE  SE8                                SE8 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AG AG2SE SE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AG : VA : !
+$
+$ gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : SE : !
+$
+$ Prototype Ag2Se-alpha (oP12, P2_12_12_1)
+$
+ PHASE AG2SE_ALPHA % 2 2 1 !
+ CONST AG2SE_ALPHA : AG : SE : !
+$
+$ Prototype Ag2S-beta (cI20, Im-3m)
+$
+ PHASE AG2SE_BETA % 2 2 1 !
+ CONST AG2SE_BETA : AG : SE : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : AG AG2 SE SE2 SE3 SE4 SE5 SE6 SE7 SE8 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ag
+$
+$ CUB_A13 added in unary 3.0
+$ CUB_A13 revised in unary 4.1
+$ BCT_A5 added in unary 4.1
+$
+ PAR  G(FCC_A1,AG:VA),,                 +GHSERAG;                3000 N 91Din !
+ PAR  G(HCP_A3,AG:VA),,                 +GHSERAG+300+0.3*T;      3000 N 91Din !
+ PAR  G(BCC_A2,AG:VA),,                 +GHSERAG+3400-1.05*T;    3000 N 91Din !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG+3400-1.05*T;    3000 N 95Lim !
+$PAR  G(CUB_A13,AG:VA),,                +GHSERAG
+$            +3765.6-1.8826*T;                                   3000 N 96SGUN !
+$PAR  G(BCT_A5,AG:VA),,                 +GHSERAG+4184.1;         3000 N 96Oh !
+ PAR  G(LIQUID,AG),,                    +GLIQAG;                 3000 N 91Din !
+$
+ PAR  G(GAS,AG),,                       +F28T+RTLNP;,,                N 97SUB !
+ PAR  G(GAS,AG2),,                      +F103T+RTLNP;,,               N 97SUB !
+$
+ FUNCTION GHSERAG   298.15  -7209.512+118.202013*T-23.8463314*T*LN(T)
+       -0.001790585*T**2-3.98587E-07*T**3-12011*T**(-1);
+      1234.93  Y  -15095.252+190.266404*T-33.472*T*LN(T)+1.411773E+29*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQAG    298.15  +11025.076-8.89102*T+GHSERAG-1.033905E-20*T**7;
+      1234.93  Y  -3587.111+180.964656*T-33.472*T*LN(T);
+      3000.00  N !
+$ Ag(g) :
+ FUNCTION F28T      298.15  +278646.828-32.9952163*T-20.90237*T*LN(T)
+       +7.014945E-05*T**2-6.05461833E-09*T**3+4031.7135*T**(-1);
+      4100.00  Y  +243248.852+91.8458715*T-36.204*T*LN(T)
+       +0.002972594*T**2-1.0817135E-07*T**3+15123625*T**(-1);
+      8200.00  Y  +1054861.92-1266.75624*T+114.8787*T*LN(T)
+       -0.00957561*T**2+8.79506333E-08*T**3-8.057185E+08*T**(-1);
+     10000.00  N !
+$ Ag2(g) :
+ FUNCTION F103T     298.15   +396390.111-7.93153144*T-37.089*T*LN(T)
+       -6.186E-04*T**2+4.43333333E-09*T**3+17300*T**(-1);
+      2000.00  Y  +363212.723+124.274363*T-53.368*T*LN(T)
+       +0.00202825*T**2+7.245E-09*T**3+11269075*T**(-1);
+      4100.00  Y  +359870.325+178.339145*T-60.626*T*LN(T)
+       +0.0042801*T**2-9.68483333E-08*T**3+5303090*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Se
+$
+ PAR  G(HEXAGONAL_A8,SE),,              +GHSERSE;                1000 N 91Din !
+ PAR  G(LIQUID,SE),,                    +GLIQSE;                 1000 N 91Din !
+$
+ PAR  G(GAS,SE),,                       +F15139T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE2),,                      +F15179T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE3),,                      +F15186T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE4),,                      +F15188T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE5),,                      +F15190T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE6),,                      +F15192T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE7),,                      +F15194T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,SE8),,                      +F15196T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERSE   298.15  -9376.371+174.205877*T-33.6527*T*LN(T)
+       +0.02424314*T**2-1.5318461E-05*T**3+102249*T**(-1);
+       494.00  Y  -37546.134+507.111538*T-81.2006585*T*LN(T)
+       +0.037144892*T**2-5.611026E-06*T**3+2614263*T**(-1);
+       800.00  Y  -12193.47+197.770166*T-35.1456*T*LN(T);
+      1000.00  N !
+ FUNCTION GLIQSE    298.15  +50533.347-1178.28824*T+194.107439*T*LN(T)
+       -0.390268991*T**2+1.19219297E-04*T**3-2224398*T**(-1); 
+       494.00  Y  -5228.304+183.72559*T-35.1456*T*LN(T);
+      1000.00  N !
+$ Se(g)
+ FUNCTION F15139T   298.15  +232766.124-65.5963457*T-16.24307*T*LN(T)
+       -0.005571435*T**2+6.58265833E-07*T**3-71610.6*T**(-1);
+       800.00  Y  +225185.129+10.7157034*T-27.19696*T*LN(T)
+       +0.001124752*T**2-5.25977833E-08*T**3+878596.5*T**(-1);
+      2000.00  Y  +234611.822-36.1730681*T-21.1825*T*LN(T)
+       -4.4978065E-04*T**2+1.40450217E-08*T**3-1751022*T**(-1);
+      7000.00  Y  +214845.002+13.1902612*T-26.95059*T*LN(T)
+       +2.7852715E-04*T**2-2.74948333E-09*T**3+10695825*T**(-1);
+     10000.00  N !
+$ Se2(g)
+ FUNCTION F15179T   298.15  +129222.34+86.2984759*T-50.63634*T*LN(T)
+       +0.01244823*T**2-2.32291333E-06*T**3+119836.85*T**(-1);
+       800.00  Y  +137406.921-23.0997313*T-34.10038*T*LN(T)
+       -0.0022372185*T**2+9.96887667E-08*T**3-629665*T**(-1);
+      3600.00  Y  +132735.028-3.17188301*T-36.64234*T*LN(T)
+       -0.0015478395*T**2+6.43754667E-08*T**3+1458396*T**(-1);
+      6000.00  N !
+$ Se3(g)
+ FUNCTION F15186T   298.15  +159494.857+79.4847259*T-58.11338*T*LN(T)
+       -2.21118E-05*T**2+8.831945E-10*T**3+162301*T**(-1);
+      6000.00  N !
+$ Se4(g)
+ FUNCTION F15188T   298.15  +139091.401+214.439147*T-82.98956*T*LN(T)
+       -3.913065E-05*T**2+1.564701E-09*T**3+276514.2*T**(-1);
+      6000.00  N !
+$ Se5(g)
+ FUNCTION F15190T   298.15  +122769.294+309.584196*T-108*T*LN(T)
+       -2.2141475E-05*T**2+8.847785E-10*T**3+247104.45*T**(-1);
+      6000.00  N !
+$ Se6(g)
+ FUNCTION F15192T   298.15  +96476.825+456.85972*T-132.9572*T*LN(T)
+       -1.8633165E-05*T**2+7.45342833E-10*T**3+280912.3*T**(-1);
+      6000.00  N !
+$ Se7(g)
+ FUNCTION F15194T   298.15  +99084.1042+567.553812*T-157.8755*T*LN(T)
+       -2.493888E-05*T**2+9.973365E-10*T**3+348709*T**(-1);
+      6000.00  N !
+$ Se8(g)
+ FUNCTION F15196T   298.15  +100471.831+695.896437*T-182.7964*T*LN(T)
+       -3.059853E-05*T**2+1.2224525E-09*T**3+403660.45*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Hutabalian, S.-W. Chen, W. Gierlotka, Calphad, 86, 102709(2024).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Associate liquid model with Ag2Se associates.
+$
+$ The gas phase is included in this dataset, but not in the original dataset.
+$
+$ The Gibbs energy for AG2SE_BETA is misprinted in the paper. The expression
+$ for AG2SE_ALPHA is also slightly different in the paper.
+$
+ PAR  G(LIQUID,AG2SE),,                 +2*GLIQAG+GLIQSE-47806;,,     N 24Hut !
+ PAR  L(LIQUID,AG,AG2SE;0),,            +32500-6*T;,,                 N 24Hut !
+ PAR  L(LIQUID,AG,AG2SE;1),,            +3000;,,                      N 24Hut !
+ PAR  L(LIQUID,AG2SE,SE;0),,            -10000+27*T;,,                N 24Hut !
+ PAR  L(LIQUID,AG2SE,SE;1),,            -25500+10*T;,,                N 24Hut !
+ PAR  L(LIQUID,AG,SE;0),,               +7600-5*T;,,                  N 24Hut !
+$
+ PAR  G(AG2SE_ALPHA,AG:SE),,            +2*GHSERAG+GHSERSE
+             -44705.62+40.82645*T+-5.6937*T*LN(T);,,                  N 24Hut !
+ PAR  G(AG2SE_BETA,AG:SE),,             +2*GHSERAG+GHSERSE
+             -34256.911-19.162*T;,,                                   N 24Hut !
+$
+ FUNCTION GAG2SEB   298.15  -18806.2655+129.190577*T-26.508713*T*LN(T)
+       -0.00154179941*T**2+1.2365036E-07*T**3+1.03415636*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Lim  'S.S. Lim, P.L. Rossiter, J.W. Tibballs, Calphad, 19, 131-41(1995),
+          SGTE unary database V.4.1, 1999; Ag'
+  96Oh   'C.-S. Oh, J.-H. Shim, B.-J. Lee, D.N. Lee,
+          J. Alloys Compounds, 238, 155-66(1996),
+          SGTE unary database V.4.1, 1999; Ag'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  97SUB  'SGTE Substance Database, version 1997'
+  24Hut  'Y. Hutabalian, S.-W. Chen, W. Gierlotka,
+          Calphad, 86, 102709(2024); Ag-Se'
+!

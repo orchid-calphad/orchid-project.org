@@ -1,0 +1,245 @@
+$
+$ Database for Gd-Pd from Z. Du and H. Yang 2000.
+$
+$ Z. Du, H. Yang, J. Alloys Compd., 312, 181-88(2000).
+$
+$ Dataset created 2018.02.25 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ The interaction parameters and lattice stability for fcc-Gd from 00Du are
+$ not acceptable. This is also the case for GdPd-B27 and GdPd-B2.
+$
+$ The bcc phase is also stable above 5167 K, probably covering an inverse
+$ liquid miscibility gap.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GD   HCP_A3                    157.25      9087.648   68.0894 ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GD PD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GD PD% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GD% PD : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GD% PD : VA : !
+$
+$ Prototype Fe3Th7 (hP20, P6_3mc)
+$
+ PHASE GD7PD3_D102 % 2 7 3 !
+ CONST GD7PD3_D102 : GD : PD : !
+$
+$ Prototype Si2U3 (tP10, P4/mbm) ok
+$
+ PHASE GD3PD2_D5A % 2 3 2 !
+ CONST GD3PD2_D5A : GD : PD : !
+$
+$ Prototype CrB (oC8, Cmcm), low T
+$
+ PHASE GDPD_B33 % 2 1 1 !
+ CONST GDPD_B33 : GD : GD PD% : !
+$
+$ Prototype CsCl (cP2, Pm-3m), high T
+$
+ PHASE GDPD_B2 % 2 1 1 !
+ CONST GDPD_B2 : GD : GD PD% : !
+$
+$ Prototype Pd4Pu3 (hR14, R-3) ok
+$
+ PHASE GD3PD4_LT % 2 3 4 !
+ CONST GD3PD4_LT : GD : PD : !
+$
+$ Unknown structure
+$
+ PHASE GD3PD4_HT % 2 3 4 !
+ CONST GD3PD4_HT : GD : PD : !
+$
+$ Unknown structure
+$
+ PHASE GD2PD3 % 2 2 3 !
+ CONST GD2PD3 : GD : PD : !
+$
+$ Unknown structure
+$
+ PHASE GDPD2 % 2 1 2 !
+ CONST GDPD2 : GD : PD : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m) ok
+$
+ PHASE GDPD3_L12 % 2 1 3 !
+ CONST GDPD3_L12 : GD% PD : PD : !
+$
+$ Unknown structure
+$
+ PHASE GDPD7 % 2 1 7 !
+ CONST GDPD7 : GD : PD : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Gd
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ Small correction made to top two temperature ranges of bcc_A2 to ensure 
+$ continuity in Gibbs energy, AD, Dec 2002
+$ FCC_A1 added in unary 4.4
+$
+$ FCC_A1 from 03Cac and 00Du not included in unary
+$ The value from 00Du is absurd
+$
+ PAR  G(HCP_A3,GD:VA)           200.00  +GHSERGD;                3600 N 95She2 !
+ PAR  TC(HCP_A3,GD:VA)          200.00    293.4;                 3600 N 95She2 !
+ PAR  BM(HCP_A3,GD:VA)          200.00      3.0;                 3600 N 95She2 !
+$PAR  TC(HCP_A3,GD:VA)          200.00    291.8;                 3600 N 91Din !
+$PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 91Din !
+ PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+288915;         3600 N 00Du !
+$PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+500;            3600 N 00Zin !
+$PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD
+$            +1800-0.831451*T;                                   3600 N 03Cac !
+ PAR  G(BCC_A2,GD:VA)           200.00  +GBCCGD;                 3600 N 95She2 !
+ PAR  G(LIQUID,GD)              200.00  +GLIQGD;                 3600 N 95She2 !
+$
+ PAR  G(GDPD_B33,GD:GD),,               +2*GHSERGD+174596;,,          N 00Du !
+ PAR  G(GDPD_B2,GD:GD),,                +2*GHSERGD
+             +199592-11.799*T;,,                                      N 00Du !
+$
+ FUNCTION GHSERGD   200.00  -6834.5855+97.13101*T-24.7214131*T*LN(T)
+       -0.00285240521*T**2-3.14674076E-07*T**3-8665.73348*T**(-1);
+      1000.00  Y  -6483.25362+95.6919924*T-24.6598297*T*LN(T)
+       -0.00185225011*T**2-6.61211607E-07*T**3;
+      1508.15  Y  -123124.992+699.125537*T-101.800197*T*LN(T)
+       +0.0150644246*T**2-6.39165948E-07*T**3+29356890.3*T**(-1);
+      3600.00  N !
+ FUNCTION GBCCGD    200.00  +3233.80866-2.11184585*T+GHSERGD;
+      1000.00  Y  +152792.743-1349.58873*T+180.097094*T*LN(T)
+       -0.119550229*T**2+1.17915728E-05*T**3-22038836*T**(-1);
+      1508.15  Y  -15783.7618+202.222183*T-38.960425*T*LN(T);
+      1586.15  Y  -19850.5562+224.818035*T-41.904333*T*LN(T)
+       +8.58222759E-04*T**2-3.77570269E-08*T**3+995428.573*T**(-1);
+      3600.00  N !
+ FUNCTION GLIQGD    200.00  +13060.0262-8.32179974*T+GHSERGD;
+      1000.00  Y  +146262.037-1208.70685*T+159.352082*T*LN(T)
+       -0.108247135*T**2+1.06945505E-05*T**3-19678357*T**(-1);
+      1508.15  Y  -5397.314+192.336215*T-38.5075*T*LN(T);
+      3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ PAR  G(GDPD3_L12,PD:PD),,              +4*GHSERPD+10492;,,           N 00Du !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Z. Du, H. Yang, J. Alloys Compd., 312, 181-88(2000).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The interaction parameters and lattice stability for fcc-Gd from 00Du are
+$ not acceptable. This is also the case for GdPd-B27 and GdPd-B2.
+$
+$ The bcc phase is also stable above 5167 K, probably covering an inverse
+$ liquid miscibility gap.
+$
+ PAR  L(LIQUID,GD,PD;0),,               -339562+55.898*T;,,           N 00Du !
+ PAR  L(LIQUID,GD,PD;1),,               +129036-13.21*T;,,            N 00Du !
+$
+ PAR  L(FCC_A1,GD,PD:VA;0),,            -722026+54.106*T;,,           N 00Du !
+ PAR  L(BCC_A2,GD,PD:VA;0),,            -145857;,,                    N 00Du !
+ PAR  L(HCP_A3,GD,PD:VA;0),,            -148083;,,                    N 00Du !
+$
+ PAR  G(GD7PD3_D102,GD:PD),,            +7*GHSERGD+3*GHSERPD
+             -713243+197.593*T;,,                                     N 00Du !
+ PAR  G(GD3PD2_D5A,GD:PD),,             +3*GHSERGD+2*GHSERPD
+             -436621+104.943*T;,,                                     N 00Du !
+$
+ PAR  G(GDPD_B33,GD:PD),,               +GHSERGD+GHSERPD
+             -170782+17.566*T;,,                                      N 00Du !
+ PAR  L(GDPD_B33,GD:GD,PD;0),,          -169320;,,                    N 00Du !
+$
+ PAR  G(GDPD_B2,GD:PD),,                +GHSERGD+GHSERPD
+             -170530+17.368*T;,,                                      N 00Du !
+ PAR  L(GDPD_B2,GD:GD,PD;0),,           -178451;,,                    N 00Du !
+$
+ PAR  G(GD3PD4_LT,GD:PD),,              +3*GHSERGD+4*GHSERPD
+             -582943+43.877*T;,,                                      N 00Du !
+ PAR  G(GD3PD4_HT,GD:PD),,              +3*GHSERGD+4*GHSERPD
+             -577664+40.531*T;,,                                      N 00Du !
+ PAR  G(GD2PD3,GD:PD),,                 +2*GHSERGD+3*GHSERPD
+             -407534+28.267*T;,,                                      N 00Du !
+ PAR  G(GDPD2,GD:PD),,                  +GHSERGD+2*GHSERPD
+             -241496+19.338*T;,,                                      N 00Du !
+$
+ PAR  G(GDPD3_L12,GD:PD),,              +GHSERGD+3*GHSERPD
+             -312313+30.517*T;,,                                      N 00Du !
+ PAR  L(GDPD3_L12,GD,PD:PD;0),,         -37292;,,                     N 00Du !
+$
+ PAR  G(GDPD7,GD:PD),,                  +GHSERGD+7*GHSERPD
+             -386685+75.22*T;,,                                       N 00Du !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95She2 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-02,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Gd'
+  00Du   'Z. Du, H. Yang, J. Alloys Compd., 312, 181-88(2000); Gd-Pd'
+  00Zin  'M. Zinkevich, N. Mattern, H. J Seifert,
+          J. Phase Equilib., 21, 385-94(2000),
+          SGTE unary database V.4.4, 2001; Gd'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Gd'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+!

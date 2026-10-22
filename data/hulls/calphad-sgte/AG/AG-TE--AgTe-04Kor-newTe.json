@@ -1,0 +1,218 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 4,
+    "intervals": 3,
+    "vertices": 4
+  },
+  "elements": [
+    "AG",
+    "TE"
+  ],
+  "flags": [
+    "has_intermediate_phases"
+  ],
+  "isotherms": [
+    {
+      "element_reference": {
+        "AG": {
+          "energy": -12686.282865171952,
+          "phase": "FCC_A1"
+        },
+        "TE": {
+          "energy": -14675.240750981318,
+          "phase": "HEXAGONAL_A8"
+        }
+      },
+      "intervals": [
+        {
+          "enthalpy": {
+            "intercept": 0.0,
+            "slope": -36351.662994062186
+          },
+          "entropy": {
+            "intercept": 0.0,
+            "slope": 20.261747618002218
+          },
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "FCC_A1",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -42392.70304636955,
+          "right": {
+            "phase": "AG2TE",
+            "x": 0.3333333333333333
+          },
+          "slope": -42392.70304636955,
+          "x_hi": 0.3333333333333333,
+          "x_lo": 0.0
+        },
+        {
+          "enthalpy": {
+            "intercept": -11245.129527440908,
+            "slope": -2616.274411739461
+          },
+          "entropy": {
+            "intercept": 13.5631298938451,
+            "slope": -20.42764206353308
+          },
+          "intercept": -15288.976705290816,
+          "kind": "two_phase",
+          "left": {
+            "phase": "AG2TE",
+            "x": 0.3333333333333333
+          },
+          "mu_a_rel": -15288.976705290816,
+          "mu_b_rel": -11814.749635787914,
+          "right": {
+            "phase": "AG5TE3",
+            "x": 0.37878787878787884
+          },
+          "slope": 3474.227069502902,
+          "x_hi": 0.37878787878787884,
+          "x_lo": 0.3333333333333333
+        },
+        {
+          "enthalpy": {
+            "intercept": -19697.205100111867,
+            "slope": 19697.205100111867
+          },
+          "entropy": {
+            "intercept": 9.37745174159633,
+            "slope": -9.37745174159633
+          },
+          "intercept": -22493.092336868816,
+          "kind": "two_phase",
+          "left": {
+            "phase": "AG5TE3",
+            "x": 0.37878787878787884
+          },
+          "mu_a_rel": -22493.092336868816,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "HEXAGONAL_A8",
+            "x": 1.0
+          },
+          "slope": 22493.092336868816,
+          "x_hi": 1.0,
+          "x_lo": 0.37878787878787884
+        }
+      ],
+      "temperature_K": 298.15,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "FCC_A1",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -14130.901015456515,
+          "energy_per_atom": -14130.901015456515,
+          "enthalpy": -12117.220998020728,
+          "entries_at_x": 1,
+          "entropy": 6.753915872667406,
+          "formula": "",
+          "nsites": null,
+          "phase": "AG2TE",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.3333333333333333
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -13972.981603206383,
+          "energy_per_atom": -13972.981603206383,
+          "enthalpy": -12236.142562190704,
+          "entries_at_x": 1,
+          "entropy": 5.825386687961355,
+          "formula": "",
+          "nsites": null,
+          "phase": "AG5TE3",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 0.37878787878787884
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": 0.0,
+          "enthalpy": 0.0,
+          "entries_at_x": 1,
+          "entropy": 0.0,
+          "formula": "",
+          "nsites": null,
+          "phase": "HEXAGONAL_A8",
+          "phase_kind": "solution",
+          "spacegroup_number": null,
+          "spacegroup_symbol": "",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": false,
+    "comparable_note": "CALPHAD isotherms have no upstream stability flag to compare against",
+    "max_abs_delta_energy_above_hull": 0.0,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "assessment": "AgTe-04Kor-newTe",
+    "builder_version": 1,
+    "engine": {
+      "numpy": "2.5.1",
+      "pycalphad": "0.11.2",
+      "python": "3.13.15"
+    },
+    "fit_tol": 1.0,
+    "observed_at": "2026-09-03T00:01:05Z",
+    "phase_families": {},
+    "sample_conditions": {
+      "endpoint_tol": 1.0,
+      "fit_samples": 65,
+      "order_tol": 0.0001,
+      "pressure_Pa": 101325.0,
+      "redundant_tol": 1.0,
+      "refine_tol": 1e-07,
+      "step": 0.002,
+      "temperature_K": 298.15
+    },
+    "source_path": "databases/sgte-binary/AgTe-04Kor-newTe.tdb",
+    "source_sha256": "91e63cfc06b4d3c2ac68365684f94a6bd699a558d220038b13d7d18173b9d059"
+  },
+  "reference": {
+    "kind": "calphad_formation_T",
+    "per": "mole_atoms",
+    "temperature_K": 298.15,
+    "units": "J/mol-atoms"
+  },
+  "schema_version": 1,
+  "system_id": "AG-TE",
+  "x_element": "TE"
+}

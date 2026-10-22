@@ -1,0 +1,157 @@
+$
+$ Database for Cu-Th from C.P. Wang et al. 2008.
+$
+$ C.P. Wang, Y.F. Li, X.J. Liu, K. Ishida, J. Alloys Compd., 458, 208-13(2008).
+$
+$ Dataset created 2021.06.26 by Bengt Hallstedt.
+$
+$ Some of the temperature dependencies are rather extreme.
+$
+$ Cu18Th5 is stable both above 870 K and below 480 K.
+$ There is an inverse miscibility gap with a minimum at 5489 K and x(Th)=0.05.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT TH   FCC_A1                    232.0381    6350.0     51.8    ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU TH : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% TH% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU TH% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU : VA : !
+$
+$ Prototype CeCu6 (oP28, Pnma)
+$
+ PHASE CU6TH % 2 6 1 !
+ CONST CU6TH : CU : TH : !
+$
+$ Prototype Ag51Gd14 (hP68, P6/m)
+$
+ PHASE CU18TH5 % 2 18 5 !
+ CONST CU18TH5 : CU : TH : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE CU2TH_C32 % 2 2 1 !
+ CONST CU2TH_C32 : CU : TH : !
+$
+$ Prototype Al2Cu (tI12, I4/mcm)
+$
+ PHASE CUTH2_C16 % 2 1 2 !
+ CONST CUTH2_C16 : CU : TH : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Th
+$
+$ FCC_A1, BCC_A2 and LIQUID modified in unary 4.4
+$
+ PAR  G(FCC_A1,TH:VA),,                 +GHSERTH;                4000 N 01SGUN !
+ PAR  G(BCC_A2,TH:VA),,                 +GBCCTH;                 4000 N 01SGUN !
+ PAR  G(LIQUID,TH),,                    +GLIQTH;                 4000 N 01SGUN !
+$
+ FUNCTION GHSERTH   298.15  -7732.08+116.273975*T-24.841*T*LN(T)
+       -0.00236725*T**2-5.2883E-07*T**3+13010*T**(-1);
+      1633.00  Y  -37352.871+236.906118*T-39.107*T*LN(T)
+       -0.00358025*T**2+2.36893E-07*T**3+7981000*T**(-1);
+      2900.00  Y  -33353.313+283.231045*T-46.024*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCTH    298.15  -2321.06+133.531195*T-28.244*T*LN(T)
+       +4.3775E-04*T**2-5.3048E-07*T**3+91190*T**(-1);
+      1633.00  Y  -115978.348+800.909049*T-116.453*T*LN(T)
+       +0.03098*T**2-2.536883E-06*T**3+27512600*T**(-1);
+      2023.00  Y  -33602.796+208.774709*T-35.813*T*LN(T)
+       -0.00346655*T**2+1.66067E-07*T**3+11876950*T**(-1);
+      3600.00  Y  -980.302-0.049551*T+GHSERTH;
+      4000.00  N !
+ FUNCTION GLIQTH    298.15  +5031.109+110.886346*T-24.987*T*LN(T)
+       -0.00168345*T**2-9.09067E-07*T**3+10865*T**(-1);
+      1499.80  Y  -15602.847+127.657716*T-24.03*T*LN(T)
+       -0.0136421*T**2+1.210117E-06*T**3+7111100*T**(-1);
+      2014.50  Y  -17273.382+275.001274*T-46.024*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C.P. Wang, Y.F. Li, X.J. Liu, K. Ishida, J. Alloys Compd., 458, 208-13(2008).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Some of the temperature dependencies are rather extreme.
+$
+$ Cu18Th5 is stable both above 870 K and below 480 K.
+$ There is an inverse miscibility gap with a minimum at 5489 K and x(Th)=0.05.
+$
+ PAR  L(LIQUID,CU,TH;0),,               -62000-27.03*T;,,             N 08Wan !
+ PAR  L(LIQUID,CU,TH;1),,               -23000-13*T;,,                N 08Wan !
+ PAR  L(LIQUID,CU,TH;2),,               -9600+18*T;,,                 N 08Wan !
+ PAR  L(LIQUID,CU,TH;3),,               -30000+29*T;,,                N 08Wan !
+$
+ PAR  L(FCC_A1,CU,TH:VA;0),,            +1600;,,                      N 08Wan !
+ PAR  L(BCC_A2,CU,TH:VA;0),,            +ZERO;,,                      N 08Wan !
+$
+ PAR  G(CU6TH,CU:TH),,                  +6*GHSERCU+GHSERTH
+             +448700-3327.898*T+402.675*T*LN(T);,,                    N 08Wan !
+ PAR  G(CU18TH5,CU:TH),,                +18*GHSERCU+5*GHSERTH
+             -367540+779.194*T-127.765*T*LN(T);,,                     N 08Wan !
+ PAR  G(CU2TH_C32,CU:TH),,              +2*GHSERCU+GHSERTH
+             -3060-672.864*T+84.921*T*LN(T);,,                        N 08Wan !
+ PAR  G(CUTH2_C16,CU:TH),,              +GHSERCU+2*GHSERTH
+             -39000-440.871*T+58.848*T*LN(T);,,                       N 08Wan !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  08Wan  'C.P. Wang, Y.F. Li, X.J. Liu, K. Ishida,
+          J. Alloys Compd., 458, 208-13(2008); Cu-Th'
+!

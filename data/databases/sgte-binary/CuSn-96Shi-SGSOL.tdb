@@ -1,0 +1,323 @@
+$
+$ Database for Cu-Sn from J.-H. Shim et al. 1996 (included in LB Vol. 3)
+$ with updates from K.W. Moon et al. 2000 and U. Kattner 2003
+$ Further updates from SGSOL V 5.0.
+$ This is probably the same as the 01Liu version (except liquid).
+$
+$ J.-H. Shim, C.-S. Oh, B.-J. Lee, D.N. Lee, Z. Metallkd., 87, 205-12(1996).
+$
+$ Dataset created 2013.05.30 by Bengt Hallstedt.
+$ 2020.12.06: Modified for use with GES6.
+$
+$ 96Shi used G(FCC_A1,SN:VA) = GHSERSN+4150-5.2*T
+$
+$ 03Kat has reverted to the old parameter for CU6SN5_L from 96Shi, instead
+$ of using the newer parameter from 00Moo.
+$
+$ The temperature dependence of the BCC_A2 phase is absurd. This may indicate
+$ that the lattice stability for bcc-Cu could be better. Extrapolating gives
+$ a metastable melting point between 1200 and 1300 K. Currently it is about
+$ 1100 K.
+$
+$ The HCP_A3 interaction (+5000) is included in CuSn-96Shi-AL.tdb and
+$ referred to 96Shi, but 96Shi did not include HCP_A3 in their description.
+$
+$ Liquid data modified by Ales Kroupa, May 2005, to take into account 
+$ latest experimental enthalpy data.
+$
+$ Cu is not included in BCT_A5 in SGSOL V 5.0.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT SN   BCT_A5                    118.69      6323.      51.18   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU SN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU% SN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU SN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU SN : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SN : !
+$
+$ Prototype beta-Sn (tI4, I4_1/amd)
+$
+ PHASE BCT_A5 % 1 1 !
+ CONST BCT_A5 : SN : !
+$
+$ Prototype Cu41Sn11 (cF416, F-43m)
+$
+ PHASE CU41SN11 %  2 0.788 0.212 !
+ CONST CU41SN11 : CU : SN : !
+$
+$ Prototype Cu10Sn3 (hP26, P6_3)
+$
+ PHASE CU10SN3 % 2 0.769 0.231 !
+ CONST CU10SN3 : CU : SN : !
+$
+$ Prototype Cu3Sn (oC80, Cmcm)
+$
+ PHASE CU3SN_L % 2 0.75 0.25 !
+ CONST CU3SN_L : CU : SN : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+$PHASE CU3SN_D03 %  2 0.75 0.25 !
+$CONST CU3SN_D03 : CU% SN : CU SN% : !
+$
+$ Prototype Cu6Sn5 (mC44, C2/c) and/or Cu5Sn4 (mP36, P2_1/c and/or mC54, C2)
+$
+ PHASE CU6SN5_L %  2 0.545 0.455 !
+ CONST CU6SN5_L : CU : SN : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc), Also h-Cu5Sn4
+$
+$ Stoichiometric model used by 96Shi and 00Moo
+$PHASE CU6SN5_B81 %  2 0.545 0.455 !
+$CONST CU6SN5_B81 : CU : SN : !
+$
+$ Solution model from Kattner 2003 used in LB
+$PHASE CU6SN5_B81 %  3 1 1 1 !
+$CONST CU6SN5_B81 : CU : CU VA : SN : !
+$
+$ Solution model from X.J. Liu used in SGSOL V 5.0
+ PHASE CU6SN5_B81 %  3 0.545 0.122 0.333 !
+ CONST CU6SN5_B81 : CU : CU SN : SN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+$ BCT_A5 from 00Moo not included in unary
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(BCT_A5,CU),,                    +GHSERCU+4184;           3200 N 00Moo !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ PAR  G(CU3SN_D03,CU:CU),,              +GBCCCU;                 3200 N 96Shi !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+ FUNCTION GBCCCU    298.15  +GHSERCU+4017-1.255*T;                     3200 N !
+$ ------------------------------------------------------------------------------
+$ Sn
+$
+$ FCC_A1 revised in unary 3.0
+$ HCP_A3 revised in unary 4.1
+$ TETRAGONAL_A6 added in unary 4.1
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ FCC_A1 modified in unary 5.0
+$ DHCP and TET_ALPHA1_A6 added in unary 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(BCT_A5,SN)              100.00  +GHSERSN;                3000 N 91Din !
+ PAR  G(DIAMOND_A4,SN)          100.00  +GDIASN;                 3000 N 91Din !
+ PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+5510-8.46*T;    3000 N 89Fec !
+$PAR  G(FCC_A1,SN:VA)           100.00  +GHSERSN+4150-5.2*T;     3000 N 91Din !
+ PAR  G(BCC_A2,SN:VA)           100.00  +GHSERSN+4400-6*T;       3000 N 91Din !
+ PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-7.646*T;   3000 N Ansar !
+$PAR  G(HCP_A3,SN:VA)           100.00  +GHSERSN+3900-4.4*T;     3000 N 91Din !
+$PAR  G(DHCP,SN)                100.00  +GHSERSN+3803.52-3.46*T; 3000 N 03Liu !
+$PAR  G(RHOMBOHEDRAL_A7,SN)     100.00  +GHSERSN+2035;           3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,SN)       100.00  +GHSERSN+5387-8.26212*T; 3000 N 99Ans !
+$PAR  G(CBCC_A12,SN:VA)         100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(CUB_A13,SN:VA)          100.00  +GHSERSN+2000;           3000 N 01Mie !
+$PAR  G(TET_ALPHA1_A6,SN)       100.00  +GHSERSN+5510-8.46*T;    3000 N 99Ans !
+ PAR  G(LIQUID,SN)              100.00  +GLIQSN;                 3000 N 91Din !
+$
+ PAR  G(CU3SN_D03,SN:SN),,              +GBCCSN;                 3000 N 96Shi !
+$
+ FUNCTION GHSERSN   100.00  -7958.517+122.765451*T-25.858*T*LN(T)
+       +5.1185E-04*T**2-3.192767E-06*T**3+18440*T**(-1);
+       250.00  Y  -5855.135+65.443315*T-15.961*T*LN(T)
+       -0.0188702*T**2+3.121167E-06*T**3-61960*T**(-1);
+       505.08  Y  +2524.724+4.005269*T-8.2590486*T*LN(T)
+       -0.016814429*T**2+2.623131E-06*T**3-1081244*T**(-1)-1.2307E+25*T**(-9);
+       800.00  Y  -8256.959+138.99688*T-28.4512*T*LN(T)-1.2307E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GDIASN    100.00  -9579.608+114.007785*T-22.972*T*LN(T)
+       -0.00813975*T**2+2.7288E-06*T**3+25615*T**(-1);
+       298.15  Y  -9063.001+104.84654*T-21.5750771*T*LN(T)
+       -0.008575282*T**2+1.784447E-06*T**3-2544*T**(-1);
+       800.00  Y  -10909.351+147.396535*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQSN    100.00  +7103.092-14.087767*T+GHSERSN+1.47031E-18*T**7;
+       505.08  Y  +6971.586-13.814383*T+GHSERSN+1.2307E+25*T**(-9);
+       800.00  Y  -1285.372+125.182498*T-28.4512*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCSN    298.15  +GHSERSN+4400-6*T;                         3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From J.-H. Shim et al. 1996 (included in LB Vol. 3)
+$ with updates from K.W. Moon et al. 2000 and U. Kattner 2003
+$ Further updates from SGSOL V 5.0.
+$ This is probably the same as the 01Liu version (except liquid).
+$
+$ J.-H. Shim, C.-S. Oh, B.-J. Lee, D.N. Lee, Z. Metallkd., 87, 205-12(1996).
+$
+$ Checked against SGSOL. Checked at 6000 K.
+$
+$ 96Shi used G(FCC_A1,SN:VA) = GHSERSN+4150-5.2*T
+$
+$ 03Kat has reverted to the old parameter for CU6SN5_L from 96Shi, instead
+$ of using the newer parameter from 00Moo.
+$
+$ The temperature dependence of the BCC_A2 phase is absurd. This may indicate
+$ that the lattice stability for bcc-Cu could be better. Extrapolating gives
+$ a metastable melting point between 1200 and 1300 K. Currently it is about
+$ 1100 K.
+$
+$ The HCP_A3 interaction (+5000) is included in CuSn-96Shi-AL.tdb and
+$ referred to 96Shi, but 96Shi did not include HCP_A3 in their description.
+$
+$ Liquid data modified by Ales Kroupa, May 2005, to take into account 
+$ latest experimental enthalpy data.
+$
+$ Cu is not included in BCT_A5 in SGSOL V 5.0.
+$
+ PAR  L(LIQUID,CU,SN;0),,               -9002.8-5.8381*T;,,           N 96Shi !
+ PAR  L(LIQUID,CU,SN;1),,               -18936.316+2.339*T;,,         N 05Kro !
+ PAR  L(LIQUID,CU,SN;2),,               -14122.6+52.942*T
+             -7.057*T*LN(T);,,                                        N 05Kro !
+$
+$ Parameters below from lb3.tdb
+$PAR  L(FCC_A1,CU,SN:VA;0),,            -10672+1.4837*T;,,            N Error !
+$PAR  L(FCC_A1,CU,SN:VA;1),,            -15331.3+6.9539*T;,,          N 96Shi !
+$ Parameters below from LBall-v7+fun.tdb
+$PAR  L(FCC_A1,CU,SN:VA;0),,            -12912+4.72*T;,,              N Null !
+$PAR  L(FCC_A1,CU,SN:VA;1),,            -15331.3+6.9539*T;,,          N 96Shi !
+$ Parameters below from cubinary.tdb and 96Shi
+$PAR  L(FCC_A1,CU,SN:VA;0),,            -10672-1.4837*T;,,            N 96Shi !
+$PAR  L(FCC_A1,CU,SN:VA;1),,            -15331.3+6.9539*T;,,          N 96Shi !
+$ Parameters below from SGTESOL_V4 and solders.tdb
+$PAR  L(FCC_A1,CU,SN:VA;0),,            -8127.94+0.961915*T;,,        N Null !
+$PAR  L(FCC_A1,CU,SN:VA;1),,            -19369.2+7.250096*T;,,        N Null !
+$ The almost correct parameters below. These are used by 00Moo and SGSOL V 5.0.
+ PAR  L(FCC_A1,CU,SN:VA;0),,            -11106.95+2.0791*T;,,         N 99Lee !
+ PAR  L(FCC_A1,CU,SN:VA;1),,            -15718.02+5.92547*T;,,        N 99Lee !
+$
+ PAR  L(BCC_A2,CU,SN:VA;0),,            -32656.8+25.015776*T;,,       N 01Liu !
+ PAR  L(BCC_A2,CU,SN:VA;1),,            -13862.5-32.0218*T;,,         N 01Liu !
+ PAR  L(BCC_A2,CU,SN:VA;2),,            -4175.47+5.0083*T;,,          N 01Liu !
+$
+ PAR  G(CU41SN11,CU:SN),,               +0.788*GHSERCU+0.212*GHSERSN
+             -6323.5-1.2808*T;,,                                      N 96Shi !
+ PAR  G(CU10SN3,CU:SN),,                +0.769*GHSERCU+0.231*GHSERSN
+             -6655.1-1.485*T;,,                                       N 01Liu !
+$PAR  G(CU10SN3,CU:SN),,                +0.769*GHSERCU+0.231*GHSERSN
+$            -6655-1.4483*T;,,                                        N 96Shi !
+ PAR  G(CU3SN_L,CU:SN),,                +0.75*GHSERCU+0.25*GHSERSN
+             -8194.2-0.2043*T;,,                                      N 96Shi !
+ PAR  G(CU6SN5_L,CU:SN),,               +0.545*GHSERCU+0.455*GHSERSN
+             -7129.7+0.4059*T;,,                                      N 96Shi !
+$PAR  G(CU6SN5_L,CU:SN),,               +0.545*GHSERCU+0.455*GHSERSN
+$            -7346.12+0.72038*T;,,                                    N 00Moo !
+$ Parameter below used in lb3.tdb
+$PAR  G(CU6SN5_B81,CU:SN),,             +0.545*GHSERCU+0.455*GHSERSN
+$            -6869.5-0.1589*T;,,                                      N 96Shi !
+$PAR  G(CU6SN5_B81,CU:SN),,             +0.545*GHSERCU+0.455*GHSERSN
+$            -7085.92+0.15558*T;,,                                    N 00Moo !
+$
+$ Parameters below from LBall-v7+fun.tdb
+$PAR  G(CU6SN5_B81,CU:CU:SN),,          +2*GHSERCU+GHSERSN
+$            -4335.06+8.88657*T;,,                                    N 03Kat !
+$PAR  G(CU6SN5_B81,CU:VA:SN),,          +GHSERCU+GHSERSN
+$            -12292.05+2.60267*T;,,                                   N 03Kat !
+$PAR  L(CU6SN5_B81,CU:CU,VA:SN;0),,     -27696.77;,,                  N 03Kat !
+$
+ PAR  G(CU6SN5_B81,CU:CU:SN),,          +0.667*GHSERCU+0.333*GHSERSN
+             +3200+2*T;,,                                             N 01Liu !
+ PAR  G(CU6SN5_B81,CU:SN:SN),,          +0.545*GHSERCU+0.455*GHSERSN
+             -6869.5-0.1589*T;,,                                      N 01Liu !
+ PAR  L(CU6SN5_B81,CU:CU,SN:SN;0),,     -8300;,,                      N 01Liu !
+$
+$PAR  G(CU3SN_D03,CU:SN),,              +0.75*GBCCCU+0.25*GBCCSN
+$            -10029.85+0.00285*T;,,                                   N 96Shi !
+$PAR  G(CU3SN_D03,SN:CU),,              +0.75*GBCCSN+0.25*GBCCCU
+$            +116674.85+4.8166*T;,,                                   N 96Shi !
+$PAR  L(CU3SN_D03,CU,SN:CU;0),,         +ZERO;,,                      N 96Shi !
+$PAR  L(CU3SN_D03,CU,SN:SN;0),,         +45850-42.2191*T;,,           N 96Shi !
+$PAR  L(CU3SN_D03,CU:CU,SN;0),,         -1857.8-2.5311*T;,,           N 96Shi !
+$PAR  L(CU3SN_D03,CU:CU,SN;1),,         -2.9894*T;,,                  N 96Shi !
+$PAR  L(CU3SN_D03,SN:CU,SN;0),,         +ZERO;,,                      N 96Shi !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,CU,SN:VA;0),,            +5000;,,                      N Null !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CU-SN(TDB -* +LIQUID +FCC_A1 +BCC_A2 +CU10SN3 +CU3SN_L +CU41SN11
+  +CU6SN5_B81 +CU6SN5_L +CU3SN_D03 +BCT_A5 ;P3 TMM:300/2000 STP:.5/1000/-2 ) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  Ansar  'Himo Ansara, unpublished, SGTE unary database V.4.1, 1999; Sn'
+  89Fec  'H.J. Fecht, M.X. Zhang, Y.A. Chang, J.H. Perepezko,
+          Metall. Trans. A, 20A, 795-803(1989),
+          SGTE unary database V.3.0, 1996; Sn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96Shi  'J.-H. Shim, C.-S. Oh, B.-J. Lee, D.N. Lee,
+          Z. Metallkd., 87, 205-12(1996); Cu-Sn'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  99Lee  'B.-J. Lee, unpublished, 1999; Cu-Sn'
+  00Moo  'K.W. Moon, W.J. Boettinger, U.R. Kattner, F.S. Biancaniello,
+          C.A, Handwerker, J. Electron. Mater., 29, 1122-36(2000); Cu, Cu-Sn'
+  01Liu  'X.J. Liu, H.S. Liu, I. Ohnuma, R. Kainuma, K. Ishida, S. Itabashi,
+          K. Kameda, K. Yamaguchi,
+          J. Electron. Mater., 30, 1093-1103(2001); Cu-Sn'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  03Kat  'U.R. Kattner, unpublished research, NIST 2003; Cu-Sn'
+  03Liu  'H.S. Liu, C.L. Liu, K. Ishida, Z.P. Jin, J. Electron. Mater.,
+          32, 1290-96(2003), SGTE unary database V.5.0, 2009; Sn'
+  05Kro  'A. Kroupa, modified liquid, 2005; Cu-Sn'
+!

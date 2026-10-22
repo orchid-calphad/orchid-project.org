@@ -1,0 +1,166 @@
+$
+$ Database for Ni-As from S. Uhland et al. 2001
+$
+$ S. Uhland, H. Lechtman, L. Kaufman, Calphad, 25, 109-24(2001).
+$
+$ Dataset created 2010.04.08 by Bengt Hallstedt.
+$ 2021.02.02: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AS   RHOMBOHEDRAL_A7            74.922     5117.032   35.6895 ! 
+ ELEMENT NI   FCC_A1                     58.69      4787.0     29.7955 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AS NI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AS NI% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AS NI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AS NI : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : AS : !
+$
+$ Prototype Pd5Sb2 (hP42, P6_3cm), orcelite
+$
+ PHASE NI5AS2 % 2 5 2 !
+ CONST NI5AS2 : NI : AS : ! 
+$
+$ Prototype Ni11As8 (tP76, P4_12_12), mancherite
+$
+ PHASE NI11AS8 % 2 11 8 !
+ CONST NI11AS8 : NI : AS : ! 
+$
+$ Prototype NiAs (hP4, P6_3/mmc), nickeline
+$
+ PHASE NIAS_B81 % 2 1 1 !
+ CONST NIAS_B81 : NI : AS : ! 
+$
+$ Prototype NiAs2 (oP24, Pbca), pararammelsbergite, low T ?
+$ Prototype FeS2 (oP6, Pnnm, C18), rammelsbergite, high T ?
+$
+ PHASE NIAS2 % 2 1 2 !
+ CONST NIAS2 : NI : AS : ! 
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ As
+$
+$ RED_P added in unary 4.4
+$
+ PAR  G(RHOMBOHEDRAL_A7,AS),,           +GHSERAS;                1200 N 91Din !
+ PAR  G(FCC_A1,AS:VA),,                 +GHSERAS+24874-14.74*T;  1200 N 91Din !
+ PAR  G(BCC_A2,AS:VA),,                 +GHSERAS+24874-16.1*T;   1200 N 91Din !
+ PAR  G(HCP_A3,AS:VA),,                 +GHSERAS+24874-14*T;     1200 N 91Din !
+$PAR  G(RED_P,AS),,                     +GHSERAS+5782-3.85466*T; 1200 N 01SGUN !
+ PAR  G(LIQUID,AS),,                    +GHSERAS
+             +24442.9-22.424679*T;                               1200 N 91Din !
+$
+ FUNCTION GHSERAS   298.15  -7270.447+122.211069*T-23.3144*T*LN(T)
+       -0.00271613*T**2+11600*T**(-1);
+      1090.00  Y  -10454.913+163.457433*T-29.216037*T*LN(T);
+      1200.00  N !
+$ ------------------------------------------------------------------------------
+$ Ni
+$
+$ FCC_A1 and LIQUID modified in unary 5.0 (slight change in upper T interval)
+$ BCT_A5 added in unary 5.0
+$
+ PAR  G(FCC_A1,NI:VA),,                 +GHSERNI;                3000 N 91Din !
+ PAR  TC(FCC_A1,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(FCC_A1,NI:VA),,                    0.52;                3000 N 91Din !
+ PAR  G(BCC_A2,NI:VA),,                 +GHSERNI
+             +8715.084-3.556*T;                                  3000 N 91Din !
+ PAR  TC(BCC_A2,NI:VA),,                  575.00;                3000 N 91Din !
+ PAR  BM(BCC_A2,NI:VA),,                    0.85;                3000 N 91Din !
+ PAR  G(HCP_A3,NI:VA),,                 +GHSERNI+1046+1.255*T;   3000 N 91Din !
+ PAR  TC(HCP_A3,NI:VA),,                  633.00;                3000 N 91Din !
+ PAR  BM(HCP_A3,NI:VA),,                    0.52;                3000 N 91Din !
+$PAR  G(BCT_A5,NI),,                    +GHSERNI+10023-4.556*T;  3000 N 99Gho !
+$PAR  G(CBCC_A12,NI:VA),,               +GHSERNI+3556;           3000 N 91Din !
+$PAR  G(CUB_A13,NI:VA),,                +GHSERNI+2092;           3000 N 91Din !
+ PAR  G(LIQUID,NI),,                    +GLIQNI;                 3000 N 91Din !
+$
+ FUNCTION GHSERNI   298.15  -5179.159+117.854*T-22.096*T*LN(T)-0.0048407*T**2;
+      1728.00  Y  -27840.62+279.134977*T-43.1*T*LN(T)+1.12754E+31*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQNI    298.15  +16414.686-9.397*T+GHSERNI-3.82318E-21*T**7;
+      1728.00  Y  -9549.817+268.597977*T-43.1*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCNI    298.15  +GHSERNI+8715.084-3.556*T;                 3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Uhland, H. Lechtman, L. Kaufman, Calphad, 25, 109-24(2001).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Bcc (but not fcc or hcp) becomes stable above 4400 K, when using the same
+$ interaction as for fcc.
+$
+ PAR  L(LIQUID,AS,NI;0),,               -104480+20*T;,,               N 01Uhl !
+ PAR  L(LIQUID,AS,NI;1),,               +14000;,,                     N 01Uhl !
+$
+ PAR  L(FCC_A1,AS,NI:VA;0),,            -26750-20*T;,,                N 01Uhl !
+ PAR  L(FCC_A1,AS,NI:VA;1),,            +16000;,,                     N 01Uhl !
+$
+ PAR  G(NI5AS2,NI:AS),,                 +5*GHSERNI+2*GHSERAS
+             -98210-42.7*T;,,                                         N 01Uhl !
+ PAR  G(NI11AS8,NI:AS),,                +11*GHSERNI+8*GHSERAS
+             -384807-70.3*T;,,                                        N 01Uhl !
+ PAR  G(NIAS_B81,NI:AS),,               +GHSERNI+GHSERAS
+             -46800-5.4*T;,,                                          N 01Uhl !
+ PAR  G(NIAS2,NI:AS),,                  +GHSERNI+2*GHSERAS
+             -60900-3.9*T;,,                                          N 01Uhl !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,AS,NI:VA;0),,            -26750-20*T;,,                N Same !
+ PAR  L(BCC_A2,AS,NI:VA;1),,            +16000;,,                     N Same !
+$
+ PAR  L(HCP_A3,AS,NI:VA;0),,            -26750-20*T;,,                N Same !
+ PAR  L(HCP_A3,AS,NI:VA;1),,            +16000;,,                     N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99Gho  'G. Ghosh, Metall. Mater. Trans. A, 30A, 1481-94(1999),
+          SGTE unary database V.5.0, 2009; Ni'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  01Uhl  'S. Uhland, H. Lechtman, L. Kaufman, Calphad, 25, 109-24(2001); Ni-As'
+!

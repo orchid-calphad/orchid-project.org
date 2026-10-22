@@ -1,0 +1,177 @@
+$
+$ Database for Ca-Ge from Y. Djaballah et al. 2010.
+$
+$ Y. Djaballah, A. Pasturel, A. Belgacem-Bouzida,
+$ J. Alloys Compd., 497, 74-79(2010).
+$
+$ Dataset created 2018.05.04 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ Gigantic inverse miscibility gap with minimum at 1939 K and x(Ge)=0.72.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA GE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA% GE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CA% GE : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CA GE : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE CA2GE_C37 % 2 2 1 !
+ CONST CA2GE_C37 : CA : GE : !
+$
+$ Prototype Cr5B3 (tI32, I4/mcm)
+$
+ PHASE CA5GE3_D8L % 2 5 3 !
+ CONST CA5GE3_D8L : CA : GE : !
+$
+$ Prototype Ca7Sn6 (oP52, Pnma, 62)
+$
+ PHASE CA7GE6 % 2 7 6 !
+ CONST CA7GE6 : CA : GE : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE CAGE_B33 % 2 1 1 !
+ CONST CAGE_B33 : CA : GE : !
+$
+$ Prototype CaSi2 (hR6, R-3m)
+$
+ PHASE CAGE2_C12 % 2 1 2 !
+ CONST CAGE2_C12 : CA : GE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+ PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Djaballah, A. Pasturel, A. Belgacem-Bouzida,
+$ J. Alloys Compd., 497, 74-79(2010).
+$
+$ Checked against paper. Checked at 6000.
+$
+$ The liquid interaction is horrible!
+$
+$ Gigantic inverse miscibility gap with minimum at 1939 K and x(Ge)=0.72.
+$
+ PAR  L(LIQUID,CA,GE;0),,               -239699.6+42.571*T;,,         N 10Dja !
+ PAR  L(LIQUID,CA,GE;1),,               +146030.5-142.33*T;,,         N 10Dja !
+ PAR  L(LIQUID,CA,GE;2),,               +381923.5-245.104*T;,,        N 10Dja !
+ PAR  L(LIQUID,CA,GE;3),,               +70401.6-61.192*T;,,          N 10Dja !
+ PAR  L(LIQUID,CA,GE;4),,               -91752.3-7.136*T;,,           N 10Dja !
+$
+ PAR  L(FCC_A1,CA,GE:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(BCC_A2,CA,GE:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(CA2GE_C37,CA:GE),,              +2*GHSERCA+GHSERGE
+             -165502.5-8.307*T;,,                                     N 10Dja !
+ PAR  G(CA5GE3_D8L,CA:GE),,             +5*GHSERCA+3*GHSERGE
+             -478432+1.504*T;,,                                       N 10Dja !
+ PAR  G(CA7GE6,CA:GE),,                 +7*GHSERCA+6*GHSERGE
+             -869632.4+74.906*T;,,                                    N 10Dja !
+ PAR  G(CAGE_B33,CA:GE),,               +GHSERCA+GHSERGE
+             -127762.4+8.092*T;,,                                     N 10Dja !
+ PAR  G(CAGE2_C12,CA:GE),,              +GHSERCA+2*GHSERGE
+             -145407.3+13.335*T;,,                                    N 10Dja !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  10Dja  'Y. Djaballah, A. Pasturel, A. Belgacem-Bouzida,
+          J. Alloys Compd., 497, 74-79(2010); Ca-Ge'
+!

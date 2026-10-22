@@ -1,0 +1,177 @@
+$
+$ Database for Ca-Si from J.C. Anglezio et al. 1994 (included in LB Vol. 2)
+$
+$ J.C. Anglezio, C. Servant, I. Ansara, Calphad, 18, 273-309(1994).
+$
+$ Dataset created 2013.05.27 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ More recent investigations of this system contain more compounds.
+$
+$ Differences of up to 0.9 K for invariants because of rounding errors
+$ with fractional compositions in LB.
+$
+$ There is a large inverse miscibility gap with a minimum at 2436 K
+$ and x(Si)=0.23.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA SI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA% SI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CA% SI : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CA SI : VA : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE CA2SI_C37 % 2 2 1 !
+ CONST CA2SI_C37 : CA : SI : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE CASI_B33 % 2 1 1 !
+ CONST CASI_B33 : CA : SI : !
+$
+$ Prototype CaSi2 (hR6, R-3m)
+$
+ PHASE CASI2_C12 % 2 1 2 !
+ CONST CASI2_C12 : CA : SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+ PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From from J.C. Anglezio et al. 1994 (included in LB Vol. 2)
+$
+$ J.C. Anglezio, C. Servant, I. Ansara, Calphad, 18, 273-309(1994).
+$
+$ Checked against LB and paper. Checked at 6000.
+$
+$ More recent investigations of this system contain more compounds.
+$
+$ Differences of up to 0.9 K for invariants because of rounding errors
+$ with fractional compositions in LB.
+$
+$ There is a large inverse miscibility gap with a minimum at 2436 K
+$ and x(Si)=0.23.
+$
+ PAR  L(LIQUID,CA,SI;0),,               -228147.9+61.7892*T;,,        N 94Ang !
+ PAR  L(LIQUID,CA,SI;1),,               -110482.3+73.61283*T;,,       N 94Ang !
+ PAR  L(LIQUID,CA,SI;2),,               +44663.2-6.95691*T;,,         N 94Ang !
+ PAR  L(LIQUID,CA,SI;3),,               +82284-56.03509*T;,,          N 94Ang !
+$
+ PAR  L(FCC_A1,CA,SI:VA;0),,            +80*T;,,                      N 94Ang !
+ PAR  L(BCC_A2,CA,SI:VA;0),,            +80*T;,,                      N 94Ang !
+$
+ PAR  G(CA2SI_C37,CA:SI),,              +2*GHSERCA+GHSERSI
+             -209001+60.72195*T;,,                                    N 94Ang !
+ PAR  G(CASI_B33,CA:SI),,               +GHSERCA+GHSERSI
+             -120640+22.78982*T;,,                                    N 94Ang !
+ PAR  G(CASI2_C12,CA:SI),,              +GHSERCA+2*GHSERSI
+             -150480+44.35818*T;,,                                    N 94Ang !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,CA,SI:VA;0),,            +80*T;,,                      N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CA-SI(TDB -* +LIQ +BCC_A2 +FCC_A1 +CA2SI_C37 +CASI_B33 +CASI2_C12 +DIAM
+  ;P3 TMM:300/2000 STP:.4/1000/-2) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Ang  'J.C. Anglezio, C. Servant, I. Ansara,
+          Calphad, 18, 273-309(1994); Ca-Si'
+!

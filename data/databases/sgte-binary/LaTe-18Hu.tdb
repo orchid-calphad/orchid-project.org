@@ -1,0 +1,212 @@
+$
+$ Database for La-Te from Y.-J. Hu et al. 2018.
+$
+$ Y.-J. Hu, J. Paz Solden Palma, Y. Wang, S.A. Firdosy, K.E. Star,
+$ J.-P. Fleurial, V.A. Ravi, Z.-K. Liu, Calphad, 61, 227-36(2018).
+$
+$ Dataset created 2017.12.10 by Bengt Hallstedt.
+$ 2021.01.24: Modified for use with GES6.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT LA   DHCP                      138.9055    6665.112   56.9024 ! 
+ ELEMENT TE   HEXAGONAL_A8              127.60      6080.      49.221  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  LATE                               LA1TE1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : LA LATE TE : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : LA% TE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : LA% TE : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : LA% TE : !
+$
+$ Prototype gamma-Se (hP3, P3_121)
+$ The phase is named HEXAGONAL_A8 in the SGTE unary database and
+$ TRIGONAL_A8 in LB.
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : LA TE% : !
+$
+$ Prototype NaCl (cF8, Fm-3m)
+$
+ PHASE LATE_B1 % 2 1 1 !
+ CONST LATE_B1 : LA : TE : !
+$
+$ Prototype Th3P4 (cI28, I-43d)
+$
+ PHASE LA3TE4_D73 % 2 3 4 !
+ CONST LA3TE4_D73 : LA% VA : TE : !
+$
+$ Prototype LaTe2 (mP24, Pc)
+$
+ PHASE LATE2 % 3 1 1 1 !
+ CONST LATE2 : LA : TE : TE% VA : !
+$
+$ Prototype CeTe3 (oC16, Ama2)
+$
+ PHASE LATE3 % 2 1 3 !
+ CONST LATE3 : LA : TE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ La
+$
+$ HEXAGONAL_A8 from 18Hu not included in unary.
+$
+ PAR  G(DHCP,LA),,                      +GHSERLA;                4000 N 91Din !
+ PAR  G(FCC_A1,LA:VA),,                 +GFCCLA;                 4000 N 91Din !
+ PAR  G(BCC_A2,LA:VA),,                 +GBCCLA;                 4000 N 91Din !
+ PAR  G(HEXAGONAL_A8,LA),,              +GHSERLA+2826;           4000 N 18Hu !
+ PAR  G(LIQUID,LA),,                    +GLIQLA;                 4000 N 91Din !
+$
+ FUNCTION GHSERLA   298.15  -7968.403+120.284604*T-26.34*T*LN(T)
+       -0.001295165*T**2;
+       550.00  Y  -3381.413+59.06113*T-17.1659411*T*LN(T)
+       -0.008371705*T**2+6.8932E-07*T**3-399448*T**(-1);
+      2000.00  Y  -15608.882+181.390071*T-34.3088*T*LN(T);
+      4000.00  N !
+ FUNCTION GFCCLA    298.15  -6109.797+89.878761*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+      1134.00  Y  -124598.976+955.878375*T-139.346741*T*LN(T)
+       +0.042032405*T**2-3.066199E-06*T**3+20994153*T**(-1);
+      2000.00  Y  +3009.496-2.846081*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GBCCLA    298.15  -3952.161+88.072353*T-21.7919*T*LN(T)
+       -0.004045175*T**2-5.25865E-07*T**3;
+       800.00  Y  +321682.673-3565.08252*T+513.440708*T*LN(T)
+       -0.387295093*T**2+4.9547989E-05*T**3-36581228*T**(-1);
+      1134.00  Y  -16377.894+218.492988*T-39.5388*T*LN(T);
+      1193.00  Y  -136609.91+1123.34397*T-163.413074*T*LN(T)
+       +0.053968535*T**2-4.056395E-06*T**3+21167204*T**(-1);
+      2000.00  Y  +7402.894-6.553756*T+GHSERLA;
+      4000.00  N !
+ FUNCTION GLIQLA    298.15  +5332.653+18.23012*T-11.0188191*T*LN(T)
+       -0.020171603*T**2+2.93775E-06*T**3-133541*T**(-1);
+      1134.00  Y  -3942.004+171.018431*T-34.3088*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Te
+$
+$ HEXAGONAL_A8 and LIQUID revised in unary 3.0
+$
+$ FCC_A1, BCC_A2 and DHCP from 18Hu not included in unary.
+$
+ PAR  G(HEXAGONAL_A8,TE),,              +GHSERTE;                1600 N 95Dav !
+ PAR  G(FCC_A1,TE:VA),,                 +GHSERTE+14588;          1600 N 18Hu !
+ PAR  G(BCC_A2,TE:VA),,                 +GHSERTE+29763;          1600 N 18Hu !
+ PAR  G(DHCP,TE),,                      +GHSERTE+12648;          1600 N 18Hu !
+ PAR  G(LIQUID,TE),,                    +GLIQTE;                 1600 N 95Dav !
+$
+ PAR  G(LA3TE4_D73,VA:TE),,             +GVA3TE4;,,                   N 18Hu !
+$
+ FUNCTION GHSERTE   298.15  -10544.679+183.372894*T-35.6687*T*LN(T)
+       +0.01583435*T**2-5.240417E-06*T**3+155015*T**(-1);
+       722.66  Y  +9160.595-129.265373*T+13.004*T*LN(T)
+       -0.0362361*T**2+5.006367E-06*T**3-1286810*T**(-1);
+      1150.00  Y  -12781.349+174.901226*T-32.5596*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQTE    298.15  -17554.731+685.877639*T-126.318*T*LN(T)
+       +0.2219435*T**2-9.42075E-05*T**3+827930*T**(-1);
+       626.49  Y  -3165763.48+46756.357*T-7196.41*T*LN(T)
+       +7.09775*T**2-0.00130692833*T**3+2.58051E+08*T**(-1);
+       722.66  Y  +180326.959-1500.57909*T+202.743*T*LN(T)
+       -0.142016*T**2+1.6129733E-05*T**3-24238450*T**(-1);
+      1150.00  Y  +19110.036-26.1929273*T+GHSERTE;
+      1600.00  N !
+ FUNCTION GVA3TE4   298.15  +108667.195+472.199547*T-101.218451*T*LN(T)
+       -0.00615235432*T**2-1.6803761E-06*T**3+72093.2955*T**(-1);
+      1900.00  Y  +40506.1724+941.337248*T-160.954404*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y.-J. Hu, J. Paz Solden Palma, Y. Wang, S.A. Firdosy, K.E. Star,
+$ J.-P. Fleurial, V.A. Ravi, Z.-K. Liu, Calphad, 61, 227-36(2018).
+$
+$ Checked against paper and authors' tdb. Checked at 6000 K.
+$
+ PAR  G(LIQUID,LATE),,                  +GLIQLA+GLIQTE
+             -247000+1.57*T;,,                                        N 18Hu !
+ PAR  L(LIQUID,LA,LATE;0),,             -4830+2.24*T;,,               N 18Hu !
+ PAR  L(LIQUID,LA,LATE;1),,             +6320-3.41*T;,,               N 18Hu !
+ PAR  L(LIQUID,LATE,TE;0),,             -110000-29*T;,,               N 18Hu !
+ PAR  L(LIQUID,LATE,TE;1),,             -47000-8*T;,,                 N 18Hu !
+$
+ PAR  G(LATE_B1,LA:TE),,                +GLATE;,,                     N 18Hu !
+$
+ PAR  G(LA3TE4_D73,LA:TE),,             +GLA3TE4;,,                   N 18Hu !
+ PAR  L(LA3TE4_D73,LA,VA:TE;0),,        -414158+99.75*T;,,            N 18Hu !
+ PAR  L(LA3TE4_D73,LA,VA:TE;1),,        -246127-35.76*T;,,            N 18Hu !
+$
+ PAR  G(LATE2,LA:TE:TE),,               +GLATE2;,,                    N 18Hu !
+ PAR  G(LATE2,LA:TE:VA),,               +GLATEVA;,,                   N 18Hu !
+ PAR  L(LATE2,LA:TE:TE,VA;0),,          -217039+17.14*T;,,            N 18Hu !
+ PAR  L(LATE2,LA:TE:TE,VA;1),,          +50183;,,                     N 18Hu !
+$
+ PAR  G(LATE3,LA:TE),,                  +GLATE3;,,                    N 18Hu !
+$
+ FUNCTION GLATE     298.15  -327677.372+314.008506*T-61.6840482*T*LN(T)
+       +0.00959003586*T**2-2.96156443E-06*T**3+292391.813*T**(-1);
+      2000.00  Y  -383502.516+596.900298*T-94.25526*T*LN(T);
+      6000.00  N !
+ FUNCTION GLA3TE4   298.15  -1147513.98+976.319026*T-195.144672*T*LN(T)
+       +0.00471669321*T**2-7.23028893E-06*T**3+462098.679*T**(-1);
+      1900.00  Y  -1327884.09+2099.35125*T-333.573289*T*LN(T);
+      6000.00  N !
+ FUNCTION GLATE2    298.15  -432401.415+394.010787*T-80.8109987*T*LN(T)
+       +0.00366542342*T**2-1.82076277E-06*T**3+184668.639*T**(-1);
+      1800.00  Y  -462589.826+577.076722*T-102.897111*T*LN(T);
+      6000.00  N !
+ FUNCTION GLATEVA   298.15  -233572.063+292.094764*T-59.686377*T*LN(T)
+       +0.00576656934*T**2-2.70175331E-06*T**3+232086.95*T**(-1);
+      1800.00  Y  -277399.13+555.150113*T-91.305548*T*LN(T);
+      6000.00  N !
+ FUNCTION GLATE3    298.15  -448694.857+478.015491*T-100.128259*T*LN(T)
+       -0.00411649854*T**2-1.02772391E-06*T**3+74667.4593*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Dav  'A.V. Davydov, M.H. Rand, B.B. Argent, Calphad, 19, 375-87(1995),
+          SGTE unary database V.3.0, 1996; Te'
+  18Hu   'Y.-J. Hu, J. Paz Solden Palma, Y. Wang, S.A. Firdosy, K.E. Star,
+          J.-P. Fleurial, V.A. Ravi, Z.-K. Liu,
+          Calphad, 61, 227-36(2018); La, Te, La-Te'
+!

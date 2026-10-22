@@ -1,0 +1,230 @@
+$
+$ Database for Al-Mo from N. Saunders 1998 (included in LB Vol. 1)
+$
+$ N. Saunders, COST 507, Final report round 2, 1998.
+$
+$ Dataset created 2011.07.04 by Bengt Hallstedt.
+$ 2020.12.20: Modified for use with GES6.
+$
+$ AlMo is consistently identified as bcc A2. It is unclear why it is modelled
+$ as B2_BCC in COST (?) and LB.
+$
+$ In the COST II database AlMo is modelled both as B2_BCC and as ALMO.
+$ ALMO is stable, but not B2_BCC, not even if ALMO is suspended.
+$
+$ B2_BCC modified by B. Sundman 2001 for the LB binary database.
+$
+$ Equilibria involving B2_BCC (AlMo) differ by up to 7 K from COST.
+$
+$ There is an inverse miscibility gap with a min at 5059 K and x(Mo)=0.370.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AL   FCC_A1                     26.98154   4540.      28.30   ! 
+ ELEMENT MO   BCC_A2                     95.94      4589.0     28.56   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AL MO : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AL% MO : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AL MO% : VA : !
+$
+$ The disordered part of B2_BCC, identical to BCC_A2
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : AL MO% : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : AL% MO : AL MO% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AL MO : VA : !
+$
+$ Prototype Al12W (cI26, Im-3)
+$
+ PHASE AL12MO % 2 12 1 !
+ CONST AL12MO : AL : MO : !
+$
+$ Prototype Al5Mo (hR12, R-3c), low T
+$ Prototype Al5W (hP12, P6_322), high T
+$
+ PHASE AL5MO % 2 5 1 !
+ CONST AL5MO : AL : MO : !
+$
+$ Prototype Al17Mo4 (mC84, C2) and Al4W (mC30, Cm)
+$
+ PHASE AL4MO % 2 4 1 !
+ CONST AL4MO : AL : MO : !
+$
+$ Prototype Al8Mo3 (mC22, C2/m)
+$
+ PHASE AL8MO3 % 2 8 3 !
+ CONST AL8MO3 : AL : MO : !
+$
+$ Unknown structure
+$
+ PHASE AL63MO37 % 2 63 37 !
+ CONST AL63MO37 : AL : MO : !
+$
+$ Prototype Cr3Si (cP8, Pm-3n)
+$
+ PHASE ALMO3_A15 % 2 1 3 !
+ CONST ALMO3_A15 : AL : MO : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ DEFAULT-COM REJECT_PHASE BCC_A2 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Al
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$
+ PAR  G(FCC_A1,AL:VA),,                 +GHSERAL;                2900 N 91Din !
+ PAR  G(BCC_A2,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(A2_BCC,AL:VA),,                 +GHSERAL+10083-4.813*T;  2900 N 91Din !
+ PAR  G(HCP_A3,AL:VA),,                 +GHSERAL+5481-1.8*T;     2900 N 91Din !
+$PAR  G(CBCC_A12,AL:VA),,               +GHSERAL
+$            +10083.4-4.813*T;                                   2900 N 91Din !
+$PAR  G(CUB_A13,AL:VA),,                +GHSERAL
+$            +10920.44-4.8116*T;                                 2900 N 91Din !
+$PAR  G(BCT_A5,AL),,                    +GHSERAL+10083-4.813*T;  2900 N SGCOST !
+$PAR  G(DIAMOND_A4,AL),,                +GHSERAL+30*T;           2900 N SGCOST !
+ PAR  G(LIQUID,AL),,                    +GLIQAL;                 2900 N 91Din !
+$
+ FUNCTION GHSERAL   298.15  -7976.15+137.093038*T-24.3671976*T*LN(T)
+       -0.001884662*T**2-8.77664E-07*T**3+74092*T**(-1);
+       700.00  Y  -11276.24+223.048446*T-38.5844296*T*LN(T)
+       +0.018531982*T**2 -5.764227E-06*T**3+74092*T**(-1);
+       933.47  Y  -11278.361+188.684136*T-31.748192*T*LN(T)
+       -1.230622E+28*T**(-9);
+      2900.00  N !
+ FUNCTION GLIQAL    298.15  +11005.045-11.84185*T+GHSERAL+7.9337E-20*T**7;
+       933.47  Y  -795.991+177.430209*T-31.748192*T*LN(T);
+      2900.00  N !
+$ ------------------------------------------------------------------------------
+$ Mo
+$
+ PAR  G(BCC_A2,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(A2_BCC,MO:VA),,                 +GHSERMO;                5000 N 91Din !
+ PAR  G(FCC_A1,MO:VA),,                 +GHSERMO+15200+0.63*T;   5000 N 91Din !
+ PAR  G(HCP_A3,MO:VA),,                 +GHSERMO+11550;          5000 N 91Din !
+ PAR  G(LIQUID,MO),,                    +GLIQMO;                 5000 N 91Din !
+$
+ FUNCTION GHSERMO   298.15  -7746.302+131.9197*T-23.56414*T*LN(T)
+       -0.003443396*T**2+5.66283E-07*T**3+65812*T**(-1)-1.30927E-10*T**4;
+      2896.00  Y  -30556.41+283.559746*T-42.63829*T*LN(T)-4.849315E+33*T**(-9);
+      5000.00  N !
+ FUNCTION GLIQMO    298.15  +41831.347-14.694912*T+GHSERMO+4.24519E-22*T**7;
+      2896.00  Y  +3538.963+271.6697*T-42.63829*T*LN(T);
+      5000.00  N !
+ FUNCTION GFCCMO    298.15  +GHSERMO+15200+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From N. Saunders 1998 (included in LB Vol. 1).
+$
+$ N. Saunders, COST 507, Final report round 2, 1998.
+$
+$ Checked against LB and COST. Checked at 6000 K.
+$
+$ AlMo is consistently identified as bcc A2. It is unclear why it is modelled
+$ as B2_BCC in COST (?) and LB.
+$
+$ In the COST II database AlMo is modelled both as B2_BCC and as ALMO.
+$ ALMO is stable, but not B2_BCC, not even if ALMO is suspended.
+$
+$ B2_BCC modified by B. Sundman 2001 for the LB binary database.
+$
+$ Equilibria involving B2_BCC (AlMo) differ by up to 7 K from COST.
+$
+$ There is an inverse miscibility gap with a min at 5059 K and x(Mo)=0.370.
+$
+ PAR  L(LIQUID,AL,MO;0),,               -100000+35*T;,,               N 98Sau3 !
+ PAR  L(LIQUID,AL,MO;1),,               -15000+6.3*T;,,               N 98Sau3 !
+$
+ PAR  L(BCC_A2,AL,MO:VA;0),,            -75000+25*T;,,                N 98Sau3 !
+ PAR  L(A2_BCC,AL,MO:VA;0),,            -75000+25*T;,,                N 98Sau3 !
+$
+ PAR  G(B2_BCC,AL:MO:VA),,              +10000-10*T;,,                N 01Sun !
+ PAR  G(B2_BCC,MO:AL:VA),,              +10000-10*T;,,                N 01Sun !
+ PAR  L(B2_BCC,AL,MO:MO:VA;0),,         +27170;,,                     N 01Sun !
+ PAR  L(B2_BCC,MO:AL,MO:VA;0),,         +27170;,,                     N 01Sun !
+$ Original parameters from 98Sau3 below
+$PAR  G(B2_BCC,AL:MO:VA),,              -14100+2*T;,,                 N 98Sau3 !
+$PAR  G(B2_BCC,MO:AL:VA),,              -14100+2*T;,,                 N 98Sau3 !
+$
+$PAR  G(ALMO,AL:AL),,                   +2*GBCCAL;,,                  N 98Sau3 !
+$PAR  G(ALMO,AL:MO),,                   +GHSERAL+GHSERMO
+$            -36850+1.0*T;,,                                          N 98Sau3 !
+$PAR  G(ALMO,MO:AL),,                   +GHSERMO+GHSERAL
+$            -36850+1.0*T;,,                                          N 98Sau3 !
+$PAR  G(ALMO,MO:MO),,                   +2*GHSERMO;,,                 N 98Sau3 !
+$PAR  L(ALMO,AL,MO:AL;0),,              -5000;,,                      N 98Sau3 !
+$PAR  L(ALMO,AL:AL,MO;0),,              -5000;,,                      N 98Sau3 !
+$PAR  L(ALMO,AL,MO:MO;0),,              +25000;,,                     N 98Sau3 !
+$PAR  L(ALMO,AL,MO:MO;1),,              -10000;,,                     N 98Sau3 !
+$PAR  L(ALMO,MO:AL,MO;0),,              +25000;,,                     N 98Sau3 !
+$PAR  L(ALMO,MO:AL,MO;1),,              -10000;,,                     N 98Sau3 !
+$
+ PAR  L(FCC_A1,AL,MO:VA;0),,            -92220+20*T;,,                N 98Sau3 !
+$
+ PAR  G(AL12MO,AL:MO),,                 +12*GHSERAL+GHSERMO
+             -139100+26.975*T;,,                                      N 98Sau3 !
+ PAR  G(AL5MO,AL:MO),,                  +5*GHSERAL+GHSERMO
+             -139104+30.156*T;,,                                      N 98Sau3 !
+ PAR  G(AL4MO,AL:MO),,                  +4*GHSERAL+GHSERMO
+             -137570+29.69*T;,,                                       N 98Sau3 !
+ PAR  G(AL8MO3,AL:MO),,                 +8*GHSERAL+3*GHSERMO
+             -412500+105.05*T;,,                                      N 98Sau3 !
+ PAR  G(AL63MO37,AL:MO),,               +63*GHSERAL+37*GHSERMO
+             -2268100+167.2*T;,,                                      N 98Sau3 !
+ PAR  G(ALMO3_A15,AL:MO),,              +GHSERAL+3*GHSERMO
+             -89000+20*T-0.003*T**2;,,                                N 98Sau3 !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,AL,MO:VA;0),,            -85570+25*T;,,                N 98Sau3 !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AL-MO(TDB -* +LIQ +AL12MO +AL4MO +AL5MO +AL63MO37 +AL8MO3
+  +ALMO3_A15 +A2_BCC +B2_BCC +FCC_A1 +HCP_A3 ;G5 C_S:BCC_B2/Al:MO:VA
+  ;P3 TMM:300/3500 STP:.55/1800) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Sau3 'N. Saunders, COST 507, Final report round 2, 1998; Al-Mo'
+  01Sun  'B. Sundman, B2_BCC modified for LB binary, 2001; Al-Mo'
+!

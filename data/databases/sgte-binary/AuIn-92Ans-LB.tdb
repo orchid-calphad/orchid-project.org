@@ -1,0 +1,261 @@
+$
+$ Database for Au-In from I. Ansara and J.-P. Nabot 1992 (Included in LB Vol. 1)
+$
+$ I. Ansara, J.-P. Nabot, Calphad, 16, 13-18(1992).
+$
+$ Dataset created 2013.08.04 by Bengt Hallstedt.
+$ 2020.12.22: Modified for use with GES6.
+$
+$ Invariants involving fcc are up to 16 K different compared to the paper.
+$ This is because the lattice stability for fcc In has changed since 92Ans.
+$ The fcc interaction has not been refitted. This should be done.
+$
+$ The fcc phase has an inverse stability with a minimum at
+$ 5378 K and x(In)=0.51.
+$
+$ The structure of the Au7In (alpha_1) phase seems not to be completely
+$ determined. In LB it is quoted as Ni3Ti_D024 or alpha-La (dhcp). Since it
+$ is stable between the disordered fcc and hcp phases it does not seem
+$ probable that it should have the ordered Ni3Ti_D024 structure. Thus, it is
+$ assumed here to have the dhcp structure. This is also consistent with
+$ modelling it as a disordered phase.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT AU   FCC_A1                    196.9665    6016.592   47.4884 ! 
+ ELEMENT IN   TETRAGONAL_A6             114.82      6610.0     57.65   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : AU IN : !
+$
+$ Fcc (cF4) and MeX (cF8)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : AU% IN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : AU IN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : AU IN : VA : !
+$
+$ Prototype alpha-La (SB A3', hP4, P6_3/mmc)
+$
+ PHASE DHCP %A 1 1 !
+ CONST DHCP : AU IN : !
+$
+$ Prototype In (tI2, I4/mmm)
+$
+ PHASE TETRAGONAL_A6 % 1 1 !
+ CONST TETRAGONAL_A6 : IN : !
+$
+$ Prototype Cu10Sb3 (hP26, P6_3/m)
+$
+ PHASE AU4IN % 2 39 11 !
+ CONST AU4IN : AU : IN : !
+$
+$ Prototype Cu3Ti (oP8, Pmmn)
+$
+ PHASE AU3IN_D0A % 2 3 1 !
+ CONST AU3IN_D0A : AU : IN : !
+$
+$ Prototype Au7In3 (hP60, P-3)
+$
+ PHASE AU7IN3 % 2 7 3 !
+ CONST AU7IN3 : AU : IN : !
+$
+$ Prototype Al3Ni2 (hP5, P-3m1)
+$
+ PHASE AU3IN2_D513 % 2 31 19 !
+ CONST AU3IN2_D513 : AU : IN : !
+$
+$ Pearson aP*
+$
+ PHASE AUIN % 2 1 1 !
+ CONST AUIN : AU : IN : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE AUIN2_C1 % 2 1 2 !
+ CONST AUIN2_C1 : AU : IN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Au
+$
+$ DHCP added in unary 5.0
+$
+$ DHCP replaced by the value from 92Ans in SGSOL 5.0
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems. The value for DHCP from 92Ans was used to model these systems,
+$ thus this value must be included in the unary database and not the 04Du
+$ value.
+$
+ PAR  G(FCC_A1,AU:VA),,                 +GHSERAU;                3200 N 91Din !
+ PAR  G(HCP_A3,AU:VA),,                 +GHSERAU+240.75+1.6*T;   3200 N 91Din !
+ PAR  G(BCC_A2,AU:VA),,                 +GHSERAU+4250-1.1*T;     3200 N 91Din !
+ PAR  G(DHCP,AU),,                      +GHSERAU+125+0.79*T;     3200 N 92Ans !
+$PAR  G(DHCP,AU),,                      +GHSERAU+5000;           3200 N 04Du !
+ PAR  G(LIQUID,AU),,                    +GHSERAU
+             +12552-9.385866*T;                                  3200 N 91Din !
+$
+ FUNCTION GHSERAU   298.15  -6938.856+106.830098*T-22.75455*T*LN(T)
+       -0.00385924*T**2+3.79625E-07*T**3-25097*T**(-1);
+       929.40  Y  -93586.481+1021.69543*T-155.706745*T*LN(T)
+       +0.08756015*T**2-1.1518713E-05*T**3+10637210*T**(-1);
+      1337.33  Y  +314067.829-2016.37825*T+263.252259*T*LN(T)
+       -0.118216828*T**2+8.923844E-06*T**3-67999832*T**(-1);
+      1735.80  Y  -12133.783+165.272524*T-30.9616*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ In
+$
+$ FCC_A1 and TET_ALPHA1 revised in unary 4.1
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$ TET_ALPHA1 revised in unary 5.0 (using the value from 99Ans)
+$ DHCP added in unary 5.0
+$
+$ There is quite a bit of confusion about TET_ALPHA1_A6. The structure is
+$ the same as In (TETRAGONAL_A6), but with a different (presumably) c/a ratio.
+$ TET_ALPHA1_A6 is present in Bi-In, In-Pb and In-Sn (possibly more). Between
+$ the TETRAGONAL_A6 (In-ss) and TET_ALPHA1_A6 there is a narrow two-phase
+$ region. In each system a different G(TET_ALPHA1_A6,IN) lattice stability
+$ was used.
+$ In 91Din a value from an unpublished revision of the Bi-In system by
+$ P.-Y. Chevalier 1990 is included. In SGTE Unary V 4.4 a value from 98Boa
+$ for the In-Pb system is included. 98Boa treated the TET_ALPHA1_A6
+$ phase in Bi-In and In-Pb as two different phases and used the lattice
+$ stability from 88Che0 for the Bi-In branch of this phase. Finally, SGTE
+$ unary V 5.0 uses a value from an unpublished evaluation by 99Ans of the
+$ In-Sn system. Due to the close proximity of the TETRAGONAL_A6 and
+$ TET_ALPHA1_A6 phases in these systems, any change of lattice stability
+$ will cause a distortion of the phase diagram and require reoptimisation.
+$
+$ The DHCP phase is labelled D0_24 in 03Liu and alpha-prime in 92Ans. The
+$ phase is present between the fcc and hcp phases in the Au-Sn and Au-In
+$ systems.
+$
+ PAR  G(TETRAGONAL_A6,IN),,             +GHSERIN;                3800 N 91Din !
+ PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+162.061;        3800 N 98Boa !
+$PAR  G(FCC_A1,IN:VA),,                 +GHSERIN+123-0.1988*T;   3800 N 91Din !
+ PAR  G(BCC_A2,IN:VA),,                 +GHSERIN+800-0.8*T;      3800 N 91Din !
+ PAR  G(HCP_A3,IN:VA),,                 +GHSERIN+533-0.6868*T;   3800 N 91Din !
+ PAR  G(DHCP,IN),,                      +GHSERIN+520-0.384*T;    3800 N 92Ans !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+123-0.1988*T;   3800 N 99Ans !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+0.31*T;         3800 N 98Boa !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN+193-0.16479*T;  3800 N 91Din !
+$PAR  G(TET_ALPHA1_A6,IN),,             +GHSERIN-33+0.16*T;      3800 N 88Che0 !
+$PAR  G(BCT_A5,IN),,                    +GHSERIN
+$            +5040.87-3.33969*T;                                 3800 N 99Ans !
+$PAR  G(RHOMBOHEDRAL_A7,IN),,           +GHSERIN+4184;           3800 N 88Che0 !
+ PAR  G(LIQUID,IN),,                    +GLIQIN;                 3800 N 91Din !
+$
+ FUNCTION GHSERIN   298.15  -6978.89+92.338115*T-21.8386*T*LN(T)
+       -0.00572566*T**2-2.120321E-06*T**3-22906*T**(-1);
+       429.75  Y  -7033.516+124.476588*T-27.4562*T*LN(T)
+       +5.4607E-04*T**2-8.367E-08*T**3-211708*T**(-1)+3.53116E+22*T**(-9);
+      3800.00  N !
+ FUNCTION GLIQIN    298.15  +3282.092-7.63686*T+GHSERIN-5.59058E-20*T**7;
+       429.75  Y  +3283.706-7.640804*T+GHSERIN-3.53116E+22*T**(-9);
+      3800.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From I. Ansara and J.-P. Nabot 1992 (Included in LB Vol. 1)
+$
+$ I. Ansara, J.-P. Nabot, Calphad, 16, 13-18(1992).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ Invariants involving fcc are up to 16 K different compared to the paper.
+$ This is because the lattice stability for fcc In has changed since 92Ans.
+$ The fcc interaction has not been refitted. This should be done.
+$
+$ The fcc phase has an inverse stability with a minimum at
+$ 5378 K and x(In)=0.51.
+$
+$ The structure of the Au7In (alpha_1) phase seems not to be completely
+$ determined. In LB it is quoted as Ni3Ti_D024 or alpha-La (dhcp). Since it
+$ is stable between the disordered fcc and hcp phases it does not seem
+$ probable that it should have the ordered Ni3Ti_D024 structure. Thus, it is
+$ assumed here to have the dhcp structure. This is also consistent with
+$ modelling it as a disordered phase.
+$
+ PAR  L(LIQUID,AU,IN;0),,               -80027.7+89.7173262*T
+             -9.57049*T*LN(T);,,                                      N 92Ans !
+ PAR  L(LIQUID,AU,IN;1),,               -34977.3+117.293782*T
+             -13.0337*T*LN(T);,,                                      N 92Ans !
+$
+ PAR  L(FCC_A1,AU,IN:VA;0),,            -61378.5+174.98818*T
+             -23.1851449*T*LN(T);,,                                   N 92Ans !
+$
+ PAR  L(HCP_A3,AU,IN:VA;0),,            -60630.1+16.796432*T;,,       N 92Ans !
+ PAR  L(HCP_A3,AU,IN:VA;1),,            +7870.9-27.3128*T;,,          N 92Ans !
+$
+ PAR  L(DHCP,AU,IN;0),,                 -54650+16.09*T;,,             N 92Ans !
+ PAR  L(DHCP,AU,IN;1),,                 +4460.9-23.64*T;,,            N 92Ans !
+$
+ PAR  G(AU4IN,AU:IN),,                  +39*GHSERAU+11*GHSERIN
+             -488100-119.01325*T;,,                                   N 92Ans !
+ PAR  G(AU3IN_D0A,AU:IN),,              +3*GHSERAU+GHSERIN
+             -44218-8.6638*T;,,                                       N 92Ans !
+ PAR  G(AU7IN3,AU:IN),,                 +7*GHSERAU+3*GHSERIN
+             -129357-19.372*T;,,                                      N 92Ans !
+ PAR  G(AU3IN2_D513,AU:IN),,            +31*GHSERAU+19*GHSERIN
+             -740225-104.649*T;,,                                     N 92Ans !
+ PAR  G(AUIN,AU:IN),,                   +GHSERAU+GHSERIN
+             -39278+3.6956*T;,,                                       N 92Ans !
+ PAR  G(AUIN2_C1,AU:IN),,               +GHSERAU+2*GHSERIN
+             -80192.4+36.04854*T;,,                                   N 92Ans !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,AU,IN:VA;0),,            -61378.5+174.98818*T
+             -23.1851449*T*LN(T);,,                                   N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  AU-IN(TDB -* +LIQ +TETR_A6 +FCC_A1 +AU3IN_D0A +AU4IN +AU3IN2_D513 +AU7IN3
+  +AUIN +AUIN2_C1 +DHCP +HCP_A3 ;P3 TMM:300/1500 STP:.2/1200) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  88Che0 'P.-Y Chevalier, Calphad, 12, 383-92(1988)
+          SGTE unary database V.4.1, 1999; In'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Ans  'I. Ansara, J.-Ph. Nabot, Calphad, 16, 13-18(1992); Au, Au-In,
+          SGTE unary database V.5.0, 2009; In'
+  98Boa  'D. Boa, I. Ansara, Thermochim. Acta, 314, 79-86(1998),
+          SGTE unary database V.4.1, 1999; In, Pb'
+  99Ans  'I. Ansara, S.G. Fries, H.L. Lukas, unpublished, 1999,
+          SGTE unary database V.5.0, 2009; In, Sn'
+  04Du   'Z. Du, C. Guo, D. Lu, J. Alloys Compd., 364, 117-20(2004),
+          SGTE unary database V.5.0, 2009; Au'
+!

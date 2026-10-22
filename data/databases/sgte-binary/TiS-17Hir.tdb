@@ -1,0 +1,282 @@
+$
+$ Database for Ti-S from K. Hirata et al. 2017.
+$
+$ K. Hirata, S. Iikubo, H. Fujimoto, H. Ohtani, Calphad, 57, 62-77(2017).
+$
+$ Dataset created 2019.03.10 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ Polytypes between Ti8S10 and TiS2 are not included.
+$
+$ An ionic or associated liquid model would be needed to describe this liquid.
+$
+$ The number of interactions seems too high, and some of the temperature
+$ dependencies as well.
+$
+$ The Ti2S and TiS3 phase fields are somewhat wider at low temperature in the
+$ paper than with the present dataset.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT S    ORTHORHOMBIC_S             32.06      4412.0     32.07   ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : S TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : S TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : S TI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : S TI% : VA : !
+$
+$ Prototype alpha-S (oF128, Fddd)
+$
+ PHASE ORTHORHOMBIC_A16 % 1 1 !
+ CONST ORTHORHOMBIC_A16 : S : !
+$
+$ Prototype beta-S (mP48, P2_1/a)
+$
+ PHASE MONOCLINIC_S % 1 1 !
+ CONST MONOCLINIC_S : S : !
+$
+$ Prototype Ti8S3 (mC88, C2/m)
+$
+ PHASE TI8S3 % 2 8 3 !
+ CONST TI8S3 : TI : S : !
+$
+$ Prototype Ta2P (oP36, Pnnm)
+$
+ PHASE TI2S % 2 2 1 !
+ CONST TI2S : TI% VA : S% VA : !
+$
+$ Prototype NiAs (hP4, P6_3/mmc)
+$
+ PHASE TIS_B81 % 2 1 1 !
+ CONST TIS_B81 : TI% VA : S% VA : !
+$
+$ Prototype TiS-9R (hR6, R-3m)
+$
+ PHASE TI8S9 % 2 8 9 !
+ CONST TI8S9 : TI : S : !
+$
+$ Prototype TiS-10H (hP20, P6_3/mmc)
+$
+ PHASE TI8S10 % 2 8 10 !
+ CONST TI8S10 : TI : S : !
+$
+$ Prototype CdI2 (hP3, P-3m1)
+$
+ PHASE TIS2_C6 % 2 1 2 !
+ CONST TIS2_C6 : TI% VA : S% VA : !
+$
+$ Prototype ZrSe3 (mP8, P2_1/m)
+$
+ PHASE TIS3 % 2 1 3 !
+ CONST TIS3 : TI : S% VA : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ S
+$
+$ FCC_A1 and BCC_A2 revised in unary 3.0
+$ ORTHORHOMBIC_S and LIQUID modified in unary 4.1
+$ MONOCLINIC revised in unary 4.1
+$ ORTHORHOMBIC_S and LIQUID revised in unary 4.4
+$
+$ HCP_A3 from 17Hir not included in unary
+$
+ PAR  G(ORTHORHOMBIC_S,S),,             +GHSERSS;                1300 N 01SGUN !
+ PAR  G(MONOCLINIC,S),,                 +GMONSS;                 1300 N 01SGUN !
+ PAR  G(FCC_A1,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(FCC_A1,S:VA),,                  +GHSERSS+30000+32*T;     1300 N 91Din !
+ PAR  G(BCC_A2,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(BCC_A2,S:VA),,                  +GHSERSS+31000+32*T;     1300 N 91Din !
+ PAR  G(HCP_A3,S:VA),,                  +GHSERSS+61370;          1300 N 17Hir !
+ PAR  G(LIQUID,S),,                     +GLIQSS;                 1300 N 01SGUN !
+$
+ PAR  G(TI2S,VA:S),,                    +GHSERSS+170000+10*T;,,       N 17Hir !
+ PAR  G(TIS_B81,VA:S),,                 +GHSERSS+258600;,,            N 17Hir !
+ PAR  G(TIS2_C6,VA:S),,                 +GHSERSS+100000;,,            N 17Hir !
+$
+ FUNCTION GHSERSS   298.15  -5198.294+53.913855*T-10.726*T*LN(T)
+       -0.0273801*T**2+8.179537E-6*T**3; 
+       368.30  Y  -6475.706+94.182332*T-17.8693298*T*LN(T)
+       -0.010936877*T**2+1.406467E-6*T**3+36871*T**(-1); 
+      1300.00  Y  -12485.546+188.304687*T-32*T*LN(T); 
+      1301.00  N !
+ FUNCTION GMONSS    298.15  -5725.422+89.544275*T-17.413*T*LN(T)
+       -0.00993935*T**2-0.070062E-6*T**3+1250*T**(-1); 
+       388.36  Y  -7455.008+114.782945*T-21.1531404*T*LN(T)
+       -0.008566163*T**2+1.112484E-6*T**3+122167*T**(-1); 
+      1300.00  Y  -11779.415+186.699065*T-32*T*LN(T); 
+      1301.00  N !
+ FUNCTION GLIQSS    298.15  -4196.575+85.63027*T-17.413*T*LN(T)
+       -0.00993935*T**2-0.070062E-6*T**3+1250*T**(-1); 
+       335.00  Y  1790361.982-44195.451432*T+7511.6194258*T*LN(T)
+       -13.985517511*T**2+4838.738601E-6*T**3-79880891*T**(-1); 
+       388.36  Y  -876313.954+23366.872986*T-4028.756*T*LN(T)
+       +7.954595*T**2-2908.513333E-6*T**3+33980035*T**(-1); 
+       432.25  Y  454088.687-7814.670231*T+1237.001*T*LN(T)
+       -1.5607295*T**2+359.883667E-6*T**3-31765395*T**(-1); 
+       500.00  Y  18554.561-144.895285*T+16.535*T*LN(T)
+       -0.0454119*T**2+8.327402E-6*T**3-2705030*T**(-1); 
+       700.00  Y  21243.126-113.298877*T+9.944*T*LN(T)
+       -0.0288384*T**2+3.791365E-6*T**3-3507570*T**(-1); 
+       900.00  Y  16117.849-32.79523*T-2.425*T*LN(T)
+       -0.01712545*T**2+1.84974E-6*T**3-3215170*T**(-1); 
+      1300.00  Y  -6461.814+175.590536*T-32*T*LN(T); 
+      1301.00  N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ BCT_A5 added in unary 3.0
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GHSERTI;                4000 N 91Din !
+ PAR  G(BCC_A2,TI:VA),,                 +GBCCTI;                 4000 N 91Din !
+ PAR  G(FCC_A1,TI:VA),,                 +GHSERTI+6000-0.1*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,TI),,                +GHSERTI+25000;          4000 N 91Din !
+$PAR  G(BCT_A5,TI),,                    +GHSERTI+4602.2;         3000 N SGCOST !
+$PAR  G(CBCC_A12,TI:VA),,               +GHSERTI+4602.2;         4000 N 91Din !
+$PAR  G(CUB_A13,TI:VA),,                +GHSERTI+7531.2;         4000 N 91Din !
+ PAR  G(LIQUID,TI),,                    +GLIQTI;                 4000 N 91Din !
+$
+ PAR  G(TI2S,TI:VA),,                   +2*GHSERTI+100000;,,          N 17Hir !
+ PAR  G(TIS_B81,TI:VA),,                +GHSERTI+121418+30*T;,,       N 17Hir !
+ PAR  G(TIS2_C6,TI:VA),,                +GHSERTI+400000+120*T;,,      N 17Hir !
+ PAR  G(TIS3,TI:VA),,                   +GHSERTI+40000;,,             N 17Hir !
+$
+ FUNCTION GHSERTI   298.15  -8059.921+133.615208*T-23.9933*T*LN(T)
+       -0.004777975*T**2+1.06716E-07*T**3+72636*T**(-1);
+       900.00  Y  -7811.815+132.988068*T-23.9887*T*LN(T)
+       -0.0042033*T**2-9.0876E-08*T**3+42680*T**(-1);
+      1155.00  Y  +908.837+66.976538*T-14.9466*T*LN(T)
+       -0.0081465*T**2+2.02715E-07*T**3-1477660*T**(-1);
+      1941.00  Y  -124526.786+638.806871*T-87.2182461*T*LN(T)
+       +0.008204849*T**2-3.04747E-07*T**3+36699805*T**(-1);
+      4000.00  N !
+ FUNCTION GBCCTI    298.15  -1272.064+134.71418*T-25.5768*T*LN(T)
+       -6.63845E-04*T**2-2.78803E-07*T**3+7208*T**(-1);
+      1155.00  Y  +6667.385+105.366379*T-22.3771*T*LN(T)
+       +0.00121707*T**2-8.4534E-07*T**3-2002750*T**(-1);
+      1941.00  Y  +26483.26-182.426471*T+19.0900905*T*LN(T)
+       -0.02200832*T**2+1.228863E-06*T**3+1400501*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQTI    298.15  +12194.415-6.980938*T+GHSERTI;
+      1300.00  Y  +369519.198-2554.0225*T+342.059267*T*LN(T)
+       -0.163409355*T**2+1.2457117E-05*T**3-67034516*T**(-1);
+      1941.00  Y  -19887.066+298.7367*T-46.29*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Va
+$
+ PAR  G(TI2S,VA:VA),,                   +300000;,,                    N 17Hir !
+ PAR  G(TIS_B81,VA:VA),,                +1000000;,,                   N 17Hir !
+ PAR  G(TIS2_C6,VA:VA),,                +300000;,,                    N 17Hir !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Hirata, S. Iikubo, H. Fujimoto, H. Ohtani, Calphad, 57, 62-77(2017).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Polytypes between Ti8S10 and TiS2 are not included.
+$
+$ An ionic or associated liquid model would be needed to describe this liquid.
+$
+$ The number of interactions seems too high, and some of the temperature
+$ dependencies as well.
+$
+$ The Ti2S and TiS3 phase fields are somewhat wider at low temperature in the
+$ paper than with the present dataset.
+$
+ PAR  L(LIQUID,S,TI;0),,                -180000-65*T;,,               N 17Hir !
+ PAR  L(LIQUID,S,TI;1),,                +100000+48*T;,,               N 17Hir !
+ PAR  L(LIQUID,S,TI;2),,                +445000-160*T;,,              N 17Hir !
+ PAR  L(LIQUID,S,TI;3),,                +20000-15*T;,,                N 17Hir !
+$
+ PAR  L(HCP_A3,S,TI:VA;0),,             -370000;,,                    N 17Hir !
+ PAR  L(HCP_A3,S,TI:VA;1),,             -115000;,,                    N 17Hir !
+$
+ PAR  L(BCC_A2,S,TI:VA;0),,             -450000;,,                    N 17Hir !
+ PAR  L(BCC_A2,S,TI:VA;1),,             -80000;,,                     N 17Hir !
+ PAR  L(BCC_A2,S,TI:VA;2),,             +200000;,,                    N 17Hir !
+$
+ PAR  G(TI8S3,TI:S),,                   +8*GHSERTI+3*GHSERSS
+             -960410-77*T+14.0591*T*LN(T)+0.0368379*T**2
+             -1.78871E-06*T**3;,,                                     N 17Hir !
+$
+ PAR  G(TI2S,TI:S),,                    +2*GHSERTI+GHSERSS
+             -303980+4*T+1.001*T*LN(T)+0.012143*T**2
+             -8.3354E-07*T**3;,,                                      N 17Hir !
+ PAR  L(TI2S,TI,VA:S;0),,               -450000+10*T;,,               N 17Hir !
+ PAR  L(TI2S,TI:S,VA;0),,               -47000-60*T;,,                N 17Hir !
+$
+ PAR  G(TIS_B81,TI:S),,                 +GHSERTI+GHSERSS
+             -279121.17+14*T+0.8*T*LN(T)+0.0066*T**2-4.6E-07*T**3;,,  N 17Hir !
+ PAR  L(TIS_B81,TI,VA:S;0),,            -125000-45*T;,,               N 17Hir !
+ PAR  L(TIS_B81,TI:S,VA;0),,            -125000-45*T;,,               N 17Hir !
+ PAR  L(TIS_B81,VA:S,VA;0),,            -409000+10*T;,,               N 17Hir !
+ PAR  L(TIS_B81,VA:S,VA;1),,            +60000+20*T;,,                N 17Hir !
+$
+ PAR  G(TI8S9,TI:S),,                   +8*GHSERTI+9*GHSERSS
+             -2400000+272*T;,,                                        N 17Hir !
+ PAR  G(TI8S10,TI:S),,                  +8*GHSERTI+10*GHSERSS
+             -2490000+304.5*T;,,                                      N 17Hir !
+$
+ PAR  G(TIS2_C6,TI:S),,                 +GHSERTI+2*GHSERSS
+             -340634.8+34*T-1.2376*T*LN(T)+0.012836*T**2
+             -9.988E-07*T**3;,,                                       N 17Hir !
+ PAR  L(TIS2_C6,TI:S,VA;0),,            -800000;,,                    N 17Hir !
+$
+ PAR  G(TIS3,TI:S),,                    +GHSERTI+3*GHSERSS
+             -380204+84*T-3.2784*T*LN(T)+0.0180908*T**2
+             -1.54316E-06*T**3;,,                                     N 17Hir !
+ PAR  L(TIS3,TI:S,VA;0),,               -80000;,,                     N 17Hir !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,S,TI:VA;0),,             -410000;,,                    N 17Hir !
+ PAR  L(FCC_A1,S,TI:VA;1),,             -100000;,,                    N 17Hir !
+ PAR  L(FCC_A1,S,TI:VA;2),,             +300000;,,                    N 17Hir !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  Sundm  'Bosse Sundman, unpublished, SGTE unary database V.3.0, 1996; S'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  17Hir  'K. Hirata, S. Iikubo, H. Fujimoto, H. Ohtani,
+          Calphad, 57, 62-77(2017); S, Ti-S'
+!

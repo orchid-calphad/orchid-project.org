@@ -1,0 +1,269 @@
+$
+$ Database for Co-Gd from Z.-K. Liu et al. 1995 (included in LB Vol. 5)
+$
+$ Z.-K. Liu, W. Zhang, B. Sundman, J. Alloys Compd. 226, 33-45(1995).
+$
+$ Dataset created 2010.12.16 by Bengt Hallstedt.
+$ 2020.04.13: Modified for use with GES6.
+$
+$ There are no magnetic parameters for the intermetallic compounds in
+$ lb5-v2.tdb.
+$
+$ Data for pure Gd have changed. This leads to quite large changes in invariant
+$ temperatures in the Gd-rich part of the system. In the Co-rich part changes
+$ are minimal. The invariant equilibria in the paper are exactly reproduced
+$ when old parameters for Gd are used.
+$
+$ The tables and diagram in the LB books seem to have been
+$ calculated with the old Gd lattice stabilities. Calculation with lb5-v2.tdb
+$ gives results similar to the present dataset except for the Co5Gd+Co17Gd2
+$ +Co7Gd2 equilibrium, probably because of the missing magnetic parameters in
+$ lb5-v2.tdb.
+$
+$ The fcc, bcc and hcp interactions are improbable.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CO   HCP_A3                     58.9332    4765.567   30.0400 ! 
+ ELEMENT GD   HCP_A3                    157.25      9087.648   68.0894 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CO GD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CO% GD : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CO GD : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CO% GD% : VA : !
+$
+$ Prototype Th2Zn17 (hR19, R-3m); low T, Ni17Th2 (hP38, P6_3/mmc); high T
+$
+ PHASE CO17GD2 %A 2 17 2 !
+ CONST CO17GD2 : CO : GD : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE CO5GD_D2D %A 2 5 1 !
+ CONST CO5GD_D2D : CO : GD : !
+$
+$ Prototype Co7Gd2 (hR18, R-3m); low T, Ce2Ni7 (hP36, P6_3/mmc); high T
+$
+ PHASE CO7GD2 %A 2 7 2 !
+ CONST CO7GD2 : CO : GD : !
+$
+$ Prototype Ni3Pu (hR12, R-3m)
+$
+ PHASE CO3GD %A 2 3 1 !
+ CONST CO3GD : CO : GD : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE CO2GD_C15 %A 2 2 1 !
+ CONST CO2GD_C15 : CO : GD : !
+$
+$ Prototype Co3Ho4 (hP22, P6_3/m)
+$
+ PHASE CO3GD4 %A 2 3 4 !
+ CONST CO3GD4 : CO : GD : !
+$
+$ Prototype Fe3C (oP16, Pnma)
+$
+ PHASE COGD3_D011 %A 2 1 3 !
+ CONST COGD3_D011 : CO : GD : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Co
+$
+ PAR  G(HCP_A3,CO:VA),,                 +GHSERCO;,,                   N 91Din !
+ PAR  TC(HCP_A3,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(FCC_A1,CO:VA),,                 +GHSERCO
+             +427.591-0.615248*T;,,                                   N 91Din !
+ PAR  TC(FCC_A1,CO:VA),,                 1396.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CO:VA),,                    1.35;,,                   N 91Din !
+ PAR  G(BCC_A2,CO:VA),,                 +GHSERCO+2938-0.7138*T;,,     N 91Din !
+ PAR  TC(BCC_A2,CO:VA),,                 1450.00;,,                   N 91Din !
+ PAR  BM(BCC_A2,CO:VA),,                    1.35;,,                   N 91Din !
+$PAR  G(CBCC_A12,CO:VA),,               +GHSERCO+4155;,,              N 91Din !
+$PAR  G(CUB_A13,CO:VA),,                +GHSERCO+3155;,,              N 91Din !
+ PAR  G(LIQUID,CO),,                    +GLIQCO;,,                    N 91Din !
+$
+ FUNCTION GHSERCO   298.15  +310.241+133.36601*T-25.0861*T*LN(T)
+       -0.002654739*T**2-1.7348E-07*T**3+72527*T**(-1);
+      1768.00  Y  -17197.666+253.28374*T-40.5*T*LN(T)+9.3488E+30*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCO    298.15  +15085.037-8.931932*T+GHSERCO-2.19801E-21*T**7;
+      1768.00  Y  -846.61+243.599944*T-40.5*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Gd
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$ Small correction made to top two temperature ranges of bcc_A2 to ensure 
+$ continuity in Gibbs energy, AD, Dec 2002
+$ FCC_A1 added in unary 4.4
+$
+ PAR  G(HCP_A3,GD:VA)           200.00  +GHSERGD;                3600 N 95She2 !
+ PAR  TC(HCP_A3,GD:VA)          200.00    293.4;                 3600 N 95She2 !
+ PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 95She2 !
+$PAR  TC(HCP_A3,GD:VA)          200.00    291.8;                 3600 N 91Din !
+$PAR  BMAGN(HCP_A3,GD:VA)       200.00      3.0;                 3600 N 91Din !
+ PAR  G(FCC_A1,GD:VA)           200.00  +GHSERGD+500;            3600 N 00Zin !
+ PAR  G(BCC_A2,GD:VA)           200.00  +GBCCGD;                 3600 N 95She2 !
+ PAR  G(LIQUID,GD)              200.00  +GLIQGD;                 3600 N 95She2 !
+$
+ FUNCTION GHSERGD   200.00  -6834.5855+97.13101*T-24.7214131*T*LN(T)
+       -0.00285240521*T**2-3.14674076E-07*T**3-8665.73348*T**(-1);
+      1000.00  Y  -6483.25362+95.6919924*T-24.6598297*T*LN(T)
+       -0.00185225011*T**2-6.61211607E-07*T**3;
+      1508.15  Y  -123124.992+699.125537*T-101.800197*T*LN(T)
+       +0.0150644246*T**2-6.39165948E-07*T**3+29356890.3*T**(-1);
+      3600.00  N !
+$ Function below from 91Din
+$FUNCTION GHSERGD   200.00  -11600.525+151.111948*T-32.5013*T*LN(T)
+$      +0.00281265*T**2-1.081237E-06*T**3+421363*T**(-1);
+$     1300.00  Y  -8106.163+115.953605*T-27.459*T*LN(T)
+$      -2.76123E-04*T**2-7.37325E-07*T**3;
+$     1535.00  Y  -125618.511+711.994197*T-103.403757*T*LN(T)
+$      +0.015817949*T**2-6.72548E-07*T**3+30183452*T**(-1);
+$     3600.00  N !
+ FUNCTION GBCCGD    200.00  +3233.80866-2.11184585*T+GHSERGD;
+      1000.00  Y  +152792.743-1349.58873*T+180.097094*T*LN(T)
+       -0.119550229*T**2+1.17915728E-05*T**3-22038836*T**(-1);
+      1508.15  Y  -15783.7618+202.222183*T-38.960425*T*LN(T);
+      1586.15  Y  -19850.5562+224.818035*T-41.904333*T*LN(T)
+       +8.58222759E-04*T**2-3.77570269E-08*T**3+995428.573*T**(-1);
+      3600.00  N !
+$ Function below from 91Din
+$FUNCTION GBCCGD    200.00  +3572.085-2.304997*T+GHSERGD;  
+$     1000.00  Y  +86879.486-747.960507*T+95.1961984*T*LN(T)
+$      -0.072542756*T**2+7.116157E-06*T**3-12664161*T**(-1);
+$     1535.00  Y  -14097.626+192.503674*T-37.656*T*LN(T);
+$     1587.00  Y  -18620.027+217.622313*T-40.9284427*T*LN(T)
+$      +9.53751E-04*T**2-4.1967E-08*T**3+1107440*T**(-1);
+$     3600.00  N !
+ FUNCTION GLIQGD    200.00  +13060.0262-8.32179974*T+GHSERGD;
+      1000.00  Y  +146262.037-1208.70685*T+159.352082*T*LN(T)
+       -0.108247135*T**2+1.06945505E-05*T**3-19678357*T**(-1);
+      1508.15  Y  -5397.314+192.336215*T-38.5075*T*LN(T);
+      3600.00  N !
+$ Function below from 91Din
+$FUNCTION GLIQGD    200.00  +13557.615-8.612727*T+GHSERGD;  
+$     1000.00  Y  +80721.646-609.764875*T+74.8351133*T*LN(T)
+$      -0.061538012*T**2+6.061728E-06*T**3-10325075*T**(-1);
+$     1535.00  Y  -3485.133+182.116258*T-37.1539*T*LN(T);
+$     3600.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From Z.-K. Liu et al. 1995 (included in LB Vol. 5)
+$
+$ Z.-K. Liu, W. Zhang, B. Sundman, J. Alloys Compd. 226, 33-45(1995).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ There are no magnetic parameters for the intermetallic compounds in
+$ lb5-v2.tdb.
+$
+$ Data for pure Gd have changed. This leads to quite large changes in invariant
+$ temperatures in the Gd-rich part of the system. In the Co-rich part changes
+$ are minimal. The invariant equilibria in the paper are exactly reproduced
+$ when old parameters for Gd are used.
+$
+$ The tables and diagram in the LB books seem to have been
+$ calculated with the old Gd lattice stabilities. Calculation with lb5-v2.tdb
+$ gives results similar to the present dataset except for the Co5Gd+Co17Gd2
+$ +Co7Gd2 equilibrium, probably because of the missing magnetic parameters in
+$ lb5-v2.tdb.
+$
+$ The fcc, bcc and hcp interactions are improbable.
+$
+ PAR  L(LIQUID,CO,GD;0),,               -136388+324.444*T
+             -34.273*T*LN(T);,,                                       N 95Liu !
+ PAR  L(LIQUID,CO,GD;1),,               -9689;,,                      N 95Liu !
+$
+ PAR  L(FCC_A1,CO,GD:VA;0),,            +100000;,,                    N 95Liu !
+ PAR  L(BCC_A2,CO,GD:VA;0),,            +100000;,,                    N 95Liu !
+ PAR  L(HCP_A3,CO,GD:VA;0),,            +100000;,,                    N 95Liu !
+$
+ PAR  G(CO17GD2,CO:GD),,                +17*GHSERCO+2*GHSERGD
+             -282208+88.842*T;,,                                      N 95Liu !
+ PAR  TC(CO17GD2,CO:GD),,                1222.00;,,                   N 95Liu !
+ PAR  BM(CO17GD2,CO:GD),,                  14.10;,,                   N 95Liu !
+$
+ PAR  G(CO5GD_D2D,CO:GD),,              +5*GHSERCO+GHSERGD
+             -108678+37.548*T-0.74263*T*LN(T)-424406*T**(-1);,,       N 95Liu !
+ PAR  TC(CO5GD_D2D,CO:GD),,              1020.00;,,                   N 95Liu !
+ PAR  BM(CO5GD_D2D,CO:GD),,                 1.40;,,                   N 95Liu !
+$
+ PAR  G(CO7GD2,CO:GD),,                 +7*GHSERCO+2*GHSERGD
+            -202973+65.526*T;,,                                       N 95Liu !
+ PAR  TC(CO7GD2,CO:GD),,                  767.00;,,                   N 95Liu !
+ PAR  BM(CO7GD2,CO:GD),,                    2.60;,,                   N 95Liu !
+$
+ PAR  G(CO3GD,CO:GD),,                  +3*GHSERCO+GHSERGD
+             -94127+30.262*T;,,                                       N 95Liu !
+ PAR  TC(CO3GD,CO:GD),,                   611.00;,,                   N 95Liu !
+ PAR  BM(CO3GD,CO:GD),,                     2.30;,,                   N 95Liu !
+$
+ PAR  G(CO2GD_C15,CO:GD),,              +2*GHSERCO+GHSERGD
+             -65853+18.864*T;,,                                       N 95Liu !
+ PAR  TC(CO2GD_C15,CO:GD),,               395.00;,,                   N 95Liu !
+ PAR  BM(CO2GD_C15,CO:GD),,                 4.95;,,                   N 95Liu !
+$
+ PAR  G(CO3GD4,CO:GD),,                 +3*GHSERCO+4*GHSERGD
+             -126432+123.394*T-11.257*T*LN(T);,,                      N 95Liu !
+ PAR  TC(CO3GD4,CO:GD),,                  233.00;,,                   N 95Liu !
+ PAR  BM(CO3GD4,CO:GD),,                   26.00;,,                   N 95Liu !
+$
+ PAR  G(COGD3_D011,CO:GD),,             +GHSERCO+3*GHSERGD
+             -50065+62.515*T-6.4326*T*LN(T);,,                        N 95Liu !
+ PAR  TC(COGD3_D011,CO:GD),,             -390.00;,,                   N 95Liu !
+ PAR  BM(COGD3_D011,CO:GD),,              -64.50;,,                   N 95Liu !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+   CO-GD(TDB -* +LIQUID +FCC +HCP_A3 +BCC_A2 +CO17GD2 +CO5GD_D2D +CO7GD2 +CO3GD 
+   +CO2GD_C15 +CO3GD4 +COGD3_D011 ;G5 C_S:HCP_A3/GD:VA MAJ:HCP_A3/CO:VA ;P3 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Liu  'Z.-K. Liu, W. Zhang, B. Sundman,
+          J. Alloys Compd. 226, 33-45(1995); Co-Gd'
+  95She2 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-02,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Gd'
+  00Zin  'M. Zinkevich, N. Mattern, H. J Seifert,
+          J. Phase Equilib., 21, 385-94(2000),
+          SGTE unary database V.4.4, 2001; Gd'
+!

@@ -1,0 +1,167 @@
+$
+$ Database for Cd-Sb from L.A. Zabdyr 1997 (included in LB vol. 2)
+$
+$ L.A. Zabdyr, Calphad, 21, 349-58(1997).
+$
+$ Dataset created 2015.03.28 by Bengt Hallstedt.
+$ 2019.12.15: Modified for use with GES6.
+$
+$ A small solubility of Sb in hcp-Cd is included in this dataset and in
+$ LBall-v7+fun.tdb, but not in the printed LB. In the paper Sb is included
+$ in the hcp model, but not in the calculation of the binary phase diagram.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CD   HCP_A3                    112.41      6247.      51.80   ! 
+ ELEMENT SB   RHOMBOHEDRAL_A7           121.75      5870.152   45.5219 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CD SB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CD SB : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CD SB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CD% SB : VA : !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : SB : !
+$
+$ Prototype CdSb (oP16, Pbca)
+$
+ PHASE CDSB_BE %  2 1 1 !
+ CONST CDSB_BE : CD : SB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cd
+$
+$ FCC_A1 and TETRAGONAL_A6 added in unary 3.0
+$ BCT_A5 and RHOMBO_A10 added in unary 4.1
+$ BCC_A2 added in unary 5.0
+$
+ PAR  G(HCP_A3,CD:VA),,                 +GHSERCD;                1600 N 91Din !
+ PAR  G(FCC_A1,CD:VA),,                 +GHSERCD+892.3-0.92*T;   1600 N 93Zak !
+ PAR  G(BCC_A2,CD:VA),,                 +GHSERCD+1000;           1600 N 04Che1 !
+$PAR  G(TETRAGONAL_A6,CD),,             +GHSERCD+892.3-0.92*T;   1600 N 93Zak !
+$PAR  G(BCT_A5,CD),,                    +GHSERCD+5000;           1600 N 95Yan !
+$PAR  G(RHOMBO_A10,CD),,                +GHSERCD+800-0.62*T;     1600 N 95Yan !
+ PAR  G(LIQUID,CD),,                    +GLIQCD;                 1600 N 91Din !
+$
+ FUNCTION GHSERCD   298.15  -7083.469+99.506198*T-22.0442408*T*LN(T)
+       -0.006273908*T**2-6966*T**(-1);
+       594.22  Y  -20064.971+256.812233*T-45.1611543*T*LN(T)
+       +0.008832011*T**2-8.99604E-07*T**3+1241290*T**(-1);
+      1500.00  Y  -9027.489+148.20548*T-29.7064*T*LN(T);
+      1600.00  N !
+ FUNCTION GLIQCD    298.15  +6128.444-10.296916*T+GHSERCD;
+       400.00  Y  +21716.884-371.046869*T+53.1313898*T*LN(T)
+       -0.115159917*T**2+2.8899781E-05*T**3-1271815*T**(-1);
+       594.22  Y  -3252.303+138.251107*T-29.7064*T*LN(T);
+      1500.00  Y  +5775.186-9.954373*T+GHSERCD;
+      1600.00  N !
+ FUNCTION GBCCCD    298.15  +GHSERCD+1000;                             6000 N !
+$ ------------------------------------------------------------------------------
+$ Sb
+$
+$ BCT_A5 revised in unary 3.0
+$
+$ BCT_A5 the value from 91Din is used in LBall-v7+fun.tdb.
+$ BCT_A5 the value from 96SGUN is used in SGSOL 5.0.
+$ It is only needed in Sb-Sn.
+$
+ PAR  G(RHOMBOHEDRAL_A7,SB),,           +GHSERSB;                2000 N 91Din !
+ PAR  G(FCC_A1,SB:VA),,                 +GHSERSB+19874-13.7*T;   2000 N 91Din !
+ PAR  G(BCC_A2,SB:VA),,                 +GHSERSB+19874-15.1*T;   2000 N 91Din !
+ PAR  G(HCP_A3,SB:VA),,                 +GHSERSB+19874-13*T;     2000 N 91Din !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+13000-8*T;      2000 N 96SGUN !
+$PAR  G(BCT_A5,SB),,                    +GHSERSB+1000;           2000 N 91Din !
+ PAR  G(LIQUID,SB),,                    +GLIQSB;                 2000 N 91Din !
+$
+ FUNCTION GHSERSB   298.15  -9242.858+156.154689*T-30.5130752*T*LN(T)
+       +0.007748768*T**2-3.003415E-06*T**3+100625*T**(-1);
+       903.78  Y  -11738.83+169.485872*T-31.38*T*LN(T)+1.616849E+27*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQSB    298.15  +19822.328-21.923164*T+GHSERSB-1.74847E-20*T**7;
+       903.78  Y  +8175.359+147.455986*T-31.38*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From L.A. Zabdyr 1997 (included in LB vol. 2)
+$
+$ L.A. Zabdyr, Calphad, 21, 349-58(1997).
+$
+$ Checked against LB and paper. Checked at 6000 K.
+$
+$ A small solubility of Sb in hcp-Cd is included in this dataset and in
+$ LBall-v7+fun.tdb, but not in the printed LB. In the paper Sb is included
+$ in the hcp model, but not in the calculation of the binary phase diagram.
+$
+ PAR  L(LIQUID,CD,SB;0),,               -1398.7-64.572*T
+             +7.72824*T*LN(T);,,                                      N 97Zab !
+ PAR  L(LIQUID,CD,SB;1),,               -1650.3-2.548*T;,,            N 97Zab !
+ PAR  L(LIQUID,CD,SB;2),,               +9674.2-7.471*T;,,            N 97Zab !
+ PAR  L(LIQUID,CD,SB;3),,               +3924.1-1.906*T;,,            N 97Zab !
+$
+ PAR  L(HCP_A3,CD,SB:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(CDSB_BE,CD:SB),,                +GHSERCD+GHSERSB
+             -24952.5+121.021*T-15.58876*T*LN(T);,,                   N 97Zab !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,CD,SB:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(BCC_A2,CD,SB:VA;0),,            +UN_ASS;,,                    N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CD-SB(TDB -* +LIQ +HCP_A3 +RHOM_A7 +CDSB_BE ;P3 TMM:200/1500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Zak  'W. Zakulski, Z. Moser, K. Rzyman, H.L. Lukas, S.G. Fries,
+          M. Sukiennik, R. Kaczmarczyk, R. Castanet,
+          J. Phase Equilib., 14, 184-96(1993),
+          SGTE unary database V.3.0, 1996; Cd'
+  95Yan  'J. Yang, N.J. Silk, A. Watson, A.W. Bryant, T.G. Chart, B.B. Argent,
+          Calphad, 19, 415-30(1995),
+          SGTE unary database V.4.1, 1999; Cd, Hg'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  97Zab  'L.A. Zabdyr, Calphad, 21, 349-58(1997); Cd-Sb'
+  04Che1 'P.-Y. Chevalier, unpublished, Thermodata, 2004,
+          SGTE unary database V.5.0, 2009; Cd'
+!

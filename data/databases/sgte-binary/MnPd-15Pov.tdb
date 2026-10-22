@@ -1,0 +1,297 @@
+$
+$ Database for Mn-Pd from E. Povoden-Karadeniz et al. 2015.
+$
+$ E. Povoden-Karadeniz, P. Lang, F. Moszner, S. Pogatscher, A.V. Ruban,
+$ P.J. Uggowitzer, E. Kozeschnik, Calphad, 51, 314-33(2015).
+$
+$ Dataset created 2018.11.18 by Bengt Hallstedt.
+$ 2021.01.30: Modified for use with GES6.
+$
+$ The modelling is rather simplified, without order-disorder models for L12,
+$ L10 and B2.
+$
+$ There are some misprints in the parameter table.
+$
+$ 273 J/mol has been added by mistake to the MNPD_B2 parameters in the tdb
+$ from the author. This was also used to calculate phase diagrams in the paper.
+$
+$ This dataset has a rich life at high temperature with three different B2
+$ phases stable above 3800 K.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MN PD : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN% PD% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN% PD : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : MN PD : VA : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 % 2 1 1 !
+ CONST CBCC_A12 : MN% PD : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN% PD : VA : !
+$
+$ Prototype AuCu (tP4, P4/mmm, L1_0)
+$
+ PHASE MNPD_L10_AF % 2 0.5 0.5 !
+ CONST MNPD_L10_AF : MN PD : MN PD :  !
+$
+$ Prototype AuCu (tP4, P4/mmm, L1_0)
+$
+ PHASE MNPD_L10 % 2 0.5 0.5 !
+ CONST MNPD_L10 : MN PD : MN PD :  !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE MNPD_B2 % 2 0.5 0.5 !
+ CONST MNPD_B2 : MN PD : MN PD : !
+$
+$ Prototype Ga3Pt5 (oC16, Cmmm)
+$
+ PHASE MN3PD5 % 2 3 5 !
+ CONST MN3PD5 : MN : PD :  !
+$
+$ unknown structure
+$
+ PHASE MNPD2 % 2 1 2 !
+ CONST MNPD2 : MN : PD :  !
+$
+$ Prototype Al3Zr (tI16, I4/mmm)
+$
+ PHASE MNPD3_D023 %A 2 0.25 0.75 !
+ CONST MNPD3_D023 : MN% PD : MN PD% : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE MNPD4_L12 % 2 0.25 0.75 !
+ CONST MNPD4_L12 : MN% PD : MN PD% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ PAR  G(MNPD_L10_AF,MN:MN),,            +GHSERMN+20000;,,             N 15Pov !
+ PAR  G(MNPD_L10,MN:MN),,               +GHSERMN+20000;,,             N 15Pov !
+ PAR  G(MNPD_B2,MN:MN),,                +GHSERMN+20000;,,             N 15Pov !
+ PAR  G(MNPD3_D023,MN:MN),,             +GFCCMN+3000;,,               N 15Pov !
+ PAR  TC(MNPD3_D023,MN:MN),,            -1620.00;,,                   N 15Pov !
+ PAR  BM(MNPD3_D023,MN:MN),,               -1.86;,,                   N 15Pov !
+ PAR  G(MNPD4_L12,MN:MN),,              +GFCCMN+100;,,                N 15Pov !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+$ CBCC_A12 and CUB_A13 from 15Pov not included in unary
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(CBCC_A12,PD:VA),,               +GBCCPD+5000;            4000 N 15Pov !
+ PAR  G(CUB_A13,PD:VA),,                +GBCCPD+5000;            4000 N 15Pov !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ PAR  G(MNPD_L10_AF,PD:PD),,            +GHSERPD+2000;,,              N 15Pov !
+ PAR  G(MNPD_L10,PD:PD),,               +GHSERPD+2000;,,              N 15Pov !
+ PAR  G(MNPD_B2,PD:PD),,                +GHSERPD+20000;,,             N 15Pov !
+ PAR  G(MNPD3_D023,PD:PD),,             +GHSERPD+3000;,,              N 15Pov !
+ PAR  G(MNPD4_L12,PD:PD),,              +GHSERPD+100;,,               N 15Pov !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCPD    298.15  +GHSERPD+10500-1.8*T;                      4000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ E. Povoden-Karadeniz, P. Lang, F. Moszner, S. Pogatscher, A.V. Ruban,
+$ P.J. Uggowitzer, E. Kozeschnik, Calphad, 51, 314-33(2015).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The modelling is rather simplified, without order-disorder models for L12,
+$ L10 and B2.
+$
+$ There are some misprints in the parameter table.
+$
+$ 273 J/mol has been added by mistake to the MNPD_B2 parameters in the tdb
+$ from the author. This was also used to calculate phase diagrams in the paper.
+$
+$ This dataset has a rich life at high temperature with three different B2
+$ phases stable above 3800 K.
+$
+ PAR  L(LIQUID,MN,PD;0),,               -34000-20*T;,,                N 15Pov !
+ PAR  L(LIQUID,MN,PD;1),,               -20000;,,                     N 15Pov !
+$
+ PAR  L(FCC_A1,MN,PD:VA;0),,            -75000+10*T;,,                N 15Pov !
+ PAR  L(FCC_A1,MN,PD:VA;1),,            +60000-47*T;,,                N 15Pov !
+$
+ PAR  L(BCC_A2,MN,PD:VA;0),,            -24500-30*T;,,                N 15Pov !
+ PAR  TC(BCC_A2,MN,PD:VA;0),,           +11500;,,                     N 15Pov !
+ PAR  TC(BCC_A2,MN,PD:VA;1),,           -11500;,,                     N 15Pov !
+$
+ PAR  L(CBCC_A12,MN,PD:VA;0),,          -29500-33*T;,,                N 15Pov !
+ PAR  L(CUB_A13,MN,PD:VA;0),,           -66000+5*T;,,                 N 15Pov !
+$
+ PAR  G(MNPD_L10_AF,MN:PD),,            +0.5*GHSERMN+0.5*GHSERPD
+             -43500+14.7*T;,,                                         N 15Pov !
+ PAR  G(MNPD_L10_AF,PD:MN),,            +0.5*GHSERMN+0.5*GHSERPD
+             -43500+14.7*T;,,                                         N 15Pov !
+ PAR  L(MNPD_L10_AF,MN:MN,PD;0),,       -21600;,,                     N 15Pov !
+ PAR  L(MNPD_L10_AF,MN:MN,PD;1),,       +8000;,,                      N 15Pov !
+$
+ PAR  G(MNPD_L10,MN:PD),,               +0.5*GHSERMN+0.5*GHSERPD
+             -38750+19.25*T;,,                                        N 15Pov !
+ PAR  G(MNPD_L10,PD:MN),,               +0.5*GHSERMN+0.5*GHSERPD
+             -38750+19.25*T;,,                                        N 15Pov !
+ PAR  L(MNPD_L10,MN,PD:PD;0),,          -40000+25*T;,,                N 15Pov !
+ PAR  L(MNPD_L10,MN,PD:PD;1),,          -30000-50*T;,,                N 15Pov !
+ PAR  L(MNPD_L10,PD:MN,PD;0),,          +65000;,,                     N 15Pov !
+ PAR  L(MNPD_L10,MN:MN,PD;0),,          -30000-20*T;,,                N 15Pov !
+ PAR  L(MNPD_L10,MN:MN,PD;2),,          +23000-100*T;,,               N 15Pov !
+$
+ PAR  G(MNPD_B2,MN:PD),,                +0.5*GHSERMN+0.5*GHSERPD+273
+             +46000-23*T-5*T*LN(T)+0.05*T**2-1E-05*T**3
+             +1000000*T**(-1);,,                                      N 15Pov !
+ PAR  G(MNPD_B2,PD:MN),,                +0.5*GHSERMN+0.5*GHSERPD+273
+             +46000-23*T-5*T*LN(T)+0.05*T**2-1E-05*T**3
+             +1000000*T**(-1);,,                                      N 15Pov !
+ PAR  L(MNPD_B2,MN,PD:MN;0),,           -86000-9.5*T;,,               N 15Pov !
+ PAR  L(MNPD_B2,MN:MN,PD;0),,           -86000-9.5*T;,,               N 15Pov !
+ PAR  L(MNPD_B2,MN,PD:MN;1),,           -22500+12*T;,,                N 15Pov !
+ PAR  L(MNPD_B2,MN:MN,PD;1),,           -22500+12*T;,,                N 15Pov !
+ PAR  L(MNPD_B2,MN,PD:MN;2),,           +150000-25*T;,,               N 15Pov !
+ PAR  L(MNPD_B2,MN:MN,PD;2),,           +150000-25*T;,,               N 15Pov !
+ PAR  L(MNPD_B2,MN,PD:PD;0),,           -115000+10*T;,,               N 15Pov !
+ PAR  L(MNPD_B2,PD:MN,PD;0),,           -115000+10*T;,,               N 15Pov !
+ PAR  L(MNPD_B2,MN,PD:PD;1),,           -60000+30*T;,,                N 15Pov !
+ PAR  L(MNPD_B2,PD:MN,PD;1),,           -60000+30*T;,,                N 15Pov !
+$
+ PAR  G(MNPD3_D023,MN:PD),,             +0.25*GHSERMN+0.75*GHSERPD
+             -38000+19.25*T;,,                                        N 15Pov !
+ PAR  TC(MNPD3_D023,MN:PD),,             -275.00;,,                   N 15Pov !
+ PAR  BM(MNPD3_D023,MN:PD),,               -1.00;,,                   N 15Pov !
+ PAR  G(MNPD3_D023,PD:MN),,             +0.25*GHSERPD+0.75*GHSERMN
+             +38000-19.25*T;,,                                        N 15Pov !
+ PAR  BM(MNPD3_D023,PD:MN),,               -3.00;,,                   N 15Pov !
+ PAR  L(MNPD3_D023,MN:MN,PD;0),,        -12500;,,                     N 15Pov !
+ PAR  L(MNPD3_D023,MN:MN,PD;1),,        +65000;,,                     N 15Pov !
+$
+ PAR  G(MNPD4_L12,MN:PD),,              +0.25*GHSERMN+0.75*GHSERPD
+             -36000+19.25*T;,,                                        N 15Pov !
+ PAR  G(MNPD4_L12,PD:MN),,              +0.25*GHSERPD+0.75*GHSERMN
+             +36000-19.25*T;,,                                        N 15Pov !
+ PAR  L(MNPD4_L12,MN,PD:PD;0),,         -5000;,,                      N 15Pov !
+ PAR  L(MNPD4_L12,MN,PD:PD;1),,         -10000;,,                     N 15Pov !
+$
+ PAR  G(MN3PD5,MN:PD),,                 +3*GHSERMN+5*GHSERPD
+             -329200+112.8*T;,,                                       N 15Pov !
+ PAR  G(MNPD2,MN:PD),,                  +GHSERMN+2*GHSERPD
+             -121650+46.5*T;,,                                        N 15Pov !
+$
+$ metastable
+$
+ PAR  L(HCP_A3,MN,PD:VA;0),,            -75000+10*T;,,                N Same !
+ PAR  L(HCP_A3,MN,PD:VA;1),,            +60000-47*T;,,                N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  05Guo  'C. Guo, Z. Du, Intermetallics, 13, 525-34(2005); Mn-Ni'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+  07Fra  'P. Franke, Int. J. Mater. Res., 98, 954-60(2007); Mn-Ni'
+  15Pov  'E. Povoden-Karadeniz, P. Lang, F. Moszner, S. Pogatscher, A.V. Ruban,
+          P.J. Uggowitzer, E. Kozeschnik, Calphad, 51, 314-33(2015); Pd, Mn-Pd'
+!

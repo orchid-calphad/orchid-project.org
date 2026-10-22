@@ -1,0 +1,180 @@
+$
+$ Database for Si-Yb from S. Brutti et al. 2005
+$
+$ S. Brutti, G. Balducci, A. Ciccioli, G. Gigli, Calphad, 29, 254-61(2005).
+$
+$ Dataset created 2010.10.10 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ The melting temperatures of SiYb, Si4Yb5 and Si3Yb5 are up to 16 K too low.
+$ There is probably an error in the liquid interaction.
+$
+$ Solubility of Si in Yb (fcc, bcc) not modelled in the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+ ELEMENT YB   FCC_A1                    173.04      6711.136   59.8312 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : SI YB : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SI YB% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SI YB% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 :  SI YB : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : SI : !
+$
+$ Prototype Mn5Si3 (hP16, P6_3/mcm)
+$
+ PHASE SI3YB5_D88 % 2 3 5 !
+ CONST SI3YB5_D88 : SI : YB : !
+$
+$ Prototype Ge4Sm5 (oP36, Pnma)
+$
+ PHASE SI4YB5 % 2 4 5 !
+ CONST SI4YB5 : SI : YB : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE SIYB_B27 % 2 1 1 !
+ CONST SIYB_B27 : SI : YB : !
+$
+$ Prototype Si11Yb8 (oI38)
+$
+ PHASE SI11YB8 % 2 11 8 !
+ CONST SI11YB8 : SI : YB : !
+$
+$ Prototype Pd5Th3 (hP8, P-62m)
+$
+ PHASE SI5YB3 % 2 5 3 !
+ CONST SI5YB3 : SI : YB : !
+$
+$ Prototype AlB2 (hP3, P6/mmm), Si1.74Yb
+$
+ PHASE SI2YB_C32 % 2 1.74 1 !
+ CONST SI2YB_C32 : SI : YB : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE_DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE_DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+ PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+ PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+ PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Yb
+$
+$ HCP_A3 added in unary 5.0
+$
+ PAR  G(FCC_A1,YB:VA),,                 +GHSERYB;                2000 N 91Din !
+ PAR  G(BCC_A2,YB:VA),,                 +GBCCYB;                 2000 N 91Din !
+ PAR  G(HCP_A3,YB:VA),,                 +GHSERYB+5000;           2000 N 06Guo !
+ PAR  G(LIQUID,YB),,                    +GLIQYB;                 2000 N 91Din !
+$
+ FUNCTION GHSERYB   298.15  -9370.941+189.327664*T-40.0791*T*LN(T)
+       +0.04227115*T**2-2.2242E-05*T**3;
+       553.00  Y  -8192.154+121.065655*T-26.7591*T*LN(T)-0.00256065*T**2;
+      1033.00  Y  +16034.89-89.478241*T+2.7623966*T*LN(T)
+       -0.017961331*T**2+1.421719E-06*T**3-3631462*T**(-1);
+      2000.00  N !
+ FUNCTION GBCCYB    298.15  -965.99-21.293677*T-3.8534432*T*LN(T)
+       -0.030009694*T**2+4.743871E-06*T**3-334650*T**(-1);
+      1033.00  Y  -13368.113+188.313864*T-36.1079*T*LN(T);
+      1097.00  Y  -3911.847+113.174165*T-25.7402233*T*LN(T)
+       -0.004743348*T**2+3.63044E-07*T**3-1553668*T**(-1);
+      2000.00  N !
+ FUNCTION GLIQYB    298.15  +7030.788-40.615571*T-1.8061816*T*LN(T)
+       -0.03250938*T**2+5.136665E-06*T**3-370554*T**(-1);
+      1033.00  Y  -6445.835+186.690398*T-36.7774*T*LN(T);
+      2000.00  N !
+ FUNCTION GHCPYB    298.15  +GHSERYB+5000;                             2000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Brutti, G. Balducci, A. Ciccioli, G. Gigli, Calphad, 29, 254-61(2005).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The melting temperatures of SiYb, Si4Yb5 and Si3Yb5 are up to 16 K too low.
+$ There is probably an error in the liquid interaction.
+$
+$ Solubility of Si in Yb (fcc, bcc) not modelled in the paper.
+$
+ PAR  L(LIQUID,SI,YB;0),,               -51716.2-67.1012*T;,,         N 05Bru !
+ PAR  L(LIQUID,SI,YB;1),,               -29995.8;,,                   N 05Bru !
+$
+ PAR  L(FCC_A1,SI,YB:VA;0),,            +UN_ASS;,,                    N !
+ PAR  L(BCC_A2,SI,YB:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  G(SI3YB5_D88,SI:YB),,             +3*GHSERSI+5*GHSERYB
+             -398340-33.78256*T;,,                                    N 05Bru !
+ PAR  G(SI4YB5,SI:YB),,                 +4*GHSERSI+5*GHSERYB
+             -459821.7-55.75059*T;,,                                  N 05Bru !
+ PAR  G(SIYB_B27,SI:YB),,               +GHSERSI+GHSERYB
+             -101948.4-14.77304*T;,,                                  N 05Bru !
+ PAR  G(SI11YB8,SI:YB),,                +11*GHSERSI+8*GHSERYB
+             -933031.1-73.88777*T;,,                                  N 05Bru !
+ PAR  G(SI5YB3,SI:YB),,                 +5*GHSERSI+3*GHSERYB
+             -360209.6-33.63272*T;,,                                  N 05Bru !
+ PAR  G(SI2YB_C32,SI:YB),,              +1.74*GHSERSI+GHSERYB
+             -112683.3-18.35145*T;,,                                  N 05Bru !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  05Bru  'S. Brutti, G. Balducci, A. Ciccioli, G. Gigli,
+          Calphad, 29, 254-61(2005); Si-Yb'
+  06Guo  'C. Guo, Z. Du, J. Alloys Compd., 422, 102-8(2006),
+          SGTE unary database V.5.0, 2009; Yb'
+!

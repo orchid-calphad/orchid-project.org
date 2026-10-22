@@ -1,0 +1,136 @@
+{
+  "counts": {
+    "above_hull": 0,
+    "entries": 11,
+    "intervals": 2,
+    "vertices": 3
+  },
+  "elements": [
+    "BR",
+    "PT"
+  ],
+  "flags": [
+    "has_intermediate_compounds"
+  ],
+  "isotherms": [
+    {
+      "intervals": [
+        {
+          "intercept": 0.0,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaaabigo",
+            "x": 0.0
+          },
+          "mu_a_rel": 0.0,
+          "mu_b_rel": -2.631020392499998,
+          "right": {
+            "phase": "mp-aaaabigz",
+            "x": 0.25
+          },
+          "slope": -2.631020392499998,
+          "x_hi": 0.25,
+          "x_lo": 0.0
+        },
+        {
+          "intercept": -0.8770067974999994,
+          "kind": "two_phase",
+          "left": {
+            "phase": "mp-aaaabigz",
+            "x": 0.25
+          },
+          "mu_a_rel": -0.8770067974999994,
+          "mu_b_rel": 0.0,
+          "right": {
+            "phase": "mp-aaaaaaew",
+            "x": 1.0
+          },
+          "slope": 0.8770067974999994,
+          "x_hi": 1.0,
+          "x_lo": 0.25
+        }
+      ],
+      "temperature_K": 0.0,
+      "vertices": [
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -1.636946535,
+          "entries_at_x": 7,
+          "formula": "Br",
+          "nsites": 4,
+          "phase": "mp-aaaabigo",
+          "phase_kind": "structure",
+          "spacegroup_number": 64,
+          "spacegroup_symbol": "Cmce",
+          "theoretical": false,
+          "x": 0.0
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": -0.6577550981249995,
+          "energy_per_atom": -3.4032483293749998,
+          "entries_at_x": 1,
+          "formula": "PtBr3",
+          "nsites": 48,
+          "phase": "mp-aaaabigz",
+          "phase_kind": "structure",
+          "spacegroup_number": 148,
+          "spacegroup_symbol": "R-3",
+          "theoretical": false,
+          "x": 0.25
+        },
+        {
+          "collinear": false,
+          "degenerate": [],
+          "energy": 0.0,
+          "energy_per_atom": -6.07113332,
+          "entries_at_x": 3,
+          "formula": "Pt",
+          "nsites": 1,
+          "phase": "mp-aaaaaaew",
+          "phase_kind": "structure",
+          "spacegroup_number": 225,
+          "spacegroup_symbol": "Fm-3m",
+          "theoretical": false,
+          "x": 1.0
+        }
+      ]
+    }
+  ],
+  "mp_agreement": {
+    "comparable": true,
+    "comparable_note": "",
+    "max_abs_delta_energy_above_hull": 1.1102230246251565e-16,
+    "only_mp_stable": [],
+    "only_ours_stable": [],
+    "stable_sets_match": true
+  },
+  "provenance": {
+    "above_hull_window_eV": 0.05,
+    "builder_version": 1,
+    "collinear_tol": 1e-12,
+    "correction_model": "none",
+    "degenerate_tol": 1e-06,
+    "entry_pool": "all_nondeprecated",
+    "is_stable_source": "upstream_flag",
+    "mp_release": "2026.04.13",
+    "observed_at": "2026-09-01T20:54:47Z",
+    "snapshot_scope_elements": [],
+    "snapshot_scope_kind": "full",
+    "snapshot_sha256": "b6deba8ecf1b67211b3d89cd33a5f98a1939d4bcd92db561818195e55187492a",
+    "stability_tol": 0.0001,
+    "thermo_type": "GGA_GGA+U"
+  },
+  "reference": {
+    "kind": "dft_elemental_ground_state_0K",
+    "per": "atom",
+    "temperature_K": 0.0,
+    "units": "eV/atom"
+  },
+  "schema_version": 1,
+  "system_id": "BR-PT",
+  "x_element": "PT"
+}

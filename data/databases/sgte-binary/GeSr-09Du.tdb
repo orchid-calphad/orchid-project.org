@@ -1,0 +1,164 @@
+$
+$ Database for Ge-Sr from Y. Du et al. 2009
+$
+$ Y. Du, L. Li, J. Wang, J. Wang, Z. Jin, Calphad, 33, 719-22(2009).
+$
+$ Dataset created 2009.12.13 by Bengt Hallstedt.
+$ 2021.01.03: Modified for use with GES6.
+$
+$ There is an inverse miscibility gap with a minimum at 5300 K and x(Sr)=0.90.
+$
+$ Zero interaction for fcc, bcc and diamond-A4 leads to extremely small
+$ terminal solubilities. This may not be realistic and negative interactions
+$ may be needed for extrapolations to ternary systems.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GE   DIAMOND_A4                 72.59      4636.0     31.09   ! 
+ ELEMENT SR   FCC_A1                     87.62      6568.      55.694  ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GE SR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 % 2 1 1 !
+ CONST FCC_A1 : GE SR% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 % 2 1 3 !
+ CONST BCC_A2 : GE SR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 % 2 1 0.5 !
+ CONST HCP_A3 : GE SR : VA: !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : GE% SR : !
+$
+$ Prototype BaSi2 (oP24, Pnma)
+$
+ PHASE GE2SR % 2 2 1 !
+ CONST GE2SR : GE : SR : !
+$
+$ Prototype CrB (oC8, Cmcm)
+$
+ PHASE GESR_B33 % 2 1 1 !
+ CONST GESR_B33 : GE : SR : !
+$
+$ Prototype Cr5B3 (tI32, I4/mcm)
+$
+ PHASE GE3SR5_D8L % 2 3 5 !
+ CONST GE3SR5_D8L : GE : SR : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE GESR2_C37 % 2 1 2 !
+ CONST GESR2_C37 : GE : SR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ DEFAULT-COM REJECT_PHASE HCP_A3 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ge
+$
+$ BCT_A5 and RHOMBOHEDRAL_A7 added in unary 4.1
+$
+ PAR  G(DIAMOND_A4,GE),,                +GHSERGE;                3200 N 91Din !
+ PAR  G(FCC_A1,GE:VA),,                 +GHSERGE+36000-22.3*T;   3200 N 91Din !
+ PAR  G(BCC_A2,GE:VA),,                 +GHSERGE+34100-23.5*T;   3200 N 91Din !
+ PAR  G(HCP_A3,GE:VA),,                 +GHSERGE+35000-21.5*T;   3200 N 91Din !
+$PAR  G(BCT_A5,GE),,                    +GHSERGE+28800-16.5*T;   3600 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,GE),,           +GHSERGE+29800-16.5*T;   3600 N 99SGUN !
+ PAR  G(LIQUID,GE),,                    +GLIQGE;                 3200 N 91Din !
+$
+ FUNCTION GHSERGE   298.15  -9486.153+165.635573*T-29.5337682*T*LN(T)
+       +0.005568297*T**2-1.513694E-06*T**3+163298*T**(-1);
+       900.00  Y  -5689.239+102.86087*T-19.8536239*T*LN(T)-0.003672527*T**2;
+      1211.40  Y  -9548.204+156.708024*T-27.6144*T*LN(T)-8.59809E+28*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQGE    298.15  +37141.489-30.687043*T+GHSERGE+8.56632E-21*T**7;
+      1211.40  Y  +27243.473+126.324186*T-27.6144*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Sr
+$
+ PAR  G(FCC_A1,SR:VA),,                 +GHSERSR;                3000 N 91Din !
+ PAR  G(BCC_A2,SR:VA),,                 +GBCCSR;                 3000 N 91Din !
+ PAR  G(HCP_A3,SR:VA),,                 +GHSERSR+250+0.7*T;      3000 N 91Din !
+ PAR  G(DIAMOND_A4,SR),,                +GHSERSR+92430;,,             N 09Du !
+ PAR  G(LIQUID,SR),,                    +GLIQSR;                 3000 N 91Din !
+$
+ FUNCTION GHSERSR   298.15  -7532.367+107.183879*T-23.905*T*LN(T)
+       -0.00461225*T**2-1.67477E-07*T**3-2055*T**(-1);
+       820.00  Y  -13380.102+153.196104*T-30.0905432*T*LN(T)
+       -0.003251266*T**2+1.84189E-07*T**3+850134*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCSR    298.15  -6779.234+116.583654*T-25.6708365*T*LN(T)
+       -0.003126762*T**2+2.2965E-07*T**3+27649*T**(-1);
+       820.00  Y  -6970.594+122.067301*T-26.57*T*LN(T)
+       -0.0019493*T**2-1.7895E-08*T**3+16495*T**(-1);
+      1050.00  Y  +8168.357+0.423037*T-9.7788593*T*LN(T)
+       -0.009539908*T**2+5.20221E-07*T**3-2414794*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQSR    298.15  +2194.997-10.118994*T-5.0668978*T*LN(T)
+       -0.031840595*T**2+4.981237E-06*T**3-265559*T**(-1);
+      1050.00  Y  -10855.29+213.406219*T-39.463*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y. Du, L. Li, J. Wang, J. Wang, Z. Jin, Calphad, 33, 719-22(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There is an inverse miscibility gap with a minimum at 5300 K and x(Sr)=0.90.
+$
+$ Zero interaction for fcc, bcc and diamond-A4 leads to extremely small
+$ terminal solubilities. This may not be realistic and negative interactions
+$ may be needed for extrapolations to ternary systems.
+$
+ PAR  L(LIQUID,GE,SR;0),,               -211258.37-16.21402*T;,,      N 09Du !
+ PAR  L(LIQUID,GE,SR;1),,               +14607.45-32.80826*T;,,       N 09Du !
+ PAR  L(LIQUID,GE,SR;2),,               +56159.24;,,                  N 09Du !
+$
+ PAR  G(GE2SR,GE:SR),,                  +2*GHSERGE+GHSERSR
+             -141194.6-32.92853*T;,,                                  N 09Du !
+ PAR  G(GESR_B33,GE:SR),,               +GHSERGE+GHSERSR
+             -113366.2-21.65104*T;,,                                  N 09Du !
+ PAR  G(GE3SR5_D8L,GE:SR),,             +3*GHSERGE+5*GHSERSR
+             -423744.29-65.35229*T;,,                                 N 09Du !
+ PAR  G(GESR2_C37,GE:SR),,              +GHSERGE+2*GHSERSR
+             -174726.65-5.59493*T;,,                                  N 09Du !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09Du   'Y. Du, L. Li, J. Wang, J. Wang, Z. Jin,
+          Calphad, 33, 719-22(2009); Ge-Sr'
+!

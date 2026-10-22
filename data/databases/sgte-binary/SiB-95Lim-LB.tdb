@@ -1,0 +1,197 @@
+$
+$ Database for Si-B from S.-K. Lim and H.L. Lukas (included in LB Vol. 2)
+$
+$ S.-K. Lim, H.L. Lukas, "Hochleistungskeramik, Herstellung, Aufbau und
+$ Eigenschaften", G. Petzow, J. Tobolski, R. Telle (Eds.), VCH, Weinheim,
+$ 1995, pp. 605-16.
+$
+$ Dataset created 2014.08.24 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ Included in COST 507.
+$
+$ The model for ALPHA_RHOMBO_B does not include pure B.
+$ The parameter values for the compounds are horrifying.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT SI   DIAMOND_A4                 28.0855    3217.      18.81   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B SI : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : B SI : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 2 93 12 !
+ CONST BETA_RHOMBO_B : B : B SI : !
+$
+$ Prototype alpha-B (hR12, R-3m)
+$
+ PHASE ALPHA_RHOMBO_B % 3 61 1 8 !
+ CONST ALPHA_RHOMBO_B : B : SI : B SI : !
+$
+$ Prototype B13C2 (hR15, R-3m)
+$
+ PHASE SIB3_D1G % 3 6 2 6 !
+ CONST SIB3_D1G : B : SI : B SI : !
+$
+$ Prototype SiB6 (oP280, Pnnm)
+$
+ PHASE SIB6 % 3 210 23 48 !
+ CONST SIB6 : B : SI : B SI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+$PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+ PAR  G(BETA_RHOMBO_B,B:B),,            +105*GHSERBB;,,               N 91Din !
+$PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+$PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+$PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+5000;,,              N 96SGUN !
+ PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Si
+$
+ PAR  G(DIAMOND_A4,SI),,                +GHSERSI;                3600 N 91Din !
+$PAR  G(FCC_A1,SI:VA),,                 +GHSERSI+51000-21.8*T;   3600 N 91Din !
+$PAR  G(BCC_A2,SI:VA),,                 +GHSERSI+47000-22.5*T;   3600 N 91Din !
+$PAR  G(HCP_A3,SI:VA),,                 +GHSERSI+49200-20.8*T;   3600 N 91Din !
+$PAR  G(CBCC_A12,SI:VA),,               +GHSERSI+50208-20.377*T; 3600 N 91Din !
+$PAR  G(CUB_A13,SI:VA),,                +GHSERSI+47279-20.377*T; 3600 N 91Din !
+ PAR  G(LIQUID,SI),,                    +GLIQSI;                 3600 N 91Din !
+$
+ FUNCTION GHSERSI   298.15  -8162.609+137.236859*T-22.8317533*T*LN(T)
+       -0.001912904*T**2-3.552E-09*T**3+176667*T**(-1);
+      1687.00  Y  -9457.642+167.281367*T-27.196*T*LN(T)-4.20369E+30*T**(-9);
+      3600.00  N !
+ FUNCTION GLIQSI    298.15  +50696.36-30.099439*T+GHSERSI+2.09307E-21*T**7;
+      1687.00  Y  +40370.523+137.722298*T-27.196*T*LN(T);
+      3600.00  N !
+ FUNCTION GBCCSI    298.15  +GHSERSI+47000-22.5*T;               3600 N 91Din !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ From S.-K. Lim and H.L. Lukas (included in LB Vol. 2)
+$
+$ S.-K. Lim, H.L. Lukas, "Hochleistungskeramik, Herstellung, Aufbau und
+$ Eigenschaften", G. Petzow, J. Tobolski, R. Telle (Eds.), VCH, Weinheim,
+$ 1995, pp. 605-16.
+$
+$ Included in COST 507.
+$
+$ Checked against LB and COST. Checked at 6000 K.
+$
+$ The model for ALPHA_RHOMBO_B does not include pure B.
+$ The parameter values for the compounds are horrifying.
+$
+ PAR  L(LIQUID,B,SI;0),,                +17631.92-1.76321*T;,,        N 95Lim !
+ PAR  L(LIQUID,B,SI;1),,                -3526.99+0.3527*T;,,          N 95Lim !
+$
+ PAR  L(DIAMOND_A4,B,SI;0),,            +57978.16;,,                  N 95Lim !
+$
+ PAR  G(BETA_RHOMBO_B,B:SI),,           +93*GHSERBB+12*GHSERSI
+             -6160.245+0.6160245*T;,,                                 N 95Lim !
+ PAR  L(BETA_RHOMBO_B,B:B,SI;0),,       -725614+72.5614*T;,,          N 95Lim !
+$
+ PAR  G(ALPHA_RHOMBO_B,B:SI:B),,        +69*GHSERBB+GHSERSI
+             -89819.86+8.981986*T;,,                                  N 95Lim !
+ PAR  G(ALPHA_RHOMBO_B,B:SI:SI),,       +61*GHSERBB+9*GHSERSI
+             -176659.7+17.66597*T;,,                                  N 95Lim !
+ PAR  L(ALPHA_RHOMBO_B,B:SI:B,SI;0),,   -281573.6+28.15736*T;,,       N 95Lim !
+$
+ PAR  G(SIB3_D1G,B:SI:B),,              +12*GHSERBB+2*GHSERSI
+             +112000;,,                                               N 95Lim !
+ PAR  G(SIB3_D1G,B:SI:SI),,             +6*GHSERBB+8*GHSERSI
+             +1120000;,,                                              N 95Lim !
+ PAR  L(SIB3_D1G,B:SI:B,SI;0),,         -2400475+240.0475*T;,,        N 95Lim !
+$
+ PAR  G(SIB6,B:SI:B),,                  +258*GHSERBB+23*GHSERSI
+             +729824.4-72.98244*T;,,                                  N 95Lim !
+ PAR  G(SIB6,B:SI:SI),,                 +210*GHSERBB+71*GHSERSI
+             +5454560-545.456*T;,,                                    N 95Lim !
+ PAR  L(SIB6,B:SI:B,SI;0),,             -15715630+1571.563*T;,,       N 95Lim !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  B-SI(TDB -* +LIQ +SIB3_D1G +SIB6 +BETA_RHO +ALPHA_RHO +DIAM
+  ;P3 TMM:300/2500 STP:.9/1000) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  95Lim  'S.-K. Lim, H.L. Lukas, "Hochleistungskeramik, Herstellung, Aufbau und
+          Eigenschaften", G. Petzow, J. Tobolski, R. Telle (Eds.), VCH,
+          Weinheim, 1995, pp. 605-16; Si-B'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!

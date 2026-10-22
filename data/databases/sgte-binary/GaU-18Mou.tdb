@@ -1,0 +1,195 @@
+$
+$ Database for Ga-U from C. Moussa et al. 2018.
+$
+$ C. Moussa, A. Berche, J. Barbosa, M. Pasturel, B. Stepnik, O. Tougait,
+$ J. Nucl. Mater., 499, 361-71(2018).
+$
+$ Dataset created 2022.06.12 by Bengt Hallstedt.
+$
+$ The L + Ga2U = Ga5U3 peritectic is at 1536 K instead of 1539 K.
+$
+$ There is an inverse miscibility gap with a minimum at 5390 K and x(U)=0.42.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT GA   ORTHORHOMBIC_A11           69.72      5572.0     40.7271 ! 
+ ELEMENT U    ORTHORHOMBIC_A20          238.0289    6364.      50.20   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : GA U : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : GA U : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : GA U% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : GA U : VA : !
+$
+$ alpha-Ga (oC8, Cmca)
+$
+ PHASE ORTHORHOMBIC_A11 % 1 1 !
+ CONST ORTHORHOMBIC_A11 : GA% U : !
+$
+$ Prototype alpha-U (oC4, Cmcm)
+$
+ PHASE ORTHORHOMBIC_A20 % 1 1 !
+ CONST ORTHORHOMBIC_A20 : GA U% : !
+$
+$ Prototype beta-U (tP30, P4_2/mnm, SB: A_b)
+$
+ PHASE TETRAGONAL_U % 1 1 !
+ CONST TETRAGONAL_U : GA U% : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m)
+$
+ PHASE GA3U_L12 % 2 3 1 !
+ CONST GA3U_L12 : GA : U : !
+$
+$ Prototype AlB2 (hP3, P6/mmm)
+$
+ PHASE GA2U_C32 % 2 2 1 !
+ CONST GA2U_C32 : GA : U : !
+$
+$ Prototype Pd5Pu3 (oC32, Cmcm)
+$
+ PHASE GA5U3 % 2 5 3 !
+ CONST GA5U3 : GA : U : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ga
+$
+$ DIAMOND_A4 added in unary 5.0
+$
+$ Changed name from ORTHORHOMBIC_GA to ORTHORHOMBIC_A11
+$
+$ TETRAGONAL_U and ORTHORHOMBIC_A20 from 18Mou not included in unary
+$
+ PAR  G(ORTHORHOMBIC_A11,GA)    200.00  +GHSERGA;                4000 N 91Din !
+ PAR  G(FCC_A1,GA:VA)           200.00  +GHSERGA+3800-10.2*T;    4000 N 91Din !
+ PAR  G(BCC_A2,GA:VA)           200.00  +GHSERGA+4500-11.7*T;    4000 N 91Din !
+ PAR  G(HCP_A3,GA:VA)           200.00  +GHSERGA+4500-9.5*T;     4000 N 91Din !
+$PAR  G(DIAMOND_A4,GA)          200.00  +GHSERGA+20900-2*T;      4000 N 09SGUN !
+$PAR  G(BCT_A5,GA)              200.00  +GHSERGA+3846-9.8*T;     4000 N 91Din !
+$PAR  G(TETRAGONAL_A6,GA)       200.00  +GHSERGA+3500-10*T;      4000 N 91Din !
+ PAR  G(ORTHORHOMBIC_A20,GA)    200.00  +GHSERGA+1;              4000 N 18Mou !
+ PAR  G(TETRAGONAL_U,GA)        200.00  +GHSERGA+3660;           4000 N 18Mou !
+ PAR  G(LIQUID,GA)              200.00  +GLIQGA;                 4000 N 91Din !
+$
+ FUNCTION GHSERGA   200.00  -21312.331+585.263691*T-108.228783*T*LN(T)
+       +0.227155636*T**2-1.18575257E-04*T**3+439954*T**(-1);
+       302.91  Y  -7055.643+132.73019*T-26.0692906*T*LN(T)
+       +1.506E-04*T**2-4.0173E-08*T**3-118332*T**(-1)+1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GLIQGA    200.00  +5491.298-18.073995*T+GHSERGA-7.0171E-17*T**7;
+       302.91  Y  +5666.455-18.681147*T+GHSERGA-1.64547E+23*T**(-9);
+      4000.00  N !
+ FUNCTION GFCCGA    200.00  +GHSERGA+3800-10.2*T;                      4000 N !
+ FUNCTION GHCPGA    200.00  +GHSERGA+4500-9.5*T;                       4000 N !
+$ ------------------------------------------------------------------------------
+$ U
+$
+$ FCC_A1 and HCP_A3 added in unary 4.1
+$
+$ HCP_A3 from 04Che not in unary
+$
+$ ORTHORHOMBIC_A11 from 18Mou not included in unary
+$
+ PAR  G(ORTHORHOMBIC_A20,U),,           +GHSERUU;                3000 N 91Din !
+ PAR  G(TETRAGONAL_U,U),,               +GTETUU;                 3000 N 91Din !
+ PAR  G(BCC_A2,U:VA),,                  +GBCCUU;                 3000 N 91Din !
+ PAR  G(FCC_A1,U:VA),,                  +GHSERUU+5000;           3000 N 99SGUN !
+ PAR  G(HCP_A3,U:VA),,                  +GBCCUU+5000-0.008*T;    3000 N 99SGUN !
+$PAR  G(HCP_A3,U:VA),,                  +GHSERUU+50000;          3000 N 04Che3 !
+ PAR  G(ORTHORHOMBIC_A11,U),,           +GHSERUU+1;              3000 N 18Mou !
+ PAR  G(LIQUID,U),,                     +GHSERUU
+             +12355.5-10.3239*T;                                 3000 N 91Din !
+$
+ FUNCTION GHSERUU   298.15  -8407.734+130.955151*T-26.9182*T*LN(T)
+       +0.00125156*T**2-4.42605E-06*T**3+38568*T**(-1);
+       955.00  Y  -22521.8+292.121093*T-48.66*T*LN(T);
+      3000.00  N !
+ FUNCTION GTETUU    298.15  -5156.136+106.976316*T-22.841*T*LN(T)
+       -0.01084475*T**2+2.7889E-08*T**3+81944*T**(-1);
+       941.50  Y  -14327.309+244.16802*T-42.9278*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCUU    298.15  -752.767+131.5381*T-27.5152*T*LN(T)
+       -0.00835595*T**2+9.67907E-07*T**3+204611*T**(-1);
+      1049.00  Y  -4698.365+202.685635*T-38.2836*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQUU    298.15  +GHSERUU+12355.5-10.3239*T;                3000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Moussa, A. Berche, J. Barbosa, M. Pasturel, B. Stepnik, O. Tougait,
+$ J. Nucl. Mater., 499, 361-71(2018).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The L + Ga2U = Ga5U3 peritectic is at 1536 K instead of 1539 K.
+$
+$ There is an inverse miscibility gap with a minimum at 5390 K and x(U)=0.42.
+$
+ PAR  L(LIQUID,GA,U;0),,                -69084+29.04*T;,,             N 18Mou !
+ PAR  L(LIQUID,GA,U;1),,                -35440+8.46*T;,,              N 18Mou !
+$
+ PAR  L(BCC_A2,GA,U:VA;0),,             -36880+11.28*T;,,             N 18Mou !
+ PAR  L(BCC_A2,GA,U:VA;1),,             -6617;,,                      N 18Mou !
+$
+ PAR  G(ORTHORHOMBIC_A11,GA,U;0),,      +ZERO;,,                      N 18Mou !
+ PAR  G(ORTHORHOMBIC_A20,GA,U;0),,      +ZERO;,,                      N 18Mou !
+ PAR  G(TETRAGONAL_U,GA,U;0),,          -21745;,,                     N 18Mou !
+$
+ PAR  G(GA3U_L12,GA:U),,                +3*GHSERGA+GHSERUU
+             -151120+13.08*T;,,                                       N 18Mou !
+ PAR  G(GA2U_C32,GA:U),,                +2*GHSERGA+GHSERUU
+             -123387+13.8*T;,,                                        N 18Mou !
+ PAR  G(GA5U3,GA:U),,                   +5*GHSERGA+3*GHSERUU
+             -310392+32.16*T;,,                                       N 18Mou !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,GA,U:VA;0),,             +ZERO;,,                      N 18Mou !
+ PAR  L(HCP_A3,GA,U:VA;0),,             -36880+11.28*T;,,             N Same !
+ PAR  L(HCP_A3,GA,U:VA;1),,             -6617;,,                      N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  04Che3 'P.-Y. Chevalier, E. Fischer, B. Cheynet,
+          Calphad, 28, 15-40(2004); U, Zr'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  18Mou  'C. Moussa, A. Berche, J. Barbosa, M. Pasturel, B. Stepnik, O. Tougait,
+          J. Nucl. Mater., 499, 361-71(2018); Ga, U, Ga-U'
+!

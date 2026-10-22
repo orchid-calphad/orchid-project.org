@@ -1,0 +1,189 @@
+$
+$ Database for Bi-S from S. Huang et al. 2014.
+$
+$ S. Huang, Y. Liu, Y. Chen, Z. Kang, J. Electron. Mater., 43, 1237-43(2014).
+$
+$ Dataset created 2018.04.30 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$ 2023.02.24: Unary Bi changed from V4.4 to V5.0.
+$
+$ Note! This dataset needs to be reoptimised. There is an extra small liquid
+$ miscibility gap on top of Bi2S3.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT BI   RHOMBOHEDRAL_A7           208.98      6426.6     56.735  !
+ ELEMENT S    ORTHORHOMBIC_A16           32.06      4412.0     32.07   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  BI2S3                              BI2S3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : BI BI2S3 S : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : BI S : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : BI S : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : BI : VA: !
+$
+$ Prototype alpha-As (hR2, R-3m)
+$
+ PHASE RHOMBOHEDRAL_A7 % 1 1 !
+ CONST RHOMBOHEDRAL_A7 : BI : !
+$
+$ Prototype alpha-S (oF128, Fddd)
+$
+ PHASE ORTHORHOMBIC_A16 % 1 1 !
+ CONST ORTHORHOMBIC_A16 : S : !
+$
+$ Prototype beta-S (mP48, P2_1/a)
+$
+ PHASE MONOCLINIC_S % 1 1 !
+ CONST MONOCLINIC_S : S : !
+$
+$ Prototype Sb2S3 (oP20, Pnma)
+$
+ PHASE BI2S3_D58 % 2 2 3 !
+ CONST BI2S3_D58 : BI : S : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Bi
+$
+$ RHOMBOHEDRAL_A7 and LIQUID modified in unary 5.0
+$ DIAMOND_A4 added in unary 5.0
+$
+ PAR  G(RHOMBOHEDRAL_A7,BI),,           +GHSERBI;                3000 N 09SGUN !
+ PAR  G(FCC_A1,BI:VA),,                 +GHSERBI+9900-12.5*T;    3000 N 91Din !
+ PAR  G(BCC_A2,BI:VA),,                 +GHSERBI+11297-13.9*T;   3000 N 91Din !
+ PAR  G(HCP_A3,BI:VA),,                 +GHSERBI+9900-11.8*T;    3000 N 91Din !
+$PAR  G(DIAMOND_A4,BI),,                +GHSERBI
+$            +11296.8+9.253655*T;                                3000 N 88Che2 !
+$PAR  G(BCT_A5,BI),,                    +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TETRAGONAL_A6,BI),,             +GHSERBI+4184.07;        3000 N 91Din !
+$PAR  G(TET_ALPHA1_A6,BI),,             +GHSERBI+4234;           3000 N 91Din !
+ PAR  G(LIQUID,BI),,                    +GLIQBI;                 3000 N 09SGUN ! 
+$
+ FUNCTION GHSERBI   298.15  -7817.776+128.418925*T-28.4096529*T*LN(T)
+       +0.012338888*T**2-8.381598E-6*T**3;
+       544.55  Y  +29293.369-379.605174*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1)+1.66309E+25*T**(-9);
+       800.00  Y  -11085.609+182.955328*T-36.041*T*LN(T)
+       +7.4641E-3*T**2-1.05047E-6*T**3+5175*T**(-1)+1.66309E+25*T**(-9);
+      1200.00  Y  -7580.864+124.770814*T-27.196*T*LN(T)+1.66309E+25*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQBI    298.15  +11246.017-20.636399*T+GHSERBI-5.9608E-19*T**7;
+       544.55  Y  +40629.667-400.415652*T+49.678*T*LN(T)
+       -0.0730245*T**2+1.3052833E-5*T**3-3544705*T**(-1);
+       800.00  Y  +250.689+162.14485*T-36.041*T*LN(T)
+       +0.0074641*T**2-1.05047E-6*T**3+5175*T**(-1);
+      1200.00  Y  +3755.434+103.960336*T-27.196*T*LN(T);
+      3000.00 N !
+$ ------------------------------------------------------------------------------
+$ S
+$
+$ FCC_A1 and BCC_A2 revised in unary 3.0
+$ ORTHORHOMBIC_A16 and LIQUID modified in unary 4.1
+$ MONOCLINIC revised in unary 4.1
+$ ORTHORHOMBIC_A16 and LIQUID revised in unary 4.4
+$
+ PAR  G(ORTHORHOMBIC_A16,S),,           +GHSERSS;                1300 N 01SGUN !
+ PAR  G(MONOCLINIC,S),,                 +GMONSS;                 1300 N 01SGUN !
+ PAR  G(FCC_A1,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(FCC_A1,S:VA),,                  +GHSERSS+30000+32*T;     1300 N 91Din !
+ PAR  G(BCC_A2,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(BCC_A2,S:VA),,                  +GHSERSS+31000+32*T;     1300 N 91Din !
+ PAR  G(LIQUID,S),,                     +GLIQSS;                 1300 N 01SGUN !
+$
+ FUNCTION GHSERSS   298.15  -5198.294+53.913855*T-10.726*T*LN(T)
+       -0.0273801*T**2+8.179537E-6*T**3; 
+       368.30  Y  -6475.706+94.182332*T-17.8693298*T*LN(T)
+       -0.010936877*T**2+1.406467E-6*T**3+36871*T**(-1); 
+      1300.00  Y  -12485.546+188.304687*T-32*T*LN(T); 
+      1301.00  N !
+ FUNCTION GMONSS    298.15  -5725.422+89.544275*T-17.413*T*LN(T)
+       -0.00993935*T**2-0.070062E-6*T**3+1250*T**(-1); 
+       388.36  Y  -7455.008+114.782945*T-21.1531404*T*LN(T)
+       -0.008566163*T**2+1.112484E-6*T**3+122167*T**(-1); 
+      1300.00  Y  -11779.415+186.699065*T-32*T*LN(T); 
+      1301.00  N !
+ FUNCTION GLIQSS    298.15  -4196.575+85.63027*T-17.413*T*LN(T)
+       -0.00993935*T**2-0.070062E-6*T**3+1250*T**(-1); 
+       335.00  Y  1790361.982-44195.451432*T+7511.6194258*T*LN(T)
+       -13.985517511*T**2+4838.738601E-6*T**3-79880891*T**(-1); 
+       388.36  Y  -876313.954+23366.872986*T-4028.756*T*LN(T)
+       +7.954595*T**2-2908.513333E-6*T**3+33980035*T**(-1); 
+       432.25  Y  454088.687-7814.670231*T+1237.001*T*LN(T)
+       -1.5607295*T**2+359.883667E-6*T**3-31765395*T**(-1); 
+       500.00  Y  18554.561-144.895285*T+16.535*T*LN(T)
+       -0.0454119*T**2+8.327402E-6*T**3-2705030*T**(-1); 
+       700.00  Y  21243.126-113.298877*T+9.944*T*LN(T)
+       -0.0288384*T**2+3.791365E-6*T**3-3507570*T**(-1); 
+       900.00  Y  16117.849-32.79523*T-2.425*T*LN(T)
+       -0.01712545*T**2+1.84974E-6*T**3-3215170*T**(-1); 
+      1300.00  Y  -6461.814+175.590536*T-32*T*LN(T); 
+      1301.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Huang, Y. Liu, Y. Chen, Z. Kang, J. Electron. Mater., 43, 1237-43(2014).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ Note! This dataset needs to be reoptimised. There is an extra small liquid
+$ miscibility gap on top of Bi2S3.
+$
+ PAR  G(LIQUID,BI2S3),,                 +2*GLIQBI+3*GLIQSS
+             -88000-2*T;,,                                            N 14Hua !
+ PAR  L(LIQUID,BI,BI2S3;0),,            +4000-14*T;,,                 N 14Hua !
+ PAR  L(LIQUID,BI,BI2S3;1),,            -3500-10*T;,,                 N 14Hua !
+ PAR  L(LIQUID,BI2S3,S;0),,             +16000-2.6*T;,,               N 14Hua !
+ PAR  L(LIQUID,BI2S3,S;2),,             +15000+2.6*T;,,               N 14Hua !
+$
+ PAR  G(BI2S3_D58,BI:S),,               +2*GHSERBI+3*GHSERSS
+             -163000+29*T;,,                                          N 14Hua !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  Sundm  'Bosse Sundman, unpublished, SGTE unary database V.3.0, 1996; S'
+  COST   'COST 507 database'
+  88Che2 'P.-Y. Chevalier, Thermochim. Acta, 132, 111-16(1988),
+          SGTE unary database V.5.0, 2009; Bi' 
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  01SGUN 'SGTE unary database V.4.4, 2001.'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  14Hua  'S. Huang, Y. Liu, Y. Chen, Z. Kang,
+          J. Electron. Mater., 43, 1237-43(2014); Bi-S'
+!

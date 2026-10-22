@@ -1,0 +1,188 @@
+$
+$ Database for Tb-O from R. Nakazawa et al. 2023.
+$
+$ R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+$ Calphad, 83, 102636(2023).
+$
+$ Dataset created 2024.02.08 by Bengt Hallstedt.
+$
+$ Modified from 07Zin using own data on the Tb2O3 liquidus.
+$
+$ Gas phase (except O2) is not included.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+ ELEMENT TB   HCP_A3                    158.9254    9426.552   73.3037 ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+ SPECIE  TB+3                               TB/+3 !
+ SPECIE  TBO                                TB1O1 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : TB+3 : O-2 VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : TB : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : TB : VA : !
+$
+$ Prototype B-Sm2O3 (mC30, C2/m)
+$
+ PHASE B_R2O3:I % 2 2 3 !
+ CONST B_R2O3:I : TB+3 : O-2 : !
+$
+$ Prototype Mn2O3 (cI80, Ia-3)
+$
+ PHASE C_R2O3_D53:I % 2 2 3 !
+ CONST C_R2O3_D53:I : TB+3 : O-2 : !
+$
+$ Prototype H-La2O3 (hP10, P6_3/mmc)
+$
+ PHASE H_R2O3:I % 2 2 3 !
+ CONST H_R2O3:I : TB+3 : O-2 : !
+$
+$ Prototype Nd2O3 (cI26, Im-3m)
+$
+ PHASE X_R2O3:I % 2 2 3 !
+ CONST X_R2O3:I : TB+3 : O-2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+$PAR  G(GAS,O),,                        +F7397T+RTLNP;,,              N 92SUB !
+$PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+$PAR  G(GAS,O3),,                       +F7683T+RTLNP;,,              N 92SUB !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F7397T    298.15  +243206.529-42897.0876*T**(-1)-20.7513421*T
+       -21.0155542*T*LN(T)+1.26870532E-04*T**2-1.23131285E-08*T**3;
+      2950.00  Y  +252301.473-3973170.33*T**(-1)-51.974853*T
+       -17.2118798*T*LN(T)-5.41356254E-04*T**2+7.64520703E-09*T**3;
+      6000.00  N !
+$ O3(g)
+ FUNCTION F7683T    298.15  +133772.042-11328.9959*T**(-1)-84.8602165*T
+       -19.8314069*T*LN(T)-0.0392015696*T**2+7.90727187E-06*T**3;  
+       600.00  Y  +120765.524+997137.156*T**(-1)+120.113376*T
+       -51.8410152*T*LN(T)-0.00353983136*T**2+3.20640143E-07*T**3;
+      1500.00  Y  +115412.196+1878139.02*T**(-1)+164.679664*T
+       -58.069736*T*LN(T)-2.84399032E-04*T**2+5.95650279E-10*T**3;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Tb
+$
+$ FCC_A1 from 94Lan not included in unary
+$
+ PAR  G(HCP_A3,TB:VA),,                 +GHSERTB;                3000 N 91Din !
+ PAR  G(BCC_A2,TB:VA),,                 +GBCCTB;                 3000 N 91Din !
+$PAR  G(FCC_A1,TB:VA),,                 +GHSERTB+5000;           3000 N 94Lan !
+$PAR  G(LIQUID,TB),,                    +GLIQTB;                 3000 N 91Din !
+$
+ PAR  G(ION,TB+3:VA),,                  +GLIQTB;                 3000 N 91Din !
+$
+ FUNCTION GHSERTB   298.15  -20842.158+409.309555*T-77.5006*T*LN(T)
+       +0.0832265*T**2-2.5672833E-05*T**3+562430*T**(-1);
+       600.00  Y  -8772.606+102.61162*T-25.8659*T*LN(T)
+       -0.002757005*T**2-8.05838E-07*T**3+172355*T**(-1);
+      1200.00  Y  -7944.942+101.7776*T-25.9584*T*LN(T)
+       -0.001676335*T**2-1.067632E-06*T**3;
+      1562.00  Y  -265240.309+1456.04268*T-200.215695*T*LN(T)
+       +0.041615159*T**2-2.044697E-06*T**3+65043790*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCTB    298.15  +4167.835-2.652707*T+GHSERTB;
+      1200.00  Y  +633060.245-5157.77779*T+706.580596*T*LN(T)
+       -0.373763517*T**2+3.4100235E-05*T**3-1.03233571E+08*T**(-1);
+      1562.00  Y  -23398.029+257.388486*T-46.4842*T*LN(T);
+      3000.00  N !
+ FUNCTION GLIQTB    298.15  +3945.831+29.867521*T-14.252646*T*LN(T)
+       -0.020466105*T**2+2.17475E-06*T**3-160724*T**(-1);
+      1562.00  Y  -13247.649+251.16889*T-46.4842*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+$ Calphad, 83, 102636(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Modified from 07Zin using own data on the Tb2O3 liquidus.
+$
+$ Gas phase (except O2) is not included.
+$
+ PAR  G(ION,TB+3:O-2),,                 +GTB2O3L;,,                   N 07Zin !
+ PAR  L(ION,TB+3:O-2,VA;0),,            +47415;,,                     N 23Nak !
+ PAR  L(ION,TB+3:O-2,VA;1),,            -38001;,,                     N 23Nak !
+$
+ PAR  G(C_R2O3_D53,TB+3:O-2),,          +GTB2O3C;,,                   N 07Zin !
+ PAR  G(B_R2O3,TB+3:O-2),,              +GTB2O3B;,,                   N 07Zin !
+ PAR  G(H_R2O3,TB+3:O-2),,              +GTB2O3H;,,                   N 07Zin !
+ PAR  G(X_R2O3,TB+3:O-2),,              +GTB2O3X;,,                   N 07Zin !
+$
+ FUNCTION GTB2O3C   298.15  -1903004+640.3*T-117.520*T*LN(T)
+       -0.01224*T**2+250000*T**(-1);
+      6000.00  N !
+ FUNCTION GTB2O3A   298.15  +GTB2O3C+13027-5.668*T;                    6000 N !
+ FUNCTION GTB2O3B   298.15  +GTB2O3C+7676-4.211*T;                     6000 N !
+ FUNCTION GTB2O3H   298.15  +GTB2O3C+41802-18.197*T;                   6000 N !
+ FUNCTION GTB2O3X   298.15  +GTB2O3C+53878-22.766*T;                   6000 N !
+ FUNCTION GTB2O3L   298.15  +GTB2O3C+129151-50.822*T;                  6000 N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92SUB  'SGTE Substance Database, version 1992'
+  94Lan  'S. Landin, J. Agren,
+          J. Alloys Compd., 207-208, 449-53(1994); Dy, Tb'
+  07Zin  'M. Zinkevich, Prog. Mater. Sci., 52, 597-647(2007); Tb-O'
+  23Nak  'R. Nakazawa, A. Itoh, S. Yasui, M. Kurata, Y. Kobayashi,
+          Calphad, 83, 102636(2023); Tb-O'
+!

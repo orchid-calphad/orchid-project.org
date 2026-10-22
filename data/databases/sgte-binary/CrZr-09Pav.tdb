@@ -1,0 +1,204 @@
+$
+$ Database for Cr-Zr from J. Pavlu et al., 2009
+$
+$ J. Pavlu, J. Vrestal, M. Sob, Calphad, 33, 382-87(2009).
+$
+$ Dataset created 2011.03.12 by Bengt Hallstedt.
+$ 2020.08.14: Modified for use with GES6.
+$
+$ 3-SL models for C14_LAVES and C36_LAVES. The C15_LAVES model is a standard
+$ 2-SL model, but the pure element end members are not standard.
+$
+$ The modelling of the Laves phases is based on ab initio calculations.
+$
+$ A few of the invariant equilibria differ by up to 2 K, probably because
+$ of changing from fractional to integer number of sites on the LAVES
+$ sublattices.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CR   BCC_A2                     51.996     4050.0     23.5429 ! 
+ ELEMENT ZR   HCP_A3                     91.22      5566.27    39.1809 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CR ZR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CR ZR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CR% ZR% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CR ZR% : VA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc), gamma
+$
+ PHASE C14_LAVES % 3 2 4 6 !
+ CONST C14_LAVES : CR : CR ZR : CR ZR : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m), alpha
+$
+ PHASE C15_LAVES % 2 2 1 !
+ CONST C15_LAVES : CR ZR : CR ZR : !
+$
+$ Prototype MgNi2 (hP24, P6_3/mmc), beta
+$
+ PHASE C36_LAVES % 3 2 4 6 !
+ CONST C36_LAVES : CR : CR ZR : CR ZR : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cr
+$
+ PAR  G(BCC_A2,CR:VA),,                 +GHSERCR;,,                   N 91Din !
+ PAR  TC(BCC_A2,CR:VA),,                 -311.50;,,                   N 91Din !
+ PAR  BM(BCC_A2,CR:VA),,                   -0.008;,,                  N 91Din !
+ PAR  G(FCC_A1,CR:VA),,                 +GHSERCR+7284+0.163*T;,,      N 91Din !
+ PAR  TC(FCC_A1,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(FCC_A1,CR:VA),,                   -2.46;,,                   N 91Din !
+ PAR  G(HCP_A3,CR:VA),,                 +GHSERCR+4438;,,              N 91Din !
+ PAR  TC(HCP_A3,CR:VA),,                -1109.00;,,                   N 91Din !
+ PAR  BM(HCP_A3,CR:VA),,                   -2.46;,,                   N 91Din !
+$PAR  G(CUB_A13,CR:VA),,                +GHSERCR+15899+0.6276*T;,,    N 91Din !
+$PAR  G(CBCC_A12,CR:VA),,               +GHSERCR+11087+2.7196*T;,,    N 91Din !
+ PAR  G(LIQUID,CR),,                    +GLIQCR;,,                    N 91Din !
+$
+ PAR  G(C14_LAVES,CR:CR:CR),,           +12*GHSERCR+343596;,,         N 09Pav !
+ PAR  G(C15_LAVES,CR:CR),,              +3*GHSERCR+81876;,,           N 09Pav !
+ PAR  G(C36_LAVES,CR:CR:CR),,           +12*GHSERCR+333024;,,         N 09Pav !
+$
+ FUNCTION GHSERCR   298.15  -8856.94+157.48*T-26.908*T*LN(T)
+       +0.00189435*T**2-1.47721E-06*T**3+139250*T**(-1);
+      2180.00  Y  -34869.344+344.18*T-50*T*LN(T)-2.88526E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQCR    298.15  +24339.955-11.420225*T+GHSERCR+2.37615E-21*T**7;
+      2180.00  Y  -16459.984+335.616316*T-50*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCCR    298.15  +GHSERCR+7284+0.163*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Zr
+$
+$ CUB_A13, CBCC_A12, ORTHORHOMBIC_A20 and TETRAGONAL_U added in unary 4.1
+$
+ PAR  G(HCP_A3,ZR:VA)           130.00  +GHSERZR;,,                   N 91Din !
+ PAR  G(BCC_A2,ZR:VA)           130.00  +GBCCZR;,,                    N 91Din !
+$PAR  G(OMEGA,ZR)               130.00  +GOMEZR;,,                    N 91Din !
+ PAR  G(FCC_A1,ZR:VA)           130.00  +GHSERZR+7600-0.9*T;,,        N 91Din !
+$PAR  G(CBCC_A12,ZR:VA)         130.00  +GHSERZR+4602.2;,,            N 99SGUN !
+$PAR  G(CUB_A13,ZR:VA)          130.00  +GHSERZR+7531.2;,,            N 99SGUN !
+$PAR  G(ORTHORHOMBIC_A20,ZR)    130.00  +GBCCZR+5000;,,               N 99SGUN !
+$PAR  G(TETRAGONAL_U,ZR)        130.00  +GBCCZR+5000;,,               N 99SGUN !
+ PAR  G(LIQUID,ZR)              130.00  +GLIQZR;,,                    N 91Din !
+$
+ PAR  G(C15_LAVES,ZR:ZR),,              +3*GHSERZR+82053;,,           N 09Pav !
+$
+ FUNCTION GHSERZR   130.00  -7827.595+125.64905*T-24.1618*T*LN(T)
+       -0.00437791*T**2+34971*T**(-1);
+      2128.00  Y  -26085.921+262.724183*T-42.144*T*LN(T)-1.342896E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GBCCZR    130.00  -525.539+124.9457*T-25.607406*T*LN(T)
+       -3.40084E-04*T**2-9.729E-09*T**3+25233*T**(-1)-7.6143E-11*T**4;
+      2128.00  Y  -4620.034+1.55998*T+GHSERZR+1.4103476E+32*T**(-9);
+      6000.00  N !
+ FUNCTION GOMEZR    130.00  -8878.082+144.432234*T-26.8556*T*LN(T)
+       -0.002799446*T**2+38376*T**(-1);
+      2128.00  Y  -3414.603+2.566675*T+GHSERZR+8.517346E+31*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQZR    130.00  +18147.69-9.080812*T+GHSERZR+1.6275E-22*T**7;
+      2128.00  Y  -8281.26+253.812609*T-42.144*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ J. Pavlu, J. Vrestal, M. Sob, Calphad, 33, 382-87(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ 3-SL models for C14_LAVES and C36_LAVES. The C15_LAVES model is a standard
+$ 2-SL model, but the pure element end members are not standard.
+$
+$ The modelling of the Laves phases is based on ab initio calculations.
+$
+$ A few of the invariant equilibria differ by up to 2 K, probably because
+$ of changing from fractional to integer number of sites on the LAVES
+$ sublattices.
+$
+ PAR  L(LIQUID,CR,ZR;0),,               -21050+12.61*T;,,             N 09Pav !
+ PAR  L(LIQUID,CR,ZR;1),,               -8700+6.3*T;,,                N 09Pav !
+ PAR  L(LIQUID,CR,ZR;2),,               -9000;,,                      N 09Pav !
+$
+ PAR  L(BCC_A2,CR,ZR:VA;0),,            +32000;,,                     N 09Pav !
+ PAR  L(BCC_A2,CR,ZR:VA;1),,            +5000;,,                      N 09Pav !
+$
+ PAR  L(HCP_A3,CR,ZR:VA;0),,            +25000;,,                     N 09Pav !
+ PAR  L(HCP_A3,CR,ZR:VA;1),,            -6500;,,                      N 09Pav !
+$
+ PAR  G(C14_LAVES,CR:CR:ZR),,           +6*GHSERCR+6*GHSERZR
+             +533484;,,                                               N 09Pav !
+ PAR  G(C14_LAVES,CR:ZR:CR),,           +8*GHSERCR+4*GHSERZR
+             -14610-35.952*T;,,                                       N 09Pav !
+ PAR  G(C14_LAVES,CR:ZR:ZR),,           +2*GHSERCR+10*GHSERZR
+             +182568;,,                                               N 09Pav !
+ PAR  L(C14_LAVES,CR:CR,ZR:CR;0),,      -209004;,,                    N 09Pav !
+ PAR  L(C14_LAVES,CR:ZR:CR,ZR;0),,      -63996;,,                     N 09Pav !
+$
+ PAR  G(C15_LAVES,CR:ZR),,              +2*GHSERCR+GHSERZR
+             -8625-6.531*T;,,                                         N 09Pav !
+ PAR  G(C15_LAVES,ZR:CR),,              +2*GHSERZR+GHSERCR
+             +299280;,,                                               N 09Pav !
+ PAR  L(C15_LAVES,CR,ZR:ZR;0),,         -23400;,,                     N 09Pav !
+ PAR  L(C15_LAVES,CR:CR,ZR;0),,         -44100;,,                     N 09Pav !
+$
+ PAR  G(C36_LAVES,CR:CR:ZR),,           +6*GHSERCR+6*GHSERZR
+             +555048;,,                                               N 09Pav !
+ PAR  G(C36_LAVES,CR:ZR:CR),,           +8*GHSERCR+4*GHSERZR
+             -25688.4-30.336*T;,,                                     N 09Pav !
+ PAR  G(C36_LAVES,CR:ZR:ZR),,           +2*GHSERCR+10*GHSERZR
+             +180516;,,                                               N 09Pav !
+ PAR  L(C36_LAVES,CR:CR,ZR:CR;0),,      -193296;,,                    N 09Pav !
+ PAR  L(C36_LAVES,CR:ZR:CR,ZR;0),,      -58404;,,                     N 09Pav !
+$
+$ metastable
+$
+ PAR  L(FCC_A1,CR,ZR:VA;0),,            +25000;,,                     N Same !
+ PAR  L(FCC_A1,CR,ZR:VA;1),,            -6500;,,                      N Same !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CR-ZR(TDB -* +LIQ +BCC_A2 +HCP_A3 +C14_LAV +C15_LAV +C36_LAV
+  ;P3 TMM:300/2500 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  09Pav  'J. Pavlu, J. Vrestal, M. Sob, Calphad, 33, 382-87(2009); Cr-Zr'
+!

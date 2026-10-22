@@ -1,0 +1,438 @@
+$
+$ Database for Mn-O from L. Kjellqvist and M. Selleby 2010
+$
+$ L. Kjellqvist, M. Selleby, J. Phase Equilib. Diffus., 31, 113-34(2010).
+$
+$ Dataset created 2010.12.19 by Bengt Hallstedt.
+$ 2021.01.30: Modified for use with GES6.
+$ 2024.10.13: Changed phase name HALITE_B1 to B1_OXIDE.
+$ 2024.10.13: Changed phase name MN3O4_ALPHA to MN3O4_A.
+$
+$ Based on the assessment from A.N. Grundy et al. 2003.
+$
+$ The liquid has been modified by changing from MN+3 to MNO1.5.
+$ (Complex) solution models for MN3O4 and SPINEL have been introduced.
+$
+$ O solubility in Mn not known and not modelled.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT /-   ELECTRON_GAS                0.0          0.0      0.0    ! 
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+ ELEMENT O    1/2_MOLE_O2(G)             15.999     4341.0    102.52   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  MN+2                               MN/+2 !
+ SPECIE  MN+3                               MN/+3 !
+ SPECIE  MN+4                               MN/+4 !
+ SPECIE  MNO                                MN1O1 !
+ SPECIE  MNO1.5                             MN1O1.5 !
+ SPECIE  MNO2                               MN1O2 !
+ SPECIE  MN2O3                              MN2O3 !
+ SPECIE  MN3O4                              MN3O4 !
+ SPECIE  O-2                                O/-2 !
+ SPECIE  O2                                 O2 !
+ SPECIE  O3                                 O3 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MN : !
+$
+ PHASE ION:Y % 2 1 1 !
+ CONST ION:Y : MN+2 : O-2 VA MNO1.5 : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MN : VA : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : MN : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN : VA : !
+$
+$ Prototype NaCl (cF8, Fm-3m)
+$ This is MnO (Manganosite)
+$
+ PHASE B1_OXIDE:I % 2 1 1 !
+ CONST B1_OXIDE:I : MN+2% MN+3 VA : O-2 : !
+$
+$ Prototype Mn3O4 (tI28, I4_1/amd, tetragonally distorted (Jahn-Teller) spinel)
+$ Also known as Hausmannite (or alpha-spinel)
+$ Probably Mn+3 need not be introduced on the first sublattice,
+$ but Mn+4 should be introduced on the second sublattice
+$
+ PHASE MN3O4_A:I %A 4 1 2 2 4 !
+ CONST MN3O4_A:I : MN+2 MN+3 : MN+2 MN+3 VA : MN+2 VA : O-2 : !
+$
+$ Prototype Mn2O3 (cI80, Ia-3)
+$ This is Mn2O3 (Bixbyite)
+$
+ PHASE MN2O3_D53:I % 2 2 3 !
+ CONST MN2O3_D53:I : MN+3 : O-2 : !
+$
+$ Prototype TiO2 (tP6, P4_2/mnm)
+$ This is MnO2 (Pyrolusite)
+$
+ PHASE MNO2_C4:I % 2 1 2 !
+ CONST MNO2_C4:I : MN+4 : O-2 : !
+$
+$ Prototype Al2MgO4 (cF56, Fd-3m)
+$ This is Mn3O4-beta
+$
+ PHASE SPINEL_H11:I %A 4 1 2 2 4 !
+ CONST SPINEL_H11:I : MN+2 : MN+2 MN+3 MN+4 VA : MN+2 VA% : O-2 : !
+$
+ PHASE O2GAS % 1 1 !
+ CONST O2GAS : O2 :!
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : MN MNO MNO2 O O2 O3 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA /- !
+ DEFAULT-COM REJECT-PHASE LIQUID !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ PAR  G(ION,MN+2:VA),,                  +GLIQMN;                 3000 N 91Din !
+$
+ PAR  G(GAS,MN),,                       +F12439T+RTLNP;,,             N 97SUB !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ Mn(g)
+ FUNCTION F12439T  298.15  +276164.054-34.4987547*T-20.786*T*LN(T);
+      1575.00  Y  +275547.585-29.2480566*T-21.52064*T*LN(T)
+       +3.819474E-04*T**2-3.66030333E-08*T**3+95180.95*T**(-1);
+      2100.00  Y  +274521.741-16.3844926*T-23.35302*T*LN(T)
+       +0.0013469965*T**2-1.18903067E-07*T**3;
+      2400.00  N !
+$ ------------------------------------------------------------------------------
+$ O
+$
+$ GHSEROO modified in unary 3.0
+$
+ PAR  G(O2GAS,O2),,                     +2*GHSEROO+RTLNP;,,           N 91Din !
+$
+ PAR  G(GAS,O),,                        +F12575T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,O2),,                       +2*GHSEROO+RTLNP;,,           N 91Din !
+ PAR  G(GAS,O3),,                       +F13204T+RTLNP;,,             N 94SUB !
+$
+ PAR  G(B1_OXIDE,VA:O-2),,              +ZERO;,,                      N 91Sun !
+$
+$ 1/2 O2(g)
+ FUNCTION GHSEROO   298.15  -3480.87-25.503038*T-11.1355*T*LN(T)
+       -0.005098875*T**2+6.61845833E-07*T**3-38365*T**(-1);
+      1000.00  Y  -6568.763+12.659879*T-16.8138*T*LN(T)
+       -5.957975E-04*T**2+6.781E-09*T**3+262905*T**(-1);
+      3300.00  Y  -13986.728+31.259624*T-18.9536*T*LN(T)
+       -4.25243E-04*T**2+1.0721E-08*T**3+4383200*T**(-1);
+      6000.00  N !
+$ O(g)
+ FUNCTION F12575T   298.15  +243206.494-20.8612587*T-21.01555*T*LN(T)
+       +1.2687055E-04*T**2-1.23131283E-08*T**3-42897.09*T**(-1);
+      2950.00  Y  +252301.423-52.0847285*T-17.21188*T*LN(T)
+       -5.413565E-04*T**2+7.64520667E-09*T**3-3973170.5*T**(-1);
+      6000.00  N !
+$ O3(g)
+ FUNCTION F13204T   298.15  +130696.944-37.9096651*T-27.58118*T*LN(T)
+       -0.02763076*T**2+4.60539333E-06*T**3+99530.45*T**(-1);
+       700.00  Y  +114760.623+176.626736*T-60.10286*T*LN(T)
+       +0.00206456*T**2-5.17486667E-07*T**3+1572175*T**(-1);
+      1300.00  Y  +49468.3958+710.094819*T-134.3696*T*LN(T)
+       +0.039707355*T**2-4.10457667E-06*T**3+12362250*T**(-1);
+      2100.00  Y  +866367.075-3566.80563*T+421.2001*T*LN(T)
+       -0.1284109*T**2+5.44768833E-06*T**3-2.1304835E+08*T**(-1);
+      2800.00  Y  +409416.384-1950.70834*T+223.4437*T*LN(T)
+       -0.0922361*T**2+4.306855E-06*T**3-21589870*T**(-1);
+      3500.00  Y  -1866338.6+6101.13383*T-764.8435*T*LN(T)
+       +0.09852775*T**2-2.59784667E-06*T**3+9.610855E+08*T**(-1);
+      4900.00  Y  +97590.0432+890.79836*T-149.9608*T*LN(T)
+       +0.01283575*T**2-3.555105E-07*T**3-2.1699975E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary systems
+$ ------------------------------------------------------------------------------
+$ Mn-O
+$
+$ L. Kjellqvist, M. Selleby, J. Phase Equilib. Diffus., 31, 113-34(2010).
+$
+$ Based on the assessment from A.N. Grundy et al. 2003.
+$
+$ The liquid has been modified by changing from MN+3 to MNO1.5.
+$ (Complex) solution models for MN3O4_A and SPINEL have been introduced.
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ O solubility in Mn not known and not modelled.
+$
+$ Mn2O7 (mP72, P2_1/c) with melting T 279 K was grown by the Bridgman method
+$ by R. Dronskowski.
+$ Mn5O8 (mC26, C2/m) found at low T.
+$ MnO2 has been found with several different crystal structures.
+$
+ PAR  G(ION,MNO1.5),,                   +0.5*GLMN2O3;,,               N 03Gru !
+ PAR  G(ION,MN+2:O-2),,                 +2*GLMNO;,,                   N 03Gru !
+ PAR  L(ION,MN+2:O-2,VA;0),,            +129519;,,                    N 03Gru !
+ PAR  L(ION,MN+2:O-2,VA;1),,            -45459;,,                     N 03Gru !
+ PAR  L(ION,MN+2:O-2,MNO1.5;0),,        -33859;,,                     N 03Gru !
+ PAR  L(ION,MN+2:VA,MNO1.5;0),,         +110000;,,                    N 10Kje1 !
+$
+ PAR  G(B1_OXIDE,MN+2:O-2),,            +GMN1O1;,,                    N 03Gru !
+ PAR  G(B1_OXIDE,MN+3:O-2),,            +GMN1O1-21884-22.185*T;,,     N 03Gru !
+ PAR  L(B1_OXIDE,MN+2,MN+3:O-2;0),,     -42105;,,                     N 03Gru !
+ PAR  L(B1_OXIDE,MN+2,MN+3:O-2;1),,     +46513;,,                     N 03Gru !
+$
+ PAR  G(MN2O3_D53,MN+3:O-2),,           +GMN2O3;,,                    N 03Gru !
+ PAR  G(MNO2_C4,MN+4:O-2),,             +GMN1O2;,,                    N 03Gru !
+$
+ PAR  G(MN3O4_A,MN+2:MN+2:MN+2:O-2),,   +21*GMMA+2*JMMA-2*GM3M3A
+             +ADDMN2A;,,                                              N 10Kje1 !
+ PAR  G(MN3O4_A,MN+2:MN+2:VA:O-2),,     +21*GMMA+2*JMMA-2*GM3M3A;,,   N 10Kje1 !
+ PAR  G(MN3O4_A,MN+2:MN+3:MN+2:O-2),,   +7*GMMA+ADDMN2A;,,            N 10Kje1 !
+ PAR  G(MN3O4_A,MN+2:MN+3:VA:O-2),,     +7*GMMA;,,                    N 10Kje1 !
+$PAR  G(MN3O4_A,MN+2:MN+3:VA:O-2),,     +GMN3O4;,,                    N 03Gru !
+ PAR  G(MN3O4_A,MN+2:VA:MN+2:O-2),,     +8*GGMN2O3A-6*GM3M3A+7*GMMA
+             +44.95435*T+ADDMN2A;,,                                   N 10Kje1 !
+ PAR  G(MN3O4_A,MN+2:VA:VA:O-2),,       +8*GGMN2O3A-6*GM3M3A+7*GMMA
+             +44.95435*T;,,                                           N 10Kje1 !
+ PAR  G(MN3O4_A,MN+3:MN+2:MN+2:O-2),,   +14*GMMA+2*JMMA-GM3M3A
+             +ADDMN2A;,,                                              N 10Kje1 !
+ PAR  G(MN3O4_A,MN+3:MN+2:VA:O-2),,     +14*GMMA+2*JMMA-GM3M3A;,,     N 10Kje1 !
+ PAR  G(MN3O4_A,MN+3:MN+3:MN+2:O-2),,   +GM3M3A+ADDMN2A;,,            N 10Kje1 !
+ PAR  G(MN3O4_A,MN+3:MN+3:VA:O-2),,     +GM3M3A;,,                    N 10Kje1 !
+ PAR  G(MN3O4_A,MN+3:VA:MN+2:O-2),,     +8*GGMN2O3A-5*GM3M3A
+             +44.95435*T+ADDMN2A;,,                                   N 10Kje1 !
+ PAR  G(MN3O4_A,MN+3:VA:VA:O-2),,       +8*GGMN2O3A-5*GM3M3A
+             +44.95435*T;,,                                           N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+2:MN+2:MN+2:O-2),,    +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+2:MN+2:VA:O-2),,      +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+2:MN+3:MN+2:O-2),,    +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+2:MN+3:VA:O-2),,      +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+2:VA:MN+2:O-2),,      +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+2:VA:VA:O-2),,        +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+3:MN+2:MN+2:O-2),,    +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+3:MN+2:VA:O-2),,      +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+3:MN+3:MN+2:O-2),,    +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+3:MN+3:VA:O-2),,      +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+3:VA:MN+2:O-2),,      +43.15;,,                   N 10Kje1 !
+ PAR  TC(MN3O4_A,MN+3:VA:VA:O-2),,        +43.15;,,                   N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+2:MN+2:MN+2:O-2),,  +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+2:MN+2:VA:O-2),,    +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+2:MN+3:MN+2:O-2),,  +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+2:MN+3:VA:O-2),,    +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+2:VA:MN+2:O-2),,    +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+2:VA:VA:O-2),,      +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+3:MN+2:MN+2:O-2),,  +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+3:MN+2:VA:O-2),,    +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+3:MN+3:MN+2:O-2),,  +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+3:MN+3:VA:O-2),,    +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+3:VA:MN+2:O-2),,    +ZERO;,,                      N 10Kje1 !
+ PAR  BM(MN3O4_A,MN+3:VA:VA:O-2),,      +ZERO;,,                      N 10Kje1 !
+$
+ PAR  G(SPINEL_H11,MN+2:MN+2:MN+2:O-2),, +GM2M2B+ADDMN2B;,,           N 10Kje1 !
+ PAR  G(SPINEL_H11,MN+2:MN+2:VA:O-2),,  +GM2M2B;,,                    N 10Kje1 !
+ PAR  G(SPINEL_H11,MN+2:MN+3:MN+2:O-2),, +7*GMMB+ADDMN2B;,,           N 10Kje1 !
+ PAR  G(SPINEL_H11,MN+2:MN+3:VA:O-2),,  +7*GMMB;,,                    N 10Kje1 !
+$PAR  G(SPINEL_H11,MN+2:MN+3:VA:O-2),,  +GMN3O4B;,,                   N 03Gru !
+ PAR  G(SPINEL_H11,MN+2:MN+4:MN+2:O-2),, +14*GMMB+JMMB-GM2M2B
+             +ADDMN2B;,,                                              N 10Kje1 !
+ PAR  G(SPINEL_H11,MN+2:MN+4:VA:O-2),,  +14*GMMB+JMMB-GM2M2B;,,       N 10Kje1 !
+ PAR  G(SPINEL_H11,MN+2:VA:MN+2:O-2),,  +8*GGMN2O3B-56*GMMB-3*JMMB
+             +3*GM2M2B+100.912*T+ADDMN2B;,,                           N 10Kje1 !
+ PAR  G(SPINEL_H11,MN+2:VA:VA:O-2),,    +8*GGMN2O3B-56*GMMB-3*JMMB
+             +3*GM2M2B+100.912*T;,,                                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:MN+2:MN+2:O-2),, +43.15;,,                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:MN+2:VA:O-2),,   +43.15;,,                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:MN+3:MN+2:O-2),, +43.15;,,                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:MN+3:VA:O-2),,   +43.15;,,                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:MN+4:MN+2:O-2),, +43.15;,,                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:MN+4:VA:O-2),,   +43.15;,,                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:VA:MN+2:O-2),,   +43.15;,,                   N 10Kje1 !
+ PAR  TC(SPINEL_H11,MN+2:VA:VA:O-2),,     +43.15;,,                   N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:MN+2:MN+2:O-2),, +ZERO;,,                    N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:MN+2:VA:O-2),,   +ZERO;,,                    N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:MN+3:MN+2:O-2),, +ZERO;,,                    N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:MN+3:VA:O-2),,   +ZERO;,,                    N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:MN+4:MN+2:O-2),, +ZERO;,,                    N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:MN+4:VA:O-2),,   +ZERO;,,                    N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:VA:MN+2:O-2),,   +ZERO;,,                    N 10Kje1 !
+ PAR  BM(SPINEL_H11,MN+2:VA:VA:O-2),,     +ZERO;,,                    N 10Kje1 !
+$
+ PAR  G(GAS,MNO),,                      +F12454T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,MNO2),,                     +F12461T+RTLNP;,,             N 97SUB !
+$
+$ Metastable
+$
+$PAR  G(CORUNDUM,MN+3:VA:O-2),,         +GMN2O3+25500-3.7*T;,,        N 10Kje1 !
+$
+ FUNCTION GLMNO     298.15  +GMN1O1+43947-20.628*T;                    6000 N !
+ FUNCTION GLMN2O3   298.15  +2*GMN1O1+GHSEROO-64953+43.144*T;          6000 N !
+ FUNCTION GMN1O1    298.15  -402478+259.356*T-46.835*T*LN(T)
+       -0.00385*T**2+212922*T**(-1);
+      6000.00  N !
+ FUNCTION GMN1O2    298.15  -545091+395.379*T-65.277*T*LN(T)
+       -0.007803*T**2+664955*T**(-1);
+      6000.00  N !
+ FUNCTION GMN2O3    298.15  -998618+588.619*T-101.956*T*LN(T)
+       -0.018844*T**2+589055*T**(-1);
+      6000.00  N !
+ FUNCTION GMN3O4A   298.15  -1439700+892.2*T-154.748*T*LN(T)
+       -0.017408*T**2+986139*T**(-1);
+      6000.00  N !
+ FUNCTION GMN3O4B   298.15  +15270+7*T;                                6000 N !
+ FUNCTION GMMB      298.15  +0.142857*GMN3O4B+0.142857*GMN3O4A;        6000 N !
+$ Function below from 10Kje1 (Fe-Mn-O), 10Kje3 (Mn-Ni-O) and thesis-2.tdb
+ FUNCTION GMFB      298.15  -182450+133*T-23.099*T*LN(T)-0.0014*T**2
+       +124000*T**(-1);
+      6000.00  N !
+$ Function below from 10Kje2 (Cr-Mn-O) and thesis.tdb
+$FUNCTION GMFB      298.15  -181660+125.8*T-22.08*T*LN(T)-0.0016*T**2
+$      +104000*T**(-1);
+$     6000.00  N !
+ FUNCTION GM2M2B    298.15  +21*GMFB+2*JMFB-14*GFFB+2*JFF;             6000 N !
+ FUNCTION JMMB      298.15  +26210-17.46*T;                            6000 N !
+ FUNCTION JMFB      298.15  +28000;                                    6000 N !
+$ Function below from 10Kje1 (Fe-Mn-O), 10Kje3 (Mn-Ni-O) and thesis-2.tdb
+ FUNCTION GGMN2O3B  298.15  +GMN2O3+192300-193.8*T+0.05*T**2;          6000 N !
+$ Function below from 10Kje2 (Cr-Mn-O) and thesis.tdb
+$FUNCTION GGMN2O3B  298.15  +GMN2O3+228000-200.34*T+0.05*T**2;         6000 N !
+$ Function below from 10Kje1 (Fe-Mn-O), 10Kje3 (Mn-Ni-O) and thesis-2.tdb
+ FUNCTION GGMN1O1B  298.15  +GMN1O1+41500-10.25*T;                     6000 N !
+$ Function below from 10Kje2 (Cr-Mn-O) and thesis.tdb
+$FUNCTION GGMN1O1B  298.15  +GMN1O1+66200-13.795*T;                    6000 N !
+ FUNCTION ADDMN2B   298.15  +8*GGMN1O1B-2*GM2M2B+23.05272*T;           6000 N !
+ FUNCTION GMMA      298.15  +0.142857*GMN3O4A;                         6000 N !
+ FUNCTION GMFA      298.15  +GMFB+4900-1.9*T;                          6000 N !
+ FUNCTION GM3M3A    298.15  +10.5*GMMA+JMMA-10.5*GMFA-JMFA+7*GFFA-JFF; 6000 N !
+ FUNCTION JMMA      298.15  +95000;                                    6000 N !
+ FUNCTION JMFA      298.15  +28000;                                    6000 N !
+ FUNCTION GGMN2O3A  298.15  +GMN2O3+240000-211.8*T+0.05*T**2;          6000 N !
+ FUNCTION GGMN1O1A  298.15  +GMN1O1+58500-11*T;                        6000 N !
+ FUNCTION ADDMN2A   298.15  +8*GGMN1O1A-42*GMMA-4*JMMA+4*GM3M3A
+       +23.05272*T;
+      6000.00  N !
+$ The functions GFFB, JFF and GFFA below are needed for calculations, but
+$ belong to the Fe-O system rather than the Mn-O system.
+ FUNCTION GFFB      298.15  -161731+144.873*T-24.9879*T*LN(T)
+       -0.0011952256*T**2+206520*T**(-1);
+      3000.00  N !
+ FUNCTION JFF       298.15  +46826-27.266*T;                           3000 N !
+ FUNCTION GFFA      298.15  +GFFB+1000;                                6000 N !
+$ Function below from 03Gru, not used here
+$FUNCTION GMN3O4    298.15  -1437037+889.568*T-154.748*T*LN(T)
+$      -0.017408*T**2+986139*T**(-1);
+$     6000.00  N !
+$ Function below from 03Gru, not used here
+$FUNCTION GMN3O4B   298.15  -1416189+875.120*T-154.748*T*LN(T)
+$      -0.017408*T**2+986139*T**(-1);
+$     6000.00  N !
+$ MnO(g)
+ FUNCTION F12454T  298.15  +151356.092-24.1662496*T-31.02229*T*LN(T)
+       -0.005519525*T**2+8.47063667E-07*T**3+97921.9*T**(-1);
+       900.00  Y  +146503.882+29.4389965*T-38.90434*T*LN(T)
+       +4.8722855E-04*T**2-5.46958333E-08*T**3+687003.5*T**(-1);
+      4100.00  Y  +163891.797+1.24225715*T-35.94693*T*LN(T)
+       +6.220655E-04*T**2-7.949125E-08*T**3-12461235*T**(-1);
+      6000.00  N !
+$ MnO2(g)
+ FUNCTION F12461T  298.15  +9095.11807-9.18675027*T-36.92694*T*LN(T)
+       -0.01944391*T**2+3.43552E-06*T**3+201368.45*T**(-1);
+      700.00  Y  -4061.05468+167.414546*T-63.68895*T*LN(T)
+       +0.004964408*T**2-7.80481667E-07*T**3+1423101*T**(-1);
+     2000.00  Y  +74138.9718-312.782575*T+.1646534*T*LN(T)
+       -0.01801756*T**2+7.59669E-07*T**3-16355180*T**(-1);
+     3900.00  Y  -269662.307+860.503282*T-143.1466*T*LN(T)
+       +0.008591745*T**2-1.67854167E-07*T**3+1.388169E+08*T**(-1);
+     6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  MN-O(TDB -* +GAS +ION +BCC_A2 +CBCC_A12 +CUB_A13
+  +FCC_A1 +B1_OXIDE +MN3O4_A +SPINEL_H11 +MN2O3_D53 +MNO2_C4
+  ;G5 C_S:IONIC_LIQ/MN+2:O-2 MAJ:IONIC_LIQ/MN+2:VA
+  ;P3 TMM:300/2300 STP:0.1/1000/1 STP:0.6/2000/1 STP:0.55/1000/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  91Sun  'B. Sundman, J. Phase Equilib., 12, 127-40(1991); Fe-O'
+  94SUB  'SGTE Substance Database, version 1994'
+  97SUB  'SGTE Substance Database, version 1997'
+  03Gru  'A.N. Grundy, B. Hallstedt, L.J. Gauckler,
+          J. Phase Equilib., 24, 21(2003); Mn-O'
+  10Kje1 'L. Kjellqvist, M. Selleby,
+          J. Phase Equilib. Diffus., 31, 113-34(2010); Mn-O, Fe-Mn-O'
+!

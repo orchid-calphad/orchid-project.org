@@ -1,0 +1,196 @@
+$
+$ Database for Pd-Se from S. Bordier et al. 2014.
+$
+$ S. Bordier, A. Chocard, S. Gosse, J. Nucl. Mater., 451, 120-29(2014).
+$
+$ Dataset created 2018.12.26 by Bengt Hallstedt.
+$ 2021.02.03: Modified for use with GES6.
+$
+$ The modelling of the compounds is rather unusual.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT PD   FCC_A1                    106.42      5468.488   37.8234 ! 
+ ELEMENT SE   HEXAGONAL_A8               78.96      5514.512   41.9655 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : PD SE : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : PD% SE : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : PD : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : PD : VA : !
+$
+$ gamma-Se (hP3, P3_121)
+$
+ PHASE HEXAGONAL_A8 % 1 1 !
+ CONST HEXAGONAL_A8 : SE : !
+$
+$ unknown structure
+$
+ PHASE PD9SE2 % 2 9 2 !
+ CONST PD9SE2 : PD : SE : !
+$
+$ Prototype Pd4Se (tP10, P-42_1c)
+$
+ PHASE PD4SE_LT % 2 4 1 !
+ CONST PD4SE_LT : PD : SE : !
+$
+$ unknown structure 
+$
+ PHASE PD4SE_HT % 2 4 1 !
+ CONST PD4SE_HT : PD : SE : !
+$
+$ Prototype Pd7Se2 (mP18, P2_1/c)
+$
+ PHASE PD7SE2 % 2 7 2 !
+ CONST PD7SE2 : PD : SE : !
+$
+$ Prototype Pd34Se11 (mP90, P2_1/c)
+$
+ PHASE PD34SE11 % 2 34 11 !
+ CONST PD34SE11 : PD : SE : !
+$
+$ Prototype Pd7Se4 (oP22, P2_12_12)
+$
+ PHASE PD7SE4 % 2 7 4 !
+ CONST PD7SE4 : PD : SE : !
+$
+$ Prototype Pd17Se15 (cP64, Pm-3m)
+$
+ PHASE PD17SE15 % 2 17 15 !
+ CONST PD17SE15 : PD : SE : !
+$
+$ Prototype Pd(S,Se) (tP48, P4_2/mbc)
+$
+ PHASE PDSE % 2 1 1 !
+ CONST PDSE : PD : SE : !
+$
+$ Prototype PdSe2 (oP12, Pbca)
+$
+ PHASE PDSE2 % 2 1 2 !
+ CONST PDSE2 : PD : SE : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Pd
+$
+$ RHOMBOHEDRAL_A7 added in unary 5.0
+$
+ PAR  G(FCC_A1,PD:VA),,                 +GHSERPD;                4000 N 91Din !
+ PAR  G(BCC_A2,PD:VA),,                 +GHSERPD+10500-1.8*T;    4000 N 91Din !
+ PAR  G(HCP_A3,PD:VA),,                 +GHSERPD+2000+0.1*T;     4000 N 91Din !
+$PAR  G(RHOMBOHEDRAL_A7,PD),,           +GHSERPD+4000;           4000 N 06Vre !
+ PAR  G(LIQUID,PD),,                    +GLIQPD;                 4000 N 91Din !
+$
+ FUNCTION GHSERPD   298.15  -10204.027+176.076315*T-32.211*T*LN(T)
+       +0.007120975*T**2-1.919875E-06*T**3+168687*T**(-1);
+       900.00  Y  +917.062+49.659892*T-13.5708*T*LN(T)
+       -0.00717522*T**2+1.91115E-07*T**3-1112465*T**(-1);
+      1828.00  Y  -67161.018+370.102147*T-54.2067086*T*LN(T)
+       +0.002091396*T**2-6.2811E-08*T**3+18683526*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQPD    298.15  +11506.758-5.112162*T+GHSERPD;
+       600.00  Y  +23405.778-116.918419*T+10.8922031*T*LN(T)
+       -0.027266568*T**2+2.430675E-06*T**3-1853674*T**(-1);
+      1828.00  Y  -12373.637+251.416903*T-41.17*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Se
+$
+$ FCC_A1 from 14Bor not included in unary
+$
+ PAR  G(HEXAGONAL_A8,SE),,              +GHSERSE;                1000 N 91Din !
+ PAR  G(FCC_A1,SE:VA),,                 +GHSERSE+5000;           1000 N 14Bor !
+ PAR  G(LIQUID,SE),,                    +GLIQSE;                 1000 N 91Din !
+$
+ FUNCTION GHSERSE   298.15  -9376.371+174.205877*T-33.6527*T*LN(T)
+       +0.02424314*T**2-1.5318461E-05*T**3+102249*T**(-1);
+       494.00  Y  -37546.134+507.111538*T-81.2006585*T*LN(T)
+       +0.037144892*T**2-5.611026E-06*T**3+2614263*T**(-1);
+       800.00  Y  -12193.47+197.770166*T-35.1456*T*LN(T);
+      1000.00  N !
+ FUNCTION GLIQSE    298.15  +50533.347-1178.28824*T+194.107439*T*LN(T)
+       -0.390268991*T**2+1.19219297E-04*T**3-2224398*T**(-1); 
+       494.00  Y  -5228.304+183.72559*T-35.1456*T*LN(T);
+      1000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Bordier, A. Chocard, S. Gosse, J. Nucl. Mater., 451, 120-29(2014).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The modelling of the compounds is rather unusual.
+$
+ PAR  L(LIQUID,PD,SE;0),,               -54323.1-31.247*T;,,          N 14Bor !
+ PAR  L(LIQUID,PD,SE;1),,               -187278.1;,,                  N 14Bor !
+ PAR  L(LIQUID,PD,SE;2),,               +159858.2;,,                  N 14Bor !
+$
+ PAR  L(FCC_A1,PD,SE:VA;0),,            -80443.6;,,                   N 14Bor !
+$
+ PAR  G(PD9SE2,PD:SE),,                 +GHSERPD+2*GCPPD4SE
+             -225306.4+1251.66*T;,,                                   N 14Bor !
+ PAR  G(PD4SE_LT,PD:SE),,               +GCPPD4SE-120123.1+637*T;,,   N 14Bor !
+ PAR  G(PD4SE_HT,PD:SE),,               +GCPPD4SE-117161.8+633.3*T;,, N 14Bor !
+ PAR  G(PD7SE2,PD:SE),,                 -GHSERPD+2*GCPPD4SE
+             -235713.6+1272.66*T;,,                                   N 14Bor !
+ PAR  G(PD34SE11,PD:SE),,               -2*GHSERPD+2*GHSERSE
+             +9*GCPPD4SE-1201389.9+5715.3*T;,,                        N 14Bor !
+ PAR  G(PD7SE4,PD:SE),,                 -GHSERPD+2*GHSERSE
+             +2*GCPPD4SE-384440.6+1333.1*T;,,                         N 14Bor !
+ PAR  G(PD17SE15,PD:SE),,               +GHSERPD+11*GHSERSE
+             +4*GCPPD4SE-1246412.4+2812.2*T;,,                        N 14Bor !
+$ Corrected parameter below
+ PAR  G(PDSE,PD:SE),,                   +0.75*GHSERPD+0.25*GCPPD4SE
+             -75096+170.96*T;,,                                       N 14Bor !
+$ Original parameter below
+$PAR  G(PDSE,PD:SE),,                   +0.75*GHSERPD+0.25*GCPPD4SE
+$            -76069+176.18*T;,,                                       N 14Bor !
+ PAR  G(PDSE2,PD:SE),,                 -3*GHSERPD+GHSERSE+GCPPD4SE
+             -127576.6+686.13*T;,,                                    N 14Bor !
+$
+ FUNCTION GCPPD4SE  298.15  -124.585*T*LN(T)-0.028373896*T**2
+       +1.2376119E-06*T**3+193945.52*T**(-1);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  06Vre  'J. Vrestal, J. Pinkas, A. Watson, A. Scott, J. Houserova, A. Kroupa,
+          Calphad, 30, 14-17(2006), SGTE unary database V.5.0, 2009; Pd'
+  14Bor  'S. Bordier, A. Chocard, S. Gosse,
+          J. Nucl. Mater., 451, 120-29(2014); Se, Pd-Se'
+!

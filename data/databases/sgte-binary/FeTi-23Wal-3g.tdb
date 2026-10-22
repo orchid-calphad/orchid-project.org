@@ -1,0 +1,320 @@
+$
+$ Database for Fe-Ti from A. Walnsch et al. 2023.
+$
+$ A. Walnsch, A. Leineweber, M.J. Kriegel, Calphad, 81, 102555(2023).
+$
+$ Dataset created 2024.03.02 by Bengt Hallstedt.
+$
+$ This database cannot be used with GES6. It does not understand the THETA
+$ identifier.
+$
+$ 3rd generation modelling. New magnetic models. Based on the dataset from
+$ 21San/98Har. Most/all parameters have been reoptimized, but seem close to
+$ previous works, except the fcc interaction which is quite different. This
+$ dataset must be tested with Fe-Ti-C and Fe-Ti-N before use.
+$
+$ 3-sl model for C14 Laves. In the paper the Gibbs energies of the C14
+$ endmembers are written relative to the GHSERXX functions, but these functions
+$ do not exist in 3g element data.
+$
+$ Note! The elemental G-functions do not include the Einstein contribution.
+$ This is included in the separate THETA functions.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 0.01 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT FE   BCC_A2                     55.847     4489.0     27.2797 ! 
+ ELEMENT TI   HCP_A3                     47.88      4824.      30.72   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : FE TI : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : FE% TI : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : FE% TI% : VA : !
+$
+$ Disordered part of B2_BCC, identical to BCC_A2
+$
+ PHASE A2_BCC %B 2 1 3 !
+ CONST A2_BCC : FE TI : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m)
+$
+ PHASE B2_BCC %BO 3 0.5 0.5 3 !
+ CONST B2_BCC : FE% TI : FE TI% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : FE TI% : VA : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE C14_LAVES %A 3 0.16667 0.33333 0.5 !
+ CONST C14_LAVES : FE% TI : FE TI% : FE% TI : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC 0.0 0.25 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC 0.0 0.37 !
+ TYPE-DEF O GES AMEND_PHASE_DESCRIPTION B2_BCC DIS_PART A2_BCC !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R           0.01  +8.31451;                                  6000 N !
+ FUNCTION TINV      298.15  +T**(-1);                                  6000 N !
+ FUNCTION RTINV     298.15  +R**(-1)*TINV;                             6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Fe
+$
+ PAR  G(BCC_A2,FE:VA),,                 +GHSERFE;,,                   N 01Che !
+ PAR  THETA(BCC_A2,FE:VA),,             +LN(309);,,                   N 01Che !
+ PAR  TC(BCC_A2,FE:VA),,                +1043.00;,,                   N 91Din !
+ PAR  NT(BCC_A2,FE:VA),,                -1043.00;,,                   N 91Din !
+ PAR  BMAG(BCC_A2,FE:VA),,                  2.22;,,                   N 91Din !
+ PAR  G(A2_BCC,FE:VA),,                 +GHSERFE;,,                   N 01Che !
+ PAR  THETA(A2_BCC,FE:VA),,             +LN(309);,,                   N 01Che !
+ PAR  TC(A2_BCC,FE:VA),,                +1043.00;,,                   N 91Din !
+ PAR  NT(A2_BCC,FE:VA),,                -1043.00;,,                   N 91Din !
+ PAR  BMAG(A2_BCC,FE:VA),,                  2.22;,,                   N 91Din !
+ PAR  G(FCC_A1,FE:VA),,                 +GFCCFE;,,                    N 01Che !
+ PAR  THETA(FCC_A1,FE:VA),,             +LN(309);,,                   N 01Che !
+ PAR  TC(FCC_A1,FE:VA),,                  -67.00;,,                   N 19Big !
+ PAR  NT(FCC_A1,FE:VA),,                  +67.00;,,                   N 19Big !
+ PAR  BMAG(FCC_A1,FE:VA),,                  0.70;,,                   N 19Big !
+ PAR  G(HCP_A3,FE:VA),,                 +GHCPFE;,,                    N 16Big !
+ PAR  THETA(HCP_A3,FE:VA),,             +LN(281);,,                   N 16Big !
+ PAR  NT(HCP_A3,FE:VA),,                 +100.00;,,                   N 16Big !
+ PAR  BMAG(HCP_A3,FE:VA),,                  0.10;,,                   N 16Big !
+ PAR  G(LIQUID,FE),,                    +GLIQFE;,,                    N 01Che !
+ PAR  THETA(LIQUID,FE),,                +LN(245);,,                   N 01Che !
+ PAR  GD(LIQUID,FE),,                   +42754.9478-7.624*T
+             -1.08230446*T*LN(T);,,                                   N 01Che !
+ PAR  TC(LIQUID,FE),,                    +200.00;,,                   N 01Che !
+ PAR  NT(LIQUID,FE),,                    -200.00;,,                   N 01Che !
+ PAR  BMAG(LIQUID,FE),,                     1.70;,,                   N 01Che !
+$
+ PAR  G(C14_LAVES,FE:FE:FE),,           +GHSER3FE+18488.4832;,,       N 23Wal !
+ PAR  THETA(C14_LAVES,FE:FE:FE),,       +LN(261.420959);,,            N 23Wal !
+$
+ FUNCTION GHSERFE     0.01  +GGBCCL+8927.2831-9.7228331*T;
+      1811.00  Y  +GGBCCH+8927.2831-9.7228331*T;
+      6000.00  N !
+ FUNCTION GFCCFE      0.01  +GGFCCL+249.14486-4.4119139*T;
+      1811.00  Y  +GGFCCH+249.14486-4.4119139*T;
+      6000.00  N !
+ FUNCTION GHCPFE      0.01  +GGHCPL+66.7922465-0.79245744*T;
+      1811.00  Y  +GGHCPH+66.7922465-0.79245744*T;
+      6000.00  N !
+ FUNCTION GLIQFE      0.01  +7103.20801-0.0019730116*T**2
+       +1392.1182-8.2584018*T;
+      6000.00  N !
+$
+ FUNCTION GGBCCL      0.01  -8410.26596-0.0032390815*T**2
+       -3.3191338E-14*T**5;
+      6000.00  N !
+ FUNCTION GGBCCH      0.01  -33208.4173+165.40504*T-21.0474823*T*LN(T)
+       -2.7818280E+18*T**(-5)+4.2811788E+37*T**(-11);
+      6000.00  N !
+ FUNCTION GGFCCL      0.01  -2615.00904-0.0027933375*T**2
+       -2.1239087E-14*T**5+G2STFCC;
+      6000.00  N !
+ FUNCTION GGFCCH      0.01  -32389.5438+168.31394*T-20.9834791*T*LN(T)
+      +9.2444598E+18*T**(-5)-1.4750509E+37*T**(-11)+G2STFCC;
+      6000.00  N !
+ FUNCTION GGHCPL      0.01  -3307.07993-0.00431797569*T**2
+       -2.1239086E-14*T**5;
+      6000.00  N !
+ FUNCTION GGHCPH      0.01  -24924.6659+161.764208*T-21.0325858*T*LN(T)
+       -4.71013343E+18*T**(-5);
+      6000.00  N !
+$
+ FUNCTION G2STFCC1    0.01  +9023.52375-2.49522260*T;                  6000 N !
+ FUNCTION G2STFCC2    0.01  -G2STFCC1*RTINV;                           6000 N !
+ FUNCTION G2STFCC3    0.01  +1+EXP(G2STFCC2);                          6000 N !
+ FUNCTION G2STFCC4    0.01  +LN(G2STFCC3);                             6000 N !
+ FUNCTION G2STFCC     0.01  -R*T*G2STFCC4;                             6000 N !
+ FUNCTION GHSER3FE    0.01  +GHSERFE-GMDOBCFE;                         6000 N !
+ FUNCTION GMDOBCFE    0.01  +8926.735362-9.722236623*T;                6000 N !
+$ ------------------------------------------------------------------------------
+$ Ti
+$
+$ There is possibly some error in the fcc function. The G-curve for fcc
+$ in Fig. 8 is not exactly reproduced.
+$
+ PAR  G(HCP_A3,TI:VA),,                 +GTISER;,,                    N 20Hu !
+ PAR  THETA(HCP_A3,TI:VA),,             +LN(269.66);,,                N 20Hu !
+ PAR  G(BCC_A2,TI:VA),,                 +GTIBCC;,,                    N 20Hu !
+ PAR  THETA(BCC_A2,TI:VA),,             +LN(192.01);,,                N 20Hu !
+ PAR  G(A2_BCC,TI:VA),,                 +GTIBCC;,,                    N 20Hu !
+ PAR  THETA(A2_BCC,TI:VA),,             +LN(192.01);,,                N 20Hu !
+ PAR  G(FCC_A1,TI:VA),,                 +GTIFCC;,,                    N 20Hu !
+ PAR  THETA(FCC_A1,TI:VA),,             +LN(236.67);,,                N 20Hu !
+$PAR  G(OMEGA_C32,TI),,                 +GTIOME;,,                    N 20Hu !
+$PAR  THETA(OMEGA_C32,TI),,             +LN(289.30);,,                N 20Hu !
+ PAR  G(LIQUID,TI),,                    +4349.70025
+             -0.00200294843*T**2;,,                                   N 20Hu !
+ PAR  GD(LIQUID,TI),,                   +49395.411-8.314*T
+             -0.737261354*T*LN(T);,,                                  N 20Hu !
+ PAR  THETA(LIQUID,TI),,                +LN(185.76);,,                N 20Hu !
+$
+ PAR  G(C14_LAVES,TI:TI:TI),,           +GTISER+4109.99093;,,         N 23Wal !
+ PAR  THETA(C14_LAVES,TI:TI:TI),,       +LN(272.607983);,,            N 23Wal !
+$
+ FUNCTION GTISER      0.01  -8187.11746-0.00388479749*T**2
+       -1.12754876E-14*T**5;
+      1941.00  Y  -34429.8962+168.6069891*T-21.5018141*T*LN(T)
+       -1.5326273E+18*T**(-5)+8.83870501E+37*T**(-11);
+      6000.00  N !
+ FUNCTION GTIBCC      0.01  -1189.30591-0.00175640865*T**2
+       -2.11276133E-14*T**5;
+      1941.00  Y  -38328.0689+179.0443615*T-21.6601815*T*LN(T)
+       +2.08872908E+19*T**(-5)-6.22559747E+37*T**(-11);
+      6000.00  N !
+ FUNCTION GTIFCC      0.01  -1308.28194-0.00110005324*T**2
+       -4.8222583E-14*T**5;
+      1941.00  Y  -34080.288+176.8506164*T-21.5028284*T*LN(T)
+       -1.09974048E+18*T**(-5)+9.0000148E+37*T**(-11);
+      6000.00  N !
+ FUNCTION GTIOME      0.01  -8646.04379-0.00175612531*T**2
+       -3.77858605E-14*T**5;
+      1941.00  Y  -40191.3391+175.1217992*T-21.5072012*T*LN(T)
+       -1.00203889E+18*T**(-5)+9.79952638E+37*T**(-11);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ A. Walnsch, A. Leineweber, M.J. Kriegel, Calphad, 81, 102555(2023).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ This database cannot be used with GES6. It does not understand the THETA
+$ identifier.
+$
+$ 3rd generation modelling. New magnetic models. Based on the dataset from
+$ 21San/98Har. Most/all parameters have been reoptimized, but seem close to
+$ previous works, except the fcc interaction which is quite different. This
+$ dataset must be tested with Fe-Ti-C and Fe-Ti-N before use.
+$
+$ 3-sl model for C14 Laves. In the paper the Gibbs energies of the C14
+$ endmembers are written relative to the GHSERXX functions, but these functions
+$ do not exist in 3g element data.
+$
+$ Note! The elemental G-functions do not include the Einstein contribution.
+$ This is included in the separate THETA functions.
+$
+ PAR  L(LIQUID,FE,TI;0),,               -76047;,,                     N 23Wal !
+ PAR  THETA(LIQUID,FE,TI;0),,           +0.715420059;,,               N 23Wal !
+ PAR  L(LIQUID,FE,TI;1),,               +8990;,,                      N 23Wal !
+ PAR  THETA(LIQUID,FE,TI;1),,           -0.252910066;,,               N 23Wal !
+ PAR  L(LIQUID,FE,TI;2),,               +4045;,,                      N 23Wal !
+$
+ PAR  L(FCC_A1,FE,TI:VA;0),,            -19295;,,                     N 23Wal !
+ PAR  THETA(FCC_A1,FE,TI:VA;0),,        -0.31596879;,,                N 23Wal !
+$
+ PAR  L(BCC_A2,FE,TI:VA;0),,            -68640;,,                     N 23Wal !
+ PAR  THETA(BCC_A2,FE,TI:VA;0),,        +0.998111704;,,               N 23Wal !
+ PAR  L(BCC_A2,FE,TI:VA;1),,            +9167;,,                      N 23Wal !
+ PAR  THETA(BCC_A2,FE,TI:VA;1),,        -0.25378146;,,                N 23Wal !
+ PAR  L(BCC_A2,FE,TI:VA;2),,            +28077;,,                     N 23Wal !
+ PAR  THETA(BCC_A2,FE,TI:VA;2),,        -0.644076703;,,               N 23Wal !
+ PAR  TC(BCC_A2,FE,TI:VA;0),,            +637.79;,,                   N 98Har !
+$
+ PAR  L(A2_BCC,FE,TI:VA;0),,            -68640;,,                     N 23Wal !
+ PAR  THETA(A2_BCC,FE,TI:VA;0),,        +0.998111704;,,               N 23Wal !
+ PAR  L(A2_BCC,FE,TI:VA;1),,            +9167;,,                      N 23Wal !
+ PAR  THETA(A2_BCC,FE,TI:VA;1),,        -0.25378146;,,                N 23Wal !
+ PAR  L(A2_BCC,FE,TI:VA;2),,            +28077;,,                     N 23Wal !
+ PAR  THETA(A2_BCC,FE,TI:VA;2),,        -0.644076703;,,               N 23Wal !
+ PAR  TC(A2_BCC,FE,TI:VA;0),,            +637.79;,,                   N 98Har !
+$
+ PAR  G(B2_BCC,FE:TI:VA),,              +GFETI;,,                     N 23Wal !
+ PAR  G(B2_BCC,TI:FE:VA),,              +GFETI;,,                     N 23Wal !
+ PAR  THETA(B2_BCC,FE:TI:VA),,          -0.115010333749;,,            N 23Wal !
+ PAR  THETA(B2_BCC,TI:FE:VA),,          -0.115010333749;,,            N 23Wal !
+ PAR  BMAG(B2_BCC,FE:TI:VA;0),,            -2.22;,,                   N 23Wal !
+ PAR  BMAG(B2_BCC,TI:FE:VA;0),,            -2.22;,,                   N 23Wal !
+ PAR  L(B2_BCC,FE,TI:FE:VA;0),,         -10971.3762;,,                N 23Wal !
+ PAR  L(B2_BCC,FE:FE,TI:VA;0),,         -10971.3762;,,                N 23Wal !
+ PAR  L(B2_BCC,FE,TI:FE:VA;1),,         -20790.8186;,,                N 23Wal !
+ PAR  L(B2_BCC,FE:FE,TI:VA;1),,         -20790.8186;,,                N 23Wal !
+ PAR  L(B2_BCC,FE,TI:TI:VA;0),,         -3097.392;,,                  N 23Wal !
+ PAR  L(B2_BCC,TI:FE,TI:VA;0),,         -3097.392;,,                  N 23Wal !
+ PAR  THETA(B2_BCC,FE,TI:TI:VA;0),,     +0.245736791;,,               N 23Wal !
+ PAR  THETA(B2_BCC,TI:FE,TI:VA;0),,     +0.245736791;,,               N 23Wal !
+ PAR  L(B2_BCC,FE,TI:TI:VA;1),,         +13256;,,                     N 23Wal !
+ PAR  L(B2_BCC,TI:FE,TI:VA;1),,         +13256;,,                     N 23Wal !
+$
+ PAR  L(HCP_A3,FE,TI:VA;0),,            +16370;,,                     N 98Har !
+ PAR  THETA(HCP_A3,FE,TI:VA;0),,        -0.5315439;,,                 N 23Wal !
+$
+ PAR  G(C14_LAVES,FE:FE:TI),,           +0.5*GHSER3FE+0.5*GTISER
+             +5000;,,                                                 N 23Wal !
+ PAR  THETA(C14_LAVES,FE:FE:TI),,       +LN(272.607983);,,            N 23Wal !
+ PAR  G(C14_LAVES,FE:TI:FE),,           +0.66667*GHSER3FE
+             +0.33333*GTISER+GMDOTF2+DGTIFE2;,,                       N 23Wal !
+ PAR  THETA(C14_LAVES,FE:TI:FE),,       +LN(255.995794);,,            N 23Wal !
+ PAR  TC(C14_LAVES,FE:TI:FE),,           +273.88;,,                   N 23Wal !
+ PAR  NT(C14_LAVES,FE:TI:FE),,           -273.88;,,                   N 23Wal !
+ PAR  BMAG(C14_LAVES,FE:TI:FE),,           +0.1180833;,,              N 23Wal !
+ PAR  G(C14_LAVES,FE:TI:TI),,           +0.16667*GHSER3FE
+             +0.83333*GTISER+2395.51739;,,                            N 23Wal !
+ PAR  THETA(C14_LAVES,FE:TI:TI),,       +LN(272.607983);,,            N 23Wal !
+ PAR  G(C14_LAVES,TI:FE:FE),,           +0.83333*GHSER3FE
+             +0.16667*GTISER+18488.4832;,,                            N 23Wal !
+ PAR  THETA(C14_LAVES,TI:FE:FE),,       +LN(261.420959);,,            N 23Wal !
+ PAR  G(C14_LAVES,TI:FE:TI),,           +0.33333*GHSER3FE
+             +0.66667*GTISER+5000;,,                                  N 23Wal !
+ PAR  THETA(C14_LAVES,TI:FE:TI),,       +LN(272.607983);,,            N 23Wal !
+ PAR  G(C14_LAVES,TI:TI:FE),,           +0.5*GHSER3FE+0.5*GTISER
+             -17421.1645;,,                                           N 23Wal !
+ PAR  THETA(C14_LAVES,TI:TI:FE),,       +LN(272.607983);,,            N 23Wal !
+ PAR  L(C14_LAVES,FE,TI:TI:FE;0),,      -2489.65321;,,                N 23Wal !
+ PAR  L(C14_LAVES,FE:FE,TI:FE;0),,      -6404.82926;,,                N 23Wal !
+ PAR  THETA(C14_LAVES,FE:FE,TI:FE;0),,  -0.348428539;,,               N 23Wal !
+$
+ FUNCTION GFETI       0.01  +9.7242*T-38930.4125+0.00150314569*T**2
+       -4.86523147E-07*T**3+9.8465423E-11*T**4;
+      6000.00  N !
+ FUNCTION GMDOTF2     0.01  +214.2133558-0.927974674*T;                6000 N !
+ FUNCTION DGTIFE2     0.01  -16476.5547+7.65373414E-04*T**2
+       -2.05484912E-07*T**3+9.8673154E-12*T**4;
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  FE-TI(TDB -* +LIQUID +FCC_A1 +A2_BCC +B2_BCC +HCP_A3 +C14_LAVES
+  ;G5 C_S:B2_BCC/FE:TI:VA MAJ:B2_BCC/TI:TI:VA
+  ;P3 TMM:300/2300 STP:.6/1273/1 STP:.01/1400/1 STP:0.02/1400/1) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Har  'K.C. Hari Kumar, unpublished, 1998; Fe-Ti'
+  01Che  'Q. Chen, B. Sundman, J. Phase Equilib., 22, 631-44(2001); Fe'
+  16Big  'S. Bigdeli, H. Ehtehsami, Q. Chen, H. Mao, P. Korzhavy, M. Selleby,
+          Phys. Status Solidi B, 253, 1830-36(2016); Fe, Mn'
+  19Big  'S. Bigdeli, M. Selleby, Calphad, 64, 185-95(2019); Fe'
+  20Hu   'B. Hu, S. Sridar, L. Hao, W. Xiong,
+          Intermetallics, 122, 106791(2020); Ti, V'
+  23Wal  'A. Walnsch, A. Leineweber, M.J. Kriegel,
+          Calphad, 81, 102555(2023); Fe-Ti'
+!

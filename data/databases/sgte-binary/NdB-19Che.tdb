@@ -1,0 +1,225 @@
+$
+$ Database for Nd-B from T.L. Chen et al. 2019.
+$
+$ T.L. Chen, J. Wang, C.P. Guo, C.R. Li, Z.M. Du, G.H. Rao, H.Y. Zhou,
+$ Calphad, 66, 101627(2019).
+$
+$ Dataset created 2023.11.11 by Bengt Hallstedt.
+$
+$ The paper also includes Gibbs energy expressions for the compounds below
+$ 298.15 K. Those are not included here.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT ND   DHCP                      144.24      7133.72    71.0862 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B ND : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : B ND : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : B ND : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : B ND : VA : !
+$
+$ Prototype alpha-La (hP4, P6_3/mmc)
+$
+ PHASE DHCP % 1 1 !
+ CONST DHCP : ND : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 1 1 !
+ CONST BETA_RHOMBO_B : B : !
+$
+$ Prototype Pr2B5 (mC56, C2/c)
+$
+ PHASE ND2B5 % 2 2 5 !
+ CONST ND2B5 : ND : B : !
+$
+$ Prototype UB4 (tP20, P4/mbm)
+$
+ PHASE NDB4_D1E % 2 1 4 !
+ CONST NDB4_D1E : ND : B : !
+$
+$ Prototype CaB6 (cP7, Pm-3m)
+$
+ PHASE NDB6_D21 % 2 1 6 !
+ CONST NDB6_D21 : B ND% : B : !
+$
+$ Prototype YB66 (cF1936, Fm-3c)
+$
+ PHASE NDB66 % 2 1 66 !
+ CONST NDB66 : ND : B : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+ PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+$PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+ PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+ PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+ PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ PAR  G(NDB6_D21,B:B),,                 +7*GHSERBB+3200+4*T;,,        N 19Che !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ ------------------------------------------------------------------------------
+$ Nd
+$
+$ DHCP and LIQUID modified in unary 3.0 (upper/lower T interval added)
+$ FCC_A1 added in unary 3.0
+$ HCP_A3 added in unary 4.4
+$
+ PAR  G(DHCP,ND),,                      +GHSERND;                1800 N 91Din !
+ PAR  G(BCC_A2,ND:VA),,                 +GBCCND;                 1800 N 91Din !
+ PAR  G(FCC_A1,ND:VA),,                 +GHSERND+500;            1800 N SGCOST !
+ PAR  G(HCP_A3,ND:VA),,                 +GHSERND
+             +1500-0.415725*T;                                   1800 N 00Nor2 !
+ PAR  G(LIQUID,ND),,                    +GLIQND;                 1800 N 91Din !
+$
+ FUNCTION GHSERND   298.15  -8402.93+111.10239*T-27.0858*T*LN(T)
+       +5.56125E-04*T**2-2.6923E-06*T**3+34887*T**(-1);
+       900.00  Y  -6984.083+83.662617*T-22.7536*T*LN(T)
+       -0.00420402*T**2-1.802E-06*T**3;
+      1128.00  Y  -225610.846+1673.04075*T-238.182873*T*LN(T)
+       +0.078615997*T**2-6.048207E-06*T**3+38810350*T**(-1);
+      1799.00  Y  -25742.331+276.257088*T-48.7854*T*LN(T);
+      1800.00  N !
+ FUNCTION GBCCND    298.15  +1437.295-0.546281*T+GHSERND;
+       400.00  Y  +7312.2-153.033976*T+14.9956777*T*LN(T)
+       -0.050479*T**2+7.287217E-06*T**3-831810*T**(-1);
+      1128.00  Y  -18030.266+239.677322*T-44.5596*T*LN(T);
+      1289.00  Y  +334513.017-2363.9199*T+311.409193*T*LN(T)
+       -0.156030778*T**2+1.2408421E-05*T**3-64319604*T**(-1);
+      1800.00  N !
+ FUNCTION GLIQND    298.15  +5051.743-1.585076*T+GHSERND;
+       300.00  Y  +5350.01-86.593963*T+5.357301*T*LN(T)
+       -0.046955463*T**2+6.860782E-06*T**3-374380*T**(-1);
+      1128.00  Y  -16335.232+268.625903*T-48.7854*T*LN(T);
+      1799.00  Y  +9407.099-7.631185*T+GHSERND;
+      1800.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ T.L. Chen, J. Wang, C.P. Guo, C.R. Li, Z.M. Du, G.H. Rao, H.Y. Zhou,
+$ Calphad, 66, 101627(2019).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The paper also includes Gibbs energy expressions for the compounds below
+$ 298.15 K. Those are not included here.
+$
+ PAR  L(LIQUID,B,ND;0),,                -50000+2.0295*T;,,            N 19Che !
+ PAR  L(LIQUID,B,ND;1),,                -12000+1.4369*T;,,            N 19Che !
+ PAR  L(LIQUID,B,ND;2),,                -5000;,,                      N 19Che !
+$
+ PAR  L(BCC_A2,B,ND:VA;0),,             -3900-6.1186339*T;,,          N 19Che !
+$
+ PAR  G(ND2B5,ND:B),,                   +2*GHSERND+5*GHSERBB
+             -420000+80.0625*T;,,                                     N 19Che !
+ PAR  G(NDB4_D1E,ND:B),,                +5*GNDB4;,,                   N 19Che !
+$
+ PAR  G(NDB6_D21,ND:B),,                +7*GNDB6;,,                   N 19Che !
+ PAR  L(NDB6_D21,B,ND:B;0),,            +11100-11*T;,,                N 19Che !
+$
+ PAR  G(NDB66,ND:B),,                   +GHSERND+66*GHSERBB
+             -469000+58.692*T;,,                                      N 19Che !
+$
+$ Metastable
+$
+ PAR  L(FCC_A1,B,ND:VA;0),,             +75000;,,                     N 19Che !
+$
+ FUNCTION GNDB6     298.15  -54714.2857+103.4286*T-16.0714*T*LN(T)
+       -0.00507*T**2+1.2143E-07*T**3+235714.286*T**(-1);
+      6000.00  N !
+ FUNCTION GNDB4     298.15  -76000+143.0776*T-21.3*T*LN(T)
+       -0.0033*T**2+9E-08*T**3+380000*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  B-ND(TDB -* +LIQ +NDB4_D1E +ND2B5 +NDB66 +NDB6_D21 +BCC_A2 +BETA_RHO +DHCP
+    ;P3 TMM:300/3000 *) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  00Nor2 'S. Norgren, PhD Thesis, KTH, Stockholm, 2000; Nd, Sc'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+  19Che  'T.L. Chen, J. Wang, C.P. Guo, C.R. Li, Z.M. Du, G.H. Rao, H.Y. Zhou,
+          Calphad, 66, 101627(2019); Nd-B'
+!

@@ -1,0 +1,190 @@
+$
+$ Database for Sr-H from C. Chen et al. 2012
+$
+$ C. Chen, M. Wang, Y. Du, Q. Gao, B. Hu, S. Liu, Calphad, 38, 17-22(2012).
+$
+$ Dataset created 2016.12.03 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ The lattice stability used for hcp-Sr is different from SGTE unary.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT H    1/2_MOLE_H2(G)              1.0079    4234.      65.285  ! 
+ ELEMENT SR   FCC_A1                     87.62      6568.      55.694  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  H2                                 H2 !
+ SPECIE  SR2                                SR2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : H SR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SR : H VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SR : H VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SR : H VA% : !
+$
+$ Prototype Co2Si (oP12, Pnma)
+$
+ PHASE SRH2_C37 % 2 1 2 !
+ CONST SRH2_C37 : SR : H : !
+$
+$ Unknown structure
+$
+ PHASE SRH2_BETA % 2 1 2 !
+ CONST SRH2_BETA : SR : H : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : H H2 SR SR2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ H
+$
+$ H is not included in unary
+$
+ PAR  G(LIQUID,H),,                     +0.5*GHSERH2
+             +8035+25*T+2*T*LN(T);,,                                  N 06Qiu !
+$
+ PAR  G(GAS,H),,                        +F10383T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,H2),,                       +GHSERH2+RTLNP;,,             N 97SUB !
+$
+$ H(g)
+ FUNCTION F10383T   298.15  +211801.621+24.4989821*T-20.78611*T*LN(T);
+      6000.00  N !
+$ H2(g)
+ FUNCTION GHSERH2   298.15  -9522.9741+78.5273879*T-31.35707*T*LN(T)
+       +0.0027589925*T**2-7.46390667E-07*T**3+56582.3*T**(-1);
+      1000.00  Y  +180.108664-15.6128256*T-17.84857*T*LN(T)
+       -0.00584168*T**2+3.14618667E-07*T**3-1280036*T**(-1);
+      2100.00  Y  -18840.1663+92.3120255*T-32.05082*T*LN(T)
+       -0.0010728235*T**2+1.14281783E-08*T**3+3561002.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sr
+$
+$ HCP_A3 from 12Che not included in unary
+$
+ PAR  G(FCC_A1,SR:VA;0),,               +GHSERSR;                3000 N 91Din !
+ PAR  G(BCC_A2,SR:VA;0),,               +GBCCSR;                 3000 N 91Din !
+$PAR  G(HCP_A3,SR:VA),,                 +GHSERSR+250+0.7*T;      3000 N 91Din !
+ PAR  G(HCP_A3,SR:VA),,                 +GHSERSR+277.1-0.3*T;    3000 N 12Che !
+ PAR  G(LIQUID,SR;0),,                  +GLIQSR;                 3000 N 91Din !
+$
+ PAR  G(GAS,SR;0),,                     +F14450T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,SR2;0),,                    +F14465T+RTLNP;,,             N 94SUB !
+$
+ FUNCTION GHSERSR   298.15  -7532.367+107.183879*T-23.905*T*LN(T)
+       -4.61225E-3*T**2-1.67477E-07*T**3-2055*T**(-1);
+       820.00  Y  -13380.102+153.196104*T-30.0905432*T*LN(T)
+       -3.251266E-3*T**2+1.84189E-07*T**3+850134*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCSR    298.15  -6779.234+116.583654*T-25.6708365*T*LN(T)
+       -3.126762E-3*T**2+2.2965E-7*T**3+27649*T**(-1);
+       820.00  Y  -6970.594+122.067301*T-26.57*T*LN(T)
+       -1.9493E-3*T**2-1.7895E-8*T**3+16495*T**(-1);
+      1050.00  Y  +8168.357+0.423037*T-9.7788593*T*LN(T)
+       -9.539908E-3*T**2+5.20221E-7*T**3-2414794*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQSR    298.15   +2194.997-10.118994*T-5.0668978*T*LN(T)
+       -3.1840595E-2*T**2+4.981237E-06*T**3-265559*T**(-1);
+      1050.00  Y  -10855.29+213.406219*T-39.463*T*LN(T);
+      3000.00  N !
+$ Sr(g) :
+ FUNCTION F14450T   298.15  +154227.522-24.1431703*T-20.98549*T*LN(T)
+       +1.951298E-04*T**2-3.09095833E-08*T**3+4675.2365*T**(-1);
+      1800.00  Y  +111247.483+242.365806*T-56.52776*T*LN(T)
+       +0.0133862*T**2-9.57800833E-07*T**3+9843260*T**(-1);
+      3300.00  Y  +770872.513-2114.76782*T+233.253*T*LN(T)
+       -0.04337796*T**2+1.134592E-06*T**3-2.7250735E+08*T**(-1);
+      4900.00  Y  -196742.694+263.327068*T-44.45892*T*LN(T)
+       -0.008078665*T**2+2.96671167E-07*T**3+3.57637E+08*T**(-1);
+      6200.00  Y  -949056.902+1952.13337*T-239.3059*T*LN(T)
+       +0.01421437*T**2-1.79062E-07*T**3+8.9842E+08*T**(-1);
+      9600.00  Y  +34305.7758+474.957384*T-77.25547*T*LN(T)
+       +0.00232914*T**2-1.54504333E-08*T**3-2.2245325E+08*T**(-1);
+     10000.00  N !
+$ Sr2(g) :
+ FUNCTION F14465T   298.15  +295010.66+61.845039*T-54.13634*T*LN(T)
+       +0.040485225*T**2-9.264165E-06*T**3-70453.75*T**(-1);
+       500.00  Y  +307156.188-147.411671*T-20.95926*T*LN(T)
+       +1.012636E-04*T**2-8.03856667E-09*T**3-905190.5*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ C. Chen, M. Wang, Y. Du, Q. Gao, B. Hu, S. Liu, Calphad, 38, 17-22(2012).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ The lattice stability used for hcp-Sr is different from SGTE unary.
+$
+$ Different gas phase data for Sr used. The boiling point of Sr with this
+$ dataset is about 20 K lower.
+$
+ PAR  L(LIQUID,H,SR;0),,                +9952.2-112.0824*T;,,         N 12Che !
+ PAR  L(LIQUID,H,SR;1),,                -55206.6;,,                   N 12Che !
+ PAR  L(LIQUID,H,SR;2),,                -21741.6;,,                   N 12Che !
+$
+ PAR  G(FCC_A1,SR:H),,                  +GHSERSR+0.5*GHSERH2
+             -87514.6+64.66*T;,,                                      N 12Che !
+ PAR  L(FCC_A1,SR:H,VA;0),,             +9037.1;,,                    N 12Che !
+$
+ PAR  G(BCC_A2,SR:H),,                  +GHSERSR+1.5*GHSERH2
+             +6095.4+38.0943*T;,,                                     N 12Che !
+ PAR  L(BCC_A2,SR:H,VA;0),,             -90569.3;,,                   N 12Che !
+$
+ PAR  G(HCP_A3,SR:H),,                  +GHSERSR+0.25*GHSERH2
+             -28744.4+13.8237*T;,,                                    N 12Che !
+ PAR  L(HCP_A3,SR:H,VA;0),,             -13407.2+17.901*T;,,          N 12Che !
+$
+ PAR  G(SRH2_C37,SR:H),,                +GHSERSR+GHSERH2
+             -185000+132.84*T;,,                                      N 12Che !
+ PAR  G(SRH2_BETA,SR:H),,               +GHSERSR+GHSERH2
+             -182000+130.184*T;,,                                     N 12Che !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94SUB  'SGTE Substance Database, version 1994'
+  97SUB  'SGTE substance database, version 1997'
+  06Qiu  'C. Qiu, S.M. Opalka, G.B. Olson, D.L. Anton,
+          Int. J. Mater. Res., 97, 845-53(2006); H, Na-H'
+  12Che  'C. Chen, M. Wang, Y. Du, Q. Gao, B. Hu, S. Liu,
+          Calphad, 38, 17-22(2012); Sr-H'
+!

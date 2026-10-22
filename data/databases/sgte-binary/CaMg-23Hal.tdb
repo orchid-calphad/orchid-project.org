@@ -1,0 +1,325 @@
+$
+$ Database for Ca-Mg from B. Hallstedt and M. Noori 2023.
+$
+$ B. Hallstedt, M. Noori, Calphad, 82, 102577(2023).
+$
+$ Dataset created 2023.07.11 by Bengt Hallstedt.
+$
+$ This is the 08Koz/95Aga dataset with a solution model for C14 and added
+$ metastable C15, C36 and A12 from ab initio calculations.
+$
+$ Using the same interactions for fcc and bcc as for hcp results in a Mg
+$ solubility in fcc/bcc-Ca up to 3.5 at.%, which is clearly too much. The
+$ current value results in a maximum solubility of about 0.8 at.% and
+$ minimal shifts of correspnding invariant equilibria; from 716 and 719 K
+$ to 714 and 721 K.
+$
+$ The Gibbs energy expression for C14 from 08Koz was kept. The corresponding
+$ parameters for C15 and C36 use the same expression as for C14 keeping
+$ the same difference in enthalpy as from the ab initio calculations and an
+$ additional Delta-S inspired from the Cr-Zr system.
+$ For C15: +200+0.5*T J/mol-atoms and for C36: +127+0.2*T J/mol-atoms.
+$
+$ Without further changes, the C14 field is rather wide and there is a small
+$ region of C36 on the Mg-rich side of C14.
+$
+$ Interaction parameters were introduced for C14 to have a total width of
+$ about 1 at.%, and slightly asymmetric towards Ca. This results in
+$ an additional C36 phase field on the Ca-rich side of C14.
+$
+$ The C36 field on the Mg-rich side was removed by adding a temperature
+$ dependence to two Mg-rich compounds of C36. This is similar to what was
+$ used by 06Zho, but with smaller numbers. The C36 field on the Ca-rich side
+$ was removed by adding an interaction similar to that used for C14. Such an
+$ interaction was also added for C15. These interactions are written using
+$ wildcards. The use of wildcards does not result in any visible change, but
+$ could be useful when extrapolating to a ternary.
+$
+$ The C36 tempareture dependence from 06Zho was reintroduced. Otherwise there
+$ is a tendency for C36 to appear in the Al-Ca-Mg ternary.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CA   FCC_A1                     40.08      5736.0     41.588  ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CA MG : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CA% MG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CA% MG : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CA MG% : VA : !
+$
+$ Prototype alpha-Mn (cI58, I-43m), also known as ALMG_GAMMA
+$
+ PHASE AL12MG17_A12 % 3 5 12 12 !
+ CONST AL12MG17_A12 : CA MG : CA MG : CA MG : !
+$
+$ Prototype MgZn2 (hP12, P6_3/mmc)
+$
+ PHASE C14_LAVES % 3 1 2 3 !
+ CONST C14_LAVES : CA MG% : CA% MG : CA MG% : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE C15_LAVES % 2 2 4 !
+ CONST C15_LAVES : CA% MG : CA MG% : !
+$
+$ Prototype MgNi2 (hP24, P6_3/mmc)
+$
+ PHASE C36_LAVES % 4 1 1 1 3 !
+ CONST C36_LAVES : CA MG : CA MG : CA MG : CA MG : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ca
+$
+$ FCC_A1, BCC_A2, HCP_A3 and LIQUID modified in unary 5.0
+$ (upper T interval added + trailing decimals added)
+$
+ PAR  G(FCC_A1,CA:VA),,                 +GHSERCA;                3001 N 91Din !
+ PAR  G(BCC_A2,CA:VA),,                 +GBCCCA;                 3001 N 91Din !
+ PAR  G(HCP_A3,CA:VA),,                 +GHSERCA+500+0.7*T;      3001 N 91Din !
+ PAR  G(LIQUID,CA),,                    +GLIQCA;                 3001 N 91Din !
+$
+$PAR  G(AL12MG17_A12,CA:CA:CA),,        +29*GHSERCA+130500;,,         N 06Slu !
+ PAR  G(AL12MG17_A12,CA:CA:CA),,        +29*GHSERCA+125164;,,         N 21Noo !
+$PAR  G(C14_LAVES,CA:CA:CA),,           +6*GHSERCA+49080+26.4*T;,,    N 06Zho ! 
+$PAR  G(C14_LAVES,CA:CA:CA),,           +6*GHSERCA+51000;,,           N 06Slu !
+ PAR  G(C14_LAVES,CA:CA:CA),,           +6*GHSERCA+49788;,,           N 21Noo !
+$PAR  G(C15_LAVES,CA:CA),,              +6*GHSERCA+49206+39.166*T;,,  N 05Ozt ! 
+$PAR  G(C15_LAVES,CA:CA),,              +6*GHSERCA+51600;,,           N 06Slu !
+ PAR  G(C15_LAVES,CA:CA),,              +6*GHSERCA+50417;,,           N 21Noo !
+$PAR  G(C36_LAVES,CA:CA:CA:CA),,        +6*GHSERCA+51000;,,           N 13Slu !
+ PAR  G(C36_LAVES,CA:CA:CA:CA),,        +6*GHSERCA+49644;,,           N 21Noo !
+$
+ FUNCTION GHSERCA   298.15  -4955.062+72.794266*T-16.3138*T*LN(T)
+       -0.01110455*T**2-133574*T**(-1);
+      1115.00  Y  -107304.428+799.982066*T-114.2922467*T*LN(T)
+       +0.023733814*T**2-1.2438E-06*T**3+18245540*T**(-1);
+      3000.00  Y  -3703.12+192.63995*T-35.0*T*LN(T);
+      3001.00  N !
+ FUNCTION GBCCCA    298.15  -7020.852+142.970155*T-28.2541*T*LN(T)
+       +0.0072326*T**2-4.500217E-06*T**3+60578*T**(-1);
+       716.00  Y  +1640.475+1.999694*T-6.276*T*LN(T)
+       -0.0161921*T**2-523000*T**(-1);
+      1115.00  Y  -142331.096+1023.549046*T-143.8726979*T*LN(T)
+       +0.032543127*T**2-1.704079E-06*T**3+25353771*T**(-1);
+      3000.00  Y  +321.63+189.433057*T-35*T*LN(T);
+      3001.00  N !
+ FUNCTION GLIQCA    298.15  +10799.908-10.310466*T+GHSERCA;
+       500.00  Y  +7838.856+18.2979*T-8.9874787*T*LN(T)
+       -0.02266537*T**2+3.338303E-06*T**3-230193*T**(-1);
+      1115.00  Y  -2654.938+188.9223*T-35*T*LN(T);
+      3001.00  N !
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+$PAR  G(AL12MG17_A12,MG:MG:MG),,        +29*GHSERMG
+$            +139371-87.319*T;,,                                      N 05Zho ! 
+$PAR  G(AL12MG17_A12,MG:MG:MG),,        +29*GFCCMG+95700;,,           N 06Slu !
+$PAR  G(AL12MG17_A12,MG:MG:MG),,        +29*GHSERMG+171100;,,         N 06Slu !
+ PAR  G(AL12MG17_A12,MG:MG:MG),,        +29*GHSERMG+126150;,,         N 21Noo !
+$PAR  G(C14_LAVES,MG:MG:MG),,           +6*GHSERMG+49260+26.4*T;,,    N 06Zho !
+$PAR  G(C14_LAVES,MG:MG:MG),,           +6*GFCCMG+36000;,,            N 06Slu !
+$PAR  G(C14_LAVES,MG:MG:MG),,           +6*GHSERMG+51600;,,           N 06Slu !
+ PAR  G(C14_LAVES,MG:MG:MG),,           +6*GHSERMG+44508;,,           N 21Noo !
+$PAR  G(C15_LAVES,MG:MG),,              +6*GFCCMG+35400;,,            N 06Slu !
+$PAR  G(C15_LAVES,MG:MG),,              +6*GHSERMG+51000;,,           N 06Slu !
+ PAR  G(C15_LAVES,MG:MG),,              +6*GHSERMG+43291;,,           N 21Noo !
+$PAR  G(C36_LAVES,MG:MG:MG:MG),,        +6*GFCCMG+34800;,,            N 13Slu !
+$PAR  G(C36_LAVES,MG:MG:MG:MG),,        +6*GHSERMG+50400;,,           N 13Slu !
+ PAR  G(C36_LAVES,MG:MG:MG:MG),,        +6*GHSERMG+43542;,,           N 21Noo !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ B. Hallstedt, M. Noori, Calphad, 82, 102577(2023).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ This is the 08Koz/95Aga dataset with a solution model for C14 and added
+$ metastable C15, C36 and A12 from ab initio calculations.
+$
+$ Using the same interactions for fcc and bcc as for hcp results in a Mg
+$ solubility in fcc/bcc-Ca up to 3.5 at.%, which is clearly too much. The
+$ current value results in a maximum solubility of about 0.8 at.% and
+$ minimal shifts of correspnding invariant equilibria; from 716 and 719 K
+$ to 714 and 721 K.
+$
+$ The Gibbs energy expression for C14 from 08Koz was kept. The corresponding
+$ parameters for C15 and C36 use the same expression as for C14 keeping
+$ the same difference in enthalpy as from the ab initio calculations and an
+$ additional Delta-S inspired from the Cr-Zr system.
+$ For C15: +200+0.5*T J/mol-atoms and for C36: +127+0.2*T J/mol-atoms.
+$
+$ Without further changes, the C14 field is rather wide and there is a small
+$ region of C36 on the Mg-rich side of C14.
+$
+$ Interaction parameters were introduced for C14 to have a total width of
+$ about 1 at.%, and slightly asymmetric towards Ca. This results in
+$ an additional C36 phase field on the Ca-rich side of C14.
+$
+$ The C36 field on the Mg-rich side was removed by adding a temperature
+$ dependence to two Mg-rich compounds of C36. This is similar to what was
+$ used by 06Zho, but with smaller numbers. The C36 field on the Ca-rich side
+$ was removed by adding an interaction similar to that used for C14. Such an
+$ interaction was also added for C15. These interactions are written using
+$ wildcards. The use of wildcards does not result in any visible change, but
+$ could be useful when extrapolating to a ternary.
+$
+$ The C36 tempareture dependence from 06Zho was reintroduced. Otherwise there
+$ is a tendency for C36 to appear in the Al-Ca-Mg ternary.
+$
+ PAR  L(LIQUID,CA,MG;0),,               -32322.4+16.7211*T;,,         N 95Aga !
+ PAR  L(LIQUID,CA,MG;1),,               +60.3+6.549*T;,,              N 95Aga !
+ PAR  L(LIQUID,CA,MG;2),,               -5742.3+2.7596*T;,,           N 95Aga !
+$
+ PAR  L(FCC_A1,CA,MG:VA;0),,            +16.981*T;,,                  N 23Hal !
+ PAR  L(BCC_A2,CA,MG:VA;0),,            +16.981*T;,,                  N 23Hal !
+ PAR  L(HCP_A3,CA,MG:VA;0),,            -9183.2+16.981*T;,,           N 95Aga !
+$
+ PAR  G(C14_LAVES,CA:CA:MG),,           +3*GHSERCA+3*GHSERMG-32970;,, N 21Noo !
+ PAR  G(C14_LAVES,CA:MG:CA),,           +4*GHSERCA+2*GHSERMG
+             +167394;,,                                               N 21Noo !
+ PAR  G(C14_LAVES,CA:MG:MG),,           +GHSERCA+5*GHSERMG+70062;,,   N 21Noo !
+$PAR  G(C14_LAVES,MG:CA:CA),,           +5*GHSERCA+GHSERMG
+$            +23898+26.4*T;,,                                         N 21Noo !
+ PAR  G(C14_LAVES,MG:CA:CA),,           +5*GHSERCA+GHSERMG+23898;,,   N 21Noo !
+$PAR  G(C14_LAVES,MG:CA:MG),,           +2*GHSERCA+4*GHSERMG-71652;,, N 21Noo !
+ PAR  G(C14_LAVES,MG:CA:MG),,           +6*GCAMG2;,,                  N 08Koz !
+ PAR  G(C14_LAVES,MG:MG:CA),,           +3*GHSERCA+3*GHSERMG+99462;,, N 21Noo !
+$
+$PAR  L(C14_LAVES,CA,MG:CA:MG;0),,      +46000;,,                     N 06Zho !
+$PAR  L(C14_LAVES,MG:CA,MG:MG;0),,      +18000;,,                     N 21Noo !
+$PAR  L(C14_LAVES,CA,MG:CA:MG;0),,      +38000;,,                     N 23Hal !
+$PAR  L(C14_LAVES,MG:CA:CA,MG;0),,      +38000;,,                     N 23Hal !
+$PAR  L(C14_LAVES,MG:CA,MG:MG;0),,      +15000;,,                     N 23Hal !
+ PAR  L(C14_LAVES,CA,MG:*:*;0),,        +38000;,,                     N 23Hal !
+ PAR  L(C14_LAVES,*:*:CA,MG;0),,        +38000;,,                     N 23Hal !
+ PAR  L(C14_LAVES,*:CA,MG:*;0),,        +15000;,,                     N 23Hal !
+$
+$ Metastable
+$
+ PAR  G(AL12MG17_A12,CA:MG:CA),,        +17*GHSERCA+12*GHSERMG
+             +156745;,,                                               N 21Noo !
+ PAR  G(AL12MG17_A12,CA:CA:MG),,        +17*GHSERCA+12*GHSERMG
+             -106053;,,                                               N 21Noo !
+ PAR  G(AL12MG17_A12,CA:MG:MG),,        +5*GHSERCA+24*GHSERMG
+             -122148;,,                                               N 21Noo !
+ PAR  G(AL12MG17_A12,MG:CA:CA),,        +24*GHSERCA+5*GHSERMG
+             +340083;,,                                               N 21Noo !
+ PAR  G(AL12MG17_A12,MG:MG:CA),,        +12*GHSERCA+17*GHSERMG
+             +347188;,,                                               N 21Noo !
+ PAR  G(AL12MG17_A12,MG:CA:MG),,        +12*GHSERCA+17*GHSERMG
+             -35119;,,                                                N 21Noo !
+$
+$PAR  G(C15_LAVES,CA:MG),,              -120290+0.5*LAVESC14;,,       N 21Noo !
+$PAR  G(C15_LAVES,CA:MG),,              +6*GCAMG2+2447.8;,,           N 21Noo !
+ PAR  G(C15_LAVES,CA:MG),,              +6*GCAMG2+1200+3*T;,,         N 23Hal !
+ PAR  G(C15_LAVES,MG:CA),,              +4*GHSERCA+2*GHSERMG
+             +172349;,,                                               N 21Noo !
+ PAR  L(C15_LAVES,*:CA,MG;0),,          +30000;,,                     N 23Hal !
+$
+ PAR  G(C36_LAVES,CA:CA:CA:MG),,        +3*GHSERCA+3*GHSERMG-29310;,, N 21Noo !
+$PAR  G(C36_LAVES,CA:CA:MG:CA),,        +5*GHSERCA+GHSERMG
+$            +23670+26.4*T;,,                                         N 21Noo !
+ PAR  G(C36_LAVES,CA:CA:MG:CA),,        +5*GHSERCA+GHSERMG+23670;,,   N 21Noo !
+$PAR  G(C36_LAVES,CA:CA:MG:MG),,        -487900+2*LAVESC14;,,         N 21Noo !
+$PAR  G(C36_LAVES,CA:CA:MG:MG),,        +6*GCAMG2+762.8;,,            N 21Noo !
+ PAR  G(C36_LAVES,CA:CA:MG:MG),,        +6*GCAMG2+762+1.2*T;,,        N 23Hal !
+ PAR  G(C36_LAVES,CA:MG:CA:CA),,        +5*GHSERCA+GHSERMG+111978;,,  N 21Noo !
+ PAR  G(C36_LAVES,CA:MG:CA:MG),,        +2*GHSERCA+4*GHSERMG+15630;,, N 21Noo !
+ PAR  G(C36_LAVES,CA:MG:MG:CA),,        +4*GHSERCA+2*GHSERMG+72276;,, N 21Noo !
+$PAR  G(C36_LAVES,CA:MG:MG:MG),,        +GHSERCA+5*GHSERMG
+$            -20154+26.4*T;,,                                         N 21Noo !
+ PAR  G(C36_LAVES,CA:MG:MG:MG),,        +GHSERCA+5*GHSERMG
+             -20154+26*T;,,                                           N 23Hal !
+ PAR  G(C36_LAVES,MG:CA:CA:CA),,        +5*GHSERCA+GHSERMG+111258;,,  N 21Noo !
+ PAR  G(C36_LAVES,MG:CA:CA:MG),,        +2*GHSERCA+4*GHSERMG+20610;,, N 21Noo !
+ PAR  G(C36_LAVES,MG:CA:MG:CA),,        +4*GHSERCA+2*GHSERMG+72642;,, N 21Noo !
+$PAR  G(C36_LAVES,MG:CA:MG:MG),,        +GHSERCA+5*GHSERMG
+$            -19818+26.4*T;,,                                         N 21Noo !
+ PAR  G(C36_LAVES,MG:CA:MG:MG),,        +GHSERCA+5*GHSERMG
+             -19818+26*T;,,                                           N 23Hal !
+ PAR  G(C36_LAVES,MG:MG:CA:CA),,        +4*GHSERCA+2*GHSERMG
+             +169920;,,                                               N 21Noo !
+ PAR  G(C36_LAVES,MG:MG:CA:MG),,        +GHSERCA+5*GHSERMG+66576;,,   N 21Noo !
+ PAR  G(C36_LAVES,MG:MG:MG:CA),,        +3*GHSERCA+3*GHSERMG
+             +102072;,,                                               N 21Noo !
+$PAR  L(C36_LAVES,CA:CA:CA,MG:MG;0),,   +30000;,,                     N 23Hal !
+$PAR  L(C36_LAVES,CA:CA:MG:CA,MG;0),,   +30000;,,                     N 23Hal !
+ PAR  L(C36_LAVES,*:*:CA,MG:*;0),,      +30000;,,                     N 23Hal !
+ PAR  L(C36_LAVES,*:*:*:CA,MG;0),,      +30000;,,                     N 23Hal !
+$
+ FUNCTION GCAMG2    298.15  -20456.3+130.676*T-24.04541*T*LN(T)
+       -0.0028942*T**2-2.31E-07*T**3+35456.5*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+ ASSESSED_SYSTEM
+  CA-MG(TDB -* +LIQ +BCC_A2 +CAMG2_C14 +FCC_A1 +HCP_A3 ;G5 MAJ:FCC_A1/CA:VA
+  ;P3 TMM:300/2000 STP:.8/800) !
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  95Aga  'R. Agarwal, J.J. Lee, H.L. Lukas, F. Sommer,
+          Z. Metallkd., 86, 103-8(1995); Ca-Mg'
+  05Ozt  'K. Ozturk, Y. Zhong L.-Q. Chen, C. Wolverton, J.O. Sofo, Z.-K. Liu,
+          Metall. Mater. Trans. A, 36A, 5-13(2005); Al-Ca'
+  05Zho  'Y. Zhong, M. Yang, Z.-K. Liu, Calphad, 29, 303-11 (2005); Al-Mg'
+  06Slu  'M.H.F. Sluiter, Calphad, 30, 357-66(2006); Endmember values'
+  06Zho  'Y. Zhong, K. Ozturk, J.O. Sofo, Z.-K. Liu,
+          J. Alloys Compd., 420, 98-106(2006); Ca-Mg'  
+  08Koz  'A. Kozlov, M. Ohno, R. Arroyave, Z.-K. Liu, R. Schmid-Fetzer,
+          Intermetallics, 16, 299-315(2008); Ca-Mg'
+  13Slu  'M.H.F. Sluiter, unpublished research (2013); More endmember values'
+  21Noo  'M. Noori, Ab initio calculations, 2021; Al-Ca, Al-Mg, Ca-Mg, Al-Ca-Mg'
+  23Hal  'B. Hallstedt, M. Noori, Calphad, 82, 102577(2023); Al-Ca, Al-Mg,
+          Ca-Mg, Al-Ca-Mg'
+!

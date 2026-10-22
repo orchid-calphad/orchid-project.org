@@ -1,0 +1,190 @@
+$
+$ Database for Ir-W from Y.-Y. Huang et al. 2020.
+$
+$ Y.-Y. Huang, B. Wu, F. Li, L.-L. Chen, Z.-X. Deng, K. Chang,
+$ J. Mining Metall. B, 56, 109-18(2020).
+$
+$ Dataset created 2022.12.04 by Bengt Hallstedt.
+$
+$ The modelling of the epsilon (hcp) phase is incorrect.
+$ The model for sigma does not match the crystal structure.
+$
+$ This system should be modelled with a 4-sl hcp model.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT IR   FCC_A1                    192.22      5267.656   35.5054 ! 
+ ELEMENT W    BCC_A2                    183.85      4970.0     32.6176 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : IR W : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : IR% W : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : IR W% : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : IR W : VA: !
+$
+$ Prototype CdMg3 (hP8, P6_3/mmc)
+$
+ PHASE IR3W_D019 %  2 3 1 !
+ CONST IR3W_D019 : IR% W : IR W% : !
+$
+$ Prototype AuCd (oP4, Pmma)
+$
+ PHASE IRW_B19 %  2 1 1 !
+ CONST IRW_B19 : IR : IR W% : !
+$
+$ Prototype Mg (hP2, P6_3/mmc), epsilon, this is hcp!
+$
+ PHASE IRW_A3 %  2 1 1 !
+ CONST IRW_A3 : IR% W : IR W% : !
+$
+$ Prototype CrFe (tP30, P4_2/mnm), sigma
+$
+ PHASE IRW3_D8B %  2 1 3 !
+ CONST IRW3_D8B : IR% W : IR W% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ir
+$
+ PAR  G(FCC_A1,IR:VA),,                 +GHSERIR;                4000 N 91Din !
+ PAR  G(BCC_A2,IR:VA),,                 +GHSERIR+32000-6.9*T;    4000 N 91Din !
+ PAR  G(HCP_A3,IR:VA),,                 +GHSERIR+4000-0.6*T;     4000 N 91Din !
+ PAR  G(LIQUID,IR),,                    +GLIQIR;                 4000 N 91Din !
+$
+ PAR  G(IR3W_D019,IR:IR),,              +4*GHSERIR+29200;,,           N 20Hua !
+ PAR  G(IRW_B19,IR:IR),,                +2*GHSERIR+13500;,,           N 20Hua !
+ PAR  G(IRW_A3,IR:IR),,                 +2*GHSERIR+13500;,,           N 20Hua !
+ PAR  G(IRW3_D8B,IR:IR),,               +4*GHSERIR;,,                 N 20Hua !
+$
+ FUNCTION GHSERIR   298.15  -6936.288+118.780119*T-22.7944*T*LN(T)
+       -0.003091976*T**2-20083*T**(-1);
+      1215.00  Y  -8123.73+140.066697*T-26.085*T*LN(T)-4.7969E-07*T**3;
+      2719.00  Y  +290529.037-1258.35297*T+152.498874*T*LN(T)
+       -0.047176402*T**2+1.844977E-06*T**3-92987250*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQIR    298.15  +23455.244-6.312059*T+GHSERIR;
+      1000.00  Y  +102217.789-587.632815*T+73.9517579*T*LN(T)
+       -0.04638802*T**2+2.761831E-06*T**3-13382612*T**(-1);
+      2719.00  Y  -38347.217+411.234043*T-59.418*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCIR    298.15  +GHSERIR+32000-6.9*T;                      4000 N !
+$ ------------------------------------------------------------------------------
+$ W
+$
+ PAR  G(BCC_A2,W:VA),,                  +GHSERWW;,,                   N 91Din !
+ PAR  G(FCC_A1,W:VA),,                  +GHSERWW+19300+0.63*T;,,      N 91Din !
+ PAR  G(HCP_A3,W:VA),,                  +GHSERWW+14750;,,             N 91Din !
+ PAR  G(LIQUID,W),,                     +GLIQWW;,,                    N 91Din !
+$
+ PAR  G(IR3W_D019,W:W),,                +4*GHSERWW+220000;,,          N 20Hua !
+ PAR  G(IRW_A3,W:W),,                   +2*GHSERWW+100000;,,          N 20Hua !
+ PAR  G(IRW3_D8B,W:W),,                 +4*GHSERWW+35839;,,           N 20Hua !
+$
+ FUNCTION GHSERWW   298.15  -7646.311+130.4*T-24.1*T*LN(T)
+       -0.001936*T**2+2.07E-07*T**3+44500*T**(-1)-5.33E-11*T**4;
+      3695.00  Y  -82868.801+389.362335*T-54*T*LN(T)+1.528621E+33*T**(-9);
+      6000.00  N !
+ FUNCTION GLIQWW    298.15  +52160.584-14.10999*T+GHSERWW-2.713468E-24*T**7;
+      3695.00  Y  -30436.051+375.175*T-54*T*LN(T);
+      6000.00  N !
+ FUNCTION GFCCWW    298.15  +GHSERWW+19300+0.63*T;                     6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ Y.-Y. Huang, B. Wu, F. Li, L.-L. Chen, Z.-X. Deng, K. Chang,
+$ J. Mining Metall. B, 56, 109-18(2020).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The modelling of the epsilon (hcp) phase is incorrect.
+$ The model for sigma does not match the crystal structure.
+$
+$ This system should be modelled with a 4-sl hcp model.
+$
+ PAR  L(LIQUID,IR,W;0),,                -105000;,,                    N 20Hua !
+ PAR  L(LIQUID,IR,W;1),,                -42000+T;,,                   N 20Hua !
+ PAR  L(LIQUID,IR,W;2),,                -20000;,,                     N 20Hua !
+$
+ PAR  L(FCC_A1,IR,W:VA;0),,             -94000+5*T;,,                 N 20Hua !
+ PAR  L(FCC_A1,IR,W:VA;1),,             -65000-8*T;,,                 N 20Hua !
+$
+ PAR  L(BCC_A2,IR,W:VA;0),,             -40000-7.2*T;,,               N 20Hua !
+ PAR  L(BCC_A2,IR,W:VA;1),,             -35000;,,                     N 20Hua !
+$
+ PAR  G(IR3W_D019,IR:W),,               +3*GHSERIR+GHSERWW
+             -108550+2*T;,,                                           N 20Hua !
+ PAR  G(IR3W_D019,W:IR),,               +3*GHSERWW+GHSERIR+44000;,,   N 20Hua !
+ PAR  L(IR3W_D019,IR,W:IR;0),,          -290000;,,                    N 20Hua !
+ PAR  L(IR3W_D019,IR,W:W;0),,           -290000;,,                    N 20Hua !
+ PAR  L(IR3W_D019,IR:IR,W;0),,          -75000;,,                     N 20Hua !
+ PAR  L(IR3W_D019,W:IR,W;0),,           -75000;,,                     N 20Hua !
+$
+ PAR  G(IRW_B19,IR:W),,                 +GHSERIR+GHSERWW
+             -45000-5*T;,,                                            N 20Hua !
+ PAR  L(IRW_B19,IR:IR,W;0),,            -39000;,,                     N 20Hua !
+$
+ PAR  G(IRW_A3,IR:W),,                  +GHSERIR+GHSERWW-45000;,,     N 20Hua !
+ PAR  G(IRW_A3,W:IR),,                  +GHSERWW+GHSERIR
+             +120000+12*T;,,                                          N 20Hua !
+ PAR  L(IRW_A3,IR,W:IR;0),,             -100000-6*T;,,                N 20Hua !
+ PAR  L(IRW_A3,IR,W:W;0),,              +10000-65*T;,,                N 20Hua !
+ PAR  L(IRW_A3,IR:IR,W;0),,             -100000-6*T;,,                N 20Hua !
+ PAR  L(IRW_A3,W:IR,W;0),,              +10000-65*T;,,                N 20Hua !
+ PAR  L(IRW_A3,IR,W:IR;1),,             -38000;,,                     N 20Hua !
+ PAR  L(IRW_A3,IR:IR,W;1),,             -38000;,,                     N 20Hua !
+$
+ PAR  G(IRW3_D8B,IR:W),,                +GHSERIR+3*GHSERWW
+             +4500-25.7*T;,,                                          N 20Hua !
+ PAR  G(IRW3_D8B,W:IR),,                +GHSERWW+3*GHSERIR
+             -15000+90*T;,,                                           N 20Hua !
+ PAR  L(IRW3_D8B,IR,W:IR;0),,           +10000-16*T;,,                N 20Hua !
+ PAR  L(IRW3_D8B,IR,W:W;0),,            +10000-16*T;,,                N 20Hua !
+ PAR  L(IRW3_D8B,IR:IR,W;0),,           -51000-38*T;,,                N 20Hua !
+ PAR  L(IRW3_D8B,W:IR,W;0),,            -51000-38*T;,,                N 20Hua !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,IR,W:VA;0),,             -94000+5*T;,,                 N Same !
+ PAR  L(HCP_A3,IR,W:VA;1),,             -65000-8*T;,,                 N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  20Hua  'Y.-Y. Huang, B. Wu, F. Li, L.-L. Chen, Z.-X. Deng, K. Chang,
+          J. Mining Metall. B, 56, 109-18(2020); Ir-W'
+!

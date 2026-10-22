@@ -1,0 +1,178 @@
+$
+$ Database for Ce-Cu from H. Bo et al. 2009.
+$
+$ H. Bo, S. Jin, L.G. Zhang, X.M. Chen, L.B. Liu, F. Zheng, Z.P. Jin,
+$ J. Alloys Compd., 484, 286-95(2009).
+$
+$ Dataset created 2017.11.25 by Bengt Hallstedt.
+$ 2020.12.25: Modified for use with GES6.
+$
+$ There is no obvious improvement compared to the previous 95Zhu assessment.
+$
+$ Invariant equilibria are shifted by up to 3 K from rounding errors from
+$ fractional compositions.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CE   FCC_A1                    140.12      7280.16    69.454  ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CE CU : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CE% CU% : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CE% CU : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CE CU% : VA : !
+$
+$ Prototype FeB (oP8, Pnma)
+$
+ PHASE CECU_B27 % 2 1 1 !
+ CONST CECU_B27 : CE : CU : !
+$
+$ Prototype Hg2K (oI12, Imma)
+$
+ PHASE CECU2 % 2 1 2 !
+ CONST CECU2 : CE : CU : !
+$
+$ Prototype CeCu4 (oP20, Pnnm)
+$
+ PHASE CECU4 % 2 1 4 !
+ CONST CECU4 : CE : CU : !
+$
+$ Prototype CaCu5 (hP6, P6/mmm)
+$
+ PHASE CECU5_D2D % 2 1 5 !
+ CONST CECU5_D2D : CE : CU : !
+$
+$ Prototype CeCu6 (oP28, Pnma)
+$
+ PHASE CECU6 % 2 1 6 !
+ CONST CECU6 : CE : CU : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Ce
+$
+$ HCP_A3 and DHCP added in unary 3.0
+$ HCP_A3 and DHCP revised in unary 4.4
+$
+ PAR  G(FCC_A1,CE:VA),,                 +GHSERCE;                4000 N 91Din !
+ PAR  G(BCC_A2,CE:VA),,                 +GBCCCE;                 4000 N 91Din !
+ PAR  G(HCP_A3,CE:VA),,                 +GHSERCE+300;            4000 N Frank !
+$PAR  G(HCP_A3,CE:VA),,                 +GHSERCE+50000;          4000 N 96SGUN !
+$PAR  G(DHCP,CE:VA),,                   +GHSERCE
+$            -122.539+0.433*T;                                   4000 N 99Gsc !
+$PAR  G(DHCP,CE),,                      +GHSERCE-190+0.56886*T;  4000 N 96SGUN !
+ PAR  G(LIQUID,CE),,                    +GLIQCE;                 4000 N 91Din !
+$
+ FUNCTION GHSERCE   298.15  -7160.519+84.23022*T-22.3664*T*LN(T)
+       -0.0067103*T**2-3.20773E-07*T**3-18117*T**(-1);
+      1000.00  Y  -79678.506+659.4604*T-101.32248*T*LN(T)
+       +0.026046487*T**2-1.930297E-06*T**3+11531707*T**(-1);
+      2000.00  Y  -14198.639+190.370192*T-37.6978*T*LN(T);
+      4000.00  N !
+ FUNCTION GBCCCE    298.15  -1354.69-5.21501*T-7.7305867*T*LN(T)
+       -0.029098402*T**2+4.784299E-06*T**3-196303*T**(-1);
+      1000.00  Y  -12101.106+187.449688*T-37.6142*T*LN(T);
+      1072.00  Y  -11950.375+186.333811*T-37.4627992*T*LN(T)
+       -5.7145E-05*T**2+2.348E-09*T**3-25897*T**(-1);
+      4000.00  N !
+ FUNCTION GLIQCE    298.15  +4117.865-11.423898*T-7.5383948*T*LN(T)
+       -0.02936407*T**2+4.827734E-06*T**3-198834*T**(-1);
+      1000.00  Y  -6730.605+183.023193*T-37.6978*T*LN(T);
+      4000.00  N !
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ H. Bo, S. Jin, L.G. Zhang, X.M. Chen, L.B. Liu, F. Zheng, Z.P. Jin,
+$ J. Alloys Compd., 484, 286-95(2009).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ There is no obvious improvement compared to the previous 95Zhu assessment.
+$
+$ Invariant equilibria are shifted by up to 3 K from rounding errors from
+$ fractional compositions.
+$
+ PAR  L(LIQUID,CE,CU;0),,               -44488-0.398*T;,,             N 09Bo !
+ PAR  L(LIQUID,CE,CU;1),,               +34088-6.247*T;,,             N 09Bo !
+ PAR  L(LIQUID,CE,CU;2),,               -20951+10.387*T;,,            N 09Bo !
+$
+ PAR  L(FCC_A1,CE,CU:VA;0),,               +25019;,,                  N 09Bo !
+ PAR  L(BCC_A2,CE,CU:VA;0),,               -8545;,,                   N 09Bo !
+$
+ PAR  G(CECU_B27,CE:CU),,               +GHSERCE+GHSERCU
+             -18840-7*T;,,                                            N 09Bo !
+ PAR  G(CECU2,CE:CU),,                  +GHSERCE+2*GHSERCU
+             -34320-13.623*T;,,                                       N 09Bo !
+ PAR  G(CECU4,CE:CU),,                  +GHSERCE+4*GHSERCU
+             -58200-5.87*T;,,                                         N 09Bo !
+ PAR  G(CECU5_D2D,CE:CU),,              +GHSERCE+5*GHSERCU
+             -61740-9*T;,,                                            N 09Bo !
+ PAR  G(CECU6,CE:CU),,                  +GHSERCE+6*GHSERCU
+             -62748-14.35*T;,,                                        N 09Bo !
+$
+$ Metastable
+$
+ PAR  L(HCP_A3,CE,CU:VA;0),,               +25019;,,                  N Same !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  Frank  'Peter Franke, unpublished, SGTE unary database V.4.4, 2001; Ce'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  96Zhu  'W. Zhuang, Z.-Y. Qiao, S. Wei, J. Shen,
+          J. Phase Equilib., 17, 508-21(1996); Ce-Cu'
+  99Gsc  'K.A. Gschneidner, Jr., V.K. Pecharsky, J. Phase Equilib.,
+          20, 612-14(1999), SGTE unary database V.4.4, 2001; Ce'
+  09Bo   'H. Bo, S. Jin, L.G. Zhang, X.M. Chen, L.B. Liu, F. Zheng, Z.P. Jin,
+          J. Alloys Compd., 484, 286-95(2009); Ce-Cu'
+!

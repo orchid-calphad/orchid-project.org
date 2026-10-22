@@ -1,0 +1,222 @@
+$
+$ Database for Mg-Sm from R. Jiang et al. 2024.
+$
+$ R. Jiang, X. Duan, D. Li, C. He, J. Phase Equilib. Diffus., 45, 520-36(2024).
+$
+$ Dataset created 2025.01.17 by Bengt Hallstedt.
+$
+$ The lattice stability for Mg as RHOMB_C19 is missing. No solubility is shown
+$ in the paper and G(RHOMB_C19,MG) needs to be very large to match the
+$ interaction. The Mg solubility is removed in this dataset.
+$
+$ The hcp = MgSm + Rhomb equilibrium is at 477 K instead of 485 K, probably
+$ due to the missing Mg solubility in Rhomb. This can be easily fixed if needed.
+$
+$ There is an inverse miscibility gap with a minimum at 5558 K and x(Sm)=0.29.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MG   HCP_A3                     24.305     4998.      32.671  !
+ ELEMENT SM   RHOMB_C19                 150.36      7573.04    69.4962 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MG SM : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MG : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MG SM : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MG SM : VA : !
+$
+$ Prototype alpha-Sm (hR9, R-3m)
+$
+ PHASE RHOMB_C19 % 1 1 !
+ CONST RHOMB_C19 : SM : !
+$
+$ Prototype Ce5Mg41 (tI92, I4/m)
+$
+ PHASE MG41SM5 % 2 41 5 !
+ CONST MG41SM5 : MG : SM : !
+$
+$ Prototype Cd45Sm11 (cF448, F-43m)
+$
+ PHASE MG5SM % 2 5 1 !
+ CONST MG5SM : MG : SM : !
+$
+$ Prototype BiF3 (cF16, Fm-3m)
+$
+ PHASE MG3SM_D03 % 2 3 1 !
+ CONST MG3SM_D03 : MG : MG SM% : !
+$
+$ Prototype Cu2Mg (cF24, Fd-3m)
+$
+ PHASE MG2SM_C15 % 2 2 1 !
+ CONST MG2SM_C15 : MG% SM : MG SM% : !
+$
+$ Prototype CsCl (cP2, Pm3m)
+$
+ PHASE MGSM_B2 % 2 1 1 !
+ CONST MGSM_B2 : MG% SM : MG SM% : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mg
+$
+$ RHOMB_C19 from 10Guo not included in unary
+$
+ PAR  G(FCC_A1,MG:VA),,                 +GHSERMG+2600-0.9*T;     3000 N 91Din !
+ PAR  G(BCC_A2,MG:VA),,                 +GHSERMG+3100-2.1*T;     3000 N 91Din !
+ PAR  G(HCP_A3,MG:VA),,                 +GHSERMG;                3000 N 91Din !
+$PAR  G(RHOMB_C19,MG),,                 +GHSERMG+5000;           3000 N 10Guo !
+ PAR  G(LIQUID,MG),,                    +GLIQMG;                 3000 N 91Din !
+$
+ PAR  G(MGSM_B2,MG:MG),,                +2*GBCCMG;,,                  N 24Jia !
+ PAR  G(MG2SM_C15,MG:MG),,              +3*GHSERMG+15000;,,           N REFLAV !
+ PAR  G(MG3SM_D03,MG:MG),,              +4*GHSERMG+24000;,,           N 24Jia !
+$
+ FUNCTION GHSERMG   298.15  -8367.34+143.675547*T-26.1849782*T*LN(T)
+       +4.858E-04*T**2-1.393669E-06*T**3+78950*T**(-1);
+       923.00  Y  -14130.185+204.716215*T-34.3088*T*LN(T)+1.038192E+28*T**(-9);
+      3000.00  N !
+ FUNCTION GLIQMG    298.15  +8202.243-8.83693*T+GHSERMG-8.0176E-20*T**7;
+       923.00  Y  -5439.869+195.324057*T-34.3088*T*LN(T);
+      3000.00  N !
+ FUNCTION GBCCMG    298.15  +GHSERMG+3100-2.1*T;                       6000 N !
+$ ------------------------------------------------------------------------------
+$ Sm
+$
+$ HCP_A3 added in unary 4.4
+$ HCP_A3 modified in unary 5.0
+$
+$ FCC_A1 from 00Du (used in SGSOL 5.0; this value is absurd)
+$ not included in unary
+$ FCC_A1 from 02Zin not included in unary
+$ FCC_A1, CBCC_A12, CUB_A13 from 09Wan not included in unary
+$
+ PAR  G(RHOMB_C19,SM),,                 +GHSERSM;                2100 N 91Din !
+ PAR  G(BCC_A2,SM:VA),,                 +GBCCSM;                 2100 N 91Din !
+$PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+180946;         2100 N 00Du1 !
+$PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+5000;           2100 N 98Su1 !
+$PAR  G(FCC_A1,SM:VA),,                 +GHSERSM+1000;           2100 N 09Wan !
+ PAR  G(HCP_A3,SM:VA),,                 +GHSERSM
+             +69.977-0.069491*T;                                 2100 N 98Su2 !
+$PAR  G(CBCC_A12,SM:VA),,               +GHSERSM+1000;           2100 N 09Wan !
+$PAR  G(CUB_A13,SM:VA),,                +GHSERSM+5000;           2100 N 09Wan !
+ PAR  G(LIQUID,SM),,                    +GLIQSM;                 2100 N 91Din !
+$
+ PAR  G(MGSM_B2,SM:SM),,                +2*GBCCSM;,,                  N 24Jia !
+ PAR  G(MG2SM_C15,SM:SM),,              +3*GHSERSM+24000;,,           N 24Jia !
+$
+ FUNCTION GHSERSM   298.15  -3872.013-32.10748*T-1.6485*T*LN(T)
+       -0.050254*T**2+1.010345E-05*T**3-82168*T**(-1);
+       700.00  Y  -50078.215+627.869894*T-102.665*T*LN(T)
+       +0.0474522*T**2-7.538383E-06*T**3+3861770*T**(-1);
+      1190.00  Y  +289719.819-2744.50976*T+381.41982*T*LN(T)
+       -0.254986338*T**2+2.7512152E-05*T**3-40102102*T**(-1);
+      1345.00  Y  -23056.079+282.194375*T-50.208*T*LN(T);
+      2100.00  N !
+ FUNCTION GBCCSM    298.15  -4368.72+55.972523*T-16.9298494*T*LN(T)
+       -0.025446016*T**2+3.579527E-06*T**3+94209*T**(-1);
+      1190.00  Y  -15957.862+253.121044*T-46.9445*T*LN(T);
+      1345.00  Y  +111191.653-624.680805*T+71.6856914*T*LN(T)
+       -0.047314968*T**2+3.329865E-06*T**3-24870276*T**(-1);
+      2100.00  N !
+ FUNCTION GLIQSM    298.15  +3468.783+20.117456*T-11.6968284*T*LN(T)
+       -0.032418177*T**2+4.544272E-06*T**3+23528*T**(-1);
+      1190.00  Y  -11728.229+273.487076*T-50.208*T*LN(T);
+      2100.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ R. Jiang, X. Duan, D. Li, C. He, J. Phase Equilib. Diffus., 45, 520-36(2024).
+$
+$ Checked against paper. Checked at 6000 K.
+$
+$ The lattice stability for Mg as RHOMB_C19 is missing. No solubility is shown
+$ in the paper and G(RHOMB_C19,MG) needs to be very large to match the
+$ interaction. The Mg solubility is removed in this dataset.
+$
+$ The hcp = MgSm + Rhomb equilibrium is at 477 K instead of 485 K, probably
+$ due to the missing Mg solubility in Rhomb. This can be easily fixed if needed.
+$
+$ There is an inverse miscibility gap with a minimum at 5558 K and x(Sm)=0.29.
+$
+ PAR  L(LIQUID,MG,SM;0),,               -50894+20.34*T;,,             N 24Jia !
+ PAR  L(LIQUID,MG,SM;1),,               -29763+12.5*T;,,              N 24Jia !
+$
+ PAR  L(BCC_A2,MG,SM:VA;0),,            -47266+19.2*T;,,              N 24Jia !
+ PAR  L(BCC_A2,MG,SM:VA;1),,            -34770+19.4*T;,,              N 24Jia !
+$
+ PAR  L(HCP_A3,MG,SM:VA;0),,            -22000+6.7*T;,,               N 24Jia !
+ PAR  L(HCP_A3,MG,SM:VA;1),,            -6800;,,                      N 24Jia !
+$
+$PAR  L(RHOMB_C19,MG,SM;0),,            -20000;,,                     N 24Jia !
+$
+ PAR  G(MG41SM5,MG:SM),,                +41*GHSERMG+5*GHSERSM
+             -279128+0.92*T;,,                                        N 24Jia !
+ PAR  G(MG5SM,MG:SM),,                  +5*GHSERMG+GHSERSM
+             -51927-0.72*T;,,                                         N 24Jia !
+$
+ PAR  G(MG3SM_D03,MG:SM),,              +3*GHSERMG+GHSERSM
+             -55903+9.162*T;,,                                        N 24Jia !
+ PAR  L(MG3SM_D03,MG:MG,SM;0),,         -17880-4*T;,,                 N 24Jia !
+$
+ PAR  G(MG2SM_C15,MG:SM),,              +2*GHSERMG+GHSERSM
+             -40184+1.57*T;,,                                         N 24Jia !
+ PAR  G(MG2SM_C15,SM:MG),,              +2*GHSERSM+GHSERMG+15000;,,   N 24Jia !
+$
+ PAR  G(MGSM_B2,MG:SM),,                +GHSERMG+GHSERSM
+             -35017+9.24*T;,,                                         N 24Jia !
+ PAR  G(MGSM_B2,SM:MG),,                +GHSERMG+GHSERSM
+             -35017+9.24*T;,,                                         N 24Jia !
+ PAR  L(MGSM_B2,MG,SM:MG;0),,           +15600-24*T;,,                N 24Jia !
+ PAR  L(MGSM_B2,MG:MG,SM;0),,           +15600-24*T;,,                N 24Jia !
+ PAR  L(MGSM_B2,MG,SM:SM;0),,           +27000;,,                     N 24Jia !
+ PAR  L(MGSM_B2,SM:MG,SM;0),,           +27000;,,                     N 24Jia !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  COST   'COST 507 database'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  98Su1  'X. Su, W. Zhang, G. Liu, Z. Du,
+          J. Alloys Compd., 267, 149-53(1998); Sm'
+  98Su2  'X. Su, W. Zhang, Z. Du, J. Alloys Compd., 278, 182-84(1998)
+          SGTE unary database V.4.4, 2001; Sm'
+  00Du1  'Z. Du, H. Yang, Z. Metallkd., 91 455-59(2000); Pd, Sm'
+  09Wan  'C.P. Wang, H.L. Zhang, S.L. Wang, Z. Lin, X.J. Liu, A.T. Tang,
+          F.S. Pan, J. Alloys Compd., 481, 291-95(2009); Ho, Mn, Sm'
+  10Guo  'C. Guo, Z. Du, C. Li, Calphad, 34, 90-97(2010); Gd, Mg'
+  24Jia  'R. Jiang, X. Duan, D. Li, C. He,
+          J. Phase Equilib. Diffus., 45, 520-36(2024); Mg-Sm'
+!

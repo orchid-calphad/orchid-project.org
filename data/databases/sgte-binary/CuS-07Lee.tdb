@@ -1,0 +1,336 @@
+$
+$ Database for Cu-S from B.-J. Lee et al. 2007
+$
+$ B.-J. Lee, B. Sundman, S.I. Kim, K.-G. Chin, ISIJ Int., 47, 163-71(2007).
+$
+$ Dataset created 2016.05.27 by Bengt Hallstedt.
+$ 2020.11.21: Modified for use with GES6.
+$
+$ Based on an unpublished assessment by B. Sundman 1992, which is included
+$ in LB Vol. 3.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT CU   FCC_A1                     63.546     5004.      33.15   !
+ ELEMENT S    ORTHORHOMBIC_A16           32.06      4412.0     32.07   ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  CU2                                CU2 !
+ SPECIE  CU2S                               CU2S1 !
+ SPECIE  CUS                                CU1S1 !
+ SPECIE  S2                                 S2 !
+ SPECIE  S3                                 S3 !
+ SPECIE  S4                                 S4 !
+ SPECIE  S5                                 S5 !
+ SPECIE  S6                                 S6 !
+ SPECIE  S7                                 S7 !
+ SPECIE  S8                                 S8 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : CU CU2S S : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : CU S : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : CU S : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : CU : VA : !
+$
+$ Prototype alpha-S (oF128, Fddd)
+$
+ PHASE ORTHORHOMBIC_A16 % 1 1 !
+ CONST ORTHORHOMBIC_A16 : S : !
+$
+$ Prototype beta-S (mP48, P2_1/a)
+$
+ PHASE MONOCLINIC_S % 1 1 !
+ CONST MONOCLINIC_S : S : !
+$
+$ Prototype alpha-Cu2S (mP144, P2_1/c), alpha-chalcopyrite
+$
+ PHASE CU2S_ALPHA % 2 2 1 !
+ CONST CU2S_ALPHA : CU : S : !
+$
+$ Prototype beta-Cu2S (hP16, P6_3/mmc), beta-chalcopyrite
+$ Prototype InNi2 (B8_2) according to LB-binary
+$
+ PHASE CU2S_BETA % 2 2 1 !
+ CONST CU2S_BETA : CU : S : !
+$
+$ Prototype Cu2Se (cF44, Fm-3m), digenite
+$ Prototype CaF2 according to LB-binary
+$
+ PHASE CU2S_GAMMA % 3 2 1 1 !
+ CONST CU2S_GAMMA : CU VA : CU VA : S : !
+$
+$ Prototype Cu31S16 (mP376, P2_1/c), djurleite
+$
+ PHASE CU31S16 % 2 1.93 1 !
+ CONST CU31S16 : CU : S : !
+$
+$ Prototype Cu7S4 (oP44, Pnma), anilite
+$
+ PHASE CU7S4 % 2 1.75 1 !
+ CONST CU7S4 : CU : S : !
+$
+$ Prototype CuS (hP12, P6_3/mmc), covellite
+$
+ PHASE CUS_B18 % 2 1 1 !
+ CONST CUS_B18 : CU : S : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : CU CU2 CU2S CUS S S2 S3 S4 S5 S6 S7 S8 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Cu
+$
+ PAR  G(FCC_A1,CU:VA),,                 +GHSERCU;                3200 N 91Din !
+ PAR  G(BCC_A2,CU:VA),,                 +GHSERCU+4017-1.255*T;   3200 N 91Din !
+ PAR  G(HCP_A3,CU:VA),,                 +GHSERCU+600+0.2*T;      3200 N 91Din !
+ PAR  G(LIQUID,CU),,                    +GLIQCU;                 3200 N 91Din !
+$
+ PAR  G(GAS,CU),,                       +F8005T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CU2),,                      +F8130T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERCU   298.15  -7770.458+130.485235*T-24.112392*T*LN(T)
+       -0.00265684*T**2+1.29223E-07*T**3+52478*T**(-1);
+      1357.77  Y  -13542.026+183.803828*T-31.38*T*LN(T)+3.64167E+29*T**(-9);
+      3200.00  N !
+ FUNCTION GLIQCU    298.15  +12964.735-9.511904*T+GHSERCU-5.8489E-21*T**7;
+      1357.77  Y  -46.545+173.881484*T-31.38*T*LN(T);
+      3200.00  N !
+$ Cu(g)
+ FUNCTION F8005T    298.15  +331712.276-25.4355932*T-21.044*T*LN(T)
+       +2.776E-04*T**2-4.9305E-08*T**3+5295*T**(-1);
+      1600.00  Y  +336105.82-35.4351873*T-20.115*T*LN(T)
+       +0.00118285*T**2-2.18138333E-07*T**3-1572935*T**(-1);
+      3000.00  Y  +390707.537-303.006732*T+14.175*T*LN(T)
+       -0.0079804*T**2+2.27558333E-07*T**3-16772955*T**(-1);
+      5300.00  Y  +110975.664+452.828908*T-75.18201*T*LN(T)
+       +0.004605*T**2-1.02516667E-07*T**3+1.4589055E+08*T**(-1);
+      8400.00  Y  +918206.507-898.334069*T+75.05701*T*LN(T)
+       -0.0078504*T**2+9.14616667E-08*T**3-6.694665E+08*T**(-1);
+     10000.00  N !
+$ Cu2(g)
+ FUNCTION F8130T    298.15  +462958.167+11.147823*T-37.642*T*LN(T)
+       -1.1515E-04*T**2-6.7015E-08*T**3+51145*T**(-1);
+      3500.00  Y  +692156.122-643.599383*T+40.105*T*LN(T)
+       -0.01109485*T**2+1.90893333E-07*T**3-1.2151985E+08*T**(-1);
+      5500.00  Y  +1198333.43-1966.90368*T+195.893*T*LN(T)
+       -0.03229355*T**2+7.29055E-07*T**3-4.2822925E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ S
+$
+$ FCC_A1 and BCC_A2 revised in unary 3.0
+$ ORTHORHOMBIC_A16 and LIQUID modified in unary 4.1
+$ MONOCLINIC revised in unary 4.1
+$ ORTHORHOMBIC_A16 and LIQUID revised in unary 4.4
+$
+$ Data for S changed from SGTE unary database v4.1 (1999) to v4.4 (2001).
+$ The later data do not seem to produce reasonable results.
+$ The source of these data is unknown.
+$ The older data are used in LBall-v7+fun.tdb.
+$ The newer data are used in SGSOL 5.0.
+$ The older data are kept here as well.
+$
+ PAR  G(ORTHORHOMBIC_A16,S),,           +GHSERSS;                1300 N 99SGUN !
+ PAR  G(MONOCLINIC,S),,                 +GHSERSS+188.29+2.8932*T
+             -0.57614*T*LN(T);                                   1300 N 99SGUN !
+ PAR  G(FCC_A1,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(FCC_A1,S:VA),,                  +GHSERSS+30000+32*T;     1300 N 91Din !
+ PAR  G(BCC_A2,S:VA),,                  +GHSERSS+105000;         1300 N Sundm !
+$PAR  G(BCC_A2,S:VA),,                  +GHSERSS+31000+32*T;     1300 N 91Din !
+ PAR  G(LIQUID,S),,                     +GLIQSS;                 1300 N 99SGUN !
+$
+ PAR  G(GAS,S),,                        +F14852T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S2),,                       +F14964T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S3),,                       +F15022T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S4),,                       +F15041T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S5),,                       +F15047T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S6),,                       +F15052T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S7),,                       +F15057T+RTLNP;,,             N 97SUB !
+ PAR  G(GAS,S8),,                       +F15061T+RTLNP;,,             N 97SUB !
+$
+ PAR  G(CU2S_GAMMA,VA:VA:S),,           +GHSERSS+105281;,,            N 92Sun1 !
+$
+ FUNCTION GHSERSS   298.15  -5228.956+55.401762*T-11.007*T*LN(T)
+       -0.026529*T**2+7.754333E-06*T**3;
+       368.30  Y  -6513.769+94.676922*T-17.941839*T*LN(T)
+       -0.010895125*T**2+1.402558E-06*T**3+39910*T**(-1);
+      1300.00  N !
+ FUNCTION GLIQSS    298.15  -4001.549+77.889686*T-15.504*T*LN(T)
+       -0.018629*T**2-2.4942E-07*T**3-113945*T**(-1);
+       388.36  Y  -5285183.35+118449.585*T-19762.4*T*LN(T)
+       +32.79275*T**2-0.0102214167*T**3+2.646735E+08*T**(-1);
+       428.15  Y  -8174995.23+319914.078*T-57607.3*T*LN(T)
+       +135.3045*T**2-0.0529973333*T**3;
+       432.25  Y  -219408.801+7758.83993*T-1371.85*T*LN(T)
+       +2.845035*T**2-0.00101380333*T**3;
+       453.15  Y  +92539.872-1336.36627*T+202.958*T*LN(T)
+       -0.2531915*T**2+5.18835E-05*T**3-8202200*T**(-1);
+       717.00  Y  -6889.972+176.35482*T-32*T*LN(T);
+      1300.00  N !
+$ S(g)
+ FUNCTION F14852T   298.15  +269797.373+2.2810296*T-25.70471*T*LN(T)
+       +0.003751372*T**2-5.48887167E-07*T**3+3450.3165*T**(-1);
+      1000.00  Y  +273925.002-38.4958652*T-19.81748*T*LN(T)
+       -2.300353E-04*T**2-1.18709967E-08*T**3-570436.5*T**(-1);
+      3400.00  Y  +257401.532-.943966729*T-24.05931*T*LN(T)
+       -5.98546E-07*T**2+2.02961167E-09*T**3+9368165*T**(-1);
+     10000.00  N !
+$ S2(g)
+ FUNCTION F14964T   298.15  +117374.548+2.98629624*T-34.09678*T*LN(T)
+       -0.002325464*T**2+1.85480167E-07*T**3+128593.6*T**(-1);
+      1000.00  Y  +117352.438+2.50383325*T-34.04744*T*LN(T)
+       -0.0021150245*T**2+9.16602333E-08*T**3+175718.45*T**(-1);
+      3400.00  Y  +124361.091+14.5182901*T-36.1923*T*LN(T)
+       -5.930925E-04*T**2-7.54259333E-09*T**3-7484105*T**(-1);
+      6000.00  N !
+$ S3(g)
+ FUNCTION F15022T   298.15  +126744.315+83.8435689*T-52.94561*T*LN(T)
+       -0.0043385055*T**2+6.68300333E-07*T**3+276938.3*T**(-1);
+      1000.00  Y  +123958.871+118.720436*T-58.16242*T*LN(T)
+       -7.29079E-06*T**2+2.42566833E-10*T**3+558805*T**(-1);
+      6000.00  N !
+$ S4(g)
+ FUNCTION F15041T   298.15  +109847.438+203.904963*T-72.67966*T*LN(T)
+       -0.009041155*T**2+1.47148883E-06*T**3+505278*T**(-1);
+       900.00  Y  +104526.08+272.793563*T-83.05028*T*LN(T)
+       -1.828101E-05*T**2+6.19803333E-10*T**3+1023588.5*T**(-1);
+      6000.00  N !
+$ S5(g)
+ FUNCTION F15047T   298.15  +106276.072+170.263399*T-74.99022*T*LN(T)
+       -0.035336475*T**2+5.76872833E-06*T**3+227070.6*T**(-1);
+       900.00  Y  +75139.8847+544.891054*T-130.537*T*LN(T)
+       +0.007879015*T**2-4.32610333E-07*T**3+3425257*T**(-1);
+      2800.00  Y  +114904.753+339.945759*T-103.9801*T*LN(T)
+       +2.25877E-05*T**2-7.925025E-10*T**3-7832715*T**(-1);
+      6000.00  N !
+$ S6(g)
+ FUNCTION F15052T   298.15  +57214.7948+523.24074*T-130.1838*T*LN(T)
+       -4.152356E-04*T**2-4.27131667E-07*T**3+779118.5*T**(-1);
+      1600.00  Y  +8925.72335+728.509037*T-155.3363*T*LN(T)
+       +0.002031178*T**2-1.776135E-08*T**3+14908280*T**(-1);
+      4200.00  Y  +43158.7838+657.511854*T-147.3935*T*LN(T)
+       +0.0015928905*T**2-3.34608333E-08*T**3-8046775*T**(-1);
+      6000.00  N !
+$ S7(g)
+ FUNCTION F15057T   298.15  +59623.0027+634.182529*T-153.2939*T*LN(T)
+       -0.003102847*T**2+3.66153167E-07*T**3+940068*T**(-1);
+      1500.00  Y  +56671.3245+666.288106*T-157.9591*T*LN(T)
+       -2.441417E-06*T**2+7.28532E-11*T**3+1284129.5*T**(-1);
+      6000.00  N !
+$ S8(g)
+ FUNCTION F15061T   298.15  +45619.0277+695.996674*T-166.1987*T*LN(T)
+       -0.0109886*T**2-1.38875683E-06*T**3+753634*T**(-1);
+       800.00  Y  +22301.584+822.41812*T-181.0091*T*LN(T)
+       -0.020252625*T**2+3.04543E-06*T**3+4785936*T**(-1);
+      1500.00  Y  +28125.3352+992.470207*T-208.7199*T*LN(T)
+       +0.006139635*T**2-2.57977667E-07*T**3-2943090*T**(-1);
+      3900.00  Y  +82396.4096+766.112131*T-180.3439*T*LN(T)
+       -2.580219E-04*T**2+5.17172833E-09*T**3-21845450*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ B.-J. Lee, B. Sundman, S.I. Kim, K.-G. Chin, ISIJ Int., 47, 163-71(2007).
+$
+$ Based on an unpublished assessment by B. Sundman 1992, which is included
+$ in LB Vol. 3.
+$
+$ Checked against paper. Checked at 6000 K.
+$
+ PAR  G(LIQUID,CU2S),,                  +GDIGCU2S+22136-15.6267*T;,,  N 07Lee !
+ PAR  G(LIQUID,CU,CU2S;0),,             +85840-27.6287*T;,,           N 07Lee !
+ PAR  G(LIQUID,CU,CU2S;1),,             -12900+8.5262*T;,,            N 07Lee !
+ PAR  G(LIQUID,CU2S,S;0),,              +40406.6-17.5576*T;,,         N 07Lee !
+ PAR  G(LIQUID,CU2S,S;1),,              -100287+35.0355*T;,,          N 07Lee !
+$
+ PAR  L(FCC_A1,CU,S:VA;0),,             -102200-26.5*T;,,             N 07Lee !
+$
+ PAR  G(CU2S_ALPHA,CU:S),,              +2*GHSERCU+GHSERSS
+             -78474.5-83.8534*T+7.2618*T*LN(T);,,                     N 07Lee !
+ PAR  G(CU2S_BETA,CU:S),,               +2*GHSERCU+GHSERSS
+             -79412-56.4306*T+3.0602*T*LN(T);,,                       N 07Lee !
+$
+ PAR  G(CU2S_GAMMA,CU:CU:S),,           +3*GHSERCU+GHSERSS
+             -49.382*T;,,                                             N 92Sun1 !
+ PAR  G(CU2S_GAMMA,VA:CU:S),,           +GHSERCU+GHSERSS+100000;,,    N 92Sun1 !
+ PAR  G(CU2S_GAMMA,CU:VA:S),,           +GDIGCU2S;,,                  N 07Lee !
+ PAR  L(CU2S_GAMMA,CU,VA:VA:S;0),,      -154893+51.3874*T;,,          N 07Lee !
+$
+ PAR  G(CU31S16,CU:S),,                 +1.93*GHSERCU+GHSERSS
+             -79718.6-30.97899*T;,,                                   N 07Lee !
+ PAR  G(CU7S4,CU:S),,                   +1.75*GHSERCU+GHSERSS
+             -76000.8-22.78185*T;,,                                   N 07Lee !
+ PAR  G(CUS_B18,CU:S),,                 +GHSERCU+GHSERSS
+             -52804.7-6.6291*T;,,                                     N 07Lee !
+$
+ PAR  G(GAS,CU2S),,                     +F8165T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,CUS),,                      +F8110T+RTLNP;,,              N 97SUB !
+$
+$ Metastable
+$
+ PAR  L(BCC_A2,CU,S:VA;0),,             -102200-26.5*T;,,             N Same !
+$
+ FUNCTION GDIGCU2S  298.15  +2*GHSERCU+GHSERSS
+       -73851.5-97.82124*T+8.1715*T*LN(T);
+      6000.00  N !
+$ Cu2S(g)
+ FUNCTION F8165T    298.15  +360695.208+86.5671447*T-56.88859*T*LN(T)
+       -9.99244E-04*T**2+1.37975767E-07*T**3+192388.25*T**(-1);
+      1300.00  Y  +361237.959+87.342813*T-57.12582*T*LN(T)
+       -3.713802E-04*T**2+2.283655E-08*T**3;
+      3000.00  N !
+$ CuS(g)
+ FUNCTION F8110T    298.15  +325630.842+35.9489656*T-42.073*T*LN(T)
+       +0.00327015*T**2-5.18983333E-07*T**3+68765*T**(-1);
+      1100.00  Y  +321683.15+59.2828779*T-45.062*T*LN(T)
+       +0.0036216*T**2-3.92015E-07*T**3+851435*T**(-1);
+      3500.00  Y  +614271.15-1009.57819*T+86.76401*T*LN(T)
+       -0.0228947*T**2+6.11731667E-07*T**3-1.215617E+08*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  Sundm  'Bosse Sundman, unpublished, SGTE unary database V.3.0, 1996; S'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  92Sun1 'B. Sundman, unpublished, 1992; Cu-S'
+  97SUB  'SGTE substance database, version 1997'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  07Lee  'B.-J. Lee, B. Sundman, S.I. Kim, K.-G. Chin,
+          ISIJ Int., 47, 163-71(2007); Cu-S'
+!

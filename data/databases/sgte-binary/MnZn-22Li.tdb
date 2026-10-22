@@ -1,0 +1,283 @@
+$
+$ Database for Mn-Zn from X. Li et al. 2022.
+$
+$ X. Li, S. Liu, D. Huang, Y. Du, Calphad, 79, 102479(2022).
+$
+$ Dataset created 2023.03.27 by Bengt Hallstedt.
+$
+$ Partial reoptimization of 20Li/21Li.
+$
+$ Incorrect stoichiometric coefficient for G(MNZN13,VA:ZN:MN).
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT MN   CBCC_A12                   54.9380    4995.696   32.2206 ! 
+ ELEMENT ZN   HCP_A3                     65.38      5657.0     41.63   ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : MN ZN : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : MN% ZN : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : MN% ZN : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : MN ZN : VA : !
+$
+$ Prototype Mg (hP2, P6_3/mmc), epsilon
+$
+ PHASE HCP_IM_A3 %A 1 1 !
+ CONST HCP_IM_A3 : MN ZN : !
+$
+$ Prototype alpha-Mn (cI58, I-43m)
+$
+ PHASE CBCC_A12 %A 2 1 1 !
+ CONST CBCC_A12 : MN% ZN : VA : !
+$
+$ Prototype beta-Mn (cP20, P4_132)
+$
+ PHASE CUB_A13 % 2 1 1 !
+ CONST CUB_A13 : MN% ZN : VA : !
+$
+$ Prototype CsCl (cP2, Pm-3m), beta-1
+$
+ PHASE MNZN_B2 % 2 1 1 !
+ CONST MNZN_B2 : MN : ZN : !
+$
+$ Prototype AuCu3 (cP4, Pm-3m), alpha-prime
+$
+ PHASE MNZN3_L12 % 2 1 3 !
+ CONST MNZN3_L12 : MN% ZN : MN ZN% : !
+$
+$ Prototype Cu5Zn8 (cI52, I-43m)
+$
+ PHASE MN5ZN21_D82 % 4 2 2 3 6 !
+ CONST MN5ZN21_D82 : MN ZN : MN ZN : MN ZN : ZN : !
+$
+$ Prototype FeZn10 (hP632, P6_3/mmc), delta-1
+$
+ PHASE MNZN9_LT % 4 0.058 0.18 0.525 0.237 !
+ CONST MNZN9_LT : MN : MN ZN : ZN : ZN : !
+$
+$ Pearson hP*, delta
+$
+ PHASE MNZN9_HT % 2 1 9 !
+ CONST MNZN9_HT : MN% ZN : MN ZN% : !
+$
+$ Prototype CoZn13 (mC28, P2/m), zeta
+$
+ PHASE MNZN13 % 3 0.072 0.856 0.072 !
+ CONST MNZN13 : MN VA : ZN : MN : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ Mn
+$
+ PAR  G(CBCC_A12,MN:VA),,               +GHSERMN;                2000 N 91Din !
+ PAR  TC(CBCC_A12,MN:VA),,               -285.00;                2000 N 91Din !
+ PAR  BM(CBCC_A12,MN:VA),,                 -0.66;                2000 N 91Din !
+ PAR  G(CUB_A13,MN:VA),,                +GCUBMN;                 2000 N 91Din !
+ PAR  G(FCC_A1,MN:VA),,                 +GFCCMN;                 2000 N 91Din !
+ PAR  TC(FCC_A1,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(FCC_A1,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(BCC_A2,MN:VA),,                 +GBCCMN;                 2000 N 91Din !
+ PAR  TC(BCC_A2,MN:VA),,                 -580.00;                2000 N 91Din !
+ PAR  BM(BCC_A2,MN:VA),,                   -0.27;                2000 N 91Din !
+ PAR  G(HCP_A3,MN:VA),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_A3,MN:VA),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_A3,MN:VA),,                   -1.86;                2000 N 91Din !
+ PAR  G(LIQUID,MN),,                    +GLIQMN;                 2000 N 91Din !
+$
+ PAR  G(HCP_IM_A3,MN),,                 +GHCPMN;                 2000 N 91Din !
+ PAR  TC(HCP_IM_A3,MN),,                -1620.00;                2000 N 91Din !
+ PAR  BM(HCP_IM_A3,MN),,                   -1.86;                2000 N 91Din !
+ PAR  G(MNZN3_L12,MN:MN),,              +4*GHSERMN+42400;,,           N 21Li !
+ PAR  G(MNZN9_HT,MN:MN),,               +10*GHSERMN+106000;,,         N 22Li !
+$
+ FUNCTION GHSERMN   298.15  -8115.28+130.059*T-23.4582*T*LN(T)
+       -0.00734768*T**2+69827*T**(-1);
+      1519.00  Y  -28733.41+312.2648*T-48*T*LN(T)+1.656847E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GCUBMN    298.15  -5800.4+135.995*T-24.8785*T*LN(T)
+       -0.00583359*T**2+70269*T**(-1);
+      1519.00  Y  +442.65-0.9715*T+GHSERMN+2.310723E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GFCCMN    298.15  -3439.3+131.884*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +2663.31-2.5984*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GBCCMN    298.15  -3235.3+127.85*T-23.7*T*LN(T)
+       -0.00744271*T**2+60000*T**(-1);
+      1519.00  Y  +5544.58-4.5605*T+GHSERMN-3.91695E+29*T**(-9);
+      2000.00  N !
+ FUNCTION GHCPMN    298.15  -4439.3+133.007*T-24.5177*T*LN(T)
+       -0.006*T**2+69600*T**(-1);
+      1519.00  Y  +1663.31-1.4754*T+GHSERMN+2.205113E+30*T**(-9);
+      2000.00  N !
+ FUNCTION GLIQMN    298.15  +17859.91-12.6208*T+GHSERMN-4.41929E-21*T**7;
+      1519.00  Y  -9993.9+299.036*T-48*T*LN(T);
+      2000.00  N !
+$ ------------------------------------------------------------------------------
+$ Zn
+$
+$ BCT_A5 and DIAMOND_A4 added in unary 3.0
+$ HCP_A3 revised in unary 4.1 (due to introduction of HCP_ZN)
+$ RHOMBOHEDRAL_A7 and TETRAGONAL_A6 added in unary 4.1
+$ TETRAGONAL_A6 revised in unary 4.4
+$ CBCC_A12 and CUB_A13 added in unary 4.4
+$ HCP_A3 and LIQUID modified in unary 5.0 (melting T and coefficients adjusted)
+$ RHOMBO_A10 added in unary 5.0
+$
+$ Pure Zn restored as HCP_A3
+$
+ PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN;                1700 N 91Din !
+$PAR  G(HCP_A3,ZN:VA),,                 +GHSERZN
+$            +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(FCC_A1,ZN:VA),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 91Din !
+ PAR  G(BCC_A2,ZN:VA),,                 +GHSERZN
+             +2886.96-2.5104*T;                                  1700 N 91Din !
+$PAR  G(DIAMOND_A4,ZN),,                +GHSERZN+30*T;           1700 N SGCOST !
+$PAR  G(BCT_A5,ZN),,                    +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N SGCOST !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN+4184;           1700 N 96Lee !
+$PAR  G(TETRAGONAL_A6,ZN),,             +GHSERZN
+$            +2886.96-2.5104*T;                                  1700 N 99SGUN !
+$PAR  G(RHOMBOHEDRAL_A7,ZN),,           +GHSERZN+2300+11.5*T;    1700 N 99SGUN !
+$PAR  G(RHOMBO_A10,ZN),,                +GLIQZN-2000+10*T;       1700 N 98Han !
+ PAR  G(CBCC_A12,ZN:VA),,               +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(CUB_A13,ZN:VA),,                +GHSERZN+2000;           1700 N 01Mie !
+ PAR  G(LIQUID,ZN),,                    +GLIQZN;                 1700 N 91Din !
+$
+ PAR  G(HCP_IM_A3,ZN),,                 +GHSERZN
+             +2969.82-1.56968*T;                                 1700 N 93Kow !
+ PAR  G(MNZN3_L12,ZN:ZN),,              +4*GFCCZN-5200;,,             N 21Li !
+ PAR  G(MN5ZN21_D82,ZN:ZN:ZN:ZN),,      +13*GFCCZN+52000;,,           N 20Li !
+ PAR  G(MNZN9_HT,ZN:ZN),,               +10*GHSERZN+54000-15.7*T;,,   N 22Li !
+$
+ FUNCTION GHSERZN   298.15  -7285.787+118.470069*T-23.701314*T*LN(T)
+       -0.001712034*T**2-1.264963E-06*T**3;
+       692.677 Y  -11070.546+172.345644*T-31.38*T*LN(T)+4.7047E+26*T**(-9);
+      1700.00  N !
+ FUNCTION GLIQZN    298.15  +7157.222-10.29305*T+GHSERZN-3.58949E-19*T**7;
+       692.677 Y  -3620.385+161.60854*T-31.38*T*LN(T);
+      1700.00  N !
+ FUNCTION GBCCZN    298.15  +GHSERZN+2886.96-2.5104*T;                 6000 N !
+ FUNCTION GFCCZN    298.15  +GHSERZN+2969.82-1.56968*T;                6000 N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ X. Li, S. Liu, D. Huang, Y. Du, Calphad, 79, 102479(2022).
+$
+$ Checked against paper and author's tdb. Checked at 6000 K.
+$
+$ Partial reoptimization of 20Li/21Li.
+$
+$ Incorrect stoichiometric coefficient for G(MNZN13,VA:ZN:MN).
+$
+ PAR  L(LIQUID,MN,ZN;0),,               -8263.29+4.21*T;,,            N 22Li !
+ PAR  L(LIQUID,MN,ZN;1),,               -1000+0.87*T;,,               N 22Li !
+ PAR  L(LIQUID,MN,ZN;2),,               -4300+1.22*T;,,               N 22Li !
+$
+ PAR  L(FCC_A1,MN,ZN:VA;0),,            -2560-2.9*T;,,                N 20Li !
+ PAR  L(FCC_A1,MN,ZN:VA;1),,            +1300-2.7*T;,,                N 20Li !
+$
+ PAR  L(BCC_A2,MN,ZN:VA;0),,            -110-6.11*T;,,                N 20Li !
+ PAR  L(BCC_A2,MN,ZN:VA;1),,            +1400-0.37*T;,,               N 20Li !
+$
+ PAR  L(HCP_A3,MN,ZN:VA;0),,            +UN_ASS;,,                    N !
+$
+ PAR  L(HCP_IM_A3,MN,ZN;0),,            -2732-5.8*T;,,                N 22Li !
+ PAR  L(HCP_IM_A3,MN,ZN;1),,            +17721-7.4*T;,,               N 22Li !
+ PAR  L(HCP_IM_A3,MN,ZN;2),,            -14222+6.2*T;,,               N 22Li !
+$
+ PAR  L(CBCC_A12,MN,ZN:VA;0),,          +13000;,,                     N 20Li !
+$
+ PAR  L(CUB_A13,MN,ZN:VA;0),,           -4893+1.6*T;,,                N 22Li !
+ PAR  L(CUB_A13,MN,ZN:VA;1),,           -2500+7.4*T;,,                N 22Li !
+ PAR  L(CUB_A13,MN,ZN:VA;2),,           -3000;,,                      N 22Li !
+$
+ PAR  G(MNZN_B2,MN:ZN),,                +GHSERMN+GHSERZN
+             -4626.18-0.754*T;,,                                      N 22Li !
+$
+ PAR  G(MNZN3_L12,MN:ZN),,              +GHSERMN+3*GHSERZN
+             -11746.54-4.71*T;,,                                      N 22Li !
+ PAR  G(MNZN3_L12,ZN:MN),,              +GFCCZN+3*GHSERMN;,,          N 21Li !
+$
+ PAR  G(MN5ZN21_D82,MN:MN:MN:ZN),,      +7*GHSERMN+6*GFCCZN;,,        N 20Li !
+ PAR  G(MN5ZN21_D82,MN:MN:ZN:ZN),,      +4*GHSERMN+9*GFCCZN;,,        N 20Li !
+ PAR  G(MN5ZN21_D82,MN:ZN:MN:ZN),,      +5*GHSERMN+8*GFCCZN;,,        N 20Li !
+ PAR  G(MN5ZN21_D82,MN:ZN:ZN:ZN),,      +2*GHSERMN+11*GFCCZN
+             -59209.8;,,                                              N 21Li !
+ PAR  G(MN5ZN21_D82,ZN:MN:MN:ZN),,      +5*GHSERMN+8*GFCCZN;,,        N 20Li !
+ PAR  G(MN5ZN21_D82,ZN:MN:ZN:ZN),,      +2*GHSERMN+11*GFCCZN;,,       N 20Li !
+ PAR  G(MN5ZN21_D82,ZN:ZN:MN:ZN),,      +3*GHSERMN+10*GFCCZN;,,       N 20Li !
+ PAR  L(MN5ZN21_D82,MN:ZN:MN,ZN:ZN;0),, -86401.9;,,                   N 21Li !
+$
+ PAR  G(MNZN9_LT,MN:MN:ZN:ZN),,         +0.238*GHSERMN+0.762*GHSERZN
+             +940-0.98*T;,,                                           N 22Li !
+ PAR  G(MNZN9_LT,MN:ZN:ZN:ZN),,         +0.058*GHSERMN+0.942*GHSERZN
+             -513-0.658*T;,,                                          N 22Li !
+ PAR  L(MNZN9_LT,MN:MN,ZN:ZN:ZN;0),,    -6364;,,                      N 22Li !
+$
+ PAR  G(MNZN9_HT,MN:ZN),,               +GHSERMN+9*GHSERZN
+             +1424.6-36.4*T;,,                                        N 22Li !
+ PAR  G(MNZN9_HT,ZN:MN),,               +GHSERZN+9*GHSERMN
+             +2969.8-1.6*T;,,                                         N 22Li !
+ PAR  L(MNZN9_HT,MN:MN,ZN;0),,          -23218+10*T;,,                N 22Li !
+$
+ PAR  G(MNZN13,MN:ZN:MN),,              +0.144*GHSERMN+0.856*GHSERZN
+             -1400-0.62*T;,,                                          N 22Li !
+ PAR  G(MNZN13,VA:ZN:MN),,              +0.072*GHSERMN+0.928*GHSERZN
+             -1204+2.572*T;,,                                         N 22Li !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  93Kow  'M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993),
+          SGTE unary database V.4.1, 1999; Zn'
+  96Lee  'B.-J. Lee, Calphad, 20, 471-80(1996)
+          SGTE unary database V.4.4, 2001; Zn'
+  98Han  'S.C. Hansen, Calphad, 22, 359-73(1998),
+          SGTE unary database V.5.0, 2009; Zn'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  01Mie  'J. Miettinen, Calphad, 25, 43-58(2001),
+          SGTE unary database V.4.4, 2001; Sn, Zn'
+  20Li   'X. Li, S. Liu, K. Xu, Y. Zhang, Y. Du,
+          Calphad, 69, 101770(2020); Mn-Zn'
+  21Li   'X. Li, S. Liu, J. Huang, D. Huang, Y. Du,
+          J. Alloys Compd., 863, 158484(2021); Mn-Zn'
+  22Li   'X. Li, S. Liu, D. Huang, Y. Du, Calphad, 79, 102479(2022); Mn-Zn'
+!

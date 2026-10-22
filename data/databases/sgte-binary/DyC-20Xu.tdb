@@ -1,0 +1,178 @@
+$
+$ Database for Dy-C from K. Xu et al. 2020.
+$
+$ K. Xu, L. Chen, K. Chang, P. Wan, M. Li, Z. Deng, F. Huang, Q. Huang,
+$ Calphad, 68, 101738(2020).
+$
+$ Dataset created 2021.07.03 by Bengt Hallstedt.
+$
+$ Dy-C has not yet been sufficiently investigated experimentally. This
+$ dataset must be regarded tentative. Dy3C, Dy2C and DyC have been reported,
+$ but are not included in this dataset due to inconclusive data.
+$
+$ C solubility in solid Dy is not considered in the paper.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT C    GRAPHITE                   12.011     1054.0      5.7423 ! 
+ ELEMENT DY   HCP_A3                    162.50      8865.896   74.9559 ! 
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : C DY : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : DY : C VA% : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : DY : C VA% : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : DY : C VA% : !
+$
+$ Prototype C (cF8, Fd-3m)
+$
+ PHASE DIAMOND_A4 % 1 1 !
+ CONST DIAMOND_A4 : C : !
+$
+$ Prototype C (hP4, P6_3/mmc)
+$
+ PHASE GRAPHITE % 1 1 !
+ CONST GRAPHITE : C : !
+$
+$ Prototype Pu2C3 (cI40, I-43d)
+$
+ PHASE DY2C3_D5C % 2 2 3 !
+ CONST DY2C3_D5C : DY : C : !
+$
+$ Prototype CaC2 (tI6, I4/mmm)
+$
+ PHASE DYC2_C11A % 2 1 2 !
+ CONST DYC2_C11A : DY : C : !
+$
+$ Prototype CaF2 (cF12, Fm-3m)
+$
+ PHASE DYC2_C1 % 2 1 2 !
+ CONST DYC2_C1 : DY : C : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ C
+$
+ PAR  G(GRAPHITE,C),,                   +GHSERCC;,,                   N 91Din !
+ PAR  G(DIAMOND_A4,C),,                 +GDIACC;,,                    N 91Din !
+ PAR  G(LIQUID,C),,                     +GHSERCC+117369-24.63*T;,,    N 91Din !
+$
+ FUNCTION GHSERCC   298.15  -17368.441+170.73*T-24.3*T*LN(T)
+       -4.723E-04*T**2+2562600*T**(-1)-2.643E+08*T**(-2)+1.2E+10*T**(-3);
+      6000.00  N !
+ FUNCTION GDIACC    298.15  -16359.441+175.61*T-24.31*T*LN(T)
+       -4.723E-04*T**2+2698000*T**(-1)-2.61E+08*T**(-2)+1.11E+10*T**(-3);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Dy
+$
+$ HCP_A3, BCC_A2 and LIQUID revised in unary 3.0
+$
+$ FCC_A1 from 94Lan not included in unary
+$ FCC_A1 from 03Cac not included in unary (but it should be)
+$ FCC_A1, CBCC_A12 and CUB_A13 from 09Wan4 not included in unary.
+$
+ PAR  G(HCP_A3,DY:VA)           100.00  +GHSERDY;                3000 N 95She1 !
+ PAR  TC(HCP_A3,DY:VA)          100.00    179;                   3000 N 95She1 !
+ PAR  BM(HCP_A3,DY:VA)          100.00      3.0;                 3000 N 95She1 !
+ PAR  G(BCC_A2,DY:VA)           100.00  +GBCCDY;                 3000 N 95She1 !
+ PAR  G(FCC_A1,DY:VA)           100.00  +GHSERDY
+             +1300-0.6651608*T;                                  3000 N 03Cac !
+$PAR  G(FCC_A1,DY:VA)           298.15  +GHSERDY+5000;           3000 N 94Lan !
+$PAR  G(CBCC_A12,DY:VA)         298.15  +GHSERDY+10000;          3000 N 09Wan4 !
+$PAR  G(CUB_A13,DY:VA)          298.15  +GHSERDY+10000;          3000 N 09Wan4 !
+ PAR  G(LIQUID,DY)              100.00  +GLIQDY;                 3000 N 95She1 !
+$
+ FUNCTION GHSERDY   100.00  -7937.16586+102.307412*T-26.3917167*T*LN(T)
+       -7.61683657E-04*T**2-5.86914125E-07*T**3+4010.90565*T**(-1);
+      1000.00  Y  -13733.328+214.012934*T-43.8283359*T*LN(T)
+       +0.0166909801*T**2-3.49702836E-06*T**3+0.0173619874*T**(-1);
+      1654.15  Y  -404681.371+2032.1415*T-272.123952*T*LN(T)
+       +0.0578301681*T**2-2.76169148E-06*T**3+1.09616238E+08*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCDY    100.00  +1508.1802-0.566616181*T+GHSERDY;
+      1000.00  Y  +327500.062-2868.04585*T+391.515418*T*LN(T)
+       -0.224042148*T**2+2.04076075E-05*T**3-48652656.5*T**(-1);
+      1654.15  Y  -33708.7949+291.409631*T-50.208*T*LN(T);
+      1685.15  Y  -40775.4966+330.318068*T-55.2811171*T*LN(T)
+       +0.0015254673*T**2-7.7437116E-08*T**3+1776589.32*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQDY    100.00  +13196.6185-7.5443643*T+GHSERDY;
+      1000.00  Y  +300126.971-2519.78614*T+341.302578*T*LN(T)
+       -0.196153225*T**2+1.76197799E-05*T**3-43071677.5*T**(-1);
+      1685.15  Y  -21864.7344+282.205014*T-49.9151*T*LN(T);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ K. Xu, L. Chen, K. Chang, P. Wan, M. Li, Z. Deng, F. Huang, Q. Huang,
+$ Calphad, 68, 101738(2020).
+$
+$ Checked against paper. Checked at 6000K.
+$
+$ Dy-C has not yet been sufficiently investigated experimentally. This
+$ dataset must be regarded tentative. Dy3C, Dy2C and DyC have been reported,
+$ but are not included in this dataset due to inconclusive data.
+$
+$ C solubility in solid Dy is not considered in the paper.
+$
+ PAR  L(LIQUID,C,DY;0),,                -268000+22.2*T;,,             N 20Xu !
+ PAR  L(LIQUID,C,DY;1),,                -140000;,,                    N 20Xu !
+ PAR  L(LIQUID,C,DY;2),,                -24500;,,                     N 20Xu !
+$
+ PAR  G(DY2C3_D5C,DY:C),,               +2*GHSERDY+3*GHSERCC
+             -179000+8.75*T;,,                                        N 20Xu !
+ PAR  G(DYC2_C11A,DY:C),,               +GHSERDY+2*GHSERCC
+             -93000+3.6*T;,,                                          N 20Xu !
+ PAR  G(DYC2_C1,DY:C),,                 +GHSERDY+2*GHSERCC
+             -45000-27*T;,,                                           N 20Xu !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  Same   'Same or similar interaction as in the corresponding stable phase'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Lan  'S. Landin, J. Agren,
+          J. Alloys Compd., 207-208, 449-53(1994); Dy, Tb'
+  95She1 'H. Shen, W. Zhang, G. Liu, R. Wang, Z. Du, Report F-95-01,
+          University of Science and Technology, Beijing, May 1995,
+          SGTE unary database V.3.0, 1996; Dy'
+  03Cac  'G. Cacciamani, S. De Negri, A. Saccone, R. Ferro,
+          Intermetallics, 11, 1135-51(2003); Dy, Ho, Al-Dy'
+  09Wan4 'C.P. Wang, Z. Lin, X.J. Liu,
+          J. Alloys Compd., 469, 123-28(2009); Dy, Mn, Pr'
+  20Xu   'K. Xu, L. Chen, K. Chang, P. Wan, M. Li, Z. Deng, F. Huang, Q. Huang,
+          Calphad, 68, 101738(2020); Dy-C'
+!

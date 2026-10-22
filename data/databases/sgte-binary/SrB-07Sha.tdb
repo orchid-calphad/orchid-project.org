@@ -1,0 +1,220 @@
+$
+$ Database for Sr-B from S. Shang et al. 2007
+$
+$ S. Shang, T. Wang, Z.-K. Liu, Calphad, 31, 286-91(2007).
+$
+$ Dataset created 2017.10.08 by Bengt Hallstedt.
+$ 2021.02.05: Modified for use with GES6.
+$
+$ The paper also includes new expressions for alpha-B and beta-B based on
+$ ab initio calculations. These are not included here.
+$
+$ SGSOL (Dec16c) includes alpha-B, but not gaseous Sr and B.
+$
+$ ------------------------------------------------------------------------------
+ TEMP-LIM 298.15 6000.00 !
+$
+$ELEMENT NAME  REF. STATE               ATOMIC MASS H298-H0    S298    !
+$
+ ELEMENT VA   VACUUM                      0.0          0.0      0.0    ! 
+ ELEMENT B    BETA_RHOMBO_B              10.81      1222.0      5.9    ! 
+ ELEMENT SR   FCC_A1                     87.62      6568.      55.694  ! 
+$ ------------------------------------------------------------------------------
+$ Species
+$
+ SPECIE  B2                                 B2 !
+ SPECIE  SR2                                SR2 !
+$ ------------------------------------------------------------------------------
+$ Phase definitions
+$
+ PHASE LIQUID:L % 1 1 !
+ CONST LIQUID:L : B SR : !
+$
+$ Fcc (cF4, Fm-3m) and MeX (cF8, Fm-3m)
+$
+ PHASE FCC_A1 %A 2 1 1 !
+ CONST FCC_A1 : SR : VA : !
+$
+$ Bcc (cI2, Im-3m)
+$
+ PHASE BCC_A2 %B 2 1 3 !
+ CONST BCC_A2 : SR : VA : !
+$
+$ Hcp (hP2, P6_3/mmc) and Me2X (NiAs-type, hP4, P6_3/mmc, B8_1)
+$
+ PHASE HCP_A3 %A 2 1 0.5 !
+ CONST HCP_A3 : SR : VA : !
+$
+$ Prototype beta-B (hR105, R-3m)
+$
+ PHASE BETA_RHOMBO_B % 1 1 !
+ CONST BETA_RHOMBO_B : B : !
+$
+$ Prototype CaB6 (cP7, Pm-3m)
+$
+ PHASE SRB6_D21 % 2 1 6 !
+ CONST SRB6_D21 : SR : B : !
+$
+ PHASE GAS:G % 1 1 !
+ CONST GAS:G : B B2 SR SR2 : !
+$ ------------------------------------------------------------------------------
+$ Defaults
+$
+ DEFINE-SYSTEM-DEFAULT ELEMENT 2 !
+ DEFAULT-COM DEFINE_SYSTEM_ELEMENT VA !
+ TYPE-DEF % SEQ * !
+ TYPE-DEF A GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -3 0.28 !
+ TYPE-DEF B GES AMEND_PHASE_DESCRIPTION @ MAGNETIC -1 0.4 !
+ FUNCTION ZERO      298.15  0;                                         6000 N !
+ FUNCTION UN_ASS    298.15  0;                                         6000 N !
+ FUNCTION R         298.15  +8.31451;                                  6000 N !
+ FUNCTION RTLNP     298.15  +8.31451*T*LN(1E-05*P);                    6000 N !
+$ ------------------------------------------------------------------------------
+$ Element data
+$ ------------------------------------------------------------------------------
+$ B
+$
+$ FCC_A1, HCP_A3, DIAMOND_A4 and GRAPHITE added in unary 3.0
+$ BCC_A2 added in unary 4.1
+$ GRAPHITE revised in unary 4.4 (using the value from COST 507)
+$ FCC_A1, BCC_A2 and HCP_A3 removed in unary 5.0
+$ ALPHA_RHOMBO_B added in unary 5.0
+$
+$ FCC_A1, BCC_A2 and HCP_A3 still in SGSOL 5.0
+$ The value for FCC_A1 in COST (and SGTE) is possibly incorrect.
+$
+ PAR  G(BETA_RHOMBO_B,B),,              +GHSERBB;,,                   N 91Din !
+$PAR  G(ALPHA_RHOMBO_B,B),,             +GALPBB;,,                    N 09SGUN !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N SGCOST !
+$PAR  G(FCC_A1,B:VA),,                  +GHSERBB+50208-13.472*T;,,    N 94Hal !
+$PAR  G(BCC_A2,B:VA),,                  +GHSERBB+43514-12.217*T;,,    N 94Hal !
+$PAR  G(HCP_A3,B:VA),,                  +GHSERBB+50208-9.706*T;,,     N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+10000-2*T;,,         N SGCOST !
+$PAR  G(GRAPHITE,B),,                   +GHSERBB+5000;,,              N 96SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+10;,,                N 99SGUN !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB+20;,,                N COST !
+$PAR  G(DIAMOND_A4,B),,                 +GHSERBB;,,                   N 96SGUN !
+ PAR  G(LIQUID,B),,                     +GLIQBB;,,                    N 91Din !
+$
+ PAR  G(GAS,B),,                        +F1389T+RTLNP;,,              N 97SUB !
+ PAR  G(GAS,B2),,                       +F1921T+RTLNP;,,              N 97SUB !
+$
+ FUNCTION GHSERBB   298.15  -7735.284+107.111864*T-15.6641*T*LN(T)
+       -0.006864515*T**2+6.18878E-07*T**3+370843*T**(-1);
+      1100.00  Y  -16649.474+184.801744*T-26.6047*T*LN(T)
+       -7.9809E-04*T**2-2.556E-08*T**3+1748270*T**(-1);
+      2348.00  Y  -36667.582+231.336244*T-31.5957527*T*LN(T)
+       -0.00159488*T**2+1.34719E-07*T**3+11205883*T**(-1);
+      3000.00  Y  -21530.653+222.396264*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GALPBB    298.15  -6076.24+86.648762*T-12.942464*T*LN(T)
+       -7.089468E-3*T**2+0.659896E-6*T**3-45*T**(-1);
+      1400.00  Y  +28477.506-106.789208*T+12.1072478*T*LN(T)
+       -13.316875E-3*T**2+0.706895E-6*T**3-8002403*T**(-1);
+      3000.00  Y  -25699.64+225.127135*T-31.4*T*LN(T);
+      6000.00  N !
+ FUNCTION GLIQBB    298.15  +48458.559-20.268025*T+GHSERBB;
+       500.00  Y  +41119.703+82.101722*T-14.9827763*T*LN(T)
+       -0.007095669*T**2+5.07347E-07*T**3+335484*T**(-1);
+      2348.00  Y  +28842.012+200.94731*T-31.4*T*LN(T);
+      3000.00  Y  +50372.665-21.448954*T+GHSERBB;
+      6000.00  N !
+ FUNCTION GFCCBB    298.15  +GHSERBB+43514-12.217*T;                   6000 N !
+$ B(g)
+ FUNCTION F1389T    298.15 +558741.08-13.3403636*T-20.91611*T*LN(T)
+       +7.20885E-05*T**2-5.63569667E-09*T**3+4306.9065*T**(-1);
+      4800.00  Y  +593321.479-80.4363028*T-13.38924*T*LN(T)
+       -5.13201E-04*T**2-2.51243833E-09*T**3-26985320*T**(-1);
+     10000.00  N !
+$ B2(g)
+ FUNCTION F1921T    298.15 +829926.969-93.2007048*T-13.63395*T*LN(T)
+       -0.033960835*T**2+7.30767333E-06*T**3-67153.4*T**(-1);
+       600.00  Y  +815354.412+137.902601*T-49.68482*T*LN(T)
+       +0.00543292*T**2-7.11178167E-07*T**3+1030739.5*T**(-1);
+      1400.00  Y  +823475.255+55.7356689*T-37.91694*T*LN(T)
+       -0.001645613*T**2+5.37223333E-08*T**3+105366.3*T**(-1);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$ Sr
+$
+ PAR  G(FCC_A1,SR:VA;0),,               +GHSERSR;                3000 N 91Din !
+ PAR  G(BCC_A2,SR:VA;0),,               +GBCCSR;                 3000 N 91Din !
+ PAR  G(HCP_A3,SR:VA),,                 +GHSERSR+250+0.7*T;      3000 N 91Din !
+ PAR  G(LIQUID,SR;0),,                  +GLIQSR;                 3000 N 91Din !
+$
+ PAR  G(GAS,SR;0),,                     +F14450T+RTLNP;,,             N 94SUB !
+ PAR  G(GAS,SR2;0),,                    +F14465T+RTLNP;,,             N 94SUB !
+$
+ FUNCTION GHSERSR   298.15  -7532.367+107.183879*T-23.905*T*LN(T)
+       -4.61225E-3*T**2-1.67477E-07*T**3-2055*T**(-1);
+       820.00  Y  -13380.102+153.196104*T-30.0905432*T*LN(T)
+       -3.251266E-3*T**2+1.84189E-07*T**3+850134*T**(-1);
+      3000.00  N !
+ FUNCTION GBCCSR    298.15  -6779.234+116.583654*T-25.6708365*T*LN(T)
+       -3.126762E-3*T**2+2.2965E-7*T**3+27649*T**(-1);
+       820.00  Y  -6970.594+122.067301*T-26.57*T*LN(T)
+       -1.9493E-3*T**2-1.7895E-8*T**3+16495*T**(-1);
+      1050.00  Y  +8168.357+0.423037*T-9.7788593*T*LN(T)
+       -9.539908E-3*T**2+5.20221E-7*T**3-2414794*T**(-1);
+      3000.00  N !
+ FUNCTION GLIQSR    298.15   +2194.997-10.118994*T-5.0668978*T*LN(T)
+       -3.1840595E-2*T**2+4.981237E-06*T**3-265559*T**(-1);
+      1050.00  Y  -10855.29+213.406219*T-39.463*T*LN(T);
+      3000.00  N !
+$ Sr(g) :
+ FUNCTION F14450T   298.15  +154227.522-24.1431703*T-20.98549*T*LN(T)
+       +1.951298E-04*T**2-3.09095833E-08*T**3+4675.2365*T**(-1);
+      1800.00  Y  +111247.483+242.365806*T-56.52776*T*LN(T)
+       +0.0133862*T**2-9.57800833E-07*T**3+9843260*T**(-1);
+      3300.00  Y  +770872.513-2114.76782*T+233.253*T*LN(T)
+       -0.04337796*T**2+1.134592E-06*T**3-2.7250735E+08*T**(-1);
+      4900.00  Y  -196742.694+263.327068*T-44.45892*T*LN(T)
+       -0.008078665*T**2+2.96671167E-07*T**3+3.57637E+08*T**(-1);
+      6200.00  Y  -949056.902+1952.13337*T-239.3059*T*LN(T)
+       +0.01421437*T**2-1.79062E-07*T**3+8.9842E+08*T**(-1);
+      9600.00  Y  +34305.7758+474.957384*T-77.25547*T*LN(T)
+       +0.00232914*T**2-1.54504333E-08*T**3-2.2245325E+08*T**(-1);
+     10000.00  N !
+$ Sr2(g) :
+ FUNCTION F14465T   298.15  +295010.66+61.845039*T-54.13634*T*LN(T)
+       +0.040485225*T**2-9.264165E-06*T**3-70453.75*T**(-1);
+       500.00  Y  +307156.188-147.411671*T-20.95926*T*LN(T)
+       +1.012636E-04*T**2-8.03856667E-09*T**3-905190.5*T**(-1);
+      3000.00  N !
+$ ------------------------------------------------------------------------------
+$ Binary system
+$
+$ S. Shang, T. Wang, Z.-K. Liu, Calphad, 31, 286-91(2007).
+$
+$ Checked against paper and SGSOL Dec16c. Checked at 6000 K.
+$
+$ The paper also includes new expressions for alpha-B and beta-B based on
+$ ab initio calculations. These are not included here.
+$
+$ SGSOL (Dec16c) includes alpha-B, but not gaseous Sr and B.
+$
+ PAR  L(LIQUID,B,SR;0),,                +ZERO;,,                      N 07Sha !
+$
+ PAR  G(SRB6_D21,SR:B),,                +GHSERSR+6*GHSERBB+7*GSRB6;,, N 07Sha !
+$
+ FUNCTION GSRB6     298.15  -43314.302-18.980308*T+2.715526*T*LN(T);
+      6000.00  N !
+$ ------------------------------------------------------------------------------
+$
+$
+ LIST-OF-REFERENCE
+ NUMBER  SOURCE
+  Null   'Unknown source'
+  REFLAV 'Laves phase convention: G(LAVES,X:X)=+3*GHSERXX+15000'
+  COST   'COST 507 database'
+  SGCOST 'COST 507 database, SGTE unary database V.3.0, 1996; Al, B, Nd, Ti, Zn'
+  91Din  'A.T. Dinsdale, Calphad, 15, 317-425(1991).'
+  94Hal  'B. Hallemans, P. Wollants, J.R. Roos,
+          Z. Metallkd., 85, 676-82(1994), SGTE unary database V.4.1, 1999; B'
+  94SUB  'SGTE substance database, version 1994'
+  96SGUN 'SGTE unary database V.3.0, 1996.'
+  97SUB  'SGTE substance database, version 1997'
+  99SGUN 'SGTE unary database V.4.1, 1999.'
+  07Sha  'S. Shang, T. Wang, Z.-K. Liu, Calphad, 31, 286-91(2007); Sr-B'
+  09SGUN 'SGTE unary database V.5.0, 2009.'
+!
