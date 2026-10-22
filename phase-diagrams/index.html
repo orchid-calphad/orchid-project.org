@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORCHID phase diagrams</title>
+<meta name="description" content="Binary phase diagrams calculated from open CALPHAD databases, each linked to the exact TDB file used.">
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;--axis:#3a3640;--grid:#ece9ef}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--axis:#cfc8d8;--grid:#25212b}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--axis:#cfc8d8;--grid:#25212b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;text-decoration:none;color:var(--fg)}
+nav a{text-decoration:none}
+h1{font-size:1.6rem;margin:24px 0 4px}
+.lead{color:var(--muted);margin:0 0 16px;max-width:760px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:end;margin:12px 0}
+label{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+select,button{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+.plot{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;position:relative}
+svg{width:100%;height:auto;display:block}
+.tip{position:absolute;pointer-events:none;background:var(--fg);color:var(--bg);font-size:.82rem;padding:3px 8px;border-radius:5px;display:none;white-space:nowrap}
+.side{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:.9rem}
+.side h2{font-size:1rem;margin:0 0 8px}
+.side dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px}
+.side dt{color:var(--muted)} .side dd{margin:0;word-break:break-all}
+.inv{margin:10px 0 0;padding-left:18px;font-variant-numeric:tabular-nums}
+.note{color:var(--muted);font-size:.85rem;margin-top:14px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.82rem;margin:6px 4px 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:12px;height:3px;display:inline-block;border-radius:2px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="../">ORCHID</a>
+  <a href="../catalog/">Catalog</a><a href="./">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a>
+</nav></div></header>
+<main class="wrap">
+<h1>Binary phase diagrams</h1>
+<p class="lead">Calculated from open CALPHAD databases with pycalphad. Each diagram names the exact TDB file it came from,
+with its checksum, so it can be reproduced. Several published assessments exist for many systems; choose one to compare.
+<b>Prototype:</b> four systems.</p>
+<div class="controls">
+  <label>System <select id="sys"></select></label>
+  <label>Assessment (TDB) <select id="tdb"></select></label>
+  <label>Temperature <select id="unit"><option value="C">°C</option><option value="K">K</option></select></label>
+  <label>Tie-region shading <select id="fill"><option value="1">on</option><option value="0">off</option></select></label>
+</div>
+<div class="layout">
+  <div class="plot"><svg id="svg" viewBox="0 0 760 520" role="img" aria-label="phase diagram"></svg><div class="tip" id="tip"></div><div class="legend" id="legend"></div></div>
+  <aside class="side">
+    <h2 id="title">—</h2>
+    <dl>
+      <dt>TDB</dt><dd><a id="tdblink" href="#">—</a></dd>
+      <dt>SHA-256</dt><dd id="sha" style="font-size:.78rem">—</dd>
+      <dt>Source</dt><dd>SGTE binary supplement (Hallstedt 2025), CC BY 4.0</dd>
+      <dt>Engine</dt><dd id="engine">—</dd>
+    </dl>
+    <div style="margin-top:12px"><b>Invariant reactions</b><ol class="inv" id="inv"></ol></div>
+    <p class="note">Shaded areas are two-phase fields (hover for phases); white areas are single-phase fields; horizontal lines are invariant reactions.
+    Calculated diagrams depend on the assessment; they are not measured data.</p>
+  </aside>
+</div>
+</main>
+<script>
+const W=760,H=520,M={l:62,r:16,t:16,b:48};
+const $=id=>document.getElementById(id);
+let INDEX=null, CUR=null;
+const pal=["#7b3fa0","#1f77b4","#d62728","#2ca02c","#ff7f0e","#17becf","#8c564b","#e377c2","#bcbd22","#7f7f7f","#3b4cc0","#b40426","#006d5b","#a05d00"];
+const colorOf=(()=>{const m={};let i=0;return p=>m[p]||(m[p]=pal[i++%pal.length]);})();
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(t,a,parent){const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);(parent||$("svg")).appendChild(e);return e;}
+async function load(){
+  INDEX=await (await fetch("../data/phase-diagrams/index.json")).json();
+  const s=$("sys"); Object.keys(INDEX.systems).sort().forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=k.split("-").map(e=>e[0]+e.slice(1).toLowerCase()).join("–");s.appendChild(o);});
+  const h=location.hash.slice(1).split("/"); if(h[0]&&INDEX.systems[h[0]]) s.value=h[0];
+  fillTdb(h[1]); s.onchange=()=>fillTdb(); $("tdb").onchange=draw; $("unit").onchange=render; $("fill").onchange=render;
+}
+function fillTdb(pref){const t=$("tdb");t.innerHTML="";INDEX.systems[$("sys").value].slice().reverse().forEach(r=>{const o=document.createElement("option");o.value=r.file;o.textContent=r.tdb.replace(/\.tdb$/i,"");t.appendChild(o);});if(pref)t.value=pref;draw();}
+async function draw(){const f=$("tdb").value;CUR=await (await fetch("../data/phase-diagrams/sgte/"+f)).json();location.hash=$("sys").value+"/"+f;render();}
+function dedupe(inv){const out=[];inv.forEach(iv=>{const key=iv.points.map(p=>p.phase).sort().join("+");if(!out.some(o=>Math.abs(o.T-iv.T)<0.5&&o.key===key))out.push(Object.assign({key},iv));});return out;}
+function render(){
+  const d=CUR,svg=$("svg"); d.invariants=dedupe(d.invariants);svg.innerHTML="";$("legend").innerHTML="";
+  const K=$("unit").value==="K",off=K?0:273.15;
+  let Ts=[];d.regions.forEach(r=>r.forEach(p=>Ts.push(...p.T)));d.invariants.forEach(i=>Ts.push(i.T));
+  const tmin=Math.max(d.T_range[0],Math.min(...Ts)-50), tmax=Math.min(d.T_range[1],Math.max(...Ts)+80);
+  const X=x=>M.l+x*(W-M.l-M.r), Y=T=>H-M.b-(T-tmin)/(tmax-tmin)*(H-M.t-M.b);
+  const ax=css("--axis"), grid=css("--grid");
+  for(let i=0;i<=10;i++){const x=X(i/10);el("line",{x1:x,x2:x,y1:M.t,y2:H-M.b,stroke:grid});el("text",{x:x,y:H-M.b+18,"text-anchor":"middle","font-size":12,fill:ax}).textContent=i*10;}
+  const step=[50,100,200,250,500].find(s=>(tmax-tmin)/s<=10)||500;
+  for(let T=Math.ceil((tmin-off)/step)*step+off;T<=tmax;T+=step){const y=Y(T);el("line",{x1:M.l,x2:W-M.r,y1:y,y2:y,stroke:grid});el("text",{x:M.l-6,y:y+4,"text-anchor":"end","font-size":12,fill:ax}).textContent=Math.round(T-off);}
+  el("rect",{x:M.l,y:M.t,width:W-M.l-M.r,height:H-M.t-M.b,fill:"none",stroke:ax});
+  el("text",{x:(M.l+W-M.r)/2,y:H-10,"text-anchor":"middle","font-size":13,fill:ax}).textContent="Mole fraction "+d.x_component.charAt(0)+d.x_component.slice(1).toLowerCase()+" (%)";
+  const yl=el("text",{x:16,y:(M.t+H-M.b)/2,"text-anchor":"middle","font-size":13,fill:ax,transform:`rotate(-90 16 ${(M.t+H-M.b)/2})`});yl.textContent="Temperature ("+(K?"K":"°C")+")";
+  const tip=$("tip"),seen=new Set();
+  const show=(e,txt)=>{tip.style.display="block";tip.textContent=txt;const b=svg.parentNode.getBoundingClientRect();tip.style.left=(e.clientX-b.left+12)+"px";tip.style.top=(e.clientY-b.top+12)+"px";};
+  d.regions.forEach(seg=>{
+    if(seg.length<2) return; const [a,b]=seg; const n=Math.min(a.x.length,b.x.length); if(n<2) return;
+    const name=seg.map(p=>p.phase).join(" + ");
+    if($("fill").value==="1"){const pts=[];for(let i=0;i<n;i++)pts.push(X(a.x[i])+","+Y(a.T[i]));for(let i=n-1;i>=0;i--)pts.push(X(b.x[i])+","+Y(b.T[i]));
+      const pg=el("polygon",{points:pts.join(" "),fill:colorOf(a.phase),"fill-opacity":.10,stroke:"none"});pg.onmousemove=e=>show(e,name);pg.onmouseleave=()=>tip.style.display="none";}
+    seg.forEach(p=>{seen.add(p.phase);const pl=el("polyline",{points:p.x.slice(0,n).map((x,i)=>X(x)+","+Y(p.T[i])).join(" "),fill:"none",stroke:colorOf(p.phase),"stroke-width":1.6});pl.onmousemove=e=>show(e,p.phase+" boundary ("+name+")");pl.onmouseleave=()=>tip.style.display="none";});
+  });
+  d.invariants.forEach(iv=>{const xs=iv.points.map(p=>p.x);const ln=el("line",{x1:X(Math.min(...xs)),x2:X(Math.max(...xs)),y1:Y(iv.T),y2:Y(iv.T),stroke:ax,"stroke-width":1.4});const t=Math.round(iv.T-off)+(K?" K":" °C")+": "+iv.points.map(p=>p.phase).join(" + ");ln.onmousemove=e=>show(e,t);ln.onmouseleave=()=>tip.style.display="none";});
+  [...seen].sort().forEach(p=>{const s=document.createElement("span");s.innerHTML=`<i style="background:${colorOf(p)}"></i>`;s.append(p);$("legend").appendChild(s);});
+  $("title").textContent=$("sys").selectedOptions[0].textContent+" · "+d.tdb.replace(/\.tdb$/i,"");
+  const href="https://github.com/orchid-calphad/orchid-project.org/blob/main/data/databases/sgte-binary/"+d.tdb;
+  $("tdblink").href=href;$("tdblink").textContent=d.tdb;$("sha").textContent=d.sha256;$("engine").textContent=d.engine;
+  const inv=$("inv");inv.innerHTML="";d.invariants.forEach(iv=>{const li=document.createElement("li");li.textContent=Math.round(iv.T-off)+(K?" K: ":" °C: ")+iv.points.map(p=>`${p.phase} (${(100*p.x).toFixed(1)}%)`).join(", ");inv.appendChild(li);});
+}
+load();
+</script>
+</body>
+</html>
