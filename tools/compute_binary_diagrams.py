@@ -12,8 +12,19 @@ def elements_from_name(fn):
 def r(a, n):  # round arrays for compact JSON
     return [round(float(x), n) for x in (a if getattr(a, "shape", None) != () else [a])]
 
+REFRACTORY = {"W","Re","Os","Ta","Mo","Nb","Ir","Ru","Hf","Tc","Rh","C","B","Zr","Cr","V","Th","Pu","U"}
+def _alarm(signum, frame): raise TimeoutError("diagram exceeded time limit")
 def one(args):
+    import signal; signal.signal(signal.SIGALRM, _alarm); signal.alarm(600)
+    try:
+        return _one(args)
+    finally:
+        signal.alarm(0)
+def _one(args):
     tdb, out, tmax = args
+    if out and os.path.exists(os.path.join(out, os.path.basename(tdb).rsplit(".", 1)[0] + ".json")):
+        return os.path.basename(tdb), "exists", 0
+    if tmax <= 0: tmax = 4000 if set(elements_from_name(tdb)) & REFRACTORY else 2500
     from pycalphad import Database, variables as v
     from pycalphad.mapping import BinaryStrategy
     els = elements_from_name(tdb); rec = {"tdb": os.path.basename(tdb), "elements": els}
@@ -41,7 +52,7 @@ def one(args):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("out"); ap.add_argument("tdbs", nargs="+")
-    ap.add_argument("--workers", type=int, default=8); ap.add_argument("--tmax", type=float, default=2500)
+    ap.add_argument("--workers", type=int, default=8); ap.add_argument("--tmax", type=float, default=0, help="0 = auto (4000 K with a refractory element, else 2500 K)")
     a = ap.parse_args(); os.makedirs(a.out, exist_ok=True)
     with mp.Pool(a.workers, maxtasksperchild=4) as pool:
         for res in pool.imap_unordered(one, [(t, a.out, a.tmax) for t in a.tdbs]):

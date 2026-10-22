@@ -16,7 +16,9 @@ def one(args):
     except Exception as e:
         return os.path.basename(args[0]), "failed", f"{type(e).__name__}: {str(e)[:160]}"
 
+def _alarm(signum, frame): raise TimeoutError("grid exceeded time limit")
 def _one(args):
+    import signal; signal.signal(signal.SIGALRM, _alarm); signal.alarm(900)
     jf, tdbdir = args[:2]; EDGE = args[2] if len(args) > 2 else 1e-5
     import numpy as np
     from pycalphad import Database, equilibrium, variables as v

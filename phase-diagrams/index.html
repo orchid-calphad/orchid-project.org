@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ORCHID phase diagrams</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo/orchid-icon.svg">
 <meta name="description" content="Binary phase diagrams calculated from open CALPHAD databases, each linked to the exact TDB file used.">
 <style>
 :root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;--axis:#3a3640;--grid:#ece9ef}
@@ -36,26 +37,38 @@ svg{width:100%;height:auto;display:block}
 .legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.82rem;margin:6px 4px 2px}
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend i{width:12px;height:3px;display:inline-block;border-radius:2px}
+.pt{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:2px;margin:10px 0 4px;max-width:760px}
+.pt button{font-size:11px;padding:3px 0;border-radius:4px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:default;opacity:.45}
+.pt button.has{opacity:1;color:var(--fg);cursor:pointer}
+.pt button.partner{background:var(--accent2);border-color:var(--accent);color:var(--accent);opacity:1;cursor:pointer}
+.pt button.sel{background:var(--accent);color:#fff;border-color:var(--accent);opacity:1}
+.pthint{font-size:.85rem;color:var(--muted)}
 </style>
 </head>
 <body>
 <header><div class="wrap"><nav>
-  <a class="brand" href="../">ORCHID</a>
+  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
   <a href="../catalog/">Catalog</a><a href="./">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a>
 </nav></div></header>
 <main class="wrap">
 <h1>Binary phase diagrams</h1>
 <p class="lead">Calculated from open CALPHAD databases with pycalphad. Each diagram names the exact TDB file it came from,
 with its checksum, so it can be reproduced. Several published assessments exist for many systems; choose one to compare.
-<b>Prototype:</b> four systems.</p>
+Pick a system on the periodic table or from the list.</p>
+<div class="pthint" id="pthint">Pick a first element, then a partner (highlighted) to open a system.</div>
+<div class="pt" id="pt"></div>
 <div class="controls">
   <label>System <select id="sys"></select></label>
   <label>Assessment (TDB) <select id="tdb"></select></label>
   <label>Temperature <select id="unit"><option value="C">°C</option><option value="K">K</option></select></label>
+  <label>DFT hulls <select id="hullsel"><option value="both">MP + OQMD</option><option value="mp">Materials Project</option><option value="oqmd">OQMD</option><option value="none">off</option></select></label>
+  <label>Near-hull structures <select id="nearsel"><option value="1">show</option><option value="0">hide</option></select></label>
   <label>Tie-region shading <select id="fill"><option value="1">on</option><option value="0">off</option></select></label>
 </div>
 <div class="layout">
-  <div class="plot"><svg id="svg" viewBox="0 0 760 520" role="img" aria-label="phase diagram"></svg><div class="tip" id="tip"></div><div class="legend" id="legend"></div></div>
+  <div class="plot"><svg id="svg" viewBox="0 0 760 520" role="img" aria-label="phase diagram"></svg><div class="tip" id="tip"></div><div class="legend" id="legend"></div>
+    <div id="hullbox" style="margin-top:6px;border-top:1px solid var(--line);padding-top:6px"><svg id="hsvg" viewBox="0 0 760 240" role="img" aria-label="formation-energy convex hulls"></svg><div class="legend" id="hlegend"></div>
+    <details style="font-size:.82rem;margin:4px 6px"><summary>Hull data and sources</summary><div id="hmeta"></div></details></div></div>
   <aside class="side">
     <h2 id="title">—</h2>
     <dl>
@@ -84,10 +97,65 @@ async function load(){
   INDEX=await (await fetch("../data/phase-diagrams/index.json")).json();
   const s=$("sys"); Object.keys(INDEX.systems).sort().forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=k.split("-").map(e=>e[0]+e.slice(1).toLowerCase()).join("–");s.appendChild(o);});
   const h=location.hash.slice(1).split("/"); if(h[0]&&INDEX.systems[h[0]]) s.value=h[0];
-  fillTdb(h[1]); s.onchange=()=>fillTdb(); $("tdb").onchange=draw; $("unit").onchange=render; $("fill").onchange=render;
+  fillTdb(h[1]); buildPT(); s.onchange=()=>{fillTdb();buildPT();}; $("tdb").onchange=draw; $("unit").onchange=render; $("fill").onchange=render; $("hullsel").onchange=()=>drawHulls(CUR); $("nearsel").onchange=()=>drawHulls(CUR);
 }
-function fillTdb(pref){const t=$("tdb");t.innerHTML="";INDEX.systems[$("sys").value].slice().reverse().forEach(r=>{const o=document.createElement("option");o.value=r.file;o.textContent=r.tdb.replace(/\.tdb$/i,"");t.appendChild(o);});if(pref)t.value=pref;draw();}
-async function draw(){const f=$("tdb").value;CUR=await (await fetch("../data/phase-diagrams/sgte/"+f)).json();location.hash=$("sys").value+"/"+f;render();}
+
+const PT=[["H",1,1],["He",1,18],["Li",2,1],["Be",2,2],["B",2,13],["C",2,14],["N",2,15],["O",2,16],["F",2,17],["Ne",2,18],["Na",3,1],["Mg",3,2],["Al",3,13],["Si",3,14],["P",3,15],["S",3,16],["Cl",3,17],["Ar",3,18],
+["K",4,1],["Ca",4,2],["Sc",4,3],["Ti",4,4],["V",4,5],["Cr",4,6],["Mn",4,7],["Fe",4,8],["Co",4,9],["Ni",4,10],["Cu",4,11],["Zn",4,12],["Ga",4,13],["Ge",4,14],["As",4,15],["Se",4,16],["Br",4,17],["Kr",4,18],
+["Rb",5,1],["Sr",5,2],["Y",5,3],["Zr",5,4],["Nb",5,5],["Mo",5,6],["Tc",5,7],["Ru",5,8],["Rh",5,9],["Pd",5,10],["Ag",5,11],["Cd",5,12],["In",5,13],["Sn",5,14],["Sb",5,15],["Te",5,16],["I",5,17],["Xe",5,18],
+["Cs",6,1],["Ba",6,2],["Hf",6,4],["Ta",6,5],["W",6,6],["Re",6,7],["Os",6,8],["Ir",6,9],["Pt",6,10],["Au",6,11],["Hg",6,12],["Tl",6,13],["Pb",6,14],["Bi",6,15],["Po",6,16],["At",6,17],["Rn",6,18],
+["La",8,3],["Ce",8,4],["Pr",8,5],["Nd",8,6],["Pm",8,7],["Sm",8,8],["Eu",8,9],["Gd",8,10],["Tb",8,11],["Dy",8,12],["Ho",8,13],["Er",8,14],["Tm",8,15],["Yb",8,16],["Lu",8,17],
+["Ac",9,3],["Th",9,4],["Pa",9,5],["U",9,6],["Np",9,7],["Pu",9,8],["Am",9,9],["Cm",9,10]];
+let PICK=null;
+function partners(e){const E=e.toUpperCase(),out=new Set();Object.keys(INDEX.systems).forEach(k=>{const [a,b]=k.split("-");if(a===E)out.add(b);if(b===E)out.add(a);});return out;}
+function buildPT(){const pt=$("pt");pt.innerHTML="";const has=new Set();Object.keys(INDEX.systems).forEach(k=>k.split("-").forEach(e=>has.add(e)));
+  const cur=$("sys").value.split("-"),parts=PICK?partners(PICK):null;
+  PT.forEach(([e,r,c])=>{const b=document.createElement("button");b.textContent=e;b.style.gridRow=r;b.style.gridColumn=c;b.type="button";const E=e.toUpperCase();
+    if(has.has(E))b.classList.add("has"); if(parts&&parts.has(E))b.classList.add("partner");
+    if((PICK&&PICK.toUpperCase()===E)||(!PICK&&cur.includes(E)))b.classList.add("sel");
+    b.onclick=()=>{if(!has.has(E))return; if(PICK&&parts&&parts.has(E)){const k=Object.keys(INDEX.systems).find(k=>{const [a,c]=k.split("-");return (a===PICK.toUpperCase()&&c===E)||(c===PICK.toUpperCase()&&a===E);});PICK=null;$("sys").value=k;fillTdb();buildPT();$("pthint").textContent="Pick another first element to change system.";}
+      else{PICK=e;buildPT();$("pthint").textContent=`${e}: ${partners(e).size} partner(s) with a diagram are highlighted.`;}};
+    pt.appendChild(b);});}
+function yr(t){const m=t.match(/-(\d\d)[A-Za-z]/);if(!m)return 0;const y=+m[1];return y<=40?2000+y:1900+y;}
+
+const HCOL={mp:"#1f6fb2",oqmd:"#c2410c"}, HREF={
+ mp:{name:"Materials Project",cite:"A. Jain et al., APL Materials 1, 011002 (2013)",doi:"10.1063/1.4812323",site:"https://materialsproject.org"},
+ oqmd:{name:"OQMD",cite:"J. E. Saal et al., JOM 65, 1501 (2013); S. Kirklin et al., npj Comput. Mater. 1, 15010 (2015)",doi:"10.1038/npjcompumats.2015.10",site:"https://oqmd.org"}};
+async function loadHull(src,a,b){const [s0,s1]=[a,b].sort();const base="../data/hulls/dft-"+src+"/";
+  try{const h=await (await fetch(base+s0+"/"+s0+"-"+s1+".json")).json();let e=null;try{e=await (await fetch(base+"entries/"+s0+"/"+s0+"-"+s1+".json")).json();}catch(_){} return {h,e};}catch(_){return null;}}
+async function drawHulls(d){const box=$("hullbox"),svg=$("hsvg");svg.innerHTML="";$("hlegend").innerHTML="";$("hmeta").innerHTML="";
+  const want=$("hullsel").value;if(want==="none"){box.style.display="none";return;}box.style.display="";
+  const [a,b]=d.components,xc=d.x_component,srcs=want==="both"?["mp","oqmd"]:[want],data={};
+  for(const s of srcs){data[s]=await loadHull(s,a,b);}
+  const W2=760,H2=240,m={l:62,r:16,t:12,b:34};let emin=0;
+  const flip=hd=>hd.h.x_element!==xc;  // hull x is fraction of x_element
+  Object.values(data).forEach(hd=>{if(!hd)return;hd.h.isotherms[0].vertices.forEach(v=>emin=Math.min(emin,v.energy));});
+  emin=Math.min(-0.05,emin*1.15);const emax=Math.max(0.06,-emin*0.15);
+  const X2=x=>m.l+x*(W2-m.l-m.r),Y2=E=>m.t+(emax-E)/(emax-emin)*(H2-m.t-m.b),ax=css("--axis"),grid=css("--grid");
+  const S=(t,at)=>el(t,at,svg);
+  for(let i=0;i<=10;i++)S("line",{x1:X2(i/10),x2:X2(i/10),y1:m.t,y2:H2-m.b,stroke:grid});
+  const st=[0.05,0.1,0.2,0.25,0.5,1].find(q=>(emax-emin)/q<=6)||1;
+  for(let E=Math.ceil(emin/st)*st;E<=emax+1e-9;E+=st){S("line",{x1:m.l,x2:W2-m.r,y1:Y2(E),y2:Y2(E),stroke:Math.abs(E)<1e-9?ax:grid});S("text",{x:m.l-6,y:Y2(E)+4,"text-anchor":"end","font-size":11,fill:ax}).textContent=E.toFixed(2);}
+  S("rect",{x:m.l,y:m.t,width:W2-m.l-m.r,height:H2-m.t-m.b,fill:"none",stroke:ax});
+  S("text",{x:16,y:(m.t+H2-m.b)/2,"text-anchor":"middle","font-size":12,fill:ax,transform:`rotate(-90 16 ${(m.t+H2-m.b)/2})`}).textContent="ΔH_f (eV/atom)";
+  S("text",{x:(m.l+W2-m.r)/2,y:H2-6,"text-anchor":"middle","font-size":12,fill:ax}).textContent="Formation-energy convex hull at 0 K (same composition axis as above)";
+  const tip=$("tip"),show=(e,t)=>{tip.style.display="block";tip.textContent=t;const r=svg.parentNode.parentNode.getBoundingClientRect();tip.style.left=(e.clientX-r.left+12)+"px";tip.style.top=(e.clientY-r.top+12)+"px";};
+  const near=$("nearsel").value==="1",meta=[];
+  srcs.forEach(src=>{const hd=data[src];const lg=document.createElement("span");
+    if(!hd){lg.innerHTML=`<i style="background:${HCOL[src]}"></i>${HREF[src].name}: no hull for this system`;$("hlegend").appendChild(lg);return;}
+    const fx=x=>flip(hd)?1-x:x,iso=hd.h.isotherms[0],vs=iso.vertices.slice().sort((p,q)=>fx(p.x)-fx(q.x));
+    if(near&&hd.e)hd.e.above_hull.forEach(en=>{const c=S("circle",{cx:X2(fx(en.x)),cy:Y2(en.energy),r:2.5,fill:HCOL[src],"fill-opacity":.25});c.addEventListener("mousemove",ev=>show(ev,`${HREF[src].name}: ${en.formula} ${en.spacegroup_symbol||""} · ${en.phase} · ${en.energy.toFixed(3)} eV/atom (${(1000*(en.energy_above_hull_recomputed??0)).toFixed(0)} meV above hull)`));c.addEventListener("mouseleave",()=>tip.style.display="none");});
+    S("polyline",{points:vs.map(v=>X2(fx(v.x))+","+Y2(v.energy)).join(" "),fill:"none",stroke:HCOL[src],"stroke-width":1.8,"stroke-dasharray":src==="oqmd"?"6 4":"none"});
+    vs.forEach(v=>{const at={fill:HCOL[src],stroke:"white","stroke-width":1};const sh=src==="mp"?S("circle",{cx:X2(fx(v.x)),cy:Y2(v.energy),r:4.5,...at}):S("rect",{x:X2(fx(v.x))-4,y:Y2(v.energy)-4,width:8,height:8,...at});
+      sh.addEventListener("mousemove",ev=>show(ev,`${HREF[src].name}: ${v.formula} ${v.spacegroup_symbol||""} · ${v.phase} · ΔH_f ${v.energy.toFixed(3)} eV/atom${v.theoretical?" (theoretical)":""}`));sh.addEventListener("mouseleave",()=>tip.style.display="none");
+      if(v.energy<-0.005){const t=S("text",{x:X2(fx(v.x)),y:Y2(v.energy)+(src==="mp"?-8:16),"text-anchor":"middle","font-size":10,fill:HCOL[src],"pointer-events":"none"});t.textContent=v.formula.replace(/\s+/g,"").replace(/([A-Za-z])1(?![0-9])/g,"$1");}});
+    lg.innerHTML=`<i style="background:${HCOL[src]}"></i>${HREF[src].name} (${src==="mp"?"solid, circles":"dashed, squares"})`;$("hlegend").appendChild(lg);
+    const pv=hd.h.provenance,rf=hd.h.reference;
+    meta.push(`<p style="margin:6px 0"><b>${HREF[src].name}</b> — release <code>${pv.mp_release}</code>, ${pv.thermo_type} energies, pool ${pv.entry_pool}; stability: ${pv.is_stable_source==="upstream_flag"?"upstream flag":"recomputed hull"}; zero = ${rf.kind.replace(/_/g," ")} (${rf.units}); snapshot SHA-256 <code style="word-break:break-all">${pv.snapshot_sha256}</code>; retrieved ${pv.observed_at.slice(0,10)}. Licence CC BY 4.0. Cite: ${HREF[src].cite}, <a href="https://doi.org/${HREF[src].doi}" target="_blank" rel="noopener">doi:${HREF[src].doi}</a> · <a href="${HREF[src].site}" target="_blank" rel="noopener">${HREF[src].site.replace("https://","")}</a> · <a href="../data/hulls/dft-${src}/${[a,b].sort()[0]}/${[a,b].sort().join("-")}.json">hull JSON</a></p>`);});
+  meta.push(`<p class="note" style="margin:6px 0">The two sources use different energy references and correction schemes (Materials Project: GGA/GGA+U mixing, zero at the elemental ground states; OQMD: fitted elemental reference energies), so compare which phases are on each hull rather than absolute energies. Hulls are 0 K predictions, not measured phase stability.</p>`);
+  $("hmeta").innerHTML=meta.join("");}
+function fillTdb(pref){const t=$("tdb");t.innerHTML="";INDEX.systems[$("sys").value].slice().sort((a,b)=>yr(b.tdb)-yr(a.tdb)).forEach(r=>{const o=document.createElement("option");o.value=r.file;o.textContent=r.tdb.replace(/\.tdb$/i,"");t.appendChild(o);});if(pref)t.value=pref;draw();}
+async function draw(){const f=$("tdb").value;CUR=await (await fetch("../data/phase-diagrams/sgte/"+f)).json();location.hash=$("sys").value+"/"+f;render();drawHulls(CUR);}
 function dedupe(inv){const out=[];inv.forEach(iv=>{const key=iv.points.map(p=>p.phase).sort().join("+");if(!out.some(o=>Math.abs(o.T-iv.T)<0.5&&o.key===key))out.push(Object.assign({key},iv));});return out;}
 function render(){
   const d=CUR,svg=$("svg"); d.invariants=dedupe(d.invariants);svg.innerHTML="";$("legend").innerHTML="";

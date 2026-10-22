@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ORCHID — Open CALPHAD data</title>
 <meta name="description" content="ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery. Openly licensed thermodynamic databases, convex hulls and evaluated phase-equilibrium data with full provenance.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%237b3fa0'/><path d='M9 20c3-9 11-9 14 0' stroke='white' stroke-width='3' fill='none'/></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo/orchid-icon.svg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -14,7 +14,8 @@
   "description": "Curated catalog of openly available CALPHAD thermodynamic databases, redistributable TDB files, and binary convex-hull documents from DFT (Materials Project, OQMD) and assessed CALPHAD descriptions, each with licence and provenance.",
   "url": "https://orchid-project.org/",
   "keywords": ["CALPHAD", "thermodynamic database", "TDB", "phase diagram", "convex hull", "DFT", "materials data", "AI-ready data"],
-  "creator": {"@type": "Person", "name": "Raymundo Arróyave", "affiliation": {"@type": "Organization", "name": "Texas A&M University"}},
+  "creator": [{"@type": "Person", "name": "Raymundo Arróyave", "affiliation": {"@type": "Organization", "name": "Texas A&M University"}}, {"@type": "Person", "name": "James Saal"}, {"@type": "Person", "name": "Dongwon Shin"}],
+  "logo": "https://orchid-project.org/assets/logo/orchid-mark.svg",
   "license": "https://orchid-project.org/data/LICENSES.md",
   "isAccessibleForFree": true,
   "distribution": [
@@ -59,7 +60,7 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 </head>
 <body>
 <header><div class="wrap"><nav>
-  <a class="brand" href="./">ORCHID</a>
+  <a class="brand" href="./" style="display:inline-flex;align-items:center;gap:8px"><img src="assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
   <a href="catalog/">Catalog</a>
   <a href="phase-diagrams/">Phase diagrams</a>
   <a href="catalog/binary-thermo.html">Hulls &amp; mixing</a>
@@ -69,12 +70,15 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 </nav></div></header>
 
 <main class="wrap">
-<section class="hero">
+<section class="hero" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center">
+  <img src="assets/logo/orchid-mark-outlined.svg" alt="ORCHID logo: spinodal rose with an orchid at the stable centre" width="170" height="157" style="flex:0 0 auto">
+  <div style="flex:1 1 420px">
   <h1>Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery</h1>
   <p>ORCHID gathers openly available thermodynamic databases and the evidence behind them — assessed phase
   diagrams, invariant reactions, thermochemical measurements and first-principles energies — in one place, with
   the licence, source and evidence class of every value recorded. The data are versioned, citable and machine-readable,
   built to be used by people and by AI models alike.</p>
+  </div>
 </section>
 
 <section class="stats" aria-label="Current contents">
@@ -115,7 +119,7 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 
 <h2 id="cite">Cite</h2>
 <p>Versioned releases are archived on Zenodo with a DOI for each version. Until the first release, please cite:</p>
-<p><code>R. Arróyave et al., ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery, https://orchid-project.org (2026).</code></p>
+<p><code>R. Arróyave, J. Saal, D. Shin, ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery, https://orchid-project.org (2026).</code></p>
 <p class="soon">For machines: <a href="llms.txt">llms.txt</a> · <a href="CITATION.cff">CITATION.cff</a> · <a href="data/croissant.json">Croissant metadata</a></p>
 </main>
 

@@ -1,98 +1,111 @@
 {
- "source": "SGTE binary supplement (Hallstedt 2025), CC BY 4.0",
- "engine": "pycalphad 0.11.2 BinaryStrategy",
+ "source": "SGTE binary collection (Hallstedt 2025), CC BY 4.0",
+ "engine": "pycalphad 0.11.2 BinaryStrategy + equilibrium grid",
  "systems": {
   "AL-NI": [
    {
     "file": "AlNi-01Dup-4sl-old.json",
     "tdb": "AlNi-01Dup-4sl-old.tdb",
     "sha256": "67b462ac7c6861a84c0e2a7acfec629f88b106503d481197873823c481338785",
-    "n_regions": 50,
-    "n_invariants": 20
+    "grid": true,
+    "citation": "N. Dupin, I. Ansara, B. Sundman, Calphad, 25, 279-98(2001).",
+    "doi": "10.1016/S0364-5916(01)00049-9"
    },
    {
     "file": "AlNi-01Dup-4sl.json",
     "tdb": "AlNi-01Dup-4sl.tdb",
     "sha256": "de7e77f0f98a25d4f01716630697881b4db651d22139b8f0d5f3720c31c5ca26",
-    "n_regions": 42,
-    "n_invariants": 17
+    "grid": true,
+    "citation": "N. Dupin, I. Ansara, B. Sundman, Calphad, 25, 279-98(2001).",
+    "doi": "10.1016/S0364-5916(01)00049-9"
    },
    {
     "file": "AlNi-01Dup-LB.json",
     "tdb": "AlNi-01Dup-LB.tdb",
     "sha256": "f92c4694c34add599e1d6834978ecd31b7988db4f19619cd70505f966ac4bf9f",
-    "n_regions": 26,
-    "n_invariants": 10
+    "grid": true,
+    "citation": "N. Dupin, I. Ansara, B. Sundman, Calphad, 25, 279-98(2001).",
+    "doi": "10.1016/S0364-5916(01)00049-9"
    },
    {
     "file": "AlNi-01Dup-orig.json",
     "tdb": "AlNi-01Dup-orig.tdb",
     "sha256": "e936330672baf7933076994060777e792d030690c67145b37eada567688be3b0",
-    "n_regions": 21,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "N. Dupin, I. Ansara, B. Sundman, Calphad, 25, 279-98(2001).",
+    "doi": "10.1016/S0364-5916(01)00049-9"
    },
    {
     "file": "AlNi-03Sun.json",
     "tdb": "AlNi-03Sun.tdb",
     "sha256": "b61858b6243ad431784c8a36bdfb3d8b0248977a099350c24a55d4985361b0fb",
-    "n_regions": 39,
-    "n_invariants": 15
+    "grid": true,
+    "citation": "B. Sundman, N. Dupin, JEEP 2003 Lyon.",
+    "doi": null
    },
    {
     "file": "AlNi-04Oht.json",
     "tdb": "AlNi-04Oht.tdb",
     "sha256": "7532c7378b636d77f225282c9d0334e1b000ece067a354ba0308ba2cd663f617",
-    "n_regions": 21,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "H. Ohtani, Y. Chen, M. Hasebe, Mater. Trans. (JIM), 45, 1489-98(2004).",
+    "doi": "10.2320/matertrans.45.1489"
    },
    {
     "file": "AlNi-05Mie.json",
     "tdb": "AlNi-05Mie.tdb",
     "sha256": "3b6faf924a8dca5bcb5e147bd54d4d9e42089c1c741c47559f25ad1155b83ffd",
-    "n_regions": 35,
-    "n_invariants": 13
+    "grid": true,
+    "citation": "J. Miettinen, Calphad, 29, 40-48(2005).",
+    "doi": "10.1016/j.calphad.2005.02.002"
    },
    {
     "file": "AlNi-11Che.json",
     "tdb": "AlNi-11Che.tdb",
     "sha256": "38cb761434c46112bc268cf111f8ff4ca79eb0486fc73a75cde305ebfc3ddae5",
-    "n_regions": 29,
-    "n_invariants": 11
+    "grid": true,
+    "citation": "H.-L. Chen, E. Doernberg, P. Svoboda, R. Schmid-Fetzer, Thermochim. Acta, 512, 189-95(2011).",
+    "doi": "10.1016/j.tca.2010.10.005"
    },
    {
     "file": "AlNi-14Zhu.json",
     "tdb": "AlNi-14Zhu.tdb",
     "sha256": "7b8304cf5f0be6a04f66bb0cf7f35975a2d92a9fa351851fe1347aee68c6019e",
-    "n_regions": 23,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "J. Zhu, M.S. Titus, T.M. Pollock, J. Phase Equilib. Diffus., 35, 595-611(2014).",
+    "doi": "10.1007/s11669-014-0327-5"
    },
    {
     "file": "AlNi-22Yan.json",
     "tdb": "AlNi-22Yan.tdb",
     "sha256": "e71d9e3cf85a2ad2c7ff48347dfd2752a8233fc9e9dd2e7e721ac61a4cbd044a",
-    "n_regions": 38,
-    "n_invariants": 15
+    "grid": true,
+    "citation": "W. Yang, P. Wang, X. Huang, S. Zhang, Intermetallics, 149, 107647(2022).",
+    "doi": "10.1016/j.intermet.2022.107647"
    },
    {
     "file": "AlNi-88Ans.json",
     "tdb": "AlNi-88Ans.tdb",
     "sha256": "e3328a93ebedd45d5a51d40a67f7b7504adc9906eb8d6685d5f84db66bca31e8",
-    "n_regions": 24,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "I. Ansara, B. Sundman, P. Willemin, Acta Metall., 36, 977-82(1988).",
+    "doi": "10.1016/0001-6160(88)90152-6"
    },
    {
     "file": "AlNi-97Ans.json",
     "tdb": "AlNi-97Ans.tdb",
     "sha256": "476040576afa2e8201b123dccc8c9cff87c60278e953aa0a5b853ef7d71832f3",
-    "n_regions": 23,
-    "n_invariants": 9
+    "grid": true,
+    "citation": "I. Ansara, N. Dupin, H.L. Lukas, B. Sundman, J. Alloys Compd., 247, 20-30(1997).",
+    "doi": "10.1016/S0925-8388(96)02652-7"
    },
    {
     "file": "AlNi-98Hua.json",
     "tdb": "AlNi-98Hua.tdb",
     "sha256": "41ccf30b100f6f25ec48cae31d701ae650c4b964360ba47c7e179a1510039c68",
-    "n_regions": 22,
-    "n_invariants": 9
+    "grid": true,
+    "citation": "W. Huang, Y.A. Chang, Intermet., 6, 487-98(1998).",
+    "doi": "10.1016/S0966-9795(97)00099-X"
    }
   ],
   "CU-ZN": [
@@ -100,43 +113,49 @@
     "file": "CuZn-03Dav.json",
     "tdb": "CuZn-03Dav.tdb",
     "sha256": "4fa0e63708a02b1f08b44bbb0138c308e8146cf2005b55046a1175cb027fb861",
-    "n_regions": 23,
-    "n_invariants": 11
+    "grid": true,
+    "citation": "N. David, J.-M. Fiorani, M. Vilasi, J. Hertz, J. Phase Equilib., 24, 240-48(2003).",
+    "doi": "10.1361/105497103770330541"
    },
    {
     "file": "CuZn-05Jia.json",
     "tdb": "CuZn-05Jia.tdb",
     "sha256": "00e6afc14ff2edb662983d71abb180d545de5bb8da2b30ab4c014c54706d57bb",
-    "n_regions": 18,
-    "n_invariants": 9
+    "grid": true,
+    "citation": "M. Jiang, C.P. Wang, X.J. Liu, I. Ohnuma, R. Kainuma, G.P. Vassilev, K. Ishida, J. Phys. Chem. Solids, 66, 246-50(2005).",
+    "doi": "10.1016/j.jpcs.2004.08.039"
    },
    {
     "file": "CuZn-08Gie.json",
     "tdb": "CuZn-08Gie.tdb",
     "sha256": "6a3bb3f347ded5af8287b69c053e9a879351f5c2da1b3e7f4bc4de0edf6c3f02",
-    "n_regions": 16,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "W. Gierlotka, S.-W. Chen, J. Mater. Res., 23, 258-63(2008).",
+    "doi": "10.1557/JMR"
    },
    {
     "file": "CuZn-11Wan.json",
     "tdb": "CuZn-11Wan.tdb",
     "sha256": "1bc8b8df311a816df1eb49c7b294654f7b0f075fc7a2e1dc7329a636d77da462",
-    "n_regions": 13,
-    "n_invariants": 6
+    "grid": true,
+    "citation": "J. Wang, H. Xu, S. Shang, L. Zhang, Y. Du, W. Zhang, S. Liu, P. Wang, Z.-K. Liu, Calphad, 35, 191-203(2011).",
+    "doi": "10.1016/j.calphad.2011.02.001"
    },
    {
     "file": "CuZn-15Lia.json",
     "tdb": "CuZn-15Lia.tdb",
     "sha256": "0e2862d7621854ca4f4d3510c3ea45abe1545ec991384f906d91907b8bbbc841",
-    "n_regions": 18,
-    "n_invariants": 6
+    "grid": true,
+    "citation": "S.-M. Liang, H.-M. Hsiao, R. Schmid-Fetzer, Calphad, 51, 224-32(2015).",
+    "doi": "10.1016/j.calphad.2015.09.010"
    },
    {
     "file": "CuZn-93Kow-LB.json",
     "tdb": "CuZn-93Kow-LB.tdb",
     "sha256": "199a279ec633d57b71ade6e126e576930508f1242924f8345e7aaaf7c21d59b6",
-    "n_regions": 23,
-    "n_invariants": 9
+    "grid": true,
+    "citation": "M. Kowalski, P.J. Spencer, J. Phase Equilib., 14, 432-38 (1993).",
+    "doi": "10.1007/BF02671961"
    }
   ],
   "FE-C": [
@@ -144,64 +163,73 @@
     "file": "FeC-10Hal.json",
     "tdb": "FeC-10Hal.tdb",
     "sha256": "7b87dfe21503206d42c190e952906e301bfc41b5353d43fa7c397cf4e451c476",
-    "n_regions": 15,
-    "n_invariants": 5
+    "grid": false,
+    "citation": "B. Hallstedt, D. Djurovic, J. von Appen, R. Dronskowski, A. Dick, F. Koermann, T. Hickel, J. Neugebauer, Calphad, 34, 129-33(2010).",
+    "doi": "10.1016/j.calphad.2010.01.004"
    },
    {
     "file": "FeC-14Nar-3g.json",
     "tdb": "FeC-14Nar-3g.tdb",
     "sha256": "2ac51900c8c0ad3b5fc7f08239c645d392ac6bf5d41da971300b780ce0f6e6b9",
-    "n_regions": 19,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "R. Naraghi, M. Selleby, J. Agren, Calphad, 46, 148-58(2014).",
+    "doi": "10.1016/j.calphad.2014.03.004"
    },
    {
     "file": "FeC-16Goh.json",
     "tdb": "FeC-16Goh.tdb",
     "sha256": "f7f205bbf9b6e5949dd4726d6a29b24f22690dc9119d3cc037fc4669357dbcb3",
-    "n_regions": 15,
-    "n_invariants": 4
+    "grid": true,
+    "citation": "H. Gohring, A. Leineweber, E.J. Mittemeijer, Calphad, 52, 38-46(2016).",
+    "doi": "10.1016/j.calphad.2015.10.014"
    },
    {
     "file": "FeC-19Che.json",
     "tdb": "FeC-19Che.tdb",
     "sha256": "fe32281d077aba2437cc7352a726bf7a770ed36071849bc3faf8fac1fed24fa4",
-    "n_regions": 16,
-    "n_invariants": 4
+    "grid": false,
+    "citation": "L. Chen, Z. Zhang, Y. Huang, J. Cui, Z. Deng, H. Zou, K. Chang, Calphad, 64, 225-35(2019).",
+    "doi": "10.1016/j.calphad.2018.12.001"
    },
    {
     "file": "FeC-19Mie.json",
     "tdb": "FeC-19Mie.tdb",
     "sha256": "a128011207de397a0d8bd8a5197508572afae4e2be1ef939c57037c00906e062",
-    "n_regions": 21,
-    "n_invariants": 7
+    "grid": true,
+    "citation": "J. Miettinen, V.-V. Visuri, T. Fabritius, Acta Universitatis Ouluensis, C 704, 2019.",
+    "doi": null
    },
    {
     "file": "FeC-20Sae.json",
     "tdb": "FeC-20Sae.tdb",
     "sha256": "36e4397833b59ef89f58aee5832a1f16061dea21b85561a96cefa6d31a4cada7",
-    "n_regions": 16,
-    "n_invariants": 4
+    "grid": true,
+    "citation": "M. Saeki, T. Yamashita, H. Ohtani, ISIJ Int., 60, 745-55(2020).",
+    "doi": "10.2355/isijinternational.ISIJINT-2019-274"
    },
    {
     "file": "FeC-23Jac.json",
     "tdb": "FeC-23Jac.tdb",
     "sha256": "c7f5cd4fc7acc9e50b3e29624baec74a51a25bda60cedab3a996184fc489e708",
-    "n_regions": 16,
-    "n_invariants": 4
+    "grid": true,
+    "citation": "A. Jacob, E. Povoden-Karadeniz, P. Retzl, E. Kozeschnik, Calphad, 81, 102531(2023).",
+    "doi": "10.1016/j.calphad.2023.102531"
    },
    {
     "file": "FeC-24Eno.json",
     "tdb": "FeC-24Eno.tdb",
     "sha256": "6287b7852f6f5d4b1202c9d1126b250ef657911dc41f80b302b9cf80d08cebe8",
-    "n_regions": 16,
-    "n_invariants": 5
+    "grid": true,
+    "citation": "M. Enoki, K. Takahashi, H. Ohtani, J. Phase Equilib. Diffus., 45, 1244-59(2024).",
+    "doi": "10.1007/s11669-024-01162-3"
    },
    {
     "file": "FeC-85Gus-LB.json",
     "tdb": "FeC-85Gus-LB.tdb",
     "sha256": "9997883ee050052301db1ddeb6afcb297654005e2c3cbce8a434c6f70e418788",
-    "n_regions": 15,
-    "n_invariants": 4
+    "grid": true,
+    "citation": "P. Gustafson, Scand. J. Metall., 14, 259-67(1985).",
+    "doi": null
    }
   ],
   "NI-TI": [
@@ -209,92 +237,105 @@
     "file": "NiTi-04Tok.json",
     "tdb": "NiTi-04Tok.tdb",
     "sha256": "362b1ea505e0ce057d1b71a3f11014d31197766e37770102925faeee28254c56",
-    "n_regions": 24,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "T. Tokunaga, K. Hashima, H. Ohtani, M. Hasebe, Mater. Trans. JIM, 45, 1507-14(2004).",
+    "doi": "10.2320/matertrans.45.1507"
    },
    {
     "file": "NiTi-09Key.json",
     "tdb": "NiTi-09Key.tdb",
     "sha256": "5edb4535ec69baf262492be7082746f9d44bad1535cd9ced5318a117394a990e",
-    "n_regions": 28,
-    "n_invariants": 13
+    "grid": true,
+    "citation": "J. De Keyzer, G. Cacciamani, N. Dupin, P. Wollants, Calphad, 33, 109-23(2009).",
+    "doi": null
    },
    {
     "file": "NiTi-13Pov.json",
     "tdb": "NiTi-13Pov.tdb",
     "sha256": "aba1407d528a3950a5280619a08171857e4a6ad8a4b0c86995c8e7b73f112991",
-    "n_regions": 35,
-    "n_invariants": 16
+    "grid": true,
+    "citation": "E. Povoden-Karadeniz, D.C. Cirstea, P. Lang, T. Wojcik, E. Kozeschnik, Calphad, 41, 128-39(2013).",
+    "doi": "10.1016/j.calphad.2013.02.004"
    },
    {
     "file": "NiTi-14Hu.json",
     "tdb": "NiTi-14Hu.tdb",
     "sha256": "83c0ad45fde56b371df4f38e3e86d022e6fa3c08bc62327ab5b69278071dc3e8",
-    "n_regions": 82,
-    "n_invariants": 40
+    "grid": true,
+    "citation": "B. Hu, Y. Du, J.C. Schuster, W. Sun, S. Liu, C. Tang, J. Alloys Compd., 578, 35-42(2014).",
+    "doi": "10.1016/j.tca.2014.01.002"
    },
    {
     "file": "NiTi-15San.json",
     "tdb": "NiTi-15San.tdb",
     "sha256": "28f41732b6b51f8a075393cc9fa9f461848214f16385ef4951eacfaa36af4f12",
-    "n_regions": 27,
-    "n_invariants": 10
+    "grid": true,
+    "citation": "K. Santhy, K.C. Hari Kumar, J. Alloys Compd., 619, 733-47(2015).",
+    "doi": "10.1016/j.jallcom.2014.08.200"
    },
    {
     "file": "NiTi-16Ber.json",
     "tdb": "NiTi-16Ber.tdb",
     "sha256": "d2a92729bf95724c58526835fdc0d851509fbc698a3f1ea4a71aaf38785838f6",
-    "n_regions": 24,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "A. Berche, J.C. Tedenac, J. Fartushna, P. Jund, Calphad, 54, 67-75(2016).",
+    "doi": "10.1016/j.calphad.2016.06.002"
    },
    {
     "file": "NiTi-18Hua.json",
     "tdb": "NiTi-18Hua.tdb",
     "sha256": "37a12353c6dda89d33d0e2d913d13a9a5bf6e35ea51a3b9ff9a489b3264c4d0f",
-    "n_regions": 17,
-    "n_invariants": 5
+    "grid": true,
+    "citation": "J. Huang, Y. Wang, J. Wang, X.-G. Lu, L. Zhang, J. Phase Equilib. Diffus., 39, 597-609(2018).",
+    "doi": "10.1007/s11669-018-0650-3"
    },
    {
     "file": "NiTi-21Jin.json",
     "tdb": "NiTi-21Jin.tdb",
     "sha256": "07cb881c11a82ea116caf19fecbbc193e57d7fb28da67a257a5b095a0b15f85a",
-    "n_regions": 34,
-    "n_invariants": 13
+    "grid": true,
+    "citation": "B. Jin, X. Lu, S. Liu, K. Xu, Y. Du, S. Zhang, M. Chu, Calphad, 73, 102256(2021).",
+    "doi": "10.1016/j.calphad.2021.102256"
    },
    {
     "file": "NiTi-22Sun.json",
     "tdb": "NiTi-22Sun.tdb",
     "sha256": "510a8484471c8fd26ba93c84d7977436f9333237d657322208b3aa23b13e653b",
-    "n_regions": 30,
-    "n_invariants": 13
+    "grid": true,
+    "citation": "H. Sun, Y. Zhang, Q. Pan, Y. Liu, W. Zheng, X.-G. Lu, Calphad, 79, 102505(2022).",
+    "doi": "10.1016/j.calphad.2022.102505"
    },
    {
     "file": "NiTi-92Sau.json",
     "tdb": "NiTi-92Sau.tdb",
     "sha256": "7cdd2f2d8f3af719d9c8759a84e7e001044dba426bbe76a65d87dd97f77e9d05",
-    "n_regions": 22,
-    "n_invariants": 7
+    "grid": true,
+    "citation": "N. Saunders, communication to N. Dupin, 1992.",
+    "doi": null
    },
    {
     "file": "NiTi-95Oh.json",
     "tdb": "NiTi-95Oh.tdb",
     "sha256": "661c193a3a6c1514dde350daffa259135a8b7b279a9d3b4165258d674c19a72a",
-    "n_regions": 25,
-    "n_invariants": 8
+    "grid": true,
+    "citation": "C.-S. Oh, J.-H. Shim, D.N. Lee, J. Korean Inst. Met. Mater., 33, 129-36(1995).",
+    "doi": null
    },
    {
     "file": "NiTi-96Bel-LB.json",
     "tdb": "NiTi-96Bel-LB.tdb",
     "sha256": "1dc4d56ca879ba4553fb58647450c4c1b5a567ed889e134e0c8c6c0d6d5dc5b4",
-    "n_regions": 23,
-    "n_invariants": 6
+    "grid": true,
+    "citation": "P. Bellen, K.C. Hari Kumar, P. Wollants, Z. Metallkd., 87, 972-78(1996).",
+    "doi": "10.1515/ijmr-1996-871207"
    },
    {
     "file": "NiTi-99Tan.json",
     "tdb": "NiTi-99Tan.tdb",
     "sha256": "b49cb7d07c39c86aa9170412cb76d743f6e43d270ad5fd62ddd69b9822a86b2c",
-    "n_regions": 22,
-    "n_invariants": 9
+    "grid": true,
+    "citation": "W. Tang, B. Sundman, R. Sandstrom, C. Qiu, Acta Mater., 47, 3457-68(1999).",
+    "doi": "10.1016/S1359-6454(99)00193-7"
    }
   ]
  }
