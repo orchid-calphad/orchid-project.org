@@ -1,0 +1,1229 @@
+#!/usr/bin/env python3
+"""Export the public ORCHID literature-data release from the SGTE-corpus record store.
+
+Reads (never writes) the db-v2.1 record store produced by the open-tdb SGTE-corpus campaign:
+
+  invariants/master/*.jsonl   invariant-reaction tables (source, artifact, reading, observation records)
+  general/records/*.jsonl     general thermodynamic / phase-equilibrium / structure tables
+  text/*.jsonl                running-text values, each linked to one verbatim quote and page
+  context/*.jsonl             paper-level experimental context (samples, treatments, measurements)
+
+and writes derived data only (values, units, conditions, phases, compositions, evidence class, method,
+citations, one verbatim quote per value with its page) under data/literature/:
+
+  index.json                  systems -> counts by evidence class / property group, file list
+  systems/<SYS>.json          records of one chemical system (+ the papers and contexts they reference)
+  papers.json                 paper id -> citation, DOI, year, title, kind, systems
+  contexts.json               paper id -> experimental context items (quote + page each)
+  orchid-literature.jsonl.gz  every record, one per line
+  orchid-literature.csv.gz    every record, flattened
+  SCHEMA.md                   field documentation (written by this script)
+
+Never exported: page images, crops, renders, full text, full table text, PDFs, reader notes, the content of
+dropped (unquoted) fields. Okamoto handbook material is out of scope.
+
+Deterministic: same inputs give byte-identical outputs (sorted keys, gzip mtime 0). Standard library only.
+
+  python3 tools/export_literature_data.py            # write
+  python3 tools/export_literature_data.py --check    # verify the files on disk are current (exit 1 if not)
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import glob
+import gzip
+import hashlib
+import io
+import json
+import os
+import re
+import sys
+from collections import Counter, defaultdict
+
+DEFAULT_CORPUS = os.path.expanduser("~/projects/open-tdb/build/sgte-corpus")
+DEFAULT_PDFS = os.path.expanduser("~/data/PD-extraction")
+SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT_REL = os.path.join("data", "literature")
+RELEASE = "orchid-literature 2026-10-22 (record store db-v2.1: invariant/general v2.1.19p, text+context fixup-20261022)"
+MAX_SYSTEM_BYTES = 1_900_000
+
+EVIDENCE = {"experimental": "experimental", "model_value": "model", "model": "model",
+            "computed": "dft", "dft": "dft", "unspecified": "unspecified"}
+
+TEXT_QUANTITY = {"formation_enthalpy": "HM_FORM", "mixing_enthalpy": "HM_MIX", "gibbs_energy": "GIBBS_ENERGY",
+                 "entropy": "ENTROPY", "partial_enthalpy": "PARTIAL_ENTHALPY", "heat_capacity": "CPM",
+                 "heat_content": "HEAT_CONTENT", "emf": "EMF", "activity": "ACTIVITY",
+                 "activity_coefficient": "ACTIVITY_COEFFICIENT", "vapor_pressure": "VAPOR_PRESSURE",
+                 "chemical_potential": "CHEMICAL_POTENTIAL", "lattice_parameter": "LATTICE_UNSPECIFIED_AXIS",
+                 "other": "OTHER"}
+
+GENERIC_METHODS = {"as_reported", "as_reported_in_text", "as_reported_in_assessment_table", ""}
+
+
+def property_group(obs_type: str, q: str | None) -> str:
+    if obs_type == "invariant_reaction":
+        return "invariant reaction"
+    if obs_type == "phase_transition":
+        return "phase transition"
+    if obs_type in ("phase_region_vertex_set", "phase_assemblage_node"):
+        return "phase equilibrium"
+    if obs_type == "structural_property":
+        return "crystal structure"
+    q = (q or "").upper()
+    if obs_type == "property_expression":
+        return "model expression"
+    if q.startswith(("HM_FORM", "SM_FORM", "GM_FORM")) or "FORM" in q:
+        return "formation"
+    if q.startswith(("HM_MIX", "GM_MIX", "SM_MIX", "PARTIAL", "EXCESS")) or "MIX" in q:
+        return "mixing / partial"
+    if q.startswith(("CPM", "CP", "HEAT_CONTENT", "SM", "ENTROPY", "HM")):
+        return "heat capacity / entropy / enthalpy"
+    if q.startswith(("ACR", "ACTIVITY", "EMF", "CHEMICAL_POTENTIAL", "MU", "VAPOR", "GIBBS", "GM")):
+        return "activity / EMF / Gibbs energy"
+    if q.startswith(("LATTICE", "MOLAR_VOLUME", "SITE", "VOLUME", "DENSITY")):
+        return "crystal structure"
+    return "other property"
+
+
+# ----------------------------------------------------------------------------------------------- helpers
+
+def jl(path):
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if line:
+                yield json.loads(line)
+
+
+def num(v):
+    if isinstance(v, bool) or v is None:
+        return None
+    if isinstance(v, (int, float)):
+        if v != v or v in (float("inf"), float("-inf")):
+            return None
+        return round(float(v), 10) if isinstance(v, float) else v
+    return None
+
+
+def clean(obj):
+    """Drop None / empty containers recursively, round floats (stable output)."""
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            v = clean(v)
+            if v is None or v == {} or v == [] or v == "":
+                continue
+            out[k] = v
+        return out
+    if isinstance(obj, list):
+        return [clean(v) for v in obj if clean(v) not in (None, {}, [], "")]
+    if isinstance(obj, float):
+        if obj != obj:
+            return None
+        return float(f"{obj:.10g}")
+    return obj
+
+
+def doi_norm(d):
+    if not d or not isinstance(d, str):
+        return None
+    d = d.strip()
+    d = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", d, flags=re.I)
+    return d.lower() or None
+
+
+SHA2DOI = {}  # pdf sha256 prefix (16 hex) -> DOI, for corpus sources whose record lacks the DOI
+
+
+def paper_key(src: dict | None):
+    if not src:
+        return None
+    d = doi_norm(src.get("doi"))
+    if d:
+        return "doi:" + d
+    sha = src.get("file_sha256")
+    if sha:
+        if sha[:16] in SHA2DOI:
+            return "doi:" + SHA2DOI[sha[:16]]
+        return "sha256:" + sha[:16]
+    pid = src.get("pid") or src.get("id")
+    return pid
+
+
+def system_name(elems):
+    return "-".join(sorted({e.upper() for e in elems}))
+
+
+def reader_of(reading_id: str) -> str:
+    r = reading_id.rsplit(":", 1)[-1]
+    r = re.sub(r"-(\d+)-(\d+)(?=-|$)", r"-\1.\2", r)
+    return "text_layer" if r == "text-layer" else r
+
+
+# ----------------------------------------------------------------------------------------------- bibliography
+
+class Biblio:
+    def __init__(self, corpus, pdfs):
+        self.cache_dir = os.path.join(corpus, "crossref-cache")
+        self.header = {}          # doi -> header citation (TDB header)
+        self.header_by_sha = {}   # file sha16 -> header citation
+        links = os.path.join(corpus, "tdb_pdf_links.json")
+        if os.path.exists(links):
+            data = json.load(open(links, encoding="utf-8"))
+            for ln in data.get("links", []):
+                d = doi_norm(ln.get("doi"))
+                cit = ln.get("header_citation")
+                if d and cit:
+                    self.header.setdefault(d, (cit, ln.get("year")))
+                if ln.get("pdf") and ln.get("status") == "linked_pdf_local":
+                    p = os.path.join(pdfs, ln["pdf"])
+                    if os.path.exists(p):
+                        h = hashlib.sha256(open(p, "rb").read()).hexdigest()[:16]
+                        if d:
+                            SHA2DOI.setdefault(h, d)
+                        elif cit:
+                            self.header_by_sha.setdefault(h, (cit, ln.get("year")))
+        self.meta = {}
+        mp = os.path.join(corpus, "db-v2.1", "cited-meta", "meta.json")
+        if os.path.exists(mp):
+            for v in json.load(open(mp, encoding="utf-8")).values():
+                d = doi_norm(v.get("doi"))
+                if d and v.get("status") == "found":
+                    self.meta.setdefault(d, v)
+
+    def crossref(self, doi):
+        key = hashlib.sha256(doi.lower().encode()).hexdigest()[:20]
+        p = os.path.join(self.cache_dir, key + ".json")
+        if not os.path.exists(p):
+            return None
+        try:
+            d = json.load(open(p, encoding="utf-8"))
+        except Exception:
+            return None
+        if doi_norm(d.get("DOI")) != doi:
+            return None
+        return d
+
+    def describe(self, doi):
+        """-> dict(title, authors, year, container, volume, page) from local caches only."""
+        if not doi:
+            return {}
+        cr = self.crossref(doi)
+        if cr:
+            auth = []
+            for a in cr.get("author", []) or []:
+                nm = " ".join(x for x in (a.get("given"), a.get("family")) if x) or a.get("name")
+                if nm:
+                    auth.append(nm)
+            year = None
+            for k in ("published-print", "published-online", "issued", "created"):
+                dp = (cr.get(k) or {}).get("date-parts")
+                if dp and dp[0] and dp[0][0]:
+                    year = dp[0][0]
+                    break
+            return {"title": (cr.get("title") or [None])[0], "authors": auth, "year": year,
+                    "container": (cr.get("short-container-title") or cr.get("container-title") or [None])[0],
+                    "volume": cr.get("volume"), "page": cr.get("page"), "metadata_source": "crossref"}
+        m = self.meta.get(doi)
+        if m:
+            return {"title": m.get("title"), "authors": [m["first_author"]] if m.get("first_author") else [],
+                    "year": m.get("year"), "container": m.get("venue"), "metadata_source": "openalex/crossref"}
+        return {}
+
+
+def repair_replacement_chars(obj, names):
+    """Source records carry U+FFFD where an accented letter was lost upstream (e.g. 'Fern\ufffdndez').
+    Restore each damaged word from a known name (Crossref author names in the local cache) when exactly one
+    candidate matches with the damaged positions as wildcards; otherwise drop the U+FFFD (never invent letters)."""
+    def fix(s):
+        if "\ufffd" not in s:
+            return s
+        def word(m):
+            w = m.group(0)
+            pat = re.compile("^" + "".join("." if ch == "\ufffd" else re.escape(ch) for ch in w) + "$")
+            idx = [i for i, ch in enumerate(w) if ch == "\ufffd"]
+            hits = {n for n in names if pat.match(n) and all(ord(n[i]) > 127 for i in idx)}  # the lost letter was non-ASCII
+            return hits.pop() if len(hits) == 1 else w.replace("\ufffd", "")
+        return re.sub(r"[^\s,;.()\[\]\"]*\ufffd[^\s,;.()\[\]\"]*", word, s)
+    if isinstance(obj, str):
+        return fix(obj)
+    if isinstance(obj, list):
+        return [repair_replacement_chars(x, names) for x in obj]
+    if isinstance(obj, dict):
+        return {k: repair_replacement_chars(v, names) for k, v in obj.items()}
+    return obj
+
+
+def crossref_name_words(cache_dir):
+    words = set()
+    for f in os.listdir(cache_dir):
+        if not f.endswith(".json"):
+            continue
+        try:
+            d = json.load(open(os.path.join(cache_dir, f), encoding="utf-8"))
+        except Exception:
+            continue
+        for a in d.get("author", []) or []:
+            for part in (a.get("given"), a.get("family")):
+                for w in re.split(r"[\s,]+", part or ""):
+                    if w and "\ufffd" not in w:
+                        words.add(w)
+    return words
+
+
+# Formation enthalpies / Gibbs energies of formation are reported in kJ/mol-atom (PI decision 2026-10-22).
+FORMATION_KJ = {"HM_FORM", "GM_FORM"}
+_E = [(re.compile(r"^\s*kcal", re.I), 4.184), (re.compile(r"^\s*cal", re.I), 0.004184), (re.compile(r"^\s*kj", re.I), 1.0),
+      (re.compile(r"^\s*j\b|^\s*j[\s/(]", re.I), 0.001), (re.compile(r"^\s*ev", re.I), 96.48533212)]
+_PER_ATOM = re.compile(r"mol(e)?[\s.\-·'’()]*(of[\s.\-]*)?at|g(ram)?[\s.\-Æ·]*at|molatom|/\s*atom|per\s+atom", re.I)
+_UNSTATED = re.compile(r"basis unstated|^\s*k?j\s*(/\s*mol(e)?|\s+mol\s*-?\s*1)\s*$", re.I)
+
+
+def _sig(x):
+    return float(f"{x:.10g}")
+
+
+def normalize_formation_unit(r):
+    if r.get("property") not in FORMATION_KJ or not isinstance(r.get("value"), (int, float)):
+        return
+    u = (r.get("unit") or "").strip()
+    fac = next((f for pat, f in _E if pat.search(u)), None)
+    if fac is None:
+        return
+    if fac == 96.48533212 and not _PER_ATOM.search(u):
+        return  # eV per cell / defect / formula: not convertible to a per-atom molar value
+    if _PER_ATOM.search(u):
+        new = "kJ/mol-atom"
+    elif _UNSTATED.search(u):
+        new = "kJ/mol (basis unstated)"
+    else:
+        return
+    r["value_stored"], r["unit_stored"] = r["value"], u
+    r["value"], r["unit"] = _sig(r["value"] * fac), new
+    unc = r.get("uncertainty")
+    if isinstance(unc, dict) and isinstance(unc.get("value"), (int, float)):
+        unc["value"] = _sig(unc["value"] * fac)
+    rng = r.get("value_range")
+    if isinstance(rng, list):
+        r["value_range"] = [_sig(v * fac) if isinstance(v, (int, float)) else v for v in rng]
+    elif isinstance(rng, dict):
+        r["value_range"] = {k: (_sig(v * fac) if isinstance(v, (int, float)) else v) for k, v in rng.items()}
+
+
+def format_citation(meta, fallback=None):
+    if meta.get("title") or meta.get("authors"):
+        a = meta.get("authors") or []
+        auth = ", ".join(a[:6]) + (" et al." if len(a) > 6 else "")
+        parts = [p for p in (auth, meta.get("title")) if p]
+        venue = " ".join(str(x) for x in (meta.get("container"), meta.get("volume")) if x)
+        if meta.get("page"):
+            venue += (", " if venue else "") + str(meta["page"])
+        if meta.get("year"):
+            venue += f" ({meta['year']})"
+        if venue.strip():
+            parts.append(venue.strip())
+        return ", ".join(parts) + "."
+    return fallback
+
+
+# ----------------------------------------------------------------------------------------------- loading
+
+class Store:
+    def __init__(self, corpus, pdfs):
+        self.corpus = corpus
+        self.db = os.path.join(corpus, "db-v2.1")
+        self.bib = Biblio(corpus, pdfs)
+        self.sources = {}         # source id/alias -> source record
+        self.papers = {}          # paper key -> paper dict
+        self.excluded = Counter()
+        self.notes = Counter()
+
+    # -- sources / papers
+    def add_source(self, s):
+        d, sha = doi_norm(s.get("doi")), s.get("file_sha256")
+        if d and sha and s.get("kind") in ("journal_article", "book_chapter"):
+            SHA2DOI.setdefault(sha[:16], d)
+        for k in [s["id"]] + list(s.get("aliases") or []):
+            self.sources.setdefault(k, s)
+
+    def paper_for(self, src, role):
+        key = paper_key(src)
+        if not key:
+            return None
+        p = self.papers.get(key)
+        if p is None:
+            p = self.papers[key] = {"id": key, "kind": set(), "systems": set(), "role": set(),
+                                    "_src": src, "doi": key[4:] if key.startswith("doi:") else None}
+        p["kind"].add(src.get("kind") or "unknown")
+        p["role"].add(role)
+        return key
+
+    def paper_from_cited(self, c):
+        """A cited work printed in a table/text reference list (dict from _export.cited / attribution.cited)."""
+        d = doi_norm(c.get("doi"))
+        key = ("doi:" + d) if d else None
+        if key is None:
+            return None
+        p = self.papers.get(key)
+        if p is None:
+            p = self.papers[key] = {"id": key, "kind": {"cited_work"}, "systems": set(), "role": set(),
+                                    "_src": {"doi": d, "citation": {"printed_reference": c.get("text")},
+                                             "kind": "cited_work"}, "doi": d}
+        p["role"].add("cited_source")
+        if c.get("text") and not p["_src"].get("citation", {}).get("printed_reference"):
+            p["_src"].setdefault("citation", {})["printed_reference"] = c.get("text")
+        return key
+
+    def finalize_papers(self):
+        out = {}
+        for key, p in self.papers.items():
+            src = p["_src"]
+            doi = p["doi"]
+            meta = self.bib.describe(doi) if doi else {}
+            cit = src.get("citation") or {}
+            printed = cit.get("printed_reference") if isinstance(cit, dict) else None
+            if not printed and src.get("kind") == "unresolved_citation":
+                ca = (src.get("cited_as") or [{}])[0]
+                printed = f"reference [{ca.get('label')}] of {ca.get('in', '').replace('source:doi:', 'doi:')} (no printed entry could be read)"
+            header = None
+            if doi and doi in self.bib.header:
+                header = self.bib.header[doi]
+            elif key.startswith("sha256:") and key[7:] in self.bib.header_by_sha:
+                header = self.bib.header_by_sha[key[7:]]
+            title_field = cit.get("title") if isinstance(cit, dict) else None
+            fallback = printed or (header[0] if header else None) or (title_field or None)
+            year = meta.get("year") or (header[1] if header else None) or (cit.get("year") if isinstance(cit, dict) else None)
+            try:
+                year = int(str(year)[:4]) if year else None
+            except ValueError:
+                year = None
+            kinds = sorted(p["kind"])
+            kind = "corpus_paper" if any(k in ("journal_article", "book_chapter") for k in kinds) else (
+                "cited_work" if "cited_work" in kinds else kinds[0])
+            out[key] = clean({
+                "id": key,
+                "doi": doi,
+                "doi_url": f"https://doi.org/{doi}" if doi else None,
+                "citation": format_citation(meta, fallback) or (f"doi:{doi}" if doi else "(citation not resolved)"),
+                "title": meta.get("title"),
+                "authors": meta.get("authors"),
+                "year": year,
+                "container": meta.get("container"),
+                "kind": kind,
+                "source_kinds": kinds,
+                "roles": sorted(p["role"]),
+                "systems": sorted(p["systems"]),
+                "metadata_source": meta.get("metadata_source") or ("tdb_header" if header else ("printed_reference" if printed else None)),
+                "pdf_sha256_prefix": (src.get("file_sha256") or "")[:16] or None,
+            })
+        return dict(sorted(out.items()))
+
+
+# ----------------------------------------------------------------------------------------------- records
+
+def phases_of(obs):
+    out = []
+    statephases = {}
+    for sp in ((obs.get("state") or {}).get("phases") or []):
+        if sp.get("printed_label") is not None:
+            statephases.setdefault(sp["printed_label"], sp)
+    mp = (obs.get("_export") or {}).get("model_phases") or {}
+    for ph in obs.get("phases") or []:
+        lab = ph.get("printed_label")
+        sp = statephases.get(lab) or {}
+        out.append(clean({"label": lab, "model_phase": sp.get("model_phase") or mp.get(lab),
+                          "mapping_confidence": ph.get("mapping_confidence") or sp.get("mapping_confidence"),
+                          "pearson_symbol": sp.get("pearson_symbol"), "prototype": sp.get("prototype")}))
+    return out
+
+
+def comp_basis(conversions):
+    """Composition basis of stored phase compositions, from the builder's conversion log."""
+    c = {x.split(":")[0] for x in conversions or []}
+    if c & {"composition_basis_disputed", "composition_basis_mixed", "composition_basis_other",
+            "composition_range_basis_disputed", "composition_range_basis_other",
+            "composition_range_basis_weight_percent"}:
+        return "unresolved"
+    if "mass_percent_to_mole_fraction" in c:
+        return "mole_fraction (converted from mass percent)"
+    if "atomic_percent_to_fraction" in c:
+        return "mole_fraction (converted from atomic percent)"
+    return "mole_fraction"
+
+
+def phase_comps(obs, basis):
+    out = []
+    for pc in obs.get("phase_compositions") or []:
+        comp = {k.upper(): num(v) for k, v in (pc.get("composition") or {}).items() if num(v) is not None}
+        if not comp:
+            continue
+        b = basis
+        if any(v > 1.0001 or v < -1e-9 for v in comp.values()):
+            b = "unresolved"
+        out.append(clean({"phase": (pc.get("phase") or {}).get("printed_label"), "composition": comp,
+                          "basis": b, "composition_source": pc.get("composition_basis")}))
+    return out
+
+
+def model_link(exp):
+    me = (exp or {}).get("model_evidence")
+    if not me:
+        return None
+    tdb = me.get("tdb") or {}
+    mc = me.get("model_citation") or {}
+    return clean({"tdb": tdb.get("name"), "tdb_path": tdb.get("path"), "tdb_sha256": tdb.get("sha256"),
+                  "catalog_entry": tdb.get("catalog_entry"), "link_basis": me.get("link_basis"),
+                  "model_citation": ((mc.get("citation") or {}).get("title") or None),
+                  "model_doi": doi_norm(mc.get("doi")), "reproduced_by_calculation": me.get("model_reproduction")})
+
+
+def cited_list(cited, store):
+    out = []
+    for c in cited or []:
+        pk = store.paper_from_cited(c)
+        out.append(clean({"label": c.get("label"), "reference": c.get("text"), "doi": doi_norm(c.get("doi")),
+                          "first_author": c.get("first_author"), "year": c.get("year"),
+                          "kind": c.get("work_kind") or c.get("kind"), "status": c.get("status"),
+                          "paper": pk}))
+    return out
+
+
+def quality_flags(obs):
+    q = obs.get("quality") or {}
+    st = q.get("status") or {}
+    pl = st.get("plausibility") or {}
+    return clean({
+        "extraction_accepted": bool(st.get("extraction_accepted")),
+        "row_state": st.get("row_state") or st.get("consensus_state"),
+        "review_state": q.get("review_state"),
+        "espei_ready": st.get("espei_ready"),
+        "state_fully_specified": st.get("state_fully_specified"),
+        "specification_gaps": st.get("specification_gaps"),
+        "plausibility": clean({"result": pl.get("result"), "model": pl.get("model"),
+                               "dT_K": num(pl.get("dT_K"))}) if pl.get("result") not in (None, "not_evaluated") else None,
+        "source_disputed": bool(obs.get("source_disputed")) or None,
+        "judge_adjudicated": bool(st.get("adjudicated_by")) or None,
+        "magnitude_suspect": bool(st.get("magnitude_suspect")) or None,
+        "system_mismatch": bool(st.get("system_mismatch")) or None,
+    })
+
+
+def base_record(obs, kind, store, paper, art, readers):
+    cond = obs.get("conditions") or {}
+    exp = obs.get("_export") or {}
+    ev = obs.get("evidence_class") or EVIDENCE.get(obs.get("origin"), "unspecified")
+    ev = EVIDENCE.get(ev, ev)
+    sysn = system_name(obs.get("system") or [])
+    rec = {
+        "_oid": obs.get("id"),
+        "id": obs.get("pid_compact"),
+        "pid": obs.get("pid"),
+        "system": sysn,
+        "elements": sorted({e.upper() for e in obs.get("system") or []}),
+        "record_kind": kind,
+        "observation_type": obs.get("observation_type"),
+        "evidence_class": ev,
+        "temperature_K": num(cond.get("T_K")),
+        "temperature_printed": cond.get("T_printed"),
+        "temperature_basis": cond.get("T_basis"),
+        "temperature_max_K": num(cond.get("T_max_K")),
+        "temperature_range_K": cond.get("T_range_K"),
+        "temperature_bound": cond.get("T_bound"),
+        "temperature_approximate": cond.get("T_approximate"),
+        "temperature_uncertainty": clean({"value": num((obs.get("temperature_uncertainty") or {}).get("value")),
+                                          "basis": (obs.get("temperature_uncertainty") or {}).get("basis")}),
+        "pressure_Pa": num(cond.get("P_Pa")),
+        "pressure_basis": cond.get("P_basis"),
+        "overall_composition": {k.upper(): num(v) for k, v in (cond.get("overall_composition") or {}).items()
+                                if num(v) is not None} or None,
+        "overall_composition_basis": cond.get("composition_basis"),
+        "phases": phases_of(obs),
+        "reaction": clean({"printed": (obs.get("reaction") or {}).get("printed"),
+                           "type": (obs.get("reaction") or {}).get("type")}),
+        "paper": paper,
+        "locator": art,
+        "readers": readers,
+        "reader_tier": (obs.get("quality") or {}).get("status", {}).get("reader_tier") or obs.get("reader_tier"),
+        "tool_release": obs.get("tool_release") or obs.get("_tool_release"),
+    }
+    return rec, exp, ev
+
+
+def origin_block(obs, store, paper, measured_src):
+    measured_key = paper_key(measured_src) if measured_src else None
+    own = bool(measured_key and paper and measured_key == paper)
+    return own, clean({
+        "class": obs.get("origin"),
+        "basis": obs.get("origin_basis"),
+        "measured_in": measured_key,
+        "measured_in_basis": obs.get("measured_in_basis"),
+        "own_work_of_paper": own,
+    })
+
+
+def conditions_block(own, ev, paper, contexts):
+    if own and ev == "experimental":
+        if paper in contexts:
+            return {"kind": "paper_context", "paper": paper}
+        return {"kind": "paper_context_not_extracted", "paper": paper}
+    if own:
+        return {"kind": "not_applicable_own_calculation" if ev in ("model", "dft") else "own_work_origin_unspecified"}
+    return {"kind": "cited_source", "note": "conditions in the cited source"}
+
+
+def finish(rec, exp, obs, store, own, ev, contexts, origin):
+    rec["origin"] = origin
+    rec["conditions"] = conditions_block(own, ev, rec["paper"], contexts)
+    rec["model"] = model_link(exp) if ev == "model" else None
+    if ev == "model" and rec["model"] is None and exp.get("model_evidence_unlinked"):
+        rec["model_unlinked_reason"] = exp.get("model_evidence_unlinked")
+    return rec
+
+
+def load_contexts(store):
+    out = {}
+    for f in sorted(glob.glob(os.path.join(store.db, "context", "*.jsonl"))):
+        for r in jl(f):
+            if r.get("record_type") != "context":
+                continue
+            sp = r.get("source_pid") or ""
+            if sp.startswith("doi:"):
+                key = "doi:" + doi_norm(sp[4:])
+            else:
+                key = paper_key(store.sources.get(r.get("source"))) or sp
+            items = []
+            for group, fields in (("sample", ("label", "nominal_composition", "measured_composition",
+                                               "composition_basis", "starting_materials", "purity", "synthesis")),
+                                  ("treatment", ("purpose", "applies_to", "temperature_printed", "temperature",
+                                                 "temperature_status", "duration", "duration_parsed",
+                                                 "atmosphere_or_container", "cooling")),
+                                  ("measurement", ("method", "instrument", "applies_to", "calibration",
+                                                   "heating_or_cooling_rate", "atmosphere", "crucible",
+                                                   "stated_uncertainty"))):
+                for it in r.get(group + "s") or []:
+                    d = {"type": group}
+                    for k in fields:
+                        if k in it:
+                            d[k] = it[k]
+                    d.update({"quote": it.get("quote"), "page": it.get("page"), "id": it.get("pid_compact"),
+                              "extraction_accepted": bool(it.get("extraction_accepted")),
+                              "second_reader_agrees": bool(it.get("second_reader_agrees")),
+                              "has_dropped_fields": bool(it.get("fields_not_in_quote") or it.get("second_reader_dropped_fields")) or None,
+                              "review_flags": sorted({x.get("flag") for x in it.get("review_flags") or [] if x.get("flag")}) or None})
+                    items.append(clean(d))
+            if not items:
+                continue
+            uniq = {}
+            for x in items:
+                uniq.setdefault(dumps(x), x)
+            store.notes["context_items_duplicate_dropped"] += len(items) - len(uniq)
+            items = list(uniq.values())
+            items.sort(key=lambda x: (x["type"], x.get("page") or 0, x.get("id") or ""))
+            out[key] = {"paper": key, "context_id": r.get("id"), "section_basis": r.get("section_basis"),
+                        "reader_tier": r.get("reader_tier"),
+                        "readers": [x for x in ((r.get("reader") or {}).get("identity"), r.get("second_reader_identity")) if x],
+                        "items": items}
+            store.notes["context_items"] += len(items)
+            store.notes["context_items_accepted"] += sum(1 for x in items if x.get("extraction_accepted"))
+    return out
+
+
+def excluded_file(path):
+    b = os.path.basename(path).lower()
+    if "rejected" in b and "wrong-match" in b:
+        return "pdf_wrong_match"
+    if "okamoto" in b or "handbook" in b:
+        return "okamoto_out_of_scope"
+    return None
+
+
+def restricted(src):
+    r = (src or {}).get("rights") or {}
+    return r.get("status") == "restricted" or r.get("redistribute_extracted_values") in (False, "no", "denied")
+
+
+def load_tables(store, sub, kind, contexts, records):
+    files = sorted(glob.glob(os.path.join(store.db, sub, "*.jsonl")))
+    for f in files:
+        why = excluded_file(f)
+        recs = list(jl(f))
+        obs_list = [r for r in recs if r.get("record_type") == "observation"]
+        if why:
+            store.excluded[why] += len(obs_list)
+            continue
+        arts = {}
+        corpus_src = None
+        for r in recs:
+            if r.get("record_type") == "source":
+                store.add_source(r)
+                if r.get("kind") in ("journal_article", "book_chapter") and corpus_src is None:
+                    corpus_src = r
+            elif r.get("record_type") == "artifact":
+                arts[r["id"]] = r
+        for obs in obs_list:
+            m = re.match(r"obs:(artifact:.+?:p\d+:[^:]+)(?::row-(\d+))?", obs["id"])
+            art = arts.get(m.group(1)) if m else None
+            if art is None and len(arts) == 1:
+                art = next(iter(arts.values()))
+            src = store.sources.get((art or {}).get("source")) or corpus_src
+            if restricted(src):
+                store.excluded["restricted_rights"] += 1
+                continue
+            if not obs.get("system"):
+                store.excluded["no_chemical_system"] += 1
+                continue
+            paper = store.paper_for(src, "reporting_paper") if src else None
+            row = int(m.group(2)) if m and m.group(2) else None
+            loc = clean({"artifact": "table", "label": (art or {}).get("label"), "caption": (art or {}).get("caption"),
+                         "page": (art or {}).get("page"), "row": row + 1 if row is not None else None,
+                         "asset": obs.get("asset")})
+            readers = sorted({reader_of(x) for x in obs.get("readings") or []})
+            rec, exp, ev = base_record(obs, kind, store, paper, loc, readers)
+            ot = obs.get("observation_type")
+            basis = comp_basis(exp.get("conversions"))
+            rec["phase_compositions"] = phase_comps(obs, basis)
+            if rec["overall_composition"] and any(v > 1.0001 for v in rec["overall_composition"].values()):
+                rec["overall_composition_basis"] = "unresolved"
+            # value
+            if ot == "invariant_reaction":
+                rec["property"], rec["value"], rec["unit"] = "INVARIANT_TEMPERATURE", rec["temperature_K"], "K"
+            elif ot == "phase_transition" and obs.get("value") is None:
+                rec["property"], rec["value"], rec["unit"] = "TRANSITION_TEMPERATURE", rec["temperature_K"], "K"
+            elif ot in ("phase_region_vertex_set", "phase_assemblage_node") and obs.get("value") is None:
+                rec["property"] = "PHASE_COMPOSITION" if ot == "phase_region_vertex_set" else "PHASE_ASSEMBLAGE"
+            else:
+                rec["property"] = obs.get("quantity") or "OTHER"
+                rec["value"] = num(obs.get("value"))
+                rec["unit"] = obs.get("unit")
+                pr = exp.get("printed") or {}
+                rec["property_printed"] = obs.get("printed_quantity") or pr.get("quantity")
+                rec["value_printed"] = pr.get("value") if not isinstance(pr.get("value"), (dict, list)) else None
+                rec["unit_printed"] = pr.get("unit")
+                u = obs.get("uncertainty") or {}
+                rec["uncertainty"] = clean({"value": num(u.get("value")), "basis": u.get("basis"), "note": u.get("note")})
+                if obs.get("value_range"):
+                    vr = obs["value_range"]
+                    rec["value_range"] = clean({"min": num(vr.get("min")), "max": num(vr.get("max"))})
+                if obs.get("value_expression"):
+                    rec["value_expression"] = (obs["value_expression"] or {}).get("printed")
+                rs = obs.get("reference_state")
+                if rs:
+                    rec["reference_state"] = rs
+                if obs.get("component"):
+                    rec["component"] = obs["component"]
+                if obs.get("structure"):
+                    rec["structure"] = obs["structure"]
+                if obs.get("calculation_settings"):
+                    rec["calculation_settings"] = obs["calculation_settings"]
+            rec["property_group"] = property_group(ot, rec.get("property"))
+            meth = obs.get("method") or ""
+            rec["method"] = None if meth in GENERIC_METHODS else meth
+            rec["method_basis"] = "printed in the table row/column" if rec["method"] else None
+            measured_src = store.sources.get(obs.get("measured_in"))
+            if measured_src is None and obs.get("measured_in") and src and obs["measured_in"] in ([src["id"]] + list(src.get("aliases") or [])):
+                measured_src = src
+            own, origin = origin_block(obs, store, paper, measured_src)
+            rec["cited_sources"] = cited_list(exp.get("cited"), store)
+            if not own and measured_src is not None:
+                store.paper_for(measured_src, "cited_source")
+            rec["quote"] = None
+            rec["quote_page"] = None
+            fl = quality_flags(obs)
+            fl["unsigned_in_print"] = None
+            fl["sign_pdf_page_verified"] = None
+            rec["flags"] = clean(fl)
+            rec["flags"]["extraction_accepted"] = bool((obs.get("quality") or {}).get("status", {}).get("extraction_accepted"))
+            rec = finish(rec, exp, obs, store, own, ev, contexts, origin)
+            records.append(rec)
+
+
+def load_text(store, contexts, records):
+    for f in sorted(glob.glob(os.path.join(store.db, "text", "*.jsonl"))):
+        why = excluded_file(f)
+        recs = list(jl(f))
+        if why:
+            store.excluded[why] += sum(1 for r in recs if r.get("record_type") == "observation")
+            continue
+        arts, reads = {}, {}
+        for r in recs:
+            t = r.get("record_type")
+            if t == "source":
+                store.add_source(r)
+            elif t == "artifact":
+                arts[r["id"]] = r
+            elif t == "reading":
+                reads[r["id"]] = r
+        for obs in (r for r in recs if r.get("record_type") == "observation"):
+            att = obs.get("attribution") or {}
+            src = store.sources.get(att.get("reported_in")) or store.sources.get((arts.get(obs.get("artifact")) or {}).get("source"))
+            if restricted(src):
+                store.excluded["restricted_rights"] += 1
+                continue
+            if not obs.get("system"):
+                store.excluded["no_chemical_system"] += 1
+                continue
+            paper = store.paper_for(src, "reporting_paper") if src else None
+            art = arts.get(obs.get("artifact")) or {}
+            rd = reads.get(obs.get("locator_reading")) or {}
+            pr = rd.get("printed") or {}
+            quote = pr.get("quote")
+            if not quote:
+                store.excluded["text_without_quote"] += 1
+                continue
+            loc = clean({"artifact": "text_passage", "label": art.get("label"), "page": art.get("page"),
+                         "asset": obs.get("asset")})
+            readers = sorted({(reads.get(x) or {}).get("reader", {}).get("identity", reader_of(x)).split(" / ")[0]
+                              for x in obs.get("readings") or []})
+            rec, exp, ev = base_record(obs, "running_text", store, paper, loc, readers)
+            rt = obs.get("reported_temperature") or {}
+            if rt.get("printed") or rt.get("value_printed") is not None:
+                rec["temperature_printed"] = rt.get("printed") or (f"{rt.get('value_printed')} {rt.get('unit_printed') or ''}".strip())
+            rec["temperature_bound"] = rt.get("bound")
+            rec["temperature_max_K"] = num(rt.get("range_max"))
+            if obs.get("composition_basis"):
+                rec["overall_composition_basis"] = "mole_fraction (printed basis: " + ", ".join(obs["composition_basis"]) + ")"
+            rec["phase_compositions"] = []
+            ot = obs.get("observation_type")
+            if ot == "phase_transition":
+                rec["property"], rec["value"], rec["unit"] = "TRANSITION_TEMPERATURE", rec["temperature_K"], "K"
+                if (obs.get("reaction") or {}).get("type") in ("eutectic", "peritectic", "monotectic", "eutectoid",
+                                                              "peritectoid", "syntectic", "metatectic", "catatectic"):
+                    rec["property"] = "INVARIANT_TEMPERATURE"
+            elif ot == "phase_assemblage_node":
+                rec["property"] = "PHASE_ASSEMBLAGE"
+            else:
+                q = obs.get("quantity") or "other"
+                rec["property"] = TEXT_QUANTITY.get(q, q.upper())
+                rec["property_printed"] = obs.get("quantity_printed")
+                rec["value"] = num(obs.get("value"))
+                rec["unit"] = obs.get("unit")
+                rec["reference_state"] = obs.get("reference_state_printed")
+                u = obs.get("uncertainty") or {}
+                rec["uncertainty"] = clean({"value": num(u.get("value")), "basis": u.get("basis"), "note": u.get("note")})
+            rec["property_group"] = property_group(ot if ot != "equilibrium_property" else "x", rec.get("property")) \
+                if ot != "phase_transition" else ("invariant reaction" if rec["property"] == "INVARIANT_TEMPERATURE" else "phase transition")
+            meth = obs.get("method") or ""
+            rec["method"] = None if meth in GENERIC_METHODS else meth
+            rec["method_basis"] = "printed in the quoted sentence (fix-up 2026-10-22 gate)" if rec["method"] else None
+            measured_src = store.sources.get(obs.get("measured_in"))
+            if measured_src is None and src and obs.get("measured_in") == att.get("reported_in"):
+                measured_src = src
+            own, origin = origin_block(obs, store, paper, measured_src)
+            if not own and obs.get("measured_in") and obs.get("measured_in") == att.get("reported_in"):
+                own = True
+                origin["own_work_of_paper"] = True
+                origin["measured_in"] = paper
+            if att.get("note"):
+                origin["attribution_note"] = att["note"]
+            if not own and measured_src is not None:
+                store.paper_for(measured_src, "cited_source")
+            rec["link_rule"] = obs.get("link_rule")
+            rec["cited_sources"] = cited_list(att.get("cited"), store)
+            rec["citations_printed"] = obs.get("citations_printed") or None
+            rec["quote"] = quote
+            rec["quote_page"] = pr.get("page") or art.get("page")
+            fl = quality_flags(obs)
+            fl["extraction_accepted"] = bool((obs.get("quality") or {}).get("status", {}).get("extraction_accepted"))
+            fl["value_in_quote"] = obs.get("value_in_quote")
+            fl["unsigned_in_print"] = obs.get("sign_as_printed") == "unsigned_in_print" or None
+            fl["sign_pdf_page_verified"] = obs.get("value_source") == "pdf_page_verified" or None
+            if fl["sign_pdf_page_verified"]:
+                fl["value_first_reader"] = num(obs.get("value_first_reader"))
+            fl["has_dropped_fields"] = bool(obs.get("dropped_fields")) or None
+            fl["dropped_field_count"] = len(obs.get("dropped_fields") or []) or None
+            fl["review_flags"] = sorted({x.get("flag") for x in obs.get("review_flags") or [] if x.get("flag")}) or None
+            fl["second_reader"] = obs.get("second_reader")
+            fl["unit_conflict_between_readers"] = bool(obs.get("unit_conflict_reader")) or None
+            fl["composition_conflict_between_readers"] = bool(obs.get("composition_conflict_reader")) or None
+            rec["flags"] = clean(fl)
+            rec["flags"]["extraction_accepted"] = fl["extraction_accepted"]
+            rec = finish(rec, exp, obs, store, own, ev, contexts, origin)
+            records.append(rec)
+
+
+# ----------------------------------------------------------------------------------------------- output
+
+CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_group", "property", "property_printed",
+               "value", "unit", "value_stored", "unit_stored", "value_printed", "unit_printed", "uncertainty", "value_range", "value_expression",
+               "temperature_K", "temperature_printed", "temperature_basis", "temperature_bound", "temperature_max_K",
+               "temperature_uncertainty", "pressure_Pa", "pressure_basis", "phases", "phase_compositions",
+               "overall_composition", "overall_composition_basis", "reference_state", "reaction", "evidence_class",
+               "origin", "model", "model_unlinked_reason", "method", "method_basis", "conditions",
+               "conditions_summary", "cited_sources", "citations_printed", "paper", "paper_citation", "paper_doi", "quote", "quote_page",
+               "locator", "link_rule", "flags", "extraction_accepted", "readers", "reader_tier", "tool_release", "pid"]
+
+
+def summarize_context(ctx):
+    if not ctx:
+        return None
+    parts = []
+    for it in ctx["items"]:
+        if not it.get("extraction_accepted"):
+            continue
+        if it["type"] == "sample":
+            s = "; ".join(f"{k} {it[k]}" for k in ("purity", "starting_materials", "synthesis") if it.get(k))
+        elif it["type"] == "treatment":
+            s = "; ".join(str(it[k]) for k in ("temperature_printed", "duration", "atmosphere_or_container", "cooling") if it.get(k))
+        else:
+            s = "; ".join(str(it[k]) for k in ("method", "instrument", "heating_or_cooling_rate", "atmosphere") if it.get(k))
+        if s:
+            parts.append(f"{it['type']} (p{it.get('page')}): {s}")
+    return " | ".join(parts) or None
+
+
+def csv_value(v):
+    if v is None:
+        return ""
+    if isinstance(v, (dict, list)):
+        return json.dumps(v, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    return str(v)
+
+
+def dumps(obj, compact=True):
+    if compact:
+        return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=1)
+
+
+def gz(data: bytes) -> bytes:
+    buf = io.BytesIO()
+    with gzip.GzipFile(filename="", mode="wb", fileobj=buf, mtime=0, compresslevel=9) as g:
+        g.write(data)
+    return buf.getvalue()
+
+
+SCHEMA_MD = """# ORCHID literature data: schema
+
+Release: `{release}`. Generated by `tools/export_literature_data.py` (deterministic; `--check` verifies the files).
+
+Derived data extracted from published papers (tables and running text) by independent machine readers
+(Gemini Flash / Pro, Claude Opus; text-layer reading for tables) and accepted only on reader agreement plus
+deterministic checks. **Licence:** derived data CC BY 4.0 with attribution to ORCHID and to the cited source
+papers; each `quote` is a single sentence reproduced under fair use to make the value verifiable. The source
+papers, page images, crops and full text are **not** redistributed.
+
+## Files
+
+| file | content |
+|---|---|
+| `index.json` | release info, totals, per-system counts by evidence class and property group, file list |
+| `systems/<SYS>.json` | `{{system, elements, records[], artifacts{{}}, models{{}}, papers{{}}, contexts{{}}}}` for one chemical system. To keep files small, a record's `locator` is `{{ref, row}}` with `ref` a key of `artifacts` (table/passage label, caption, page) and its `model` is a key of `models`; `elements` is stored once per file. The `.jsonl.gz` dump carries the full records; `<SYS>` = elements sorted alphabetically, uppercase, joined by `-` (as in `data/phase-diagrams`). Large systems are split into `<SYS>.json`, `<SYS>.part2.json`, ... (listed in `index.json`) |
+| `papers.json` | paper id -> bibliographic record |
+| `contexts.json` | paper id -> experimental-context items (samples, treatments, measurements), each with its quote and page |
+| `orchid-literature.jsonl.gz` | all records, one JSON object per line (same fields as `systems/*.json`) |
+| `orchid-literature.csv.gz` | all records flattened; nested fields are compact JSON strings |
+
+## Record fields
+
+| field | meaning |
+|---|---|
+| `id` | stable compact ORCHID id (`ORC-...`) |
+| `pid` | persistent locator id: paper / page / table or passage / row |
+| `system`, `elements` | chemical system (sorted uppercase elements joined by `-`) |
+| `record_kind` | `invariant_table` (invariant-reaction table), `general_table` (thermochemical / phase-equilibrium / structure table), `running_text` (value stated in a sentence) |
+| `observation_type` | `invariant_reaction`, `phase_transition`, `equilibrium_property`, `structural_property`, `phase_region_vertex_set`, `phase_assemblage_node`, `property_expression` |
+| `property` | quantity kind: `INVARIANT_TEMPERATURE`, `TRANSITION_TEMPERATURE`, `PHASE_COMPOSITION`, `PHASE_ASSEMBLAGE`, or a thermodynamic / structural quantity (`HM_FORM`, `HM_MIX`, `CPM`, `SM`, `GIBBS_ENERGY`, `EMF`, `ACR_<EL>`, `LATTICE_A`, ...) |
+| `property_group` | coarse filter group (invariant reaction, phase transition, phase equilibrium, formation, mixing / partial, heat capacity / entropy / enthalpy, activity / EMF / Gibbs energy, crystal structure, model expression, other property) |
+| `property_printed` | the quantity symbol or name as printed |
+| `value`, `unit` | value in the normalized unit (temperatures: K; formation enthalpies and Gibbs energies of formation: kJ/mol-atom, or kJ/mol (basis unstated) when the paper does not say per atom). `value_stored`, `unit_stored`: the value before that conversion. `value_printed`, `unit_printed`: as printed (tables) |
+| `value_range` | `{{min,max}}` when a range was printed; `value_expression`: a printed expression (model parameters) |
+| `uncertainty` | `{{value, basis, note}}`; `basis: printed` is the source's own; `stated_default` / `reading_resolution` are ORCHID placeholders (e.g. "5% default", "10% placeholder; none printed") and are **not** measured uncertainties |
+| `temperature_K` | equilibrium / measurement temperature in K; `temperature_printed` as printed (unit as printed, often °C); `temperature_basis` how it was obtained (`printed`, `quantity_label`, `caption`, `assumed_room_temperature`, `not_printed`, ...); `temperature_bound` (`upper`/`lower` for printed bounds), `temperature_max_K` / `temperature_range_K` for ranges; `temperature_uncertainty` `{{value,basis}}` |
+| `pressure_Pa`, `pressure_basis` | pressure and how it was set (`stated_default_1_atm`, `unstated_assumed`, `printed`) |
+| `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype}}]`: printed phase label and, where mapped, the CALPHAD model phase |
+| `phase_compositions` | `[{{phase, composition{{EL: x}}, basis, composition_source}}]`. `basis` is `mole_fraction` (possibly "converted from atomic/mass percent") or `unresolved` (printed basis disputed/mixed, or values outside 0..1: do not use as mole fractions). `composition_source`: `printed`, `stoichiometry`, `formula_nominal`, `congruent_same_composition`, `printed_range`, `printed_bound`, ... |
+| `overall_composition`, `overall_composition_basis` | alloy / sample composition (mole fraction) where given |
+| `reference_state` | reference state of a thermodynamic quantity (per element phase), where stated or set by an explicit convention |
+| `reaction` | `{{printed, type}}`: reaction as printed and its class (eutectic, peritectic, congruent, ...) |
+| `evidence_class` | `experimental`, `model` (value from a CALPHAD/thermodynamic model), `dft` (first-principles), `unspecified` (origin could not be settled). Never mixed or averaged |
+| `origin` | `{{class, basis, measured_in, measured_in_basis, own_work_of_paper, attribution_note}}`: how the evidence class was decided (e.g. `printed_source_experimental`, `cited_work_before_1980_assumed_experimental`), the paper the value was measured/calculated in, and whether that is the containing paper itself |
+| `model` | for `model` values linked unambiguously to a TDB: `{{tdb, tdb_path, tdb_sha256, catalog_entry, link_basis, model_citation, model_doi, reproduced_by_calculation}}`; `model_unlinked_reason` otherwise |
+| `method` | row-level method only when printed (table cell/column, or inside the value's quoted sentence); `method_basis` says which |
+| `conditions` | `{{kind: paper_context, paper}}`: the containing paper's own experimental context applies (see `contexts`); `paper_context_not_extracted`; `cited_source` ("conditions in the cited source"): the value is cited from another work and the containing paper's context does **not** apply; `not_applicable_own_calculation` |
+| `conditions_summary` | (CSV only) accepted context items of that paper, condensed |
+| `cited_sources` | the value's own source(s) as printed in the paper's reference list: `{{label, reference, doi, first_author, year, kind, status, paper}}` |
+| `citations_printed` | (text) citation labels printed in the sentence |
+| `paper` | id of the containing paper (`doi:<doi>` or `sha256:<pdf prefix>`) -> `papers.json`; CSV adds `paper_citation`, `paper_doi` |
+| `quote`, `quote_page` | (running text) the one verbatim sentence backing the value and its page; for tables `locator` gives table label, caption, page and row instead |
+| `locator` | `{{artifact: table|text_passage, label, caption, page, row, asset}}` |
+| `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready`, `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check result, model, dT), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts |
+| `link_rule` | (text) the rule that linked the value to its quote: the quote is verbatim on one page/passage and the printed value is inside it |
+| `readers`, `reader_tier`, `tool_release` | extraction provenance: the readers whose readings agreed (`text_layer` = the PDF text layer), the reader tier (`preliminary_flash+claude`: two independent model readers agree; `confirmed_pro`: confirmed by a third reader; `+fable_judge`: a judge chose between disagreeing readers; `preliminary_flash` for text: first reader, with the second reader's agreement in `flags.second_reader`), the record-builder release |
+
+## Paper fields (`papers.json`)
+
+Ids are `doi:<doi>` (corpus papers and cited works with a DOI), `sha256:<16 hex>` (corpus papers without DOI),
+`ref:<hash>` (a cited work without DOI, citation = the printed reference) or `unresolved:...` (a reference label the
+citing paper's list could not resolve). Fields: `id`, `doi`, `doi_url`, `citation` (formatted from local Crossref metadata, the TDB header, or the printed reference),
+`title`, `authors`, `year`, `container`, `kind` (`corpus_paper`: a paper the values were read from; `cited_work`:
+a work cited for a value), `roles` (`reporting_paper`, `cited_source`), `systems`, `metadata_source`,
+`pdf_sha256_prefix` (first 16 hex of the source PDF's SHA-256, an identifier only; the PDF is not distributed).
+
+## Context items (`contexts.json`, `systems/*.json` -> `contexts`)
+
+`{{paper, context_id, section_basis, reader_tier, readers, items[]}}`; each item has `type` (`sample`, `treatment`,
+`measurement`), its fields (`purity`, `starting_materials`, `synthesis`, `nominal_composition`; `temperature_printed`,
+`duration`, `atmosphere_or_container`, `cooling`, `purpose`; `method`, `instrument`, `heating_or_cooling_rate`,
+`atmosphere`, `crucible`, `calibration`, `stated_uncertainty`, `applies_to`), its `quote` and `page`, and
+`extraction_accepted`, `second_reader_agrees`, `has_dropped_fields`, `review_flags`. A context is attached only to values
+whose origin is the paper's own experimental work.
+"""
+
+
+def build(corpus, pdfs):
+    store = Store(corpus, pdfs)
+    # pass 1: all sources (cited works resolve across stores)
+    for sub in ("invariants/master", "general/records", "text"):
+        for f in sorted(glob.glob(os.path.join(store.db, sub, "*.jsonl"))):
+            for r in jl(f):
+                if r.get("record_type") == "source":
+                    store.add_source(r)
+    contexts = load_contexts(store)
+    records = []
+    load_tables(store, "invariants/master", "invariant_table", contexts, records)
+    load_tables(store, "general/records", "general_table", contexts, records)
+    load_text(store, contexts, records)
+
+    # ids unique: the compact id names a table row; several values of one row share it, so a short hash of
+    # the internal observation id is appended (stable, independent of record order)
+    seen = Counter(r["id"] for r in records)
+    for r in records:
+        oid = r.pop("_oid")
+        if not r["id"] or seen[r["id"]] > 1:
+            r["id"] = (r["id"] or "ORC") + "." + hashlib.sha256(oid.encode()).hexdigest()[:6]
+            store.notes["row_ids_with_value_suffix"] += 1
+    assert len({r["id"] for r in records}) == len(records)
+    records = [clean(r) for r in records]
+    for r in records:
+        normalize_formation_unit(r)
+    for r in records:
+        r["flags"]["extraction_accepted"] = bool(r["flags"].get("extraction_accepted"))
+    records.sort(key=lambda r: (r["system"], r["record_kind"], r.get("pid") or "", r["id"]))
+
+    for r in records:
+        for pk in [r.get("paper")] + [c.get("paper") for c in r.get("cited_sources") or []] + [(r.get("origin") or {}).get("measured_in")]:
+            if pk and pk in store.papers:
+                store.papers[pk]["systems"].add(r["system"])
+    papers = store.finalize_papers()
+    used_ctx = {r["paper"] for r in records if (r.get("conditions") or {}).get("kind") == "paper_context"}
+    contexts_out = {k: contexts[k] for k in sorted(contexts) if k in used_ctx}
+    store.notes["contexts_unused_no_own_experimental_values"] = len(contexts) - len(contexts_out)
+    return store, records, papers, contexts_out
+
+
+PD_SYSTEMS = set()
+
+
+def outputs(store, records, papers, contexts):
+    pdi = os.path.join(SITE, "data", "phase-diagrams", "index.json")
+    if os.path.exists(pdi):
+        PD_SYSTEMS.update(json.load(open(pdi, encoding="utf-8")).get("systems", {}))
+    files = {}
+    by_sys = defaultdict(list)
+    for r in records:
+        by_sys[r["system"]].append(r)
+    index_systems = {}
+    for sysn in sorted(by_sys):
+        recs = by_sys[sysn]
+        chunks, cur, size = [], [], 0
+        for r in recs:
+            b = len(dumps(r).encode()) + 1
+            if cur and size + b > MAX_SYSTEM_BYTES:
+                chunks.append(cur)
+                cur, size = [], 0
+            cur.append(r)
+            size += b
+        chunks.append(cur)
+        names = []
+        for i, ch in enumerate(chunks):
+            name = f"{sysn}.json" if i == 0 else f"{sysn}.part{i + 1}.json"
+            pk = set()
+            for r in ch:
+                pk.add(r.get("paper"))
+                pk.add((r.get("origin") or {}).get("measured_in"))
+                for c in r.get("cited_sources") or []:
+                    pk.add(c.get("paper"))
+            ck = {r["paper"] for r in ch if (r.get("conditions") or {}).get("kind") == "paper_context"}
+            arts, models, compact = {}, {}, []
+            for r in ch:
+                r2 = dict(r)
+                loc = dict(r2.pop("locator", {}) or {})
+                row = loc.pop("row", None)
+                akey = loc.pop("asset", None) or r2.get("pid", "").split("#")[0]
+                arts.setdefault(akey, loc)
+                r2["locator"] = clean({"ref": akey, "row": row})
+                if r2.get("model"):
+                    mkey = "M" + hashlib.sha256(dumps(r2["model"]).encode()).hexdigest()[:8]
+                    models.setdefault(mkey, r2["model"])
+                    r2["model"] = mkey
+                r2.pop("elements", None)
+                compact.append(r2)
+            doc = {"system": sysn, "elements": recs[0]["elements"], "part": i + 1, "parts": len(chunks),
+                   "release": RELEASE, "licence": "CC BY 4.0 (derived data; quotes under fair use)",
+                   "note": "records[].locator.ref -> artifacts; records[].model -> models (full records: orchid-literature.jsonl.gz)",
+                   "records": compact, "artifacts": dict(sorted(arts.items())), "models": dict(sorted(models.items())),
+                   "papers": {k: {x: y for x, y in papers[k].items() if x != "systems"} for k in sorted(p for p in pk if p and p in papers)},
+                   "contexts": {k: contexts[k] for k in sorted(ck) if k in contexts}}
+            files[f"systems/{name}"] = dumps(doc).encode()
+            names.append(f"systems/{name}")
+        ev = Counter(r["evidence_class"] for r in recs)
+        pg = Counter(r["property_group"] for r in recs)
+        index_systems[sysn] = {"elements": recs[0]["elements"], "n": len(recs),
+                               "phase_diagram": sysn in PD_SYSTEMS,
+                               "accepted": sum(1 for r in recs if r["flags"]["extraction_accepted"]),
+                               "by_evidence_class": dict(sorted(ev.items())),
+                               "by_property_group": dict(sorted(pg.items())),
+                               "by_record_kind": dict(sorted(Counter(r["record_kind"] for r in recs).items())),
+                               "files": names}
+    tot = {
+        "records": len(records),
+        "accepted": sum(1 for r in records if r["flags"]["extraction_accepted"]),
+        "systems": len(by_sys),
+        "papers_reporting": sum(1 for p in papers.values() if "reporting_paper" in (p.get("roles") or [])),
+        "papers_total": len(papers),
+        "by_evidence_class": dict(sorted(Counter(r["evidence_class"] for r in records).items())),
+        "by_evidence_class_accepted": dict(sorted(Counter(r["evidence_class"] for r in records if r["flags"]["extraction_accepted"]).items())),
+        "by_property_group": dict(sorted(Counter(r["property_group"] for r in records).items())),
+        "by_property": dict(sorted(Counter(r.get("property") or "?" for r in records).most_common(60))),
+        "by_record_kind": dict(sorted(Counter(r["record_kind"] for r in records).items())),
+        "with_quote": sum(1 for r in records if r.get("quote")),
+        "with_paper_context": sum(1 for r in records if (r.get("conditions") or {}).get("kind") == "paper_context"),
+        "cited_source_conditions": sum(1 for r in records if (r.get("conditions") or {}).get("kind") == "cited_source"),
+        "model_linked_to_tdb": sum(1 for r in records if r.get("model")),
+        "contexts": len(contexts),
+        "context_items": sum(len(c["items"]) for c in contexts.values()),
+        "excluded": dict(sorted(store.excluded.items())),
+    }
+    index = {"release": RELEASE, "licence": {"derived_data": "CC BY 4.0", "quotes": "fair use, one sentence per value",
+                                             "source_papers": "not redistributed"},
+             "schema": "SCHEMA.md", "totals": tot,
+             "files": {"papers": "papers.json", "contexts": "contexts.json", "jsonl": "orchid-literature.jsonl.gz",
+                       "csv": "orchid-literature.csv.gz"},
+             "systems": index_systems}
+    files["index.json"] = dumps(index).encode()
+    papers = repair_replacement_chars(papers, crossref_name_words(store.bib.cache_dir))
+    files["papers.json"] = dumps(papers).encode()
+    files["contexts.json"] = dumps(contexts).encode()
+    files["orchid-literature.jsonl.gz"] = gz(("\n".join(dumps(r) for r in records) + "\n").encode())
+    sbuf = io.StringIO()
+    w = csv.writer(sbuf, lineterminator="\n")
+    w.writerow(CSV_COLUMNS)
+    for r in records:
+        row = dict(r)
+        p = papers.get(r.get("paper")) or {}
+        row["paper_citation"] = p.get("citation")
+        row["paper_doi"] = p.get("doi")
+        row["extraction_accepted"] = r["flags"]["extraction_accepted"]
+        row["conditions_summary"] = summarize_context(contexts.get(r["paper"])) if (r.get("conditions") or {}).get("kind") == "paper_context" else (
+            "conditions in the cited source" if (r.get("conditions") or {}).get("kind") == "cited_source" else None)
+        w.writerow([csv_value(row.get(c)) for c in CSV_COLUMNS])
+    files["orchid-literature.csv.gz"] = gz(sbuf.getvalue().encode())
+    files["SCHEMA.md"] = SCHEMA_MD.format(release=RELEASE).encode()
+    return files, tot
+
+
+LIT_FIELDS = [("id", "sc:Text"), ("system", "sc:Text"), ("record_kind", "sc:Text"), ("observation_type", "sc:Text"),
+              ("property_group", "sc:Text"), ("property", "sc:Text"), ("value", "sc:Float"), ("unit", "sc:Text"),
+              ("uncertainty", "sc:Text"), ("temperature_K", "sc:Float"), ("temperature_printed", "sc:Text"),
+              ("pressure_Pa", "sc:Float"), ("phases", "sc:Text"), ("phase_compositions", "sc:Text"),
+              ("reaction", "sc:Text"), ("evidence_class", "sc:Text"), ("origin", "sc:Text"), ("model", "sc:Text"),
+              ("method", "sc:Text"), ("conditions", "sc:Text"), ("cited_sources", "sc:Text"), ("paper", "sc:Text"),
+              ("paper_citation", "sc:Text"), ("paper_doi", "sc:Text"), ("quote", "sc:Text"), ("quote_page", "sc:Integer"),
+              ("flags", "sc:Text"), ("extraction_accepted", "sc:Boolean")]
+
+
+def croissant_update(path, files):
+    """Add / refresh the literature entries of data/croissant.json (other entries untouched)."""
+    d = json.load(open(path, encoding="utf-8"))
+    dist = [x for x in d.get("distribution", []) if not str(x.get("@id", "")).startswith("literature")]
+    sha = lambda b: hashlib.sha256(b).hexdigest()
+    base = "https://orchid-project.org/data/literature/"
+    dist += [
+        {"@type": "cr:FileObject", "@id": "literature-csv-gz", "name": "orchid-literature.csv.gz",
+         "contentUrl": base + "orchid-literature.csv.gz", "encodingFormat": "application/gzip",
+         "sha256": sha(files["orchid-literature.csv.gz"])},
+        {"@type": "cr:FileObject", "@id": "literature-csv", "name": "orchid-literature.csv",
+         "containedIn": {"@id": "literature-csv-gz"}, "encodingFormat": "text/csv"},
+        {"@type": "cr:FileObject", "@id": "literature-jsonl-gz", "name": "orchid-literature.jsonl.gz",
+         "contentUrl": base + "orchid-literature.jsonl.gz", "encodingFormat": "application/gzip",
+         "sha256": sha(files["orchid-literature.jsonl.gz"])},
+        {"@type": "cr:FileObject", "@id": "literature-index", "name": "literature-index.json",
+         "contentUrl": base + "index.json", "encodingFormat": "application/json", "sha256": sha(files["index.json"])},
+        {"@type": "cr:FileObject", "@id": "literature-papers", "name": "literature-papers.json",
+         "contentUrl": base + "papers.json", "encodingFormat": "application/json", "sha256": sha(files["papers.json"])},
+        {"@type": "cr:FileObject", "@id": "literature-contexts", "name": "literature-contexts.json",
+         "contentUrl": base + "contexts.json", "encodingFormat": "application/json", "sha256": sha(files["contexts.json"])},
+        {"@type": "cr:FileSet", "@id": "literature-systems", "name": "literature-systems",
+         "encodingFormat": "application/json", "includes": "data/literature/systems/*.json"},
+    ]
+    d["distribution"] = dist
+    rs = [x for x in d.get("recordSet", []) if x.get("@id") != "literature"]
+    rs.append({"@type": "cr:RecordSet", "@id": "literature", "name": "literature",
+               "description": "Values extracted from published papers (CC BY 4.0 derived data; quotes under fair use). "
+                              "Nested fields are compact JSON strings; see data/literature/SCHEMA.md.",
+               "field": [{"@type": "cr:Field", "@id": f"literature/{n}", "name": n, "dataType": t,
+                          "source": {"fileObject": {"@id": "literature-csv"}, "extract": {"column": n}}}
+                         for n, t in LIT_FIELDS]})
+    d["recordSet"] = rs
+    if "literature" not in d.get("description", ""):
+        d["description"] = d["description"].rstrip(".") + ", and literature data (invariant reactions, transitions, phase compositions, thermochemical and structural values with evidence class, citation and quote)."
+    return json.dumps(d, indent=1, ensure_ascii=False).encode()
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--corpus", default=DEFAULT_CORPUS, help="SGTE-corpus build directory (read only)")
+    ap.add_argument("--pdfs", default=DEFAULT_PDFS, help="PDF corpus root (read only; hashed for no-DOI citations)")
+    ap.add_argument("--out", default=os.path.join(SITE, OUT_REL))
+    ap.add_argument("--check", action="store_true", help="verify the files on disk match a fresh export")
+    a = ap.parse_args(argv)
+    store, records, papers, contexts = build(a.corpus, a.pdfs)
+    files, tot = outputs(store, records, papers, contexts)
+    cpath = os.path.join(SITE, "data", "croissant.json")
+    croissant = croissant_update(cpath, files) if os.path.exists(cpath) else None
+    if a.check:
+        bad = []
+        if croissant is not None and open(cpath, "rb").read() != croissant:
+            bad.append("../croissant.json")
+        for rel, data in files.items():
+            p = os.path.join(a.out, rel)
+            if not os.path.exists(p) or open(p, "rb").read() != data:
+                bad.append(rel)
+        existing = {os.path.relpath(p, a.out) for p in glob.glob(os.path.join(a.out, "systems", "*.json"))}
+        stale = sorted(existing - set(files))
+        if bad or stale:
+            print(f"out of date: {len(bad)} changed/missing, {len(stale)} stale", file=sys.stderr)
+            for x in (bad + stale)[:20]:
+                print("  " + x, file=sys.stderr)
+            return 1
+        print(f"ok: {len(files)} files current")
+        return 0
+    os.makedirs(os.path.join(a.out, "systems"), exist_ok=True)
+    for p in glob.glob(os.path.join(a.out, "systems", "*.json")):
+        if os.path.relpath(p, a.out) not in files:
+            os.remove(p)
+    for rel, data in files.items():
+        p = os.path.join(a.out, rel)
+        tmp = p + ".tmp"
+        with open(tmp, "wb") as fh:
+            fh.write(data)
+        os.replace(tmp, p)
+    if croissant is not None:
+        with open(cpath + ".tmp", "wb") as fh:
+            fh.write(croissant)
+        os.replace(cpath + ".tmp", cpath)
+    sizes = {k: len(v) for k, v in files.items()}
+    big = max((v, k) for k, v in sizes.items() if k.startswith("systems/"))
+    print(json.dumps({"totals": tot, "notes": dict(store.notes),
+                      "sizes": {k: v for k, v in sorted(sizes.items()) if not k.startswith("systems/")},
+                      "system_files": sum(1 for k in sizes if k.startswith("systems/")),
+                      "system_bytes_total": sum(v for k, v in sizes.items() if k.startswith("systems/")),
+                      "largest_system_file": big}, indent=1, ensure_ascii=False))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

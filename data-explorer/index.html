@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORCHID literature data</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo/orchid-icon.svg">
+<meta name="description" content="Search invariant reactions, phase transitions, phase compositions, thermochemical and structural values extracted from published CALPHAD and phase-equilibrium papers, each with its evidence class, source, quote and page.">
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;--row:#f6f4f8;
+--exp:#1d7448;--exp-bg:#e3f3ea;--mod:#2c58a8;--mod-bg:#e5ecf9;--dft:#a3520a;--dft-bg:#fbeedf;--uns:#5f5a66;--uns-bg:#ecebee;--warn:#9a3412}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--row:#221e28;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--dft:#f2ad6b;--dft-bg:#3a2612;--uns:#bdb7c6;--uns-bg:#2a2730;--warn:#fb923c}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--row:#221e28;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--dft:#f2ad6b;--dft-bg:#3a2612;--uns:#bdb7c6;--uns-bg:#2a2730;--warn:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;text-decoration:none;color:var(--fg)}
+nav a{text-decoration:none}
+nav a[aria-current]{font-weight:600}
+h1{font-size:1.6rem;margin:24px 0 4px}
+.lead{color:var(--muted);margin:0 0 12px;max-width:820px}
+.pt{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:2px;margin:10px 0 4px;max-width:760px}
+.pt button{font-size:11px;padding:3px 0;border-radius:4px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:default;opacity:.45;min-width:0}
+.pt button.has{opacity:1;color:var(--fg);cursor:pointer}
+.pt button.partner{background:var(--accent2);border-color:var(--accent);color:var(--accent);opacity:1;cursor:pointer}
+.pt button.sel{background:var(--accent);color:#fff;border-color:var(--accent);opacity:1}
+.hint{font-size:.85rem;color:var(--muted)}
+.searchrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+input[type=search],select,button.b{font:inherit;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+input[type=search]{flex:1 1 280px;min-width:0}
+.filters select{max-width:100%}
+.filters label{max-width:100%}
+button.b{cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:2px 10px;cursor:pointer}
+.chip.cur{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip small{color:inherit;opacity:.7;margin-left:4px}
+.results{margin:6px 0;font-size:.9rem}
+.results li{margin:3px 0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:14px 0}
+.syshead{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline}
+.syshead h2{margin:0;font-size:1.3rem}
+.dl{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.9rem}
+.filters{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:10px 0 4px;font-size:.9rem}
+.filters label{display:inline-flex;align-items:center;gap:4px}
+.counts{font-size:.85rem;color:var(--muted)}
+.badge{display:inline-block;font-size:.75rem;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.b-experimental{background:var(--exp-bg);color:var(--exp)}
+.b-model{background:var(--mod-bg);color:var(--mod)}
+.b-dft{background:var(--dft-bg);color:var(--dft)}
+.b-unspecified{background:var(--uns-bg);color:var(--uns)}
+.flag{display:inline-block;font-size:.72rem;padding:0 6px;border-radius:4px;border:1px solid var(--warn);color:var(--warn);margin-left:4px;white-space:nowrap}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+th button{all:unset;cursor:pointer}
+th button:focus-visible{outline:2px solid var(--accent)}
+th .arrow{font-size:.7rem;margin-left:3px}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.rec{cursor:pointer}
+tr.rec:hover{background:var(--row)}
+tr.rec.open{background:var(--row)}
+tr.det td{background:var(--row);padding:10px 14px}
+.det dl{margin:0;display:grid;grid-template-columns:minmax(110px,auto) 1fr;gap:4px 12px}
+.det dt{color:var(--muted);font-size:.82rem}
+.det dd{margin:0;overflow-wrap:anywhere}
+blockquote{margin:2px 0;padding:4px 10px;border-left:3px solid var(--accent);background:var(--card);font-style:italic}
+.ctx{margin:0;padding-left:18px}
+.ctx li{margin:4px 0}
+.muted{color:var(--muted)}
+.more{margin:10px 0}
+.empty{color:var(--muted);padding:20px 0}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+@media (max-width:640px){
+  .pt button{font-size:9px;padding:2px 0}
+  .colhide{display:none}
+  .det dl{grid-template-columns:1fr}
+  h1{font-size:1.35rem}
+}
+</style>
+<script src="../assets/data-base.js"></script>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
+  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="./" aria-current="page">Data</a><a href="../dataset/">About the data</a>
+</nav></div></header>
+<main class="wrap">
+<h1>Literature data explorer</h1>
+<p class="lead">Invariant reactions, phase transitions, phase compositions, thermochemical and structural values read from
+published papers. Every value keeps its evidence class (<span class="badge b-experimental">experimental</span>
+<span class="badge b-model">model</span> <span class="badge b-dft">DFT</span> <span class="badge b-unspecified">unspecified</span>),
+its source, and the sentence or table row it came from. <a href="../dataset/">How the data were made, licence and citation</a>.
+Formation enthalpies against DFT: <a href="../dft-parity/">DFT vs experiment</a>.</p>
+
+<div class="searchrow">
+  <input type="search" id="q" placeholder="Element(s), compound (Al3Ni), system (Al-Ni), DOI or author" aria-label="Search the literature data">
+  <button class="b" type="button" id="qgo">Search</button>
+  <button class="b" type="button" id="qclear">Clear</button>
+</div>
+<div class="hint" id="pthint">Pick elements on the table: systems containing all picked elements are listed below.</div>
+<div class="pt" id="pt"></div>
+<div class="chips" id="syslist" aria-label="Matching systems"></div>
+<div id="searchres" class="results"></div>
+
+<section class="panel" id="syspanel" hidden>
+  <div class="syshead"><h2 id="systitle">—</h2><span class="counts" id="syscount"></span></div>
+  <div class="dl" id="sysdl"></div>
+  <div class="filters" id="filters">
+    <span>Class:</span>
+    <label><input type="checkbox" data-ev="experimental" checked> <span class="badge b-experimental">experimental</span></label>
+    <label><input type="checkbox" data-ev="model" checked> <span class="badge b-model">model</span></label>
+    <label><input type="checkbox" data-ev="dft" checked> <span class="badge b-dft">DFT</span></label>
+    <label><input type="checkbox" data-ev="unspecified" checked> <span class="badge b-unspecified">unspecified</span></label>
+    <label>Property <select id="fprop"><option value="">all</option></select></label>
+    <label>Source <select id="fkind"><option value="">tables and text</option><option value="invariant_table">invariant tables</option><option value="general_table">other tables</option><option value="running_text">running text</option></select></label>
+    <label title="Records whose extraction was not accepted (readers disagreed or a check failed)"><input type="checkbox" id="fflag"> include not-accepted records</label>
+    <label>Filter <input type="search" id="ftext" placeholder="phase, author, method…" aria-label="Filter rows" style="width:12em"></label>
+  </div>
+  <div class="counts" id="shown"></div>
+  <div class="tablewrap"><table id="tbl">
+    <thead><tr id="thead"></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table></div>
+  <div class="more"><button class="b" type="button" id="morebtn" hidden>Show more</button></div>
+</section>
+<p class="empty" id="emptymsg">Choose a system to see its records.</p>
+</main>
+<footer><div class="wrap">Derived data CC BY 4.0 (cite ORCHID and the original papers); each quoted sentence is reproduced under fair use so that
+the value can be checked. Source papers, page images and full text are not redistributed. <a href="../data/literature/SCHEMA.md">Field reference</a>
+· <a href="../data/literature/orchid-literature.csv.gz">full CSV</a> · <a href="../data/literature/orchid-literature.jsonl.gz">full JSONL</a></div></footer>
+<script>
+"use strict";
+const ROOT=dataURL("literature/");
+const $=id=>document.getElementById(id);
+function h(tag,attrs,...kids){const e=document.createElement(tag);if(attrs)for(const k in attrs){const v=attrs[k];if(v===null||v===undefined||v===false)continue;if(k==="class")e.className=v;else if(k==="text")e.textContent=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}
+  kids.flat().forEach(c=>{if(c===null||c===undefined||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)));});return e;}
+function safeUrl(u){try{const x=new URL(u,location.href);return (x.protocol==="https:"||x.protocol==="http:")?x.href:null;}catch(_){return null;}}
+function doiLink(doi){if(!doi)return null;return h("a",{href:"https://doi.org/"+encodeURIComponent(doi).replace(/%2F/g,"/"),target:"_blank",rel:"noopener"},"doi:"+doi);}
+const EVL={experimental:"experimental",model:"model",dft:"DFT",unspecified:"unspecified"};
+const PROPN={INVARIANT_TEMPERATURE:"Invariant reaction",TRANSITION_TEMPERATURE:"Phase transition",PHASE_COMPOSITION:"Phase composition",PHASE_ASSEMBLAGE:"Phase assemblage",
+ HM_FORM:"Enthalpy of formation",SM_FORM:"Entropy of formation",GM_FORM:"Gibbs energy of formation",HM_MIX:"Enthalpy of mixing",GM_MIX:"Gibbs energy of mixing",SM_MIX:"Entropy of mixing",
+ CPM:"Heat capacity",SM:"Entropy",ENTROPY:"Entropy",HEAT_CONTENT:"Heat content",GIBBS_ENERGY:"Gibbs energy",PARTIAL_ENTHALPY:"Partial enthalpy",EMF:"EMF",ACTIVITY:"Activity",
+ ACTIVITY_COEFFICIENT:"Activity coefficient",CHEMICAL_POTENTIAL:"Chemical potential",VAPOR_PRESSURE:"Vapour pressure",MOLAR_VOLUME:"Molar volume",TRANSITION_ENTHALPY:"Transition enthalpy",
+ LATTICE_A:"Lattice a",LATTICE_B:"Lattice b",LATTICE_C:"Lattice c",OTHER:"Other"};
+const propName=p=>PROPN[p]||(p&&p.startsWith("ACR_")?"Activity "+p.slice(4):(p||"").replace(/_/g," ").toLowerCase());
+const fmtNum=v=>{if(v===null||v===undefined)return "";const a=Math.abs(v);if(a!==0&&(a<1e-3||a>=1e7))return v.toExponential(3);return String(+v.toPrecision(6));};
+const cap=e=>e.charAt(0)+e.slice(1).toLowerCase();
+const sysLabel=s=>s.split("-").map(cap).join("–");
+
+let PENDING=null,INDEX=null,PAPERS=null,DOC=null,CURSYS=null,SEL=new Set(),SORT={key:"T",dir:1},LIMIT=150,OPEN=new Set();
+const PT=[["H",1,1],["He",1,18],["Li",2,1],["Be",2,2],["B",2,13],["C",2,14],["N",2,15],["O",2,16],["F",2,17],["Ne",2,18],["Na",3,1],["Mg",3,2],["Al",3,13],["Si",3,14],["P",3,15],["S",3,16],["Cl",3,17],["Ar",3,18],
+["K",4,1],["Ca",4,2],["Sc",4,3],["Ti",4,4],["V",4,5],["Cr",4,6],["Mn",4,7],["Fe",4,8],["Co",4,9],["Ni",4,10],["Cu",4,11],["Zn",4,12],["Ga",4,13],["Ge",4,14],["As",4,15],["Se",4,16],["Br",4,17],["Kr",4,18],
+["Rb",5,1],["Sr",5,2],["Y",5,3],["Zr",5,4],["Nb",5,5],["Mo",5,6],["Tc",5,7],["Ru",5,8],["Rh",5,9],["Pd",5,10],["Ag",5,11],["Cd",5,12],["In",5,13],["Sn",5,14],["Sb",5,15],["Te",5,16],["I",5,17],["Xe",5,18],
+["Cs",6,1],["Ba",6,2],["Hf",6,4],["Ta",6,5],["W",6,6],["Re",6,7],["Os",6,8],["Ir",6,9],["Pt",6,10],["Au",6,11],["Hg",6,12],["Tl",6,13],["Pb",6,14],["Bi",6,15],["Po",6,16],["At",6,17],["Rn",6,18],
+["La",8,3],["Ce",8,4],["Pr",8,5],["Nd",8,6],["Pm",8,7],["Sm",8,8],["Eu",8,9],["Gd",8,10],["Tb",8,11],["Dy",8,12],["Ho",8,13],["Er",8,14],["Tm",8,15],["Yb",8,16],["Lu",8,17],
+["Ac",9,3],["Th",9,4],["Pa",9,5],["U",9,6],["Np",9,7],["Pu",9,8],["Am",9,9],["Cm",9,10]];
+const ELSET=new Set(PT.map(p=>p[0].toUpperCase()));
+
+async function getJSON(u){const r=await fetch(u);if(!r.ok)throw new Error(u+": "+r.status);return r.json();}
+async function load(){
+  INDEX=await getJSON(ROOT+"index.json");
+  buildPT();
+  ["qgo"].forEach(id=>$(id).addEventListener("click",runSearch));
+  $("q").addEventListener("keydown",e=>{if(e.key==="Enter")runSearch();});
+  $("qclear").addEventListener("click",()=>{$("q").value="";SEL.clear();$("searchres").replaceChildren();buildPT();listSystems();});
+  document.querySelectorAll("#filters input,#filters select").forEach(x=>x.addEventListener(x.type==="search"?"input":"change",()=>{LIMIT=150;renderTable();}));
+  $("morebtn").addEventListener("click",()=>{LIMIT+=300;renderTable();});
+  window.addEventListener("hashchange",fromHash);
+  fromHash();
+}
+function fromHash(){const parts=decodeURIComponent(location.hash.slice(1)).split("/");const s=parts[0].toUpperCase();PENDING=parts[1]||null;if(s&&INDEX.systems[s]){if(s!==CURSYS){SEL=new Set(s.split("-"));buildPT();listSystems();openSystem(s);}else if(PENDING){focusRecord();renderTable();}}else listSystems();}
+function focusRecord(){const rid=PENDING;PENDING=null;if(!rid||!DOC)return;const r=DOC.records.find(x=>x.id===rid);if(!r)return;
+  if(!r.flags.extraction_accepted)$("fflag").checked=true;const cb=document.querySelector(`#filters input[data-ev="${r.evidence_class}"]`);if(cb)cb.checked=true;
+  $("fprop").value="";$("fkind").value="";$("ftext").value=rid;OPEN.add(rid);}
+
+function systemsWith(sel){return Object.keys(INDEX.systems).filter(k=>{const els=INDEX.systems[k].elements;for(const e of sel)if(!els.includes(e))return false;return true;});}
+function buildPT(){const pt=$("pt");pt.replaceChildren();const has=new Set();Object.values(INDEX.systems).forEach(v=>v.elements.forEach(e=>has.add(e)));
+  const cand=SEL.size?new Set(systemsWith(SEL).flatMap(k=>INDEX.systems[k].elements)):null;
+  PT.forEach(([e,r,c])=>{const E=e.toUpperCase();const b=h("button",{type:"button",text:e,"aria-pressed":SEL.has(E)?"true":"false","aria-label":e+(has.has(E)?"":" (no data)")});b.style.gridRow=r;b.style.gridColumn=c;
+    if(has.has(E))b.classList.add("has");if(cand&&cand.has(E)&&!SEL.has(E))b.classList.add("partner");if(SEL.has(E))b.classList.add("sel");
+    b.addEventListener("click",()=>{if(!has.has(E))return;if(SEL.has(E))SEL.delete(E);else SEL.add(E);buildPT();listSystems(true);});pt.appendChild(b);});}
+function listSystems(auto){const box=$("syslist");box.replaceChildren();
+  if(!SEL.size){$("pthint").textContent=`${Object.keys(INDEX.systems).length} systems, ${INDEX.totals.records.toLocaleString()} records. Pick elements on the table or search.`;
+    const top=Object.entries(INDEX.systems).sort((a,b)=>b[1].n-a[1].n).slice(0,24);box.append(h("span",{class:"hint"},"Most data: "));top.forEach(([k,v])=>box.append(sysChip(k,v)));return;}
+  const ks=systemsWith(SEL).sort((a,b)=>(INDEX.systems[a].elements.length-INDEX.systems[b].elements.length)||(INDEX.systems[b].n-INDEX.systems[a].n));
+  $("pthint").textContent=`${[...SEL].map(cap).join(", ")}: ${ks.length} system(s) contain ${SEL.size>1?"all of these":"this element"}; partner elements are highlighted.`;
+  ks.slice(0,80).forEach(k=>box.append(sysChip(k,INDEX.systems[k])));if(ks.length>80)box.append(h("span",{class:"hint"},`… ${ks.length-80} more`));
+  const exact=[...SEL].sort().join("-");if(auto&&INDEX.systems[exact]&&SEL.size>1)go(exact);}
+function sysChip(k,v){return h("button",{type:"button",class:"chip"+(k===CURSYS?" cur":""),onclick:()=>go(k)},sysLabel(k),h("small",null,v.n.toLocaleString()));}
+function go(k){if(location.hash.slice(1)===k)openSystem(k);else location.hash=k;}
+
+function parseFormula(q){const toks=[];const re=/([A-Z][a-z]?)(\d*\.?\d*)/g;let m,used="";while((m=re.exec(q))){if(!ELSET.has(m[1].toUpperCase()))return null;toks.push(m[1].toUpperCase());used+=m[0];}
+  return used.length===q.replace(/[\s\-–,+()/]/g,"").length&&toks.length?toks:null;}
+async function runSearch(){const q=$("q").value.trim();const res=$("searchres");res.replaceChildren();if(!q){listSystems();return;}
+  const parts=q.split(/[\s,;+]+/).filter(Boolean);
+  let els=null;
+  const syms=q.split(/[\s\-–,;+/]+/).filter(Boolean);
+  if(syms.every(s=>ELSET.has(s.toUpperCase())))els=syms.map(s=>s.toUpperCase());else if(parts.length===1)els=parseFormula(q.replace(/\s+/g,""));
+  if(els&&!/^10\./.test(q)){SEL=new Set(els);buildPT();listSystems(true);if(!systemsWith(SEL).length)res.append("No system contains all of "+els.map(cap).join(", ")+".");return;}
+  if(!PAPERS){res.textContent="Loading the paper list…";PAPERS=await getJSON(ROOT+"papers.json");res.replaceChildren();}
+  const ql=q.toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//,"").replace(/^doi:/,"");
+  const hits=Object.values(PAPERS).filter(p=>(p.doi&&p.doi.includes(ql))||(p.citation&&p.citation.toLowerCase().includes(ql))||(p.title&&p.title.toLowerCase().includes(ql))).filter(p=>(p.systems||[]).length);
+  if(!hits.length){res.textContent="No paper matches “"+q+"”.";return;}
+  res.append(h("div",{class:"hint"},`${hits.length} paper(s) match; click a system to open it.`));
+  const ul=h("ul",null);hits.slice(0,40).forEach(p=>{const li=h("li",null,p.citation+" ",doiLink(p.doi)," ",...(p.systems||[]).filter(s=>INDEX.systems[s]).slice(0,12).map(s=>sysChip(s,INDEX.systems[s])));ul.append(li);});res.append(ul);
+  if(hits.length>40)res.append(h("div",{class:"hint"},`… ${hits.length-40} more; refine the search.`));}
+
+async function openSystem(s){CURSYS=s;OPEN.clear();LIMIT=150;const meta=INDEX.systems[s];
+  $("syspanel").hidden=false;$("emptymsg").hidden=true;$("systitle").textContent=sysLabel(s);$("syscount").textContent="loading…";
+  const docs=await Promise.all(meta.files.map(f=>getJSON(ROOT+f)));if(CURSYS!==s)return;
+  DOC={records:[],artifacts:{},models:{},papers:{},contexts:{}};
+  docs.forEach(d=>{DOC.records.push(...d.records);Object.assign(DOC.artifacts,d.artifacts);Object.assign(DOC.models,d.models);Object.assign(DOC.papers,d.papers);Object.assign(DOC.contexts,d.contexts);});
+  const ev=meta.by_evidence_class,acc=meta.accepted;
+  $("syscount").textContent=`${meta.n.toLocaleString()} records (${acc.toLocaleString()} accepted) · `+Object.entries(ev).map(([k,v])=>`${EVL[k]||k} ${v}`).join(" · ");
+  const dl=$("sysdl");dl.replaceChildren(h("span",{class:"muted"},"Download:"));
+  meta.files.forEach((f,i)=>dl.append(h("a",{href:ROOT+f,download:f.split("/").pop()},meta.files.length>1?`JSON part ${i+1}`:"JSON")));
+  dl.append(h("a",{href:"#",onclick:e=>{e.preventDefault();downloadCSV();}},"CSV (this system)"));
+  if(meta.phase_diagram)dl.append(h("a",{href:"../phase-diagrams/?lit=1#"+s},"Calculated phase diagram with these data"));
+  const ps=$("fprop");const cur=ps.value;ps.replaceChildren(h("option",{value:""},"all"));Object.entries(meta.by_property_group).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>ps.append(h("option",{value:k},`${k} (${v})`)));if(meta.by_property_group[cur])ps.value=cur;
+  document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("cur",c.firstChild&&c.firstChild.textContent===sysLabel(s)));
+  focusRecord();renderTable();}
+
+function paperShort(pid){const p=DOC.papers[pid]||(PAPERS&&PAPERS[pid]);if(!p)return pid||"";const a=(p.authors&&p.authors[0])?p.authors[0].split(" ").pop():(p.citation||"").split(/[,.]/)[0];return a+(p.year?" "+p.year:"");}
+function citedShort(r){const c=(r.cited_sources||[])[0];if(!c)return "";return (c.first_author||(c.reference||"").split(/[,.]/)[0]||"ref. "+(c.label||"?"))+(c.year?" "+c.year:"");}
+function compText(r){const out=[];(r.phase_compositions||[]).forEach(pc=>{const c=Object.entries(pc.composition).map(([e,x])=>cap(e)+" "+fmtNum(x)).join(", ");out.push((pc.phase?pc.phase+": ":"")+c+(pc.basis==="unresolved"?" (basis unresolved)":""));});
+  if(!out.length&&r.overall_composition)out.push("alloy: "+Object.entries(r.overall_composition).map(([e,x])=>cap(e)+" "+fmtNum(x)).join(", "));return out.join("; ");}
+function phaseText(r){const rx=r.reaction&&(r.reaction.printed||r.reaction.type);if(rx)return (r.reaction.type&&r.reaction.printed?r.reaction.type+": ":"")+rx;return (r.phases||[]).map(p=>p.label).join(" + ");}
+const COLS=[
+ {k:"prop",t:"Property",v:r=>propName(r.property),s:r=>propName(r.property)},
+ {k:"val",t:"Value",num:1,v:r=>r.value===undefined?(r.value_expression?"expression":""):fmtNum(r.value)+(r.unit&&r.unit!=="K"?" "+r.unit:(r.unit==="K"?" K":"")),s:r=>r.value??-Infinity},
+ {k:"T",t:"T (K)",num:1,v:r=>r.temperature_K===undefined?"":fmtNum(r.temperature_K)+(r.temperature_bound?" ("+r.temperature_bound+")":""),s:r=>r.temperature_K??Infinity},
+ {k:"ph",t:"Phases / reaction",v:phaseText,s:phaseText},
+ {k:"x",t:"Composition (mole fraction)",cls:"colhide",v:compText,s:compText},
+ {k:"ev",t:"Class",v:null,s:r=>r.evidence_class},
+ {k:"src",t:"Source",v:null,s:r=>paperShort(r.paper)}];
+function rowsFiltered(){const evOn=new Set([...document.querySelectorAll("#filters input[data-ev]")].filter(x=>x.checked).map(x=>x.dataset.ev));
+  const pg=$("fprop").value,kind=$("fkind").value,flag=$("fflag").checked,ft=$("ftext").value.trim().toLowerCase();
+  return DOC.records.filter(r=>evOn.has(r.evidence_class)&&(!pg||r.property_group===pg)&&(!kind||r.record_kind===kind)&&(flag||r.flags.extraction_accepted)&&
+    (!ft||[r.id,phaseText(r),r.method,r.property_printed,paperShort(r.paper),citedShort(r),r.quote,(DOC.papers[r.paper]||{}).citation].some(x=>x&&String(x).toLowerCase().includes(ft))));}
+function renderTable(){const th=$("thead");th.replaceChildren();
+  COLS.forEach(c=>{const b=h("button",{type:"button","aria-label":"Sort by "+c.t},c.t,h("span",{class:"arrow",text:SORT.key===c.k?(SORT.dir>0?"▲":"▼"):""}));
+    b.addEventListener("click",()=>{SORT=SORT.key===c.k?{key:c.k,dir:-SORT.dir}:{key:c.k,dir:1};renderTable();});
+    th.append(h("th",{class:c.cls||null,"aria-sort":SORT.key===c.k?(SORT.dir>0?"ascending":"descending"):null},b));});
+  const col=COLS.find(c=>c.k===SORT.key);const rows=rowsFiltered().sort((a,b)=>{const x=col.s(a),y=col.s(b);return (x<y?-1:x>y?1:0)*SORT.dir;});
+  const tb=$("tbody");tb.replaceChildren();
+  rows.slice(0,LIMIT).forEach(r=>{const tr=h("tr",{class:"rec"+(OPEN.has(r.id)?" open":""),tabindex:"0","aria-expanded":OPEN.has(r.id)?"true":"false"});
+    COLS.forEach(c=>{let td;
+      if(c.k==="ev")td=h("td",null,h("span",{class:"badge b-"+r.evidence_class},EVL[r.evidence_class]||r.evidence_class));
+      else if(c.k==="src"){td=h("td",null,paperShort(r.paper));const cs=citedShort(r);if(cs&&!(r.origin||{}).own_work_of_paper)td.append(h("div",{class:"muted"},"cites "+cs));}
+      else td=h("td",{class:(c.num?"num ":"")+(c.cls||"")},c.v(r));
+      if(c.k==="prop"){if(r.record_kind==="running_text")td.append(h("div",{class:"muted"},"text"));if(!r.flags.extraction_accepted)td.append(h("span",{class:"flag"},"not accepted"));}
+      tr.append(td);});
+    const toggle=()=>{if(OPEN.has(r.id))OPEN.delete(r.id);else OPEN.add(r.id);renderTable();};
+    tr.addEventListener("click",toggle);tr.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}});
+    tb.append(tr);if(OPEN.has(r.id))tb.append(h("tr",{class:"det"},h("td",{colspan:String(COLS.length)},details(r))));});
+  const hidden=DOC.records.length-rows.length;
+  $("shown").textContent=`Showing ${Math.min(LIMIT,rows.length).toLocaleString()} of ${rows.length.toLocaleString()} matching records`+(hidden?` (${hidden.toLocaleString()} hidden by filters)`:"")+". Click a row for method, conditions, quote and sources.";
+  $("morebtn").hidden=rows.length<=LIMIT;}
+
+function kv(dl,k,...v){if(!v.some(x=>x!==null&&x!==undefined&&x!==""))return;dl.append(h("dt",null,k),h("dd",null,...v));}
+function details(r){const d=h("div",{class:"det"});const dl=h("dl");d.append(dl);
+  const art=DOC.artifacts[(r.locator||{}).ref]||{};const P=DOC.papers[r.paper]||{};
+  kv(dl,"Value",r.value!==undefined?fmtNum(r.value)+" "+(r.unit||""):"",r.value_range?` (range ${fmtNum(r.value_range.min)} to ${fmtNum(r.value_range.max)})`:"",r.value_expression?h("code",null,r.value_expression):"",
+     r.value_printed!==undefined&&r.value_printed!==r.value?h("span",{class:"muted"},` · printed ${r.value_printed} ${r.unit_printed||""}`):"");
+  kv(dl,"Property",propName(r.property),r.property_printed?h("span",{class:"muted"},` · printed “${r.property_printed}”`):"");
+  if(r.uncertainty)kv(dl,"Uncertainty","± "+fmtNum(r.uncertainty.value)+" ",h("span",{class:"muted"},r.uncertainty.basis==="printed"?"(printed)":`(${r.uncertainty.note||r.uncertainty.basis}; not a measured uncertainty)`));
+  kv(dl,"Temperature",r.temperature_K!==undefined?fmtNum(r.temperature_K)+" K":"",r.temperature_printed?h("span",{class:"muted"},` · printed ${r.temperature_printed}`):"",r.temperature_basis&&r.temperature_basis!=="printed"?h("span",{class:"muted"},` · ${r.temperature_basis.replace(/_/g," ")}`):"",
+     r.temperature_uncertainty?h("span",{class:"muted"},` · ±${fmtNum(r.temperature_uncertainty.value)} K (${r.temperature_uncertainty.basis.replace(/_/g," ")})`):"");
+  kv(dl,"Pressure",r.pressure_Pa?fmtNum(r.pressure_Pa)+" Pa":"",r.pressure_basis?h("span",{class:"muted"},` (${r.pressure_basis.replace(/_/g," ")})`):"");
+  if(r.phases&&r.phases.length)kv(dl,"Phases",r.phases.map(p=>p.label+(p.model_phase?` → ${p.model_phase}`:"")+(p.pearson_symbol?` (${p.pearson_symbol})`:"")).join("; "));
+  if(r.reaction)kv(dl,"Reaction",[r.reaction.type,r.reaction.printed].filter(Boolean).join(": "));
+  const ct=compText(r);if(ct)kv(dl,"Composition",ct,(r.phase_compositions||[]).length?h("span",{class:"muted"},` · ${r.phase_compositions[0].basis}`):"");
+  if(r.reference_state)kv(dl,"Reference state",typeof r.reference_state==="string"?r.reference_state:Object.entries(r.reference_state).map(([e,v])=>cap(e)+": "+(v&&v.phase?v.phase:JSON.stringify(v))).join(", "));
+  if(r.structure)kv(dl,"Structure",Object.entries(r.structure).map(([k,v])=>k.replace(/_/g," ")+" "+v).join(", "));
+  if(r.calculation_settings)kv(dl,"Calculation",Object.entries(r.calculation_settings).map(([k,v])=>k+": "+v).join(", "));
+  kv(dl,"Evidence class",h("span",{class:"badge b-"+r.evidence_class},EVL[r.evidence_class]),(r.origin||{}).basis?h("span",{class:"muted"}," "+r.origin.basis.replace(/_/g," ")):"");
+  kv(dl,"Method",r.method?r.method:h("span",{class:"muted"},"not printed with this value"),r.method_basis?h("span",{class:"muted"},` (${r.method_basis})`):"");
+  const cond=r.conditions||{};
+  if(cond.kind==="paper_context"&&DOC.contexts[cond.paper]){const items=DOC.contexts[cond.paper].items.filter(it=>it.extraction_accepted||$("fflag").checked);const ul=h("ul",{class:"ctx"});
+    items.forEach(it=>{const f=Object.entries(it).filter(([k])=>!["type","quote","page","id","extraction_accepted","second_reader_agrees","has_dropped_fields","review_flags","duration_parsed"].includes(k)).map(([k,v])=>k.replace(/_/g," ")+": "+(typeof v==="object"?JSON.stringify(v):v)).join("; ");
+      ul.append(h("li",null,h("b",null,it.type+" "),f,it.extraction_accepted?"":h("span",{class:"flag"},"not accepted"),h("blockquote",null,"“"+it.quote+"” (p. "+it.page+")")));});
+    kv(dl,"Conditions",h("div",{class:"muted"},"Experimental context of the reporting paper (its own work):"),items.length?ul:h("span",{class:"muted"}," none accepted"));}
+  else kv(dl,"Conditions",cond.kind==="cited_source"?"Conditions in the cited source (the reporting paper's own context does not apply).":cond.kind==="paper_context_not_extracted"?"Own experimental work; its experimental context has not been extracted yet.":cond.kind==="not_applicable_own_calculation"?"Calculated by the reporting paper (no experimental conditions).":"Own work of the reporting paper; origin not settled, so no experimental context is attached.");
+  if(r.quote)kv(dl,"Quote",h("blockquote",null,"“"+r.quote+"”"),h("span",{class:"muted"},`page ${r.quote_page}`));
+  kv(dl,"Located at",[art.artifact==="table"?`Table ${art.label||""}`:art.label,art.page&&art.artifact==="table"?`page ${art.page}`:"",(r.locator||{}).row?`row ${r.locator.row}`:""].filter(Boolean).join(", "),art.caption?h("div",{class:"muted"},"Caption: "+art.caption):"");
+  kv(dl,"Reporting paper",P.citation||r.paper||"",P.doi?" ":"",doiLink(P.doi));
+  if((r.cited_sources||[]).length){const ul=h("ul",{class:"ctx"});r.cited_sources.forEach(c=>ul.append(h("li",null,c.label?`[${c.label}] `:"",c.reference||((c.first_author||"")+" "+(c.year||"")),c.doi?" ":"",doiLink(c.doi),c.status&&c.status!=="resolved"?h("span",{class:"muted"},` (${c.status.replace(/_/g," ")})`):"")));kv(dl,"Value cited from",ul);}
+  if(r.model){const m=DOC.models[r.model]||r.model;const path=m.tdb_path?m.tdb_path.replace(/^databases\//,"../data/databases/"):null;
+    kv(dl,"Model (TDB)",path?h("a",{href:path},m.tdb):m.tdb," ",h("span",{class:"muted"},`SHA-256 ${m.tdb_sha256||"?"}`),m.model_citation?h("div",null,m.model_citation," ",doiLink(m.model_doi)):"",h("div",{class:"muted"},(m.link_basis||"").replace(/_/g," ")+(m.reproduced_by_calculation?" · reproduced by calculation":"")));}
+  else if(r.model_unlinked_reason)kv(dl,"Model (TDB)",h("span",{class:"muted"},"not linked: "+r.model_unlinked_reason));
+  const fl=r.flags,fs=[];fs.push(fl.extraction_accepted?"extraction accepted":"extraction NOT accepted");if(fl.row_state)fs.push("row "+fl.row_state.replace(/_/g," "));
+  if(fl.unsigned_in_print)fs.push("minus sign not printed (value as printed)");if(fl.sign_pdf_page_verified)fs.push("sign corrected from the PDF page image"+(fl.value_first_reader!==undefined?` (first reader: ${fl.value_first_reader})`:""));
+  if(fl.has_dropped_fields)fs.push(`${fl.dropped_field_count||""} field(s) removed: not printed in the quote`);if(fl.review_flags)fs.push("review flags: "+fl.review_flags.join(", "));
+  if(fl.plausibility)fs.push(`CALPHAD check ${fl.plausibility.result}`+(fl.plausibility.model?` vs ${fl.plausibility.model}`:"")+(fl.plausibility.dT_K!==undefined?` (ΔT ${fmtNum(fl.plausibility.dT_K)} K)`:""));
+  if(fl.source_disputed)fs.push("source disputed");if(fl.judge_adjudicated)fs.push("judge adjudicated");if(fl.magnitude_suspect)fs.push("magnitude suspect");if(fl.system_mismatch)fs.push("system mismatch");
+  if(fl.specification_gaps)fs.push("gaps: "+fl.specification_gaps.join(", "));if(fl.espei_ready)fs.push("ESPEI-ready");
+  kv(dl,"Flags",fs.join(" · "));
+  kv(dl,"Provenance",`${r.record_kind.replace(/_/g," ")} · readers ${(r.readers||[]).join(", ")} · tier ${r.reader_tier||"?"} · ${r.tool_release||""}`,h("div",{class:"muted"},"id "+r.id+" · "+(r.pid||"")));
+  return d;}
+
+function downloadCSV(){const cols=["id","system","record_kind","observation_type","property","property_printed","value","unit","uncertainty","temperature_K","temperature_printed","pressure_Pa","phases","phase_compositions","overall_composition","reaction","evidence_class","origin","method","conditions","cited_sources","paper","paper_citation","paper_doi","quote","quote_page","locator","model","flags","readers","reader_tier","tool_release","pid"];
+  const esc=v=>{if(v===undefined||v===null)return "";const s=typeof v==="object"?JSON.stringify(v):String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const lines=[cols.join(",")];DOC.records.forEach(r=>{const P=DOC.papers[r.paper]||{};const x=Object.assign({},r,{system:CURSYS,paper_citation:P.citation,paper_doi:P.doi,locator:Object.assign({},DOC.artifacts[(r.locator||{}).ref]||{},r.locator),model:r.model?DOC.models[r.model]:undefined});lines.push(cols.map(c=>esc(x[c])).join(","));});
+  const url=URL.createObjectURL(new Blob([lines.join("\n")+"\n"],{type:"text/csv"}));const a=h("a",{href:url,download:`orchid-literature-${CURSYS}.csv`});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+load().catch(e=>{$("emptymsg").textContent="Could not load the data: "+e.message;});
+</script>
+</body>
+</html>

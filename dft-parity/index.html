@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DFT vs experiment</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo/orchid-icon.svg">
+<meta name="description" content="Parity plots of literature formation enthalpies against Materials Project and OQMD DFT formation energies (kJ/mol-atom), with the quote, page and source paper behind every point.">
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--grid:#eeebf1;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;--row:#f6f4f8;
+--exp:#1d7448;--exp-bg:#e3f3ea;--mod:#2c58a8;--mod-bg:#e5ecf9;--uns:#5f5a66;--uns-bg:#ecebee;--warn:#9a3412;--band:#7b3fa01a;--bar:#7b3fa0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--grid:#24212a;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--row:#221e28;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--uns:#bdb7c6;--uns-bg:#2a2730;--warn:#fb923c;--band:#c79ae624;--bar:#c79ae6}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--grid:#24212a;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--row:#221e28;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--uns:#bdb7c6;--uns-bg:#2a2730;--warn:#fb923c;--band:#c79ae624;--bar:#c79ae6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;text-decoration:none;color:var(--fg)}
+nav a{text-decoration:none}
+nav a[aria-current]{font-weight:600}
+h1{font-size:1.6rem;margin:24px 0 4px}
+h2{font-size:1.15rem;margin:18px 0 6px}
+.lead{color:var(--muted);margin:0 0 12px;max-width:860px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:14px 0}
+.filters{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:.9rem}
+.filters fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.filters legend{float:left;color:var(--muted);margin-right:6px;padding:0}
+.filters label{display:inline-flex;align-items:center;gap:4px}
+input[type=search],select{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);max-width:100%}
+.badge{display:inline-block;font-size:.75rem;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.b-experimental{background:var(--exp-bg);color:var(--exp)}
+.b-model{background:var(--mod-bg);color:var(--mod)}
+.b-unspecified{background:var(--uns-bg);color:var(--uns)}
+.plots{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.plot h3{margin:0 0 2px;font-size:1rem}
+.plot .sub{font-size:.8rem;color:var(--muted);margin:0 0 4px}
+.plot svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.axis text{fill:var(--muted);font-size:11px}
+.axis line,.axis path{stroke:var(--line)}
+.gridl{stroke:var(--grid)}
+.diag{stroke:var(--muted);stroke-dasharray:4 3}
+.bandp{fill:var(--band)}
+.m-experimental{fill:var(--exp)}
+.m-model{fill:var(--mod)}
+.m-unspecified{fill:var(--uns)}
+.mk{fill-opacity:.55;stroke:var(--card);stroke-width:.6}
+.mk.hollow{fill-opacity:0;stroke-width:1.4}
+.mk.hollow.m-experimental{stroke:var(--exp)}.mk.hollow.m-model{stroke:var(--mod)}.mk.hollow.m-unspecified{stroke:var(--uns)}
+.hl{fill:none;stroke:var(--fg);stroke-width:2}
+.note{font-size:.8rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted);margin:6px 0}
+.legend svg{vertical-align:-2px}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hist .bar{fill:var(--bar);fill-opacity:.75}
+.hist .bar.in{fill-opacity:1}
+#tip{position:fixed;z-index:20;max-width:min(420px,calc(100vw - 24px));background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;
+ box-shadow:0 6px 24px #0003;padding:9px 11px;font-size:.82rem;line-height:1.4;pointer-events:none}
+#tip.pinned{pointer-events:auto}
+#tip .t{font-weight:700;font-size:.95rem}
+#tip .k{color:var(--muted)}
+#tip blockquote{margin:4px 0;padding:3px 8px;border-left:3px solid var(--accent);font-style:italic;max-height:7.5em;overflow:auto}
+#tip .close{float:right;border:0;background:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0 0 8px}
+.caveat{border-left:3px solid var(--warn);padding:8px 12px;background:var(--card);border-radius:0 8px 8px 0;font-size:.9rem}
+.caveat ul{margin:4px 0;padding-left:18px}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+@media (max-width:760px){.plots{grid-template-columns:1fr}h1{font-size:1.35rem}.colhide{display:none}}
+</style>
+<script src="../assets/data-base.js"></script>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
+  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="../data-explorer/">Data</a><a href="./" aria-current="page">DFT vs experiment</a><a href="../dataset/">About the data</a>
+</nav></div></header>
+<main class="wrap">
+<h1>DFT vs experiment: formation enthalpies</h1>
+<p class="lead">Formation enthalpies of binary compounds read from published papers (<a href="../data-explorer/">literature data</a>), plotted against the
+lowest-energy Materials Project and OQMD entry at the same composition. Both axes in kJ/mol-atom. The two DFT sources use different energy
+references and are shown side by side, never averaged. Hover or tap a point for its source, quote and page.</p>
+
+<section class="panel" aria-label="Filters">
+<div class="filters">
+  <fieldset><legend>Evidence:</legend>
+    <label><input type="checkbox" data-ev="experimental" checked> <span class="badge b-experimental">experimental</span></label>
+    <label><input type="checkbox" data-ev="model"> <span class="badge b-model">model</span></label>
+    <label><input type="checkbox" data-ev="unspecified"> <span class="badge b-unspecified">unspecified</span></label>
+  </fieldset>
+  <fieldset><legend>Method:</legend>
+    <label><input type="checkbox" data-m="calorimetry" checked> calorimetry</label>
+    <label><input type="checkbox" data-m="emf_vapour" checked> EMF / vapour / Knudsen</label>
+    <label><input type="checkbox" data-m="other_unknown" checked> other / not printed</label>
+  </fieldset>
+  <fieldset><legend>Compounds:</legend>
+    <label><input type="checkbox" data-c="intermetallic" checked> intermetallics</label>
+    <label><input type="checkbox" data-c="oxide_halide" checked> oxides / halides</label>
+    <label><input type="checkbox" data-c="other_nonmetal" checked> H, B, C, N, P, S, Se, Te compounds</label>
+  </fieldset>
+</div>
+<div class="filters" style="margin-top:8px">
+  <label><input type="checkbox" id="facc" checked> accepted extractions only</label>
+  <label title="Values printed without a minus sign (magnitudes by the paper's convention); drawn hollow"><input type="checkbox" id="funs"> include unsigned-in-print</label>
+  <label title="Values flagged magnitude_suspect by the extraction checks (often a per-formula value labelled per atom); drawn hollow"><input type="checkbox" id="fmag"> include magnitude-suspect</label>
+  <label><input type="checkbox" id="fmed"> median per compound</label>
+  <label>Elements <input type="search" id="fel" placeholder="e.g. Al, Ni" aria-label="Element filter (contains all)" style="width:9em"></label>
+  <label>Axes <select id="frange"><option value="-200,50">−200 to 50</option><option value="-100,20">−100 to 20</option><option value="-60,10">−60 to 10</option><option value="auto">all points</option></select></label>
+</div>
+</section>
+
+<div class="legend" id="legend"></div>
+<div class="plots">
+  <figure class="plot" style="margin:0"><h3>Materials Project</h3><p class="sub" id="sub-mp"></p><svg id="plot-mp" viewBox="0 0 440 440" role="img" aria-label="Parity plot, Materials Project"></svg><p class="note" id="clip-mp"></p></figure>
+  <figure class="plot" style="margin:0"><h3>OQMD</h3><p class="sub" id="sub-oqmd"></p><svg id="plot-oqmd" viewBox="0 0 440 440" role="img" aria-label="Parity plot, OQMD"></svg><p class="note" id="clip-oqmd"></p></figure>
+</div>
+<p class="note">x = literature value, y = DFT; dashed line y = x; shaded band ±10 kJ/mol-atom. Residual = DFT − literature.</p>
+
+<section class="panel"><h2 style="margin-top:0">Statistics for the current filters</h2>
+<div class="tablewrap"><table id="stats"><thead><tr><th>Source</th><th class="num">n</th><th class="num">MAE</th><th class="num">RMSE</th><th class="num">mean signed</th><th class="num">median |res.|</th><th class="num">Pearson r</th><th class="num">same sign</th><th class="num">within ±10</th></tr></thead><tbody></tbody></table></div>
+<p class="note">Errors in kJ/mol-atom. RMSE is dominated by a few gross outliers (see below); the median absolute residual is more robust. <span id="ncomp"></span></p>
+<div class="plots">
+  <figure class="plot hist" style="margin:0"><h3>Residuals, Materials Project</h3><svg id="hist-mp" viewBox="0 0 440 180" role="img" aria-label="Residual histogram, Materials Project"></svg></figure>
+  <figure class="plot hist" style="margin:0"><h3>Residuals, OQMD</h3><svg id="hist-oqmd" viewBox="0 0 440 180" role="img" aria-label="Residual histogram, OQMD"></svg></figure>
+</div>
+</section>
+
+<section class="panel"><h2 style="margin-top:0">Largest residuals</h2>
+<div class="tablewrap"><table id="outl"><thead><tr><th>Source</th><th>Compound</th><th class="num">literature</th><th class="num">DFT</th><th class="num">residual</th><th class="colhide">DFT entry</th><th class="colhide">Paper</th><th>Record</th></tr></thead><tbody></tbody></table></div>
+<p class="note">Typical causes: a per-formula value read as per atom, a table printing magnitudes with the sign given by the column heading, a high-temperature
+phase or polymorph missing from DFT, or a strongly correlated oxide where the DFT functional and corrections matter.</p>
+</section>
+
+<section class="caveat" aria-label="Caveats"><b>Read with care.</b>
+<ul>
+<li>DFT formation energies are 0 K values without zero-point or thermal terms; experimental enthalpies are usually at 298 K (some at high temperature).</li>
+<li>The Materials Project applies fitted energy corrections (notably to anions such as O, halides, S, N, H and to some transition-metal oxides; GGA/GGA+U mixing). OQMD's "standard" fit uses elemental reference energies fitted to experimental formation enthalpies. Neither is independent of experiment, and the two must not be averaged.</li>
+<li>The lowest-energy DFT entry at the composition is used; the measured phase may be a different polymorph (the number of DFT entries at that composition is shown), or a disordered or off-stoichiometric phase.</li>
+<li>Literature values include values cited from older work (often a compilation), model values when selected, and machine-extracted values: each point keeps its quote and page so it can be checked. Values printed without a sign or flagged magnitude-suspect are excluded by default.</li>
+<li>Only binary compounds whose phase label gives a formula are matched; see <a href="../data/literature/dft_parity.json">dft_parity.json</a> for the matching rules and exclusion counts.</li>
+</ul></section>
+
+<section><h2>Sources and credit</h2>
+<p class="note" id="credits"></p>
+</section>
+</main>
+<div id="tip" hidden role="tooltip"></div>
+<footer><div class="wrap">Literature data: CC BY 4.0 (cite ORCHID and the original papers); quotes under fair use. Materials Project and OQMD data: CC BY 4.0, see
+<a href="../data/NOTICE.md">NOTICE</a>. Data: <a href="../data/literature/dft_parity.json">dft_parity.json</a> (built by <code>tools/build_dft_parity.py</code>).</div></footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function h(tag,attrs,...kids){const e=document.createElement(tag);if(attrs)for(const k in attrs){const v=attrs[k];if(v===null||v===undefined||v===false)continue;if(k==="class")e.className=v;else if(k==="text")e.textContent=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}
+  kids.flat().forEach(c=>{if(c===null||c===undefined||c===false)return;e.append(c instanceof Node?c:document.createTextNode(String(c)));});return e;}
+function s(tag,attrs,...kids){const e=document.createElementNS(NS,tag);if(attrs)for(const k in attrs){if(attrs[k]!==null&&attrs[k]!==undefined)e.setAttribute(k,attrs[k]);}kids.forEach(c=>e.append(c instanceof Node?c:document.createTextNode(String(c))));return e;}
+function doiLink(doi,label){if(!doi)return null;return h("a",{href:"https://doi.org/"+encodeURIComponent(doi).replace(/%2F/g,"/"),target:"_blank",rel:"noopener"},label||("doi:"+doi));}
+const f1=v=>v===null||v===undefined?"–":(+v).toFixed(1);
+const SRC=["mp","oqmd"],SRCL={mp:"Materials Project",oqmd:"OQMD"};
+const EVL={experimental:"experimental",model:"model",unspecified:"unspecified"};
+const MCL={calorimetry:"calorimetry",emf_vapour:"EMF / vapour / Knudsen",other_unknown:"other / not printed"};
+let D=null,REC=null,CUR={mp:[],oqmd:[]},GEOM={},PIN=null;
+
+async function load(){
+  const r=await fetch(dataURL("literature/")+"dft_parity.json");if(!r.ok)throw new Error("dft_parity.json: "+r.status);D=await r.json();REC=D.records;
+  document.querySelectorAll(".filters input,.filters select").forEach(x=>x.addEventListener(x.type==="search"?"input":"change",render));
+  buildLegend();buildCredits();
+  SRC.forEach(k=>{const sv=$("plot-"+k);sv.addEventListener("pointermove",e=>{if(!PIN)hover(k,e,false);});sv.addEventListener("pointerleave",()=>{if(!PIN)hideTip();});sv.addEventListener("click",e=>hover(k,e,true));});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){PIN=null;hideTip();}});
+  document.addEventListener("click",e=>{if(PIN&&!$("tip").contains(e.target)&&!e.target.closest("svg[id^=plot-]")){PIN=null;hideTip();}});
+  window.addEventListener("scroll",()=>{if(!PIN)hideTip();},{passive:true});
+  render();}
+
+function marker(cls,x,y,ev,hollow,r){r=r||3.6;let el;
+  if(ev==="model")el=s("rect",{x:x-r*.85,y:y-r*.85,width:r*1.7,height:r*1.7});
+  else if(ev==="unspecified")el=s("path",{d:`M${x},${y-r*1.1}L${x+r},${y+r*.8}L${x-r},${y+r*.8}Z`});
+  else el=s("circle",{cx:x,cy:y,r:r});
+  el.setAttribute("class","mk m-"+ev+(hollow?" hollow":"")+(cls?" "+cls:""));return el;}
+function buildLegend(){const L=$("legend");L.replaceChildren();
+  [["experimental","experimental (circle)"],["model","model (square)"],["unspecified","unspecified (triangle)"]].forEach(([ev,t])=>{const sv=s("svg",{width:12,height:12,viewBox:"0 0 12 12"});sv.append(marker("",6,6,ev,false,4.5));L.append(h("span",null,sv," "+t));});
+  const sv=s("svg",{width:12,height:12,viewBox:"0 0 12 12"});sv.append(marker("",6,6,"experimental",true,4.5));L.append(h("span",null,sv," hollow: unsigned-in-print or magnitude-suspect (when included)"));}
+function buildCredits(){const c=$("credits");c.replaceChildren();
+  SRC.forEach(k=>{const m=D.dft_sources[k];c.append(h("div",{style:"margin:4px 0"},h("b",null,m.label)," release ",m.release||"?"," (",m.thermo_type||"",", reference ",(m.reference||{}).kind||"?","). ",m.reference_note," Cite: ",m.citation," ",doiLink(m.doi),m.doi2?" · ":"",doiLink(m.doi2)," Licence ",h("a",{href:"https://creativecommons.org/licenses/by/4.0/"},m.license),"; ",h("a",{href:m.url,target:"_blank",rel:"noopener"},m.url),". Snapshot SHA-256 ",h("code",null,m.snapshot_sha256.slice(0,16)+"…")));});
+  const n=D.counts;c.append(h("div",{style:"margin:6px 0"},`${n.hm_form_records.toLocaleString()} literature formation-enthalpy records; ${n.records_matched.toLocaleString()} matched to a DFT entry (${n.compounds} compounds). DFT eV/atom × ${D.kJ_per_mol_per_eV} = kJ/mol-atom.`));}
+
+function filters(){const on=sel=>new Set([...document.querySelectorAll(sel)].filter(x=>x.checked).map(x=>x.dataset[Object.keys(x.dataset)[0]]));
+  const els=$("fel").value.split(/[\s,;\-–+]+/).filter(Boolean).map(e=>e.charAt(0).toUpperCase()+e.slice(1).toLowerCase());
+  return {ev:on("input[data-ev]"),m:on("input[data-m]"),c:on("input[data-c]"),acc:$("facc").checked,uns:$("funs").checked,mag:$("fmag").checked,med:$("fmed").checked,els};}
+function pass(r,F){const mag=(r.suspect||[]).includes("magnitude_suspect");
+  return F.ev.has(r.ev)&&F.m.has(r.mcls)&&F.c.has(r.ccls)&&(!F.acc||r.acc)&&(F.uns||!(r.unsigned||r.sign_lost))&&(F.mag||!mag)&&F.els.every(e=>r.elements.includes(e));}
+function median(a){a=[...a].sort((x,y)=>x-y);const n=a.length;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;}
+function selectPoints(F){const out={mp:[],oqmd:[]};
+  D.points.forEach(p=>{const r=REC[p.rid];if(pass(r,F))out[p.src].push({p,r,lit:r.lit,dft:p.dft,hollow:r.unsigned||r.sign_lost||(r.suspect||[]).includes("magnitude_suspect"),ev:r.ev});});
+  if(F.med)SRC.forEach(k=>{const g=new Map();out[k].forEach(q=>{const key=q.r.formula;if(!g.has(key))g.set(key,[]);g.get(key).push(q);});
+    out[k]=[...g.values()].map(v=>{const lits=v.map(q=>q.lit);const best=v.reduce((a,b)=>Math.abs(b.lit-median(lits))<Math.abs(a.lit-median(lits))?b:a);
+      const evs=new Set(v.map(q=>q.ev));return {p:best.p,r:best.r,lit:median(lits),dft:v[0].dft,group:v,ev:evs.has("experimental")?"experimental":evs.has("model")?"model":"unspecified",hollow:v.every(q=>q.hollow)};});});
+  return out;}
+function stats(arr){const n=arr.length;if(!n)return {n:0};const res=arr.map(q=>q.dft-q.lit);const abs=res.map(Math.abs);
+  const o={n,mae:abs.reduce((a,b)=>a+b,0)/n,rmse:Math.sqrt(res.reduce((a,b)=>a+b*b,0)/n),mse:res.reduce((a,b)=>a+b,0)/n,med:median(abs),
+    same:arr.filter(q=>q.lit!==0&&q.dft!==0&&(q.lit>0)===(q.dft>0)).length/n,band:abs.filter(x=>x<=D.band_kJ_per_mol_atom).length/n,r:null};
+  if(n>=3){const mx=arr.reduce((a,q)=>a+q.lit,0)/n,my=arr.reduce((a,q)=>a+q.dft,0)/n;let sxx=0,syy=0,sxy=0;arr.forEach(q=>{sxx+=(q.lit-mx)**2;syy+=(q.dft-my)**2;sxy+=(q.lit-mx)*(q.dft-my);});o.r=sxx>0&&syy>0?sxy/Math.sqrt(sxx*syy):null;}
+  return o;}
+
+function render(){const F=filters();CUR=selectPoints(F);let lo,hi;
+  if($("frange").value==="auto"){const v=[];SRC.forEach(k=>CUR[k].forEach(q=>v.push(q.lit,q.dft)));lo=v.length?Math.min(...v):-100;hi=v.length?Math.max(...v):10;const pad=(hi-lo)*.04||5;lo-=pad;hi+=pad;}
+  else [lo,hi]=$("frange").value.split(",").map(Number);
+  SRC.forEach(k=>drawParity(k,lo,hi));
+  const tb=$("stats").tBodies[0];tb.replaceChildren();
+  SRC.forEach(k=>{const st=stats(CUR[k]);const pc=x=>x===undefined?"–":(100*x).toFixed(0)+"%";
+    tb.append(h("tr",null,h("td",null,SRCL[k]),h("td",{class:"num"},st.n.toLocaleString()),h("td",{class:"num"},f1(st.mae)),h("td",{class:"num"},f1(st.rmse)),h("td",{class:"num"},st.mse===undefined?"–":(st.mse>0?"+":"")+f1(st.mse)),h("td",{class:"num"},f1(st.med)),h("td",{class:"num"},st.r===null||st.r===undefined?"–":st.r.toFixed(3)),h("td",{class:"num"},pc(st.same)),h("td",{class:"num"},pc(st.band))));
+    drawHist(k);});
+  $("ncomp").textContent=F.med?"Each point is the median literature value of one compound (several reports collapse to one).":"Each point is one literature record; compounds with many reports weigh more (tick “median per compound” to avoid that).";
+  const ol=$("outl").tBodies[0];ol.replaceChildren();
+  const all=[];SRC.forEach(k=>CUR[k].forEach(q=>all.push([k,q])));all.sort((a,b)=>Math.abs(b[1].dft-b[1].lit)-Math.abs(a[1].dft-a[1].lit)||(a[1].p.rid<b[1].p.rid?-1:1));
+  all.slice(0,12).forEach(([k,q])=>{const P=D.papers[q.r.paper]||{};ol.append(h("tr",null,h("td",null,SRCL[k]),h("td",null,q.r.formula,h("div",{class:"note"},q.r.phase||"")),h("td",{class:"num"},f1(q.lit)),h("td",{class:"num"},f1(q.dft)),h("td",{class:"num"},(q.dft-q.lit>0?"+":"")+f1(q.dft-q.lit)),
+    h("td",{class:"colhide"},q.p.mid+" ",h("span",{class:"note"},(q.p.sg||"")+(q.p.npoly>1?` · ${q.p.npoly} entries`:""))),h("td",{class:"colhide"},shortCite(P)," ",doiLink(P.doi)),h("td",null,h("a",{href:recUrl(q.r,q.p.rid)},q.p.rid))));});}
+
+function shortCite(P){const c=P.citation||"";return c.length>90?c.slice(0,88)+"…":c;}
+function recUrl(r,rid){return "../data-explorer/#"+encodeURIComponent(r.sys)+"/"+encodeURIComponent(rid);}
+
+function drawParity(k,lo,hi){const sv=$("plot-"+k);sv.replaceChildren();const W=440,H=440,ml=48,mr=10,mt=10,mb=40,pw=W-ml-mr,ph=H-mt-mb;
+  const X=v=>ml+(v-lo)/(hi-lo)*pw,Y=v=>mt+ph-(v-lo)/(hi-lo)*ph;
+  const span=hi-lo,step=[5,10,20,25,50,100,200,250,500].find(t=>span/t<=8)||1000;const ax=s("g",{class:"axis"});
+  for(let t=Math.ceil(lo/step)*step;t<=hi+1e-9;t+=step){ax.append(s("line",{x1:X(t),x2:X(t),y1:mt,y2:mt+ph,class:"gridl"}),s("line",{y1:Y(t),y2:Y(t),x1:ml,x2:ml+pw,class:"gridl"}));
+    ax.append(s("text",{x:X(t),y:mt+ph+14,"text-anchor":"middle"},String(t)),s("text",{x:ml-5,y:Y(t)+4,"text-anchor":"end"},String(t)));}
+  ax.append(s("rect",{x:ml,y:mt,width:pw,height:ph,fill:"none",stroke:"var(--line)"}));
+  ax.append(s("text",{x:ml+pw/2,y:H-6,"text-anchor":"middle"},"literature ΔfH (kJ/mol-atom)"));
+  ax.append(s("text",{x:12,y:mt+ph/2,"text-anchor":"middle",transform:`rotate(-90 12 ${mt+ph/2})`},"DFT formation energy (kJ/mol-atom)"));
+  sv.append(ax);
+  const b=D.band_kJ_per_mol_atom,cl=v=>Math.max(lo,Math.min(hi,v));
+  const band=s("clipPath",{id:"cp-"+k});band.append(s("rect",{x:ml,y:mt,width:pw,height:ph}));sv.append(band);
+  const g=s("g",{"clip-path":`url(#cp-${k})`});
+  g.append(s("path",{class:"bandp",d:`M${X(lo)},${Y(lo+b)}L${X(hi)},${Y(hi+b)}L${X(hi)},${Y(hi-b)}L${X(lo)},${Y(lo-b)}Z`}));
+  g.append(s("line",{class:"diag",x1:X(lo),y1:Y(lo),x2:X(hi),y2:Y(hi)}));sv.append(g);
+  const pts=s("g");let clipped=0;const geo=[];
+  const order=[...CUR[k]].sort((a,b)=>({unspecified:0,model:1,experimental:2}[a.ev]-{unspecified:0,model:1,experimental:2}[b.ev]));
+  order.forEach(q=>{const out=q.lit<lo||q.lit>hi||q.dft<lo||q.dft>hi;if(out)clipped++;const x=X(cl(q.lit)),y=Y(cl(q.dft));pts.append(marker("",x,y,q.ev,q.hollow||out));geo.push([x,y,q]);});
+  sv.append(pts);sv.append(s("circle",{id:"hl-"+k,class:"hl",r:7,cx:-50,cy:-50}));
+  GEOM[k]={geo,W,H};
+  $("clip-"+k).textContent=clipped?`${clipped} point(s) outside the axis range are drawn hollow on the edge.`:"";
+  const m=D.dft_sources[k];$("sub-"+k).textContent=`${CUR[k].length.toLocaleString()} points · release ${m.release} · ${(m.reference||{}).kind}`;}
+
+function drawHist(k){const sv=$("hist-"+k);sv.replaceChildren();const W=440,H=180,ml=36,mr=8,mt=8,mb=30,pw=W-ml-mr,ph=H-mt-mb;
+  const lo=-50,hi=50,bw=5,nb=(hi-lo)/bw+2;const cnt=new Array(nb).fill(0);
+  CUR[k].forEach(q=>{const r=q.dft-q.lit;const i=r<lo?0:r>=hi?nb-1:1+Math.floor((r-lo)/bw);cnt[i]++;});
+  const mx=Math.max(1,...cnt);const bwp=pw/nb;const ax=s("g",{class:"axis"});
+  const ytick=[0,Math.round(mx/2),mx];ytick.forEach(t=>{const y=mt+ph-t/mx*ph;ax.append(s("line",{x1:ml,x2:ml+pw,y1:y,y2:y,class:"gridl"}),s("text",{x:ml-4,y:y+4,"text-anchor":"end"},String(t)));});
+  sv.append(ax);
+  cnt.forEach((c,i)=>{const x=ml+i*bwp+1,hh=c/mx*ph;const lab=i===0?`< ${lo}`:i===nb-1?`≥ ${hi}`:`${lo+(i-1)*bw} to ${lo+i*bw}`;
+    const centre=i>0&&i<nb-1&&Math.abs(lo+(i-1)*bw+bw/2)<=D.band_kJ_per_mol_atom;
+    const r=s("rect",{class:"bar"+(centre?" in":""),x:x,y:mt+ph-hh,width:Math.max(1,bwp-2),height:hh,rx:Math.min(3,hh/2)});r.append(s("title",null,`${lab} kJ/mol-atom: ${c}`));sv.append(r);});
+  const tx=s("g",{class:"axis"});[[0,"<−50"],[nb-1,"≥50"]].forEach(([i,t])=>tx.append(s("text",{x:ml+(i+.5)*bwp,y:mt+ph+13,"text-anchor":"middle"},t)));
+  [-40,-20,0,20,40].forEach(v=>tx.append(s("text",{x:ml+(1+(v-lo)/bw)*bwp,y:mt+ph+13,"text-anchor":"middle"},String(v))));
+  tx.append(s("text",{x:ml+pw/2,y:H-3,"text-anchor":"middle"},"residual DFT − literature (kJ/mol-atom); darker bars within ±10"));sv.append(tx);}
+
+function hover(k,e,pin){const G=GEOM[k];if(!G)return;const sv=$("plot-"+k);const rc=sv.getBoundingClientRect();const sc=G.W/rc.width;
+  const x=(e.clientX-rc.left)*sc,y=(e.clientY-rc.top)*sc;let best=null,bd=(pin?16:12)*sc;bd*=bd;
+  for(const g of G.geo){const d=(g[0]-x)**2+(g[1]-y)**2;if(d<bd){bd=d;best=g;}}
+  if(!best){if(pin){PIN=null;hideTip();}else hideTip();return;}
+  if(pin){e.stopPropagation();PIN=best;}
+  $("hl-"+k).setAttribute("cx",best[0]);$("hl-"+k).setAttribute("cy",best[1]);SRC.filter(o=>o!==k).forEach(o=>{$("hl-"+o)&&$("hl-"+o).setAttribute("cx",-50);});
+  showTip(k,best[2],e.clientX,e.clientY,pin);}
+function hideTip(){$("tip").hidden=true;$("tip").classList.remove("pinned");SRC.forEach(k=>{const c=$("hl-"+k);if(c)c.setAttribute("cx",-50);});}
+function showTip(k,q,cx,cy,pin){const t=$("tip");t.replaceChildren();const r=q.r,p=q.p,P=D.papers[r.paper]||{};
+  if(pin)t.append(h("button",{class:"close",type:"button","aria-label":"Close",onclick:()=>{PIN=null;hideTip();}},"×"));
+  t.append(h("div",{class:"t"},r.formula+" ",h("span",{class:"badge b-"+q.ev},EVL[q.ev]||q.ev)));
+  if(q.group&&q.group.length>1){const ls=q.group.map(g=>g.lit);t.append(h("div",null,h("span",{class:"k"},"median of "),`${q.group.length} records: ${f1(q.lit)} (range ${f1(Math.min(...ls))} to ${f1(Math.max(...ls))}); details of the record nearest the median:`));}
+  t.append(h("div",null,h("span",{class:"k"},"literature "),f1(r.lit)+" kJ/mol-atom",r.T?h("span",{class:"k"},` at ${r.T} K`):"",r.phase&&r.phase!==r.formula?h("span",{class:"k"},` · printed “${r.phase}”`):""));
+  t.append(h("div",null,h("span",{class:"k"},SRCL[k]+" "),f1(p.dft)+" kJ/mol-atom",h("span",{class:"k"},` (${p.dft_eV} eV/atom) · residual ${(p.dft-q.lit>0?"+":"")+f1(p.dft-q.lit)}`)));
+  t.append(h("div",null,h("span",{class:"k"},"DFT entry "),p.mid,p.sg?" · "+p.sg:"",` · E_hull ${p.ehull===null?"?":f1(p.ehull)} kJ/mol-atom · ${p.npoly} entr${p.npoly===1?"y":"ies"} at this composition`));
+  t.append(h("div",null,h("span",{class:"k"},"method "),r.method||"not printed",h("span",{class:"k"},` (${MCL[r.mcls]})`)));
+  const fl=[];if(!r.acc)fl.push("extraction not accepted");if(r.unsigned)fl.push("unsigned in print");if(r.sign_lost)fl.push("minus sign lost in extraction");(r.suspect||[]).forEach(x=>fl.push(x.replace(/_/g," ")));
+  if(fl.length)t.append(h("div",{style:"color:var(--warn)"},fl.join(" · ")));
+  if(r.quote)t.append(h("blockquote",null,"“"+r.quote+"”"),h("div",{class:"k"},"page "+(r.page??"?")));
+  else t.append(h("div",{class:"k"},[r.table,r.page!=null?"page "+r.page:""].filter(Boolean).join(", ")));
+  t.append(h("div",null,shortCite(P)," ",doiLink(P.doi)));
+  if(r.cited&&r.cited.length&&!r.own)t.append(h("div",{class:"k"},"cites: "+r.cited.map(c=>c.ref).join("; ").slice(0,160)));
+  t.append(h("div",{style:"margin-top:4px"},h("a",{href:recUrl(r,p.rid)},"Open "+p.rid+" in the data explorer"),pin?"":h("span",{class:"k"}," (tap or click to pin)")));
+  if(pin)t.classList.add("pinned");else t.classList.remove("pinned");
+  t.hidden=false;const vw=window.innerWidth,vh=window.innerHeight,tw=t.offsetWidth,th=t.offsetHeight;
+  let x=cx+14,y=cy+14;if(x+tw>vw-8)x=Math.max(8,cx-tw-14);if(y+th>vh-8)y=Math.max(8,cy-th-14);if(vw<500){x=Math.max(8,(vw-tw)/2);}
+  t.style.left=x+"px";t.style.top=y+"px";}
+load().catch(e=>{document.querySelector("main").append(h("p",{class:"note"},"Could not load the data: "+e.message));});
+</script>
+</body>
+</html>

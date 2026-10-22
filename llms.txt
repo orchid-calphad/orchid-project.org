@@ -13,9 +13,15 @@ Evidence classes are never mixed: experimental | model (linked to the exact TDB 
 - [DFT hulls, Materials Project v2026.04.13](https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/dft-mp): one JSON per binary system, interval schema.
 - [DFT hulls, OQMD v1.8](https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/dft-oqmd): same schema; fitted elemental references (not comparable in energy to MP).
 - [CALPHAD hulls, SGTE](https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/calphad-sgte)
+- [Literature data, all records (CSV.gz)](https://orchid-project.org/data/literature/orchid-literature.csv.gz): invariant reactions, transitions, phase compositions, thermochemical and structural values from published papers; evidence class, units, T (K) and pressure, phases and compositions (mole fraction), method, conditions, citation + DOI, verbatim quote + page, flags. Nested fields are JSON strings.
+- [Literature data (JSONL.gz)](https://orchid-project.org/data/literature/orchid-literature.jsonl.gz): same records, one JSON object per line.
+- [Literature data per system](https://orchid-project.org/data/literature/index.json): index of data/literature/systems/<SYS>.json (SYS = sorted uppercase elements joined by '-', e.g. AL-NI).
+- [Literature papers](https://orchid-project.org/data/literature/papers.json) and [experimental contexts](https://orchid-project.org/data/literature/contexts.json); field reference: [SCHEMA.md](https://orchid-project.org/data/literature/SCHEMA.md); about: https://orchid-project.org/dataset/
+- [DFT vs experiment, formation enthalpies (JSON)](https://orchid-project.org/data/literature/dft_parity.json): literature HM_FORM values (kJ/mol-atom) paired with the lowest-energy Materials Project and OQMD entry at the same binary composition (separate sources, never averaged); matching rules, exclusions, per-source MAE/RMSE/r. Viewer: https://orchid-project.org/dft-parity/
 - [Croissant metadata](https://orchid-project.org/data/croissant.json)
 
 ## Notes
 - DFT layers carry formation enthalpy only; reference kinds differ between sources and must not be averaged.
+- Literature data: derived data CC BY 4.0 (cite ORCHID and each value's source paper); each quote is one sentence under fair use; source papers are not redistributed. Use only records with flags.extraction_accepted = true unless you handle disputes; uncertainty with basis stated_default is a placeholder, not a measurement.
 - Files we may not redistribute are listed in the catalog with links to their original sources only.
 - Cite releases by their Zenodo DOI; see CITATION.cff.

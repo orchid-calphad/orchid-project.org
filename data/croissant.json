@@ -23,7 +23,7 @@
  "@type": "sc:Dataset",
  "conformsTo": "http://mlcommons.org/croissant/1.0",
  "name": "ORCHID",
- "description": "Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery: catalog of open CALPHAD databases, redistributable TDB files, and binary convex hulls (Materials Project, OQMD, SGTE).",
+ "description": "Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery: catalog of open CALPHAD databases, redistributable TDB files, and binary convex hulls (Materials Project, OQMD, SGTE), and literature data (invariant reactions, transitions, phase compositions, thermochemical and structural values with evidence class, citation and quote).",
  "url": "https://orchid-project.org",
  "license": "https://orchid-project.org/data/LICENSES.md",
  "creator": [
@@ -96,6 +96,71 @@
    "name": "hulls-calphad-sgte",
    "encodingFormat": "application/json",
    "includes": "data/hulls/calphad-sgte/**/*.json"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "dft-parity",
+   "name": "dft_parity.json",
+   "description": "Literature formation enthalpies (kJ/mol-atom) paired with the lowest-energy Materials Project and OQMD entry at the same composition (never averaged), with per-source statistics. Viewer: https://orchid-project.org/dft-parity/",
+   "contentUrl": "https://orchid-project.org/data/literature/dft_parity.json",
+   "encodingFormat": "application/json",
+   "sha256": "10d2a8504ba60632d74514d55548444fe8fb96c9ad620039be14e32de5ebeac9"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "literature-csv-gz",
+   "name": "orchid-literature.csv.gz",
+   "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.csv.gz",
+   "encodingFormat": "application/gzip",
+   "sha256": "e0907ac9c0b91b25af11044f4cc7bfe4f0c35419fb16c4c1e8b8452a4847c470"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "literature-csv",
+   "name": "orchid-literature.csv",
+   "containedIn": {
+    "@id": "literature-csv-gz"
+   },
+   "encodingFormat": "text/csv"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "literature-jsonl-gz",
+   "name": "orchid-literature.jsonl.gz",
+   "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.jsonl.gz",
+   "encodingFormat": "application/gzip",
+   "sha256": "48b7ea715da8325fe936e179d3890982c44fbbb3a35c31c6fb994f557cf82752"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "literature-index",
+   "name": "literature-index.json",
+   "contentUrl": "https://orchid-project.org/data/literature/index.json",
+   "encodingFormat": "application/json",
+   "sha256": "ff9c7c9abf1518b0bdb663f746ffce1301e87dbbefdb53eeb5416a0ea43f18e0"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "literature-papers",
+   "name": "literature-papers.json",
+   "contentUrl": "https://orchid-project.org/data/literature/papers.json",
+   "encodingFormat": "application/json",
+   "sha256": "8f4e8a8b88c612d5fd4451ae4793f145b831c13b852badd0bb72308f39512fc1"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "literature-contexts",
+   "name": "literature-contexts.json",
+   "contentUrl": "https://orchid-project.org/data/literature/contexts.json",
+   "encodingFormat": "application/json",
+   "sha256": "1024a04f0c72088c6edcc8ab3b628ae5a6a729c5f55a34a5a89255253e296c3f"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "literature-systems",
+   "name": "literature-systems",
+   "encodingFormat": "application/json",
+   "includes": "data/literature/systems/*.json"
   }
  ],
  "recordSet": [
@@ -325,6 +390,406 @@
       },
       "extract": {
        "column": "notes"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "@type": "cr:RecordSet",
+   "@id": "literature",
+   "name": "literature",
+   "description": "Values extracted from published papers (CC BY 4.0 derived data; quotes under fair use). Nested fields are compact JSON strings; see data/literature/SCHEMA.md.",
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "literature/id",
+     "name": "id",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "id"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/system",
+     "name": "system",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "system"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/record_kind",
+     "name": "record_kind",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "record_kind"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/observation_type",
+     "name": "observation_type",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "observation_type"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/property_group",
+     "name": "property_group",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "property_group"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/property",
+     "name": "property",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "property"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/value",
+     "name": "value",
+     "dataType": "sc:Float",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "value"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/unit",
+     "name": "unit",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "unit"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/uncertainty",
+     "name": "uncertainty",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "uncertainty"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/temperature_K",
+     "name": "temperature_K",
+     "dataType": "sc:Float",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "temperature_K"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/temperature_printed",
+     "name": "temperature_printed",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "temperature_printed"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/pressure_Pa",
+     "name": "pressure_Pa",
+     "dataType": "sc:Float",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "pressure_Pa"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/phases",
+     "name": "phases",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "phases"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/phase_compositions",
+     "name": "phase_compositions",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "phase_compositions"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/reaction",
+     "name": "reaction",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "reaction"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/evidence_class",
+     "name": "evidence_class",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "evidence_class"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/origin",
+     "name": "origin",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "origin"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/model",
+     "name": "model",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "model"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/method",
+     "name": "method",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "method"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/conditions",
+     "name": "conditions",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "conditions"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/cited_sources",
+     "name": "cited_sources",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "cited_sources"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/paper",
+     "name": "paper",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "paper"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/paper_citation",
+     "name": "paper_citation",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "paper_citation"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/paper_doi",
+     "name": "paper_doi",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "paper_doi"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/quote",
+     "name": "quote",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "quote"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/quote_page",
+     "name": "quote_page",
+     "dataType": "sc:Integer",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "quote_page"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/flags",
+     "name": "flags",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "flags"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/extraction_accepted",
+     "name": "extraction_accepted",
+     "dataType": "sc:Boolean",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "extraction_accepted"
       }
      }
     }

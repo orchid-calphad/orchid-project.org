@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORCHID literature data</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo/orchid-icon.svg">
+<meta name="description" content="How the ORCHID literature dataset was made: contents by evidence class and property, readers and quote verification, licence and citation.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "ORCHID literature data: phase equilibria and thermochemistry from published papers",
+  "description": "Invariant reactions, phase transitions, phase compositions, thermochemical and structural values extracted from published CALPHAD and phase-equilibrium papers, each with evidence class (experimental, model, DFT, unspecified), conditions, citations and DOIs, and the verbatim sentence or table row backing it.",
+  "url": "https://orchid-project.org/dataset/",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "isAccessibleForFree": true,
+  "creator": [{"@type": "Person", "name": "Raymundo Arróyave"}, {"@type": "Person", "name": "James Saal"}, {"@type": "Person", "name": "Dongwon Shin"}],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "application/gzip", "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.csv.gz"},
+    {"@type": "DataDownload", "encodingFormat": "application/gzip", "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.jsonl.gz"},
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://orchid-project.org/data/literature/index.json"}
+  ]
+}
+</script>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;
+--exp:#1d7448;--exp-bg:#e3f3ea;--mod:#2c58a8;--mod-bg:#e5ecf9;--dft:#a3520a;--dft-bg:#fbeedf;--uns:#5f5a66;--uns-bg:#ecebee}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--dft:#f2ad6b;--dft-bg:#3a2612;--uns:#bdb7c6;--uns-bg:#2a2730}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--dft:#f2ad6b;--dft-bg:#3a2612;--uns:#bdb7c6;--uns-bg:#2a2730}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;text-decoration:none;color:var(--fg)}
+nav a{text-decoration:none;font-size:.95rem}
+nav a[aria-current]{font-weight:600}
+h1{font-size:clamp(1.5rem,4vw,2.1rem);margin:28px 0 6px;line-height:1.2}
+h2{font-size:1.25rem;margin:34px 0 10px}
+.lead{color:var(--muted);max-width:780px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:24px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.stat b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:.88rem}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h3{margin:0 0 8px;font-size:1rem}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+.badge{display:inline-block;font-size:.75rem;font-weight:600;padding:1px 8px;border-radius:999px}
+.b-experimental{background:var(--exp-bg);color:var(--exp)}.b-model{background:var(--mod-bg);color:var(--mod)}
+.b-dft{background:var(--dft-bg);color:var(--dft)}.b-unspecified{background:var(--uns-bg);color:var(--uns)}
+code{font-size:.88em;background:var(--accent2);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+li{margin:4px 0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+</style>
+<script src="../assets/data-base.js"></script>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
+  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="../data-explorer/">Data</a><a href="./" aria-current="page">About the data</a>
+</nav></div></header>
+<main class="wrap">
+<h1>Literature data: phase equilibria and thermochemistry from published papers</h1>
+<p class="lead">Values read from the papers behind open CALPHAD assessments: invariant reactions, phase transitions, phase compositions,
+enthalpies, heat capacities, activities and lattice parameters. Each value carries its evidence class, units and conditions, the
+citation and DOI of the work it comes from, and the sentence or table row that backs it. <a href="../data-explorer/">Open the explorer</a>
+· <a href="../dft-parity/">DFT vs experiment</a> (formation enthalpies against Materials Project and OQMD).</p>
+
+<section class="stats" id="stats" aria-label="Dataset size"><div class="stat"><b>…</b><span>loading counts</span></div></section>
+
+<div class="cols">
+  <div class="card"><h3>By evidence class</h3><div class="tablewrap"><table id="t-ev"><thead><tr><th>Class</th><th>Records</th><th>Accepted</th></tr></thead><tbody></tbody></table></div>
+  <p class="muted" style="font-size:.85rem;margin:8px 0 0">Classes are never mixed or averaged. <b>Model</b> values are linked to the exact TDB file (path and SHA-256) when the link is unambiguous.</p></div>
+  <div class="card"><h3>By property</h3><div class="tablewrap"><table id="t-pg"><thead><tr><th>Property group</th><th>Records</th></tr></thead><tbody></tbody></table></div></div>
+  <div class="card"><h3>By source type</h3><div class="tablewrap"><table id="t-kind"><thead><tr><th>Read from</th><th>Records</th></tr></thead><tbody></tbody></table></div>
+  <h3 style="margin-top:14px">Coverage</h3><div class="tablewrap"><table id="t-cov"><tbody></tbody></table></div></div>
+</div>
+
+<h2>How the data were made</h2>
+<ul>
+  <li><b>Sources.</b> The papers cited by the SGTE binary assessments in the ORCHID catalog and related assessment literature,
+  read from lawfully held PDFs. Tables were located and classified first (invariant-reaction tables, thermochemical, phase-composition
+  and crystallographic tables); running text was read passage by passage.</li>
+  <li><b>Independent readers.</b> Each table is read independently by vision models (Gemini Flash, Claude Opus; Gemini Pro as a tie-break)
+  and by the PDF text layer. A row is accepted only when the readers agree; disputed rows go to a judge or stay flagged as
+  <i>not accepted</i>. Phase labels are mapped to CALPHAD model phases, and invariant reactions are cross-checked against pycalphad
+  calculations with the linked TDB.</li>
+  <li><b>Quote verification (running text).</b> A first and a second reader extract each value with a verbatim sentence and page.
+  The value is kept only if the quote is found verbatim on one page or passage of the paper and the printed number is inside it.
+  Since the 22 October 2026 fix-up, every published field must be printed in its own quote: a reader's field that is not
+  (a phase, method, reaction, citation, transition kind or temperature) is removed and only its existence is recorded
+  (<code>has_dropped_fields</code>).</li>
+  <li><b>Window rule.</b> A first-reader field missing from its quote survives only if it is printed in the quoted sentence's
+  immediate context: citations in the same or preceding sentence of the same paragraph and page with no intervening citation;
+  phases, methods and reactions in the same passage; transition kinds and temperatures only in the quoted sentence itself.</li>
+  <li><b>Sign checks.</b> Minus signs that the PDF text layer lost were checked on the rendered PDF page. Corrected values carry
+  <code>sign_pdf_page_verified</code>; values printed without a minus sign carry <code>unsigned_in_print</code> and are kept as printed.</li>
+  <li><b>Evidence class.</b> Decided from what the paper prints: the table column or label, the cited work (its title, abstract or full
+  text naming a measurement or a calculation), publication before 1980 (assumed experimental), or phase-diagram evaluations. A value
+  whose origin cannot be settled stays <span class="badge b-unspecified">unspecified</span>.</li>
+  <li><b>Method and conditions.</b> A row's method is given only when printed with the value. Each paper's own experimental context
+  (samples, purity, preparation, heat treatments, measurement technique, instrument, rates, atmosphere), each item with its quote
+  and page, is attached only to values that are that paper's own experimental work; values cited from other works are marked
+  <i>conditions in the cited source</i>.</li>
+  <li><b>Placeholders.</b> Where no uncertainty is printed, a placeholder (5 % or 10 %, or the reading resolution) is recorded
+  with its basis; it is not a measured uncertainty.</li>
+</ul>
+
+<h2>Files</h2>
+<div class="tablewrap"><table>
+<tr><th>File</th><th>Content</th></tr>
+<tr><td><a href="../data/literature/index.json">index.json</a></td><td>Totals and, per chemical system, counts by evidence class and property group and the file list</td></tr>
+<tr><td><code>data/literature/systems/&lt;SYS&gt;.json</code></td><td>One file per system (e.g. <a href="../data/literature/systems/AL-NI.json">AL-NI.json</a>): records plus the papers, contexts, tables/passages and TDB links they reference</td></tr>
+<tr><td><a href="../data/literature/orchid-literature.csv.gz">orchid-literature.csv.gz</a> · <a href="../data/literature/orchid-literature.jsonl.gz">.jsonl.gz</a></td><td>All records in one file</td></tr>
+<tr><td><a href="../data/literature/papers.json">papers.json</a> · <a href="../data/literature/contexts.json">contexts.json</a></td><td>Bibliography (citation, DOI, year, title) and per-paper experimental context</td></tr>
+<tr><td><a href="../data/literature/SCHEMA.md">SCHEMA.md</a></td><td>Every field documented</td></tr>
+<tr><td><a href="../data/literature/dft_parity.json">dft_parity.json</a></td><td>Formation enthalpies (kJ/mol-atom) paired with the lowest-energy Materials Project and OQMD entry at the same composition, never averaged; matching rules, exclusion counts and per-source statistics (<a href="../dft-parity/">viewer</a>)</td></tr>
+</table></div>
+
+<h2>Licence</h2>
+<p>The derived data (values, units, conditions, phases, compositions, evidence classes, methods, citations) are released under
+<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: please credit ORCHID and the original papers, whose DOIs are in every record.
+Each quoted sentence is reproduced under fair use, only so that a value can be checked against its source. The source papers,
+page images, figure or table crops and full text are not redistributed; read them at the publisher through the DOI.</p>
+
+<h2>How to cite</h2>
+<p><code>R. Arróyave, J. Saal, D. Shin, ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery — literature data, https://orchid-project.org/dataset/ (2026).</code></p>
+<p>and cite the original paper of every value you use (fields <code>paper</code> and <code>cited_sources</code>). Versioned releases will be archived on Zenodo.</p>
+<p class="muted" id="release"></p>
+</main>
+<footer><div class="wrap">Machine-readable: <a href="../data/croissant.json">Croissant metadata</a> · <a href="../llms.txt">llms.txt</a>. Site content: MIT; literature data: CC BY 4.0.</div></footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+function h(t,a,...k){const e=document.createElement(t);if(a)for(const x in a){if(x==="class")e.className=a[x];else e.setAttribute(x,a[x]);}k.forEach(c=>e.append(c instanceof Node?c:String(c)));return e;}
+const EVL={experimental:"experimental",model:"model",dft:"DFT",unspecified:"unspecified"};
+const KIND={invariant_table:"Invariant-reaction tables",general_table:"Thermochemical, phase-composition and structure tables",running_text:"Running text (one quoted sentence per value)"};
+const n=v=>Number(v).toLocaleString();
+fetch(dataURL("literature/")+"index.json").then(r=>r.json()).then(ix=>{const t=ix.totals;
+  const binaries=Object.values(ix.systems).filter(s=>s.elements.length===2).length,withPD=Object.values(ix.systems).filter(s=>s.phase_diagram).length;
+  $("stats").replaceChildren(...[[t.records,"records"],[t.accepted,"accepted (default view)"],[t.systems,"chemical systems"],[t.papers_reporting,"papers read"],[t.with_quote,"values with a verbatim quote"]].map(([v,l])=>h("div",{class:"stat"},h("b",null,n(v)),h("span",null,l))));
+  const ev=$("t-ev").tBodies[0];Object.keys(t.by_evidence_class).forEach(k=>ev.append(h("tr",null,h("td",null,h("span",{class:"badge b-"+k},EVL[k]||k)),h("td",{class:"n"},n(t.by_evidence_class[k])),h("td",{class:"n"},n(t.by_evidence_class_accepted[k]||0)))));
+  const pg=$("t-pg").tBodies[0];Object.entries(t.by_property_group).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>pg.append(h("tr",null,h("td",null,k),h("td",{class:"n"},n(v)))));
+  const kd=$("t-kind").tBodies[0];Object.entries(t.by_record_kind).forEach(([k,v])=>kd.append(h("tr",null,h("td",null,KIND[k]||k),h("td",{class:"n"},n(v)))));
+  const cv=$("t-cov").tBodies[0];[["Binary systems",binaries],["Systems with a calculated phase diagram",withPD],["Records with the reporting paper's experimental context",t.with_paper_context],["Records cited from other works",t.cited_source_conditions],["Model values linked to a TDB file",t.model_linked_to_tdb],["Papers and cited works with bibliographic records",t.papers_total]].forEach(([k,v])=>cv.append(h("tr",null,h("td",null,k),h("td",{class:"n"},n(v)))));
+  $("release").textContent="Release: "+ix.release;
+}).catch(()=>{$("stats").replaceChildren(h("div",{class:"stat"},h("span",null,"Counts could not be loaded; see data/literature/index.json.")));});
+</script>
+</body>
+</html>

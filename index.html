@@ -20,7 +20,8 @@
   "isAccessibleForFree": true,
   "distribution": [
     {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://orchid-project.org/data/catalog.json"},
-    {"@type": "DataDownload", "encodingFormat": "text/csv", "contentUrl": "https://orchid-project.org/data/catalog.csv"}
+    {"@type": "DataDownload", "encodingFormat": "text/csv", "contentUrl": "https://orchid-project.org/data/catalog.csv"},
+    {"@type": "DataDownload", "encodingFormat": "application/gzip", "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.csv.gz"}
   ]
 }
 </script>
@@ -64,7 +65,8 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
   <a href="catalog/">Catalog</a>
   <a href="phase-diagrams/">Phase diagrams</a>
   <a href="catalog/binary-thermo.html">Hulls &amp; mixing</a>
-  <a href="#data">Data</a>
+  <a href="data-explorer/">Data</a>
+  <a href="#data">Downloads</a>
   <a href="#releases">Releases</a>
   <a href="#cite">Cite</a>
 </nav></div></header>
@@ -90,6 +92,8 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 
 <h2>Explore</h2>
 <div class="grid">
+  <a class="card" href="data-explorer/" style="text-decoration:none"><h3>Literature data <span class="tag">prototype</span></h3><p>Invariant reactions, transitions, phase compositions and thermochemical values from published papers, with evidence class, source, quote and page; also overlaid on the phase diagrams.</p></a>
+  <a class="card" href="dft-parity/" style="text-decoration:none"><h3>DFT vs experiment <span class="tag">prototype</span></h3><p>Parity plots of literature formation enthalpies against Materials Project and OQMD, side by side, with error statistics and the quote behind every point.</p></a>
   <a class="card" href="phase-diagrams/" style="text-decoration:none"><h3>Phase diagrams <span class="tag">prototype</span></h3><p>Binary phase diagrams calculated from open TDB files, each linked to the exact file and checksum; compare assessments of the same system.</p></a>
   <a class="card" href="catalog/compatibility/unary-compatibility-network.html" style="text-decoration:none"><h3>Compatibility network</h3><p>All 2,912 databases as a network: which share identical pure-element descriptions and can be combined.</p></a>
   <a class="card" href="catalog/" style="text-decoration:none"><h3>Database catalog</h3><p>Search 2,912 databases by elements, category, licence and parser compatibility; download the redistributable files.</p></a>
@@ -105,6 +109,7 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 <tr><td>Catalog</td><td>One record per database: elements, phases, source, licence, distribution tier</td><td>MIT (catalog)</td><td><a href="data/catalog.json">JSON</a> · <a href="data/catalog.csv">CSV</a></td></tr>
 <tr><td>Bundled TDB files</td><td>2,788 redistributable thermodynamic databases (SGTE binary supplement and others)</td><td>Per source: CC BY 4.0, CC0, MIT, ODbL — see <a href="data/NOTICE.md">NOTICE</a></td><td><a href="https://github.com/orchid-calphad/orchid-project.org/tree/main/data/databases">data/databases/</a></td></tr>
 <tr><td>DFT convex hulls</td><td>Binary formation-energy hulls as interval documents; Materials Project v2026.04.13, OQMD v1.8</td><td>CC BY 4.0 (upstream)</td><td><a href="https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/dft-mp">dft-mp</a> · <a href="https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/dft-oqmd">dft-oqmd</a></td></tr>
+<tr><td>Literature data</td><td>Values from published papers with evidence class, conditions, citations/DOIs and the backing quote or table row (<a href="dataset/">about</a>)</td><td>CC BY 4.0 (derived data); quotes under fair use</td><td><a href="data/literature/orchid-literature.csv.gz">CSV.gz</a> · <a href="data/literature/orchid-literature.jsonl.gz">JSONL.gz</a> · <a href="data/literature/index.json">per system</a></td></tr>
 <tr><td>CALPHAD hulls</td><td>Assessed SGTE isotherms, same interval schema</td><td>CC BY 4.0</td><td><a href="https://github.com/orchid-calphad/orchid-project.org/tree/main/data/hulls/calphad-sgte">calphad-sgte</a></td></tr>
 </table></div>
 
@@ -113,8 +118,8 @@ code{font-size:.9em;background:var(--accent2);padding:1px 5px;border-radius:4px}
 <b>experimental</b>, <b>model</b> (linked to the exact TDB file by SHA-256), <b>DFT</b>, or <b>assessed phase diagram</b> — and these are never mixed.</p>
 <div class="grid">
   <div class="card"><h3>Assessed binary phase diagrams <span class="tag">in review</span></h3><p>2,272 diagrams from Okamoto's <i>Desk Handbook</i> as phase fields, boundaries and invariant reactions, citing the original assessments. Derived data only; no page images.</p></div>
-  <div class="card"><h3>Invariant reactions <span class="tag">in review</span></h3><p>Eutectic, peritectic and other invariants from published assessments, ready for ESPEI, split by evidence class.</p></div>
-  <div class="card"><h3>Thermochemical tables <span class="tag">in review</span></h3><p>Enthalpies, heat capacities, activities and related measurements with conditions, reference states and sources.</p></div>
+  <div class="card"><h3>Invariant reactions <span class="tag">prototype</span></h3><p>Eutectic, peritectic and other invariants from published assessments, split by evidence class: first release in the <a href="data-explorer/">literature data explorer</a>; ESPEI-ready exports follow review.</p></div>
+  <div class="card"><h3>Thermochemical tables <span class="tag">prototype</span></h3><p>Enthalpies, heat capacities, activities and related measurements with conditions, reference states and sources: first release in the <a href="data-explorer/">explorer</a>.</p></div>
 </div>
 
 <h2 id="cite">Cite</h2>
