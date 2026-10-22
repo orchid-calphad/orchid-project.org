@@ -90,7 +90,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0 40px;colo
 <body>
 <header><div class="wrap"><nav>
   <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
-  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="./" aria-current="page">Data</a><a href="../dataset/">About the data</a>
+  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="./" aria-current="page">Data</a><a href="../dataset/">About the data</a><a href="../about/">About</a>
 </nav></div></header>
 <main class="wrap">
 <h1>Literature data explorer</h1>
@@ -237,7 +237,7 @@ function phaseText(r){const rx=r.reaction&&(r.reaction.printed||r.reaction.type)
 const COLS=[
  {k:"prop",t:"Property",v:r=>propName(r.property),s:r=>propName(r.property)},
  {k:"val",t:"Value",num:1,v:r=>r.value===undefined?(r.value_expression?"expression":""):fmtNum(r.value)+(r.unit&&r.unit!=="K"?" "+r.unit:(r.unit==="K"?" K":"")),s:r=>r.value??-Infinity},
- {k:"T",t:"T (K)",num:1,v:r=>r.temperature_K===undefined?"":fmtNum(r.temperature_K)+(r.temperature_bound?" ("+r.temperature_bound+")":""),s:r=>r.temperature_K??Infinity},
+ {k:"T",t:"T (K)",num:1,v:r=>r.temperature_K===undefined?"":fmtNum(r.temperature_K)+(r.temperature_bound?" ("+(r.temperature_bound.op||r.temperature_bound)+")":""),s:r=>r.temperature_K??Infinity},
  {k:"ph",t:"Phases / reaction",v:phaseText,s:phaseText},
  {k:"x",t:"Composition (mole fraction)",cls:"colhide",v:compText,s:compText},
  {k:"ev",t:"Class",v:null,s:r=>r.evidence_class},
@@ -279,7 +279,7 @@ function details(r){const d=h("div",{class:"det"});const dl=h("dl");d.append(dl)
   if(r.phases&&r.phases.length)kv(dl,"Phases",r.phases.map(p=>p.label+(p.model_phase?` → ${p.model_phase}`:"")+(p.pearson_symbol?` (${p.pearson_symbol})`:"")).join("; "));
   if(r.reaction)kv(dl,"Reaction",[r.reaction.type,r.reaction.printed].filter(Boolean).join(": "));
   const ct=compText(r);if(ct)kv(dl,"Composition",ct,(r.phase_compositions||[]).length?h("span",{class:"muted"},` · ${r.phase_compositions[0].basis}`):"");
-  if(r.reference_state)kv(dl,"Reference state",typeof r.reference_state==="string"?r.reference_state:Object.entries(r.reference_state).map(([e,v])=>cap(e)+": "+(v&&v.phase?v.phase:JSON.stringify(v))).join(", "));
+  if(r.reference_state)kv(dl,"Reference state",typeof r.reference_state==="string"?r.reference_state:r.reference_state.printed?r.reference_state.printed:Object.entries(r.reference_state).map(([e,v])=>cap(e)+": "+(v&&v.phase?v.phase:JSON.stringify(v))).join(", "));
   if(r.structure)kv(dl,"Structure",Object.entries(r.structure).map(([k,v])=>k.replace(/_/g," ")+" "+v).join(", "));
   if(r.calculation_settings)kv(dl,"Calculation",Object.entries(r.calculation_settings).map(([k,v])=>k+": "+v).join(", "));
   kv(dl,"Evidence class",h("span",{class:"badge b-"+r.evidence_class},EVL[r.evidence_class]),(r.origin||{}).basis?h("span",{class:"muted"}," "+r.origin.basis.replace(/_/g," ")):"");

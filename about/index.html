@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About ORCHID</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo/orchid-icon.svg">
+<meta name="description" content="About ORCHID, the Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery: mission, contents, how the data are built, team, licensing and how to cite.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About ORCHID",
+  "url": "https://orchid-project.org/about/",
+  "about": {
+    "@type": "Dataset",
+    "name": "ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery",
+    "url": "https://orchid-project.org",
+    "creator": [
+      {"@type": "Person", "name": "Raymundo Arróyave", "affiliation": {"@type": "Organization", "name": "Texas A&M University"}},
+      {"@type": "Person", "name": "James Saal", "affiliation": {"@type": "Organization", "name": "Citrine Informatics"}},
+      {"@type": "Person", "name": "Dongwon Shin", "affiliation": {"@type": "Organization", "name": "Oak Ridge National Laboratory"}}
+    ]
+  }
+}
+</script>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;text-decoration:none;color:var(--fg)}
+nav a{text-decoration:none;font-size:.95rem}
+nav a[aria-current]{font-weight:600}
+h1{font-size:clamp(1.5rem,4vw,2.1rem);margin:28px 0 6px;line-height:1.2}
+h2{font-size:1.25rem;margin:34px 0 10px}
+.lead{color:var(--muted);max-width:780px;margin:0}
+.acr{font-size:1.05rem;margin:14px 0 0}
+.acr b{color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:12px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--fg)}
+a.card{text-decoration:none}
+a.card:hover{border-color:var(--accent)}
+.card h3{margin:0 0 6px;font-size:1rem;color:var(--accent)}
+.card p{margin:0;font-size:.93rem;color:var(--muted)}
+.person b{display:block;font-size:1.02rem}
+.person span{color:var(--muted);font-size:.93rem}
+li{margin:5px 0}
+code{font-size:.88em;background:var(--accent2);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.cite{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-wrap:anywhere}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+</style>
+<script src="../assets/data-base.js"></script>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
+  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="../data-explorer/">Data</a><a href="../dataset/">About the data</a><a href="./" aria-current="page">About</a>
+</nav></div></header>
+<main class="wrap">
+<h1>About ORCHID</h1>
+<p class="acr"><b>O</b>pen <b>R</b>epository for <b>C</b>ALPHAD <b>H</b>ypotheses, <b>I</b>ntelligence, and <b>D</b>iscovery</p>
+
+<h2 id="mission">Mission</h2>
+<p>ORCHID is an open, provenance-tracked collection of CALPHAD data: thermodynamic databases (TDB files) and the evidence
+behind them. Every value records where it came from, under which licence it may be used, and what kind of evidence it is
+(experimental, model, first-principles or assessed phase diagram). Evidence classes are kept apart and never averaged.
+The data are versioned, citable and machine-readable, for people and for AI models alike.</p>
+
+<h2 id="contents">What is in it</h2>
+<div class="grid">
+  <a class="card" href="../catalog/"><h3>Database catalog</h3><p>Openly available CALPHAD databases with elements, phases, source and licence; the redistributable files for download.</p></a>
+  <a class="card" href="../dataset/"><h3>Literature dataset</h3><p>Invariant reactions, transitions, phase compositions, thermochemical and structural values from published papers, each with its source and the quote or table row behind it.</p></a>
+  <a class="card" href="../data-explorer/"><h3>Data explorer</h3><p>Search the literature values by element, system, compound, DOI or author.</p></a>
+  <a class="card" href="../phase-diagrams/"><h3>Phase diagrams</h3><p>Binary phase diagrams calculated from open TDB files, each linked to the exact file and checksum.</p></a>
+  <a class="card" href="../dft-parity/"><h3>DFT vs experiment</h3><p>Literature formation enthalpies against Materials Project and OQMD, side by side, never averaged.</p></a>
+  <a class="card" href="../catalog/binary-thermo.html"><h3>Hulls &amp; mixing</h3><p>DFT and CALPHAD formation-energy hulls and mixing curves on one composition axis.</p></a>
+</div>
+
+<h2 id="method">How it is built</h2>
+<ul>
+  <li><b>Readers constrained to quote.</b> Values are read from lawfully held papers by independent machine readers, and each
+  value must come with the verbatim sentence or table row that states it.</li>
+  <li><b>Quote verification.</b> A value is kept only if its quote is found verbatim on one page of the paper and the printed
+  number is inside it; tables are accepted only when independent readers agree.</li>
+  <li><b>Field placement.</b> Every published field (phase, method, reaction, citation, temperature) must be printed in the
+  value's own quote or its immediate context; fields that are not are removed.</li>
+  <li><b>Printed-page sign checks.</b> Minus signs lost by the PDF text layer are checked on the rendered page; values printed
+  without a sign are kept as printed and flagged.</li>
+  <li><b>DFT comparison.</b> Formation enthalpies are paired with the lowest-energy Materials Project and OQMD entries at the
+  same composition, as an independent plausibility check.</li>
+</ul>
+<p>Details, counts and the field reference are on the <a href="../dataset/">dataset page</a>.</p>
+
+<h2 id="team">Team</h2>
+<div class="grid">
+  <div class="card person"><b>Raymundo Arróyave</b><span>Texas A&amp;M University</span><a href="https://orcid.org/0000-0001-7548-8686" rel="noopener">ORCID 0000-0001-7548-8686</a></div>
+  <div class="card person"><b>James Saal</b><span>Citrine Informatics</span><a href="https://orcid.org/0000-0003-0935-158X" rel="noopener">ORCID 0000-0003-0935-158X</a></div>
+  <div class="card person"><b>Dongwon Shin</b><span>Oak Ridge National Laboratory</span><a href="https://orcid.org/0000-0002-5797-3423" rel="noopener">ORCID 0000-0002-5797-3423</a></div>
+</div>
+
+<h2 id="licensing">Licensing</h2>
+<ul>
+  <li><b>Derived data</b> (values, units, conditions, phases, compositions, evidence classes, citations):
+  <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Credit ORCHID and the original paper of each value.</li>
+  <li><b>Quotes.</b> Each quoted sentence is reproduced under fair use, only so that a value can be checked against its source.</li>
+  <li><b>Papers are not redistributed.</b> No PDFs, page images, crops or full text; read the papers at the publisher through the DOI.</li>
+  <li><b>Third-party databases and data</b> keep their own licences, listed in <a href="../data/NOTICE.md">NOTICE</a> and
+  <a href="../data/LICENSES.md">LICENSES</a>. Files we may not redistribute are listed with links to their sources only.</li>
+  <li><b>Site code and catalog</b>: MIT.</li>
+</ul>
+
+<h2 id="cite">How to cite</h2>
+<p>If you use ORCHID data, please cite the release you used and the original sources of the data.</p>
+<p class="cite"><code>R. Arróyave, J. Saal, D. Shin. ORCHID: Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery [dataset]. https://orchid-project.org (2026). DOI assigned at release.</code></p>
+<p class="muted">Machine-readable: <a href="../CITATION.cff">CITATION.cff</a> · <a href="../data/croissant.json">Croissant metadata</a> · <a href="../llms.txt">llms.txt</a>.</p>
+
+<h2 id="contact">Contact</h2>
+<p>Code and issues: <a href="https://github.com/orchid-calphad">github.com/orchid-calphad</a>.</p>
+<!-- Contact e-mail: to be added -->
+<section id="funding"><h2>Funding</h2><p>This work was supported by the U.S. National Science Foundation under award <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2608825" rel="noopener">OAC-2608825</a> (CSSI Elements: PhaseForge).</p></section>
+</main>
+<footer><div class="wrap">ORCHID is developed at Texas A&amp;M University with Citrine Informatics and Oak Ridge National Laboratory.
+Site content: MIT; literature data: CC BY 4.0. Database files remain the property of their authors; see <a href="../data/NOTICE.md">NOTICE</a>.</div></footer>
+</body>
+</html>

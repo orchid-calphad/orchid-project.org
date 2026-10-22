@@ -57,7 +57,7 @@ ROOT_FILES = ("index.html", "index.md", "sitemap.xml", "robots.txt", "llms.txt",
 AI_BOTS = ("GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-Web", "Claude-User", "Claude-SearchBot",
            "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended", "CCBot", "Applebot-Extended",
            "Bytespider", "Amazonbot", "meta-externalagent", "cohere-ai", "DuckAssistBot")
-SITE_PAGES = ("", "phase-diagrams/", "data-explorer/", "dft-parity/", "dataset/", "catalog/",
+SITE_PAGES = ("", "phase-diagrams/", "data-explorer/", "dft-parity/", "dataset/", "about/", "catalog/",
               "catalog/binary-thermo.html", "catalog/mixing-energy.html", "catalog/model-audit/",
               "catalog/compatibility/unary-compatibility-network.html", "best-practices.html")
 
@@ -201,7 +201,9 @@ def value_text(r):
 def t_text(r):
     if r.get("temperature_K") is None:
         return ""
-    return fmt_num(r["temperature_K"]) + (" (%s)" % r["temperature_bound"] if r.get("temperature_bound") else "")
+    tb = r.get("temperature_bound")
+    tb = (tb.get("op") if isinstance(tb, dict) else tb) if tb else None
+    return fmt_num(r["temperature_K"]) + (" (%s)" % tb if tb else "")
 
 
 def jsonld_dump(obj):

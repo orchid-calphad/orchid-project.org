@@ -93,7 +93,9 @@ def jstr(v):
 BOUND = {"<": "upper", ">": "lower", "upper": "upper", "lower": "lower"}
 BOOL_FLAGS = ["espei_ready", "judge_adjudicated", "magnitude_suspect", "source_disputed", "system_mismatch",
               "unsigned_in_print", "sign_pdf_page_verified", "has_dropped_fields",
-              "composition_conflict_between_readers", "unit_conflict_between_readers"]
+              "composition_conflict_between_readers", "unit_conflict_between_readers", "page_unreadable",
+              "basis_inferred_from_magnitude", "basis_corrected_from_formula", "sign_from_heading",
+              "dft_outlier_unexplained", "reference_state_dropped_not_in_quote"]
 
 
 def lit_schema(pa):
@@ -113,7 +115,9 @@ def lit_schema(pa):
         ("temperature_basis", s), ("temperature_approximate", b), ("temperature_uncertainty_value", f),
         ("temperature_uncertainty_basis", s), ("pressure_Pa", f), ("pressure_basis", s),
         ("phases", ls), ("model_phases", ls), ("phase_details", phd),
-        ("reaction", s), ("reaction_type", s), ("transition_kind", s),
+        ("reaction", s), ("reaction_type", s), ("transition_kind", s), ("transition_kind_printed", s),
+        ("property_code_raw", s), ("unit_basis", s), ("per_formula_unit_divisor", f), ("value_before_quality_fix", f),
+        ("merged_ids", ls),
         ("compositions", comp),
         ("overall_composition", L(pa.struct([("element", s), ("value", f)]))),
         ("overall_composition_basis", s), ("reference_state_json", s), ("component", s),
@@ -186,8 +190,11 @@ def lit_row(r, papers, release):
         "phase_details": [{k: p.get(k) for k in ("label", "model_phase", "mapping_confidence", "pearson_symbol",
                                                  "prototype")} for p in ph],
         "reaction": rx.get("printed"), "reaction_type": rtype,
-        "transition_kind": (rtype.strip().lower() if rtype and r.get("observation_type") == "phase_transition"
-                            else None),
+        "transition_kind": r.get("transition_kind"), "transition_kind_printed": r.get("transition_kind_printed"),
+        "property_code_raw": r.get("property_code_raw"), "unit_basis": r.get("unit_basis"),
+        "per_formula_unit_divisor": fnum(r.get("per_formula_unit_divisor")),
+        "value_before_quality_fix": fnum(r.get("value_before_quality_fix")),
+        "merged_ids": list(r.get("merged_ids") or []),
         "compositions": comps,
         "overall_composition": [{"element": k, "value": fnum(v)}
                                 for k, v in sorted((r.get("overall_composition") or {}).items())],
@@ -264,7 +271,7 @@ def parity_schema(pa):
         ("sign_verified", b), ("sign_check", s), ("suspect", L(s)), ("chem_class", s),
         ("method_class", s), ("method", s), ("temperature_K", f), ("record_kind", s), ("paper_id", s),
         ("page", pa.int32()), ("table", s), ("quote", s), ("cited_dois", L(s)), ("default_subset", b),
-        ("dft_release", s)])
+        ("dft_release", s), ("quality_fix", s), ("unit_basis", s), ("basis_inferred_from_magnitude", b)])
 
 
 def pd_index_schema(pa):
@@ -369,7 +376,8 @@ def build_tables(data, pa):
             "method": r["method"], "temperature_K": fnum(r["T"]), "record_kind": r["kind"], "paper_id": r["paper"],
             "page": r["page"], "table": r["table"], "quote": r["quote"],
             "cited_dois": sorted({c["doi"] for c in r["cited"] if c.get("doi")}), "default_subset": default,
-            "dft_release": rel.get(pt["src"])})
+            "dft_release": rel.get(pt["src"]), "quality_fix": r.get("qfix"), "unit_basis": r.get("basis"),
+            "basis_inferred_from_magnitude": bool(r.get("basis_inferred"))})
     drow.sort(key=lambda x: (x["system"], x["record_id"], x["dft_source"]))
     tables["dft_parity"] = (drow, parity_schema(pa))
 

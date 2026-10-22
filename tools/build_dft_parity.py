@@ -274,6 +274,21 @@ def chem_class(elements):
     return "intermetallic"
 
 
+def _ranks(xs):
+    """Average ranks (1-based) with ties sharing their mean rank."""
+    order = sorted(range(len(xs)), key=lambda i: xs[i])
+    r = [0.0] * len(xs)
+    i = 0
+    while i < len(order):
+        j = i
+        while j + 1 < len(order) and xs[order[j + 1]] == xs[order[i]]:
+            j += 1
+        for k in range(i, j + 1):
+            r[order[k]] = (i + j) / 2.0 + 1
+        i = j + 1
+    return r
+
+
 def stats(pairs):
     """pairs: list of (lit, dft). Residual = dft - lit."""
     n = len(pairs)
@@ -284,7 +299,7 @@ def stats(pairs):
            "mse": sum(res) / n, "median_abs": sorted(abs(r) for r in res)[n // 2] if n % 2 else
            sum(sorted(abs(r) for r in res)[n // 2 - 1:n // 2 + 1]) / 2,
            "same_sign": sum(1 for l, d in pairs if (l > 0) == (d > 0) and l != 0 and d != 0) / n,
-           "within_band": sum(1 for r in res if abs(r) <= BAND) / n, "r": None}
+           "within_band": sum(1 for r in res if abs(r) <= BAND) / n, "r": None, "spearman": None}
     if n >= 3:
         mx = sum(l for l, _ in pairs) / n
         my = sum(d for _, d in pairs) / n
@@ -292,6 +307,11 @@ def stats(pairs):
         syy = sum((d - my) ** 2 for _, d in pairs)
         sxy = sum((l - mx) * (d - my) for l, d in pairs)
         out["r"] = sxy / math.sqrt(sxx * syy) if sxx > 0 and syy > 0 else None
+        rl, rd = _ranks([l for l, _ in pairs]), _ranks([d for _, d in pairs])
+        m = (n + 1) / 2.0
+        a = sum((x - m) * (y - m) for x, y in zip(rl, rd))
+        b = math.sqrt(sum((x - m) ** 2 for x in rl) * sum((y - m) ** 2 for y in rd))
+        out["spearman"] = a / b if b > 0 else None
     return {k: (round(v, 4) if isinstance(v, float) else v) for k, v in out.items()}
 
 
@@ -414,6 +434,9 @@ def build(open_tdb, sign_check_path):
             "quote": r.get("quote"), "page": record_page(r), "kind": r.get("record_kind"),
             "table": ("Table %s" % loc["label"]) if loc.get("artifact") == "table" and loc.get("label") else None,
             "own": (r.get("origin") or {}).get("own_work_of_paper"),
+            "qfix": next((k for k in ("basis_corrected_from_formula", "sign_from_heading", "dft_outlier_unexplained")
+                          if flags.get(k)), None),
+            "basis": r.get("unit_basis"), "basis_inferred": bool(flags.get("basis_inferred_from_magnitude")),
         }
         matched = {}
         for s, src in dft.items():
@@ -458,6 +481,10 @@ def build(open_tdb, sign_check_path):
         "experimental_with_magnitude_suspect": ("Experimental incl. magnitude-suspect extractions",
                                                 lambda p: p["ev"] == "experimental" and p["acc"]
                                                 and not p["unsigned"] and not p["sign_lost"]),
+        "experimental_explicit_basis": ("Default, per-atom basis printed (not inferred from magnitude)",
+                                        lambda p: default(p) and not p["basis_inferred"]),
+        "experimental_excl_unexplained_outliers": ("Default without unexplained DFT outliers (diagnostic only)",
+                                                   lambda p: default(p) and p["qfix"] != "dft_outlier_unexplained"),
         "experimental_incl_not_accepted": ("Experimental incl. not-accepted extractions",
                                            lambda p: p["ev"] == "experimental" and not p["unsigned"]
                                            and not p["sign_lost"] and "magnitude_suspect" not in p["suspect"]),
@@ -519,6 +546,10 @@ def build(open_tdb, sign_check_path):
                               "of this DFT comparison).",
             "layout": "records{rid: literature fields} + points[] (one per record x DFT source, joined by rid) "
                       "+ papers{paper id: citation, DOI}.",
+            "quality_fixes": "data/literature/QUALITY_FIXES.md: per-formula values labelled per atom are converted "
+                             "(basis_corrected_from_formula), unsigned magnitudes are flagged unsigned_in_print (or "
+                             "signed from a printed negated heading, sign_from_heading); remaining large residuals are "
+                             "flagged dft_outlier_unexplained and kept in the default subset.",
             "unsigned": "flags.unsigned_in_print, or a sign-check verdict no_minus_printed matched by paper "
                         "(PDF hash prefix), page and |printed value|: such values are magnitudes by the paper's "
                         "convention and are kept out of the default set.",
