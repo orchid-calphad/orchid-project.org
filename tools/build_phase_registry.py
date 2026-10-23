@@ -66,7 +66,10 @@ from fractions import Fraction
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import doi_corrections  # noqa: E402
 import orchid_cite  # noqa: E402
+
+DOI_CORR = doi_corrections.load()   # shared DOI correction table
 
 HOME = os.path.expanduser("~")
 DEF_OPEN_TDB = os.path.join(HOME, "projects", "open-tdb")
@@ -815,6 +818,7 @@ def build(a):
                                       os.path.join(open_tdb, "catalog", "model-audit", "bundled-summary.json"))))
     audit_sha = {e["path"]: e["sha256"] for e in audit["entries"]}
     links = json.load(open(inputs.add("sgte-corpus/tdb_pdf_links.json", os.path.join(a.corpus, "tdb_pdf_links.json"))))
+    inputs.add("orchid-project.org/tools/doi_corrections.json", DOI_CORR.path)
     link_by_tdb = {}
     for l in links.get("links", []):
         if l.get("doi"):
@@ -928,7 +932,9 @@ def build(a):
             # assessment reference
             dg = diagrams.get(fname)
             osrc = (dg[1].get("original_source") if dg else None) or {}
-            doi = osrc.get("doi") or (link_by_tdb.get(fname) or {}).get("doi")
+            doi = osrc.get("doi") or (None if osrc.get("doi_status") else (link_by_tdb.get(fname) or {}).get("doi"))
+            if doi and DOI_CORR.tdb(fname, doi):   # TDB header citation -> DOI mismatch (tools/doi_corrections.json)
+                doi = None
             if doi:
                 cit = (papers.get("doi:" + doi) or {}).get("citation") or osrc.get("citation") or \
                       (link_by_tdb.get(fname) or {}).get("header_citation")

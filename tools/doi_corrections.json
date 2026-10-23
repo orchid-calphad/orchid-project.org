@@ -1,0 +1,595 @@
+{
+ "table": "ORCHID DOI corrections",
+ "version": "1.0.0",
+ "date": "2026-10-23",
+ "maintainer_note": "Hand-maintained (frozen) table; do not regenerate. Seeded from the bibliography Crossref check (bibliography/DOI_MISMATCHES.md, release v2026.10). Add entries with a new id; bump the version.",
+ "description": "Printed references that upstream matchers resolved to a DOI whose Crossref record describes a different work. Every ORCHID exporter that emits DOIs applies this table: in the matching context the DOI becomes null, doi_status = 'dropped_mismatch', doi_correction = <id>, and the printed citation is kept.",
+ "contexts": {
+  "literature_cited_source": "the literature paper record keyed by this DOI (literature/papers.json) and every value field that points to it (paper, origin.measured_in, conditions.paper, cited_sources[].doi/paper)",
+  "tdb_header": "the link from this TDB file's header citation to the DOI (model.model_doi of values linked to the TDB, phase-diagrams original_source, phase-registry assessment references, bibliography TDB links); the DOI stays valid for its own paper elsewhere",
+  "handbook_source_line": "the source line printed under the handbook diagram of this system (assessed-phase-assemblage citations / original_doi, ESPEI ZPF references, bibliography handbook links)"
+ },
+ "scopes": {
+  "context_only": "only the occurrence in the named context loses the DOI",
+  "everywhere": "the DOI identifies no article; dropped in every context it appears in"
+ },
+ "corrections": [
+  {
+   "id": "doicorr-01",
+   "doi": "10.1001/jama.1964.03060380116096",
+   "status": "dropped_mismatch",
+   "context": "literature_cited_source",
+   "match": {
+    "literature_paper": "doi:10.1001/jama.1964.03060380116096"
+   },
+   "scope": "context_only",
+   "printed_citation": "J. E. Kittl, T.B. Massalski, J. Inst. Met. 93 (1964–1965) 182–188.",
+   "matched_printed_reference": "J. E. Kittl, T.B. Massalski, J. Inst. Met. 93 (1964–1965) 182–188.",
+   "issues": [
+    "crossref_lists_no_authors"
+   ],
+   "reason": "Crossref deposits no authors and nothing else (year, title, journal) confirms the match",
+   "crossref_record": {
+    "first_author": null,
+    "year": 1964,
+    "title": "Toko-Ginecologia Practica, Madrid",
+    "container_title": "JAMA"
+   },
+   "systems": [
+    "CU-GA"
+   ],
+   "replacement_id": "nodoi:29bb06ed579a1f96"
+  },
+  {
+   "id": "doicorr-02",
+   "doi": "10.1007/bf02418464",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "IN-TE"
+   },
+   "scope": "context_only",
+   "printed_citation": "N.Yu. Budanova and E.Ya. Skasyrskaya, Inorg. Mater., 34(3), 220-221 (1998)",
+   "matched_printed_reference": "N.Yu. Budanova and E.Ya. Skasyrskaya, Inorg. Mater., 34(3), 220-221 (1998)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "Yu. B. Kolesov",
+    "year": 1998,
+    "title": "Die forging of bottoms with controllable corrugation and coning",
+    "container_title": "Chemical and Petroleum Engineering"
+   },
+   "systems": [
+    "IN-TE"
+   ],
+   "replacement_id": "nodoi:2c07aec4fa5bd4f0"
+  },
+  {
+   "id": "doicorr-03",
+   "doi": "10.1007/bf02593031",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "SB-SR"
+   },
+   "scope": "context_only",
+   "printed_citation": "A.V. Vakhobov, Z.U. Niyazova, and B.N. Polev, Inorg. Mater., 11(2), 306-307 (1975)",
+   "matched_printed_reference": "A.V. Vakhobov, Z.U. Niyazova, and B.N. Polev, Inorg. Mater., 11(2), 306-307 (1975)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "James R. Gaskill",
+    "year": 1975,
+    "title": "Technical notes",
+    "container_title": "Fire Technology"
+   },
+   "systems": [
+    "SB-SR"
+   ],
+   "replacement_id": "nodoi:1992cd6746e9c267"
+  },
+  {
+   "id": "doicorr-04",
+   "doi": "10.1016/0011-7471(70)90036-7",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "AG-PU"
+   },
+   "scope": "context_only",
+   "printed_citation": "D.H. Wood, E.M. Cramer, and P.L. Wallace, Nucl. Metall., 17, 707-719 (1970)",
+   "matched_printed_reference": "D.H. Wood, E.M. Cramer, and P.L. Wallace, Nucl. Metall., 17, 707-719 (1970)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "Douglas R. Caldwell",
+    "year": 1970,
+    "title": "Determination of thermal expansion of sea-water by observing onset of convection",
+    "container_title": "Deep Sea Research and Oceanographic Abstracts"
+   },
+   "systems": [
+    "AG-PU"
+   ],
+   "replacement_id": "nodoi:48133e2c1df342ec"
+  },
+  {
+   "id": "doicorr-05",
+   "doi": "10.1016/0364-5916(96)00003-x",
+   "status": "dropped_mismatch",
+   "context": "literature_cited_source",
+   "match": {
+    "literature_paper": "doi:10.1016/0364-5916(96)00003-x"
+   },
+   "scope": "context_only",
+   "printed_citation": "The OQMD database. http://oqmd.org.",
+   "matched_printed_reference": "The OQMD database. http://oqmd.org.",
+   "issues": [
+    "crossref_lists_no_authors"
+   ],
+   "reason": "Crossref deposits no authors and nothing else (year, title, journal) confirms the match",
+   "crossref_record": {
+    "first_author": null,
+    "year": 1995,
+    "title": "Workshop on thermodynamic models and data for pure elements and other endmembers of solutions",
+    "container_title": "Calphad"
+   },
+   "systems": [
+    "TI"
+   ],
+   "replacement_id": "nodoi:bbb0149a5496360b"
+  },
+  {
+   "id": "doicorr-06",
+   "doi": "10.1016/j.tca.2014.01.002",
+   "status": "dropped_mismatch",
+   "context": "tdb_header",
+   "match": {
+    "tdb": "NiTi-14Hu.tdb"
+   },
+   "scope": "context_only",
+   "printed_citation": "J. Alloys Compd., 578, 35-42(2014).",
+   "matched_printed_reference": "J. Alloys Compd., 578, 35-42(2014).",
+   "issues": [
+    "first_author_not_printed",
+    "journal_differs"
+   ],
+   "reason": "the printed reference names no author to confirm; the printed journal differs from the Crossref journal",
+   "crossref_record": {
+    "first_author": "Biao Hu",
+    "year": 2014,
+    "title": "Thermodynamic modeling of the Cr–Ni–Ti system using a four-sublattice model for ordered/disordered bcc phases",
+    "container_title": "Thermochimica Acta"
+   },
+   "systems": [
+    "NI-TI"
+   ],
+   "replacement_id": "nodoi:4418816c237f4c56"
+  },
+  {
+   "id": "doicorr-07",
+   "doi": "10.1016/s0013-4686(97)90035-9",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "CE-SB"
+   },
+   "scope": "context_only",
+   "printed_citation": "V.D. Abulkhaev, Zh. Neorg. Khim., 42(2), 341-345 (1997) in Russian; TR: Russ. J. Inorg. Chem., 42(2), 283-286 (1997)",
+   "matched_printed_reference": "V.D. Abulkhaev, Zh. Neorg. Khim., 42(2), 341-345 (1997) in Russian; TR: Russ. J. Inorg. Chem., 42(2), 283-286 (1997)",
+   "issues": [
+    "crossref_lists_no_authors"
+   ],
+   "reason": "Crossref deposits no authors and nothing else (year, title, journal) confirms the match",
+   "crossref_record": {
+    "first_author": null,
+    "year": 1997,
+    "title": "Electrochemical calendar",
+    "container_title": "Electrochimica Acta"
+   },
+   "systems": [
+    "CE-SB"
+   ],
+   "replacement_id": "nodoi:fae67685afba3af8"
+  },
+  {
+   "id": "doicorr-08",
+   "doi": "10.1037/013887",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "CL-RE"
+   },
+   "scope": "context_only",
+   "printed_citation": "D.V. Drobot, V.A. Aleksandrova, and B.G. Korshunov, Russ. J. Inorg. Chem., 15(5), 584-585 (1970)",
+   "matched_printed_reference": "D.V. Drobot, V.A. Aleksandrova, and B.G. Korshunov, Russ. J. Inorg. Chem., 15(5), 584-585 (1970)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "DAVID ELKIND",
+    "year": 1970,
+    "title": "Review of Cybernetique et Epistemologie (Cybernetics and Epistemology).",
+    "container_title": "Contemporary Psychology: A Journal of Reviews"
+   },
+   "systems": [
+    "CL-RE"
+   ],
+   "replacement_id": "nodoi:f67a2d23f2fb7d67"
+  },
+  {
+   "id": "doicorr-09",
+   "doi": "10.1063/1.440209",
+   "status": "dropped_mismatch",
+   "context": "literature_cited_source",
+   "match": {
+    "literature_paper": "doi:10.1063/1.440209"
+   },
+   "scope": "context_only",
+   "printed_citation": "M. Venkatraman, J.P. Neumann, D.E. Peterson, Bull. Alloy Phase Diagrams 6 (5) (1985) 425–429; M. Venkatraman, J.P. Neumann, D.E. Peterson, J. Chem. Phys. 73 (2) (1980) 908–912.",
+   "matched_printed_reference": "M. Venkatraman, J.P. Neumann, D.E. Peterson, Bull. Alloy Phase Diagrams 6 (5) (1985) 425–429; M. Venkatraman, J.P. Neumann, D.E. Peterson, J. Chem. Phys. 73 (2) (1980) 908–912.",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "J. G. Edwards",
+    "year": 1980,
+    "title": "Sublimation thermodynamics of the URu3 compound",
+    "container_title": "The Journal of Chemical Physics"
+   },
+   "systems": [
+    "CR-U"
+   ],
+   "replacement_id": "nodoi:174dc68698fe2ff9"
+  },
+  {
+   "id": "doicorr-10",
+   "doi": "10.1071/mu960074",
+   "status": "dropped_mismatch",
+   "context": "literature_cited_source",
+   "match": {
+    "literature_paper": "doi:10.1071/mu960074"
+   },
+   "scope": "context_only",
+   "printed_citation": "B. Love, WADD Technical Report 60-74, Part I (1960)",
+   "matched_printed_reference": "B. Love, WADD Technical Report 60-74, Part I (1960)",
+   "issues": [
+    "crossref_lists_no_authors"
+   ],
+   "reason": "Crossref deposits no authors and nothing else (year, title, journal) confirms the match",
+   "crossref_record": {
+    "first_author": null,
+    "year": 1960,
+    "title": "Review",
+    "container_title": "Emu - Austral Ornithology"
+   },
+   "systems": [
+    "ER-TI"
+   ],
+   "replacement_id": "nodoi:1efd85b7047ae688"
+  },
+  {
+   "id": "doicorr-11",
+   "doi": "10.1080/00222347408219416",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "I-P"
+   },
+   "scope": "context_only",
+   "printed_citation": "L.A. Nissel’son, Yu.P. Ballo, and K.V. Tret’yakova , Inorg. Mater., 10, 719-722 (1974)",
+   "matched_printed_reference": "L.A. Nissel’son, Yu.P. Ballo, and K.V. Tret’yakova , Inorg. Mater., 10, 719-722 (1974)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "Seizo Miyata",
+    "year": 1974,
+    "title": "Isolation of extended-chain crystals from high-pressure crystallized polyethylene by selective dissolution",
+    "container_title": "Journal of Macromolecular Science, Part B"
+   },
+   "systems": [
+    "I-P"
+   ],
+   "replacement_id": "nodoi:b5b5b29c1b123aaf"
+  },
+  {
+   "id": "doicorr-12",
+   "doi": "10.1088/0031-8949/11/6/003",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "SR-TE"
+   },
+   "scope": "context_only",
+   "printed_citation": "Yu.B. Luskova and A.V. Vakhobov, Inorg. Mater., 11, 361-362 (1975)",
+   "matched_printed_reference": "Yu.B. Luskova and A.V. Vakhobov, Inorg. Mater., 11, 361-362 (1975)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "I Uschersohn",
+    "year": 1975,
+    "title": "Generalized Rapidity for Space-like Particles",
+    "container_title": "Physica Scripta"
+   },
+   "systems": [
+    "SR-TE"
+   ],
+   "replacement_id": "nodoi:a84caef7e1c06575"
+  },
+  {
+   "id": "doicorr-13",
+   "doi": "10.1111/j.1465-5922.1990.00343.x",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "S-SC"
+   },
+   "scope": "context_only",
+   "printed_citation": "O.V. Andreev and N.N. Parschukov, Phase Diagrams of Metallic Systems, 35(1), 343-344 (1990)",
+   "matched_printed_reference": "O.V. Andreev and N.N. Parschukov, Phase Diagrams of Metallic Systems, 35(1), 343-344 (1990)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "GILES CLARK",
+    "year": 1990,
+    "title": "Correspondence",
+    "container_title": "Journal of Analytical Psychology"
+   },
+   "systems": [
+    "S-SC"
+   ],
+   "replacement_id": "nodoi:82a20edd67e6eae8"
+  },
+  {
+   "id": "doicorr-14",
+   "doi": "10.1159/000464841",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "OS-RE"
+   },
+   "scope": "context_only",
+   "printed_citation": "M.A. Tylkina, V.P. Polyakova, and E.M. Savitskii, Russ. J. Inorg. Chem., 7, 755-756 (1962)",
+   "matched_printed_reference": "M.A. Tylkina, V.P. Polyakova, and E.M. Savitskii, Russ. J. Inorg. Chem., 7, 755-756 (1962)",
+   "issues": [
+    "crossref_lists_no_authors"
+   ],
+   "reason": "Crossref deposits no authors and nothing else (year, title, journal) confirms the match",
+   "crossref_record": {
+    "first_author": null,
+    "year": 1962,
+    "title": "Index nominum ad Vol. 7",
+    "container_title": "Vox Sanguinis"
+   },
+   "systems": [
+    "OS-RE"
+   ],
+   "replacement_id": "nodoi:d509759b77d3a2d1"
+  },
+  {
+   "id": "doicorr-15",
+   "doi": "10.1177/194336548102600605",
+   "status": "dropped_mismatch",
+   "context": "handbook_source_line",
+   "match": {
+    "handbook_system": "CL-EU"
+   },
+   "scope": "context_only",
+   "printed_citation": "D.M. Laptev, N.M. Kulagin, I.S. Astakhova, and N.V. Tolstoguzov, Russ. J. Inorg. Chem., 26(4), 553-556 (1981)",
+   "matched_printed_reference": "D.M. Laptev, N.M. Kulagin, I.S. Astakhova, and N.V. Tolstoguzov, Russ. J. Inorg. Chem., 26(4), 553-556 (1981)",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "Aaron Cohen",
+    "year": 1981,
+    "title": "A Calibration Procedure for the Radiometer Heated Transcutaneous CO2 Electrode: Measurements in the Sick Newborn",
+    "container_title": "Respiratory Care"
+   },
+   "systems": [
+    "CL-EU"
+   ],
+   "replacement_id": "nodoi:b84f97db906771f8"
+  },
+  {
+   "id": "doicorr-16",
+   "doi": "10.1515/zna-1974-0813",
+   "status": "dropped_mismatch",
+   "context": "literature_cited_source",
+   "match": {
+    "literature_paper": "doi:10.1515/zna-1974-0813"
+   },
+   "scope": "context_only",
+   "printed_citation": "R. Blachnik and EW. Kasper, \"Tin (1I) Halogenide - Tin (1I) Chaicogenide Systems,\" Z. Naturforsch. B, 29, 159-162 (1974) in German.",
+   "matched_printed_reference": "R. Blachnik and EW. Kasper, \"Tin (1I) Halogenide - Tin (1I) Chaicogenide Systems,\" Z. Naturforsch. B, 29, 159-162 (1974) in German.",
+   "issues": [
+    "crossref_lists_no_authors"
+   ],
+   "reason": "Crossref deposits no authors and nothing else (year, title, journal) confirms the match",
+   "crossref_record": {
+    "first_author": null,
+    "year": 1974,
+    "title": "Thermodynamische Eigenschaften von Zinnchalcogeniden / Thermodynamic Properties of tin II chalcogenides",
+    "container_title": "Zeitschrift für Naturforschung A"
+   },
+   "systems": [
+    "SE-SN"
+   ],
+   "replacement_id": "nodoi:7cd6fbec549a8271"
+  },
+  {
+   "id": "doicorr-17",
+   "doi": "10.1557/jmr",
+   "status": "dropped_mismatch",
+   "context": "literature_cited_source",
+   "match": {
+    "literature_paper": "doi:10.1557/jmr"
+   },
+   "scope": "everywhere",
+   "printed_citation": "F. Gao, C. Wang, X. Liu, J. Mater. Res., 25, 576-86(2010).",
+   "matched_printed_reference": "F. Gao, C. Wang, X. Liu, J. Mater. Res., 25, 576-86(2010).",
+   "issues": [
+    "doi_not_article_level"
+   ],
+   "reason": "the DOI is a journal-level prefix (10.1557/jmr), not an article DOI",
+   "crossref_record": {
+    "first_author": null,
+    "year": null,
+    "title": null,
+    "container_title": null
+   },
+   "systems": [
+    "AL-AS-GA-IN-N",
+    "AL-AS-GA-IN-P-SB",
+    "AU-BI-SN",
+    "CU-ZN",
+    "IN-N"
+   ],
+   "replacement_id": "nodoi:644820a7828395ad"
+  },
+  {
+   "id": "doicorr-18",
+   "doi": "10.1557/jmr",
+   "status": "dropped_mismatch",
+   "context": "tdb_header",
+   "match": {
+    "tdb": "InN-02Ond.tdb"
+   },
+   "scope": "everywhere",
+   "printed_citation": "B. Onderka, J. Unland, R. Schmid-Fetzer, J. Mater. Res., 17, 3065-83(2002).",
+   "matched_printed_reference": "B. Onderka, J. Unland, R. Schmid-Fetzer, J. Mater. Res., 17, 3065-83(2002).",
+   "issues": [
+    "doi_not_article_level"
+   ],
+   "reason": "the DOI is a journal-level prefix (10.1557/jmr), not an article DOI",
+   "crossref_record": {
+    "first_author": null,
+    "year": null,
+    "title": null,
+    "container_title": null
+   },
+   "systems": [
+    "IN-N"
+   ],
+   "replacement_id": "nodoi:a044a3e26f05788d"
+  },
+  {
+   "id": "doicorr-19",
+   "doi": "10.1557/jmr",
+   "status": "dropped_mismatch",
+   "context": "tdb_header",
+   "match": {
+    "tdb": "AuSn-10Gao.tdb"
+   },
+   "scope": "everywhere",
+   "printed_citation": "F. Gao, C. Wang, X. Liu, J. Mater. Res., 25, 576-86(2010).",
+   "matched_printed_reference": "F. Gao, C. Wang, X. Liu, J. Mater. Res., 25, 576-86(2010).",
+   "issues": [
+    "doi_not_article_level"
+   ],
+   "reason": "the DOI is a journal-level prefix (10.1557/jmr), not an article DOI",
+   "crossref_record": {
+    "first_author": null,
+    "year": null,
+    "title": null,
+    "container_title": null
+   },
+   "systems": [
+    "AU-SN"
+   ],
+   "replacement_id": "nodoi:644820a7828395ad"
+  },
+  {
+   "id": "doicorr-20",
+   "doi": "10.1557/jmr",
+   "status": "dropped_mismatch",
+   "context": "tdb_header",
+   "match": {
+    "tdb": "CuZn-08Gie.tdb"
+   },
+   "scope": "everywhere",
+   "printed_citation": "W. Gierlotka, S.-W. Chen, J. Mater. Res., 23, 258-63(2008).",
+   "matched_printed_reference": "W. Gierlotka, S.-W. Chen, J. Mater. Res., 23, 258-63(2008).",
+   "issues": [
+    "doi_not_article_level"
+   ],
+   "reason": "the DOI is a journal-level prefix (10.1557/jmr), not an article DOI",
+   "crossref_record": {
+    "first_author": null,
+    "year": null,
+    "title": null,
+    "container_title": null
+   },
+   "systems": [
+    "CU-ZN"
+   ],
+   "replacement_id": "nodoi:f136aca1c5e2bc36"
+  },
+  {
+   "id": "doicorr-21",
+   "doi": "10.2320/jinstmet.73.180",
+   "status": "dropped_mismatch",
+   "context": "tdb_header",
+   "match": {
+    "tdb": "IrPt-09Yam.tdb"
+   },
+   "scope": "context_only",
+   "printed_citation": "Y. Yamabe-Mitarai, T. Aoyagi, T. Abe, J. Alloys Compd., 484, 327-34(2009).",
+   "matched_printed_reference": "Y. Yamabe-Mitarai, T. Aoyagi, T. Abe, J. Alloys Compd., 484, 327-34(2009).",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "Kenta Yamada",
+    "year": 2009,
+    "title": "Thermodynamic Analysis of the Mo-Nb-B Ternary Phase Diagram",
+    "container_title": "Journal of the Japan Institute of Metals"
+   },
+   "systems": [
+    "IR-PT"
+   ],
+   "replacement_id": "nodoi:39e19a616dbd125b"
+  },
+  {
+   "id": "doicorr-22",
+   "doi": "10.7121/msi-eureka-20.11366.1.8",
+   "status": "dropped_mismatch",
+   "context": "literature_cited_source",
+   "match": {
+    "literature_paper": "doi:10.7121/msi-eureka-20.11366.1.8"
+   },
+   "scope": "context_only",
+   "printed_citation": "M. Bulanova, N. Kolchugina, T. Zienert, N. Heiden, Co-Sn (Cobalt-Tin Binary Phase Diagram Evaluation, in MSI Eureka, ed. by G. Effenberg (MSI, Materials Science International, Stuttgart, 2015), Document ID: 20.16656.1.3",
+   "matched_printed_reference": "M. Bulanova, N. Kolchugina, T. Zienert, N. Heiden, Co-Sn (Cobalt-Tin Binary Phase Diagram Evaluation, in MSI Eureka, ed. by G. Effenberg (MSI, Materials Science International, Stuttgart, 2015), Document ID: 20.16656.1.3",
+   "issues": [
+    "first_author_not_in_crossref_authors"
+   ],
+   "reason": "the printed first author is not among the Crossref authors",
+   "crossref_record": {
+    "first_author": "Stephanie Lippmann",
+    "year": 2016,
+    "title": "Li-Sn Binary Phase Diagram Evaluation",
+    "container_title": "MSI Eureka"
+   },
+   "systems": [
+    "CO-SN"
+   ],
+   "replacement_id": "nodoi:09aeb8ec9efe54be"
+  }
+ ]
+}

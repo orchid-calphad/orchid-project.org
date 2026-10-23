@@ -11,6 +11,13 @@ Population weighting: the sample is stratified with a minimum per stratum, so th
 over-represents small strata. The weighted estimate uses stratum population shares; its interval is a Wilson
 interval at the Kish effective sample size (an approximation, stated as such in the output).
 
+Scores are always computed against the FROZEN sample (review/precision-sample/sample.json, verified against
+frozen.json; see tools/build_precision_sample.py). The literature release moves on after sampling, so the report
+also says, per answered item, whether the current release still carries the value the reviewer judged
+(`unchanged`), carries a different value for one of the reviewed fields (`changed`, with the review questions
+affected), or no longer releases the record (`missing`); `merged_into` names the surviving record when the
+de-duplication merged the sampled one. A judgement on a `changed` item describes the sampled value, not the release.
+
 Standard library only.
 """
 import argparse
@@ -18,8 +25,12 @@ import hashlib
 import json
 import math
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
+
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import build_precision_sample as bps  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SAMPLE = ROOT / "review" / "precision-sample" / "sample.json"
@@ -145,12 +156,44 @@ def agreement(r1, r2, out):
             f, n, 100 * po, "  n/a" if math.isnan(kappa) else "%5.2f" % kappa, ", ".join(dis[:12]) + (" ..." if len(dis) > 12 else "") or "none"))
 
 
+def release_status(sample_path, input_path, papers_path):
+    """{id: drift entry} for the frozen sample against the current release (verifies the freeze record first)."""
+    fp = Path(sample_path).parent / "frozen.json"
+    if not fp.exists():
+        raise SystemExit("%s missing: the sample is not frozen (tools/build_precision_sample.py freeze)" % fp)
+    frozen = json.loads(fp.read_text(encoding="utf-8"))
+    sha = hashlib.sha256(Path(sample_path).read_bytes()).hexdigest()
+    if sha != frozen["sample_sha256"]:
+        raise SystemExit("%s (sha256 %s) is not the frozen sample (%s)" % (sample_path, sha[:16], frozen["sample_sha256"][:16]))
+    recs, papers = bps.load_release(input_path, papers_path)
+    return {x["id"]: x for x in bps.drift(frozen, recs, papers)}
+
+
+def drift_report(results, status, out):
+    answered = sorted({a["id"]: a["n"] for r in results for a in r["answers"]}.items(), key=lambda kv: kv[1])
+    c = Counter(status[i]["status"] for i, _ in answered)
+    out.append("")
+    out.append("== Release check: does the current release still carry the reviewed value? ==")
+    out.append("  %d answered items: %s" % (len(answered), ", ".join("%s %d" % kv for kv in sorted(c.items())) or "none"))
+    for i, n in answered:
+        x = status[i]
+        line = "  n%-4d %-22s %s" % (n, i, x["status"])
+        if x.get("questions"):
+            line += " (%s)" % ", ".join(x["questions"])
+        if x.get("merged_into"):
+            line += " merged into %s" % x["merged_into"]
+        out.append(line)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("results", nargs="+", type=Path, help="result JSON file(s) downloaded from the review page")
     ap.add_argument("--sample", type=Path, default=SAMPLE, help="sample.json (default: %(default)s)")
     ap.add_argument("--json", type=Path, help="also write the scores as canonical JSON to this path")
+    ap.add_argument("--input", type=Path, default=bps.INPUT, help="current literature export (default: %(default)s)")
+    ap.add_argument("--papers", type=Path, default=bps.PAPERS, help="current papers.json (default: %(default)s)")
     a = ap.parse_args(argv)
+    status = release_status(a.sample, a.input, a.papers)
     sample_bytes = a.sample.read_bytes()
     sha = hashlib.sha256(sample_bytes).hexdigest()
     sample = json.loads(sample_bytes)
@@ -169,9 +212,13 @@ def main(argv=None):
         scores["pooled"] = report("Pooled over %d reviewers (item-answers, not independent)" % len(results), pooled, sample["strata"], out)
     if len(results) == 2:
         agreement(results[0], results[1], out)
+    drift_report(results, status, out)
     print("\n".join(out))
     if a.json:
-        a.json.write_text(json.dumps({"sample_sha256": sha, "scores": scores}, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        answered = sorted({ans["id"] for r in results for ans in r["answers"]})
+        rel = {i: {k: v for k, v in status[i].items() if k in ("status", "questions", "merged_into")} for i in answered}
+        a.json.write_text(json.dumps({"sample_sha256": sha, "scores": scores, "release_check": rel}, sort_keys=True,
+                                     indent=2) + "\n", encoding="utf-8")
     return 0
 
 

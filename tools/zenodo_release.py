@@ -472,7 +472,7 @@ def cmd_writeback(a):
               [py, "tools/build_espei_bundle.py", "--data", a.data, "--check"],
               [ppy, "tools/build_assessed_assemblages.py", "--data", a.data, "--check"],
               [ppy, "tools/build_bibliography.py", "build", "--data", a.data, "--check"],
-              [py, "tools/build_precision_sample.py", "--check"],
+              [py, "tools/build_precision_sample.py", "--check"],   # verifies the frozen sample; never regenerates it
               [py, "tools/zenodo_release.py", "--data", a.data, "card", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "manifest", "--check"]]
     fails = [" ".join(c) for c in checks if run(c)]

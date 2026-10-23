@@ -43,8 +43,11 @@ from collections import Counter, defaultdict
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import doi_corrections  # noqa: E402
 import literature_quality as quality  # noqa: E402
 import orchid_cite  # noqa: E402
+
+CORR = doi_corrections.load()   # shared DOI correction table (tools/doi_corrections.json)
 
 DEFAULT_CORPUS = os.path.expanduser("~/projects/open-tdb/build/sgte-corpus")
 DEFAULT_PDFS = os.path.expanduser("~/data/PD-extraction")
@@ -140,21 +143,37 @@ def doi_norm(d):
 
 
 SHA2DOI = {}  # pdf sha256 prefix (16 hex) -> DOI, for corpus sources whose record lacks the DOI
+SHA2CORR = {}  # pdf sha256 prefix -> DOI correction entry (PDF filed under a DOI that names no article)
+KEY2CORR = {}  # paper key -> DOI correction entry whose DOI the paper lost
+
+
+def lit_doi(d):
+    """(DOI, correction entry): the DOI is None when tools/doi_corrections.json drops it for literature papers."""
+    d = doi_norm(d)
+    e = CORR.literature(d) if d else None
+    return (None, e) if e else (d, None)
 
 
 def paper_key(src: dict | None):
     if not src:
         return None
-    d = doi_norm(src.get("doi"))
+    d, corr = lit_doi(src.get("doi"))
     if d:
         return "doi:" + d
     sha = src.get("file_sha256")
     if sha:
         if sha[:16] in SHA2DOI:
             return "doi:" + SHA2DOI[sha[:16]]
-        return "sha256:" + sha[:16]
-    pid = src.get("pid") or src.get("id")
-    return pid
+        key = "sha256:" + sha[:16]
+        corr = SHA2CORR.get(sha[:16]) or corr
+    elif corr:
+        key = corr["replacement_id"] if corr["context"] == "literature_cited_source" else \
+            "nodoi:" + hashlib.sha256(json.dumps(src.get("citation"), sort_keys=True).encode()).hexdigest()[:16]
+    else:
+        return src.get("pid") or src.get("id")
+    if corr:
+        KEY2CORR.setdefault(key, corr)
+    return key
 
 
 def system_name(elems):
@@ -199,16 +218,22 @@ class Biblio:
             for ln in data.get("links", []):
                 d = doi_norm(ln.get("doi"))
                 cit = ln.get("header_citation")
-                if d and cit:
+                # a header citation whose matched DOI is a mismatch (tools/doi_corrections.json) does not describe it
+                tdb_corr = CORR.tdb(ln.get("tdb"), d) if d else None
+                if d and cit and not tdb_corr:
                     self.header.setdefault(d, (cit, ln.get("year")))
                 if ln.get("pdf") and ln.get("status") == "linked_pdf_local":
                     p = os.path.join(pdfs, ln["pdf"])
                     if os.path.exists(p):
                         h = hashlib.sha256(open(p, "rb").read()).hexdigest()[:16]
-                        if d:
-                            SHA2DOI.setdefault(h, d)
+                        # the PDF was fetched under the DOI, so it is that DOI's work, unless the DOI names no article
+                        pdf_doi = None if (d and CORR.anywhere(d)) else d
+                        if pdf_doi:
+                            SHA2DOI.setdefault(h, pdf_doi)
                         elif cit:
                             self.header_by_sha.setdefault(h, (cit, ln.get("year")))
+                            if d:
+                                SHA2CORR.setdefault(h, tdb_corr or CORR.anywhere(d))
         self.meta = {}
         mp = os.path.join(corpus, "db-v2.1", "cited-meta", "meta.json")
         if os.path.exists(mp):
@@ -332,10 +357,21 @@ class Store:
     # -- sources / papers
     def add_source(self, s):
         d, sha = doi_norm(s.get("doi")), s.get("file_sha256")
+        if d and CORR.anywhere(d):
+            d = None   # a DOI that names no article does not identify the PDF
         if d and sha and s.get("kind") in ("journal_article", "book_chapter"):
             SHA2DOI.setdefault(sha[:16], d)
         for k in [s["id"]] + list(s.get("aliases") or []):
             self.sources.setdefault(k, s)
+
+    def source_in_file(self, sid, local):
+        """Source record for id `sid`. Ids derived from a DOI that names no article (tools/doi_corrections.json,
+        scope everywhere: e.g. source:doi:10-1557-jmr) collide across different PDFs; for those the file's own source
+        record is used."""
+        s = self.sources.get(sid)
+        if s is not None and sid in local and CORR.anywhere(doi_norm(s.get("doi"))):
+            return local[sid]
+        return s
 
     def paper_for(self, src, role):
         key = paper_key(src)
@@ -351,8 +387,13 @@ class Store:
 
     def paper_from_cited(self, c):
         """A cited work printed in a table/text reference list (dict from _export.cited / attribution.cited)."""
-        d = doi_norm(c.get("doi"))
-        key = ("doi:" + d) if d else None
+        d, corr = lit_doi(c.get("doi"))
+        if corr:   # DOI dropped as a mismatch: the printed reference is kept under a no-DOI key
+            key = corr["replacement_id"] if corr["context"] == "literature_cited_source" else \
+                "nodoi:" + hashlib.sha256((c.get("text") or "").encode()).hexdigest()[:16]
+            KEY2CORR.setdefault(key, corr)
+        else:
+            key = ("doi:" + d) if d else None
         if key is None:
             return None
         p = self.papers.get(key)
@@ -391,9 +432,12 @@ class Store:
             kinds = sorted(p["kind"])
             kind = "corpus_paper" if any(k in ("journal_article", "book_chapter") for k in kinds) else (
                 "cited_work" if "cited_work" in kinds else kinds[0])
+            corr = KEY2CORR.get(key) if not doi else None
             out[key] = clean({
                 "id": key,
                 "doi": doi,
+                "doi_status": doi_corrections.STATUS if corr else None,
+                "doi_correction": corr["id"] if corr else None,
                 "doi_url": f"https://doi.org/{doi}" if doi else None,
                 "citation": format_citation(meta, fallback) or (f"doi:{doi}" if doi else "(citation not resolved)"),
                 "title": meta.get("title"),
@@ -462,17 +506,25 @@ def model_link(exp):
         return None
     tdb = me.get("tdb") or {}
     mc = me.get("model_citation") or {}
+    mdoi = doi_norm(mc.get("doi"))
+    corr = CORR.tdb(tdb.get("name"), mdoi) if mdoi else None   # TDB header citation -> DOI mismatch
     return clean({"tdb": tdb.get("name"), "tdb_path": tdb.get("path"), "tdb_sha256": tdb.get("sha256"),
                   "catalog_entry": tdb.get("catalog_entry"), "link_basis": me.get("link_basis"),
                   "model_citation": ((mc.get("citation") or {}).get("title") or None),
-                  "model_doi": doi_norm(mc.get("doi")), "reproduced_by_calculation": me.get("model_reproduction")})
+                  "model_doi": None if corr else mdoi,
+                  "model_doi_status": doi_corrections.STATUS if corr else None,
+                  "model_doi_correction": corr["id"] if corr else None,
+                  "reproduced_by_calculation": me.get("model_reproduction")})
 
 
 def cited_list(cited, store):
     out = []
     for c in cited or []:
         pk = store.paper_from_cited(c)
-        out.append(clean({"label": c.get("label"), "reference": c.get("text"), "doi": doi_norm(c.get("doi")),
+        d, corr = lit_doi(c.get("doi"))
+        out.append(clean({"label": c.get("label"), "reference": c.get("text"), "doi": d,
+                          "doi_status": doi_corrections.STATUS if corr else None,
+                          "doi_correction": corr["id"] if corr else None,
                           "first_author": c.get("first_author"), "year": c.get("year"),
                           "kind": c.get("work_kind") or c.get("kind"), "status": c.get("status"),
                           "paper": pk}))
@@ -578,7 +630,7 @@ def load_contexts(store):
             if r.get("record_type") != "context":
                 continue
             sp = r.get("source_pid") or ""
-            if sp.startswith("doi:"):
+            if sp.startswith("doi:") and lit_doi(sp[4:])[0]:
                 key = "doi:" + doi_norm(sp[4:])
             else:
                 key = paper_key(store.sources.get(r.get("source"))) or sp
@@ -644,9 +696,12 @@ def load_tables(store, sub, kind, contexts, records):
             continue
         arts = {}
         corpus_src = None
+        local = {}
         for r in recs:
             if r.get("record_type") == "source":
                 store.add_source(r)
+                for k in [r["id"]] + list(r.get("aliases") or []):
+                    local.setdefault(k, r)
                 if r.get("kind") in ("journal_article", "book_chapter") and corpus_src is None:
                     corpus_src = r
             elif r.get("record_type") == "artifact":
@@ -656,7 +711,7 @@ def load_tables(store, sub, kind, contexts, records):
             art = arts.get(m.group(1)) if m else None
             if art is None and len(arts) == 1:
                 art = next(iter(arts.values()))
-            src = store.sources.get((art or {}).get("source")) or corpus_src
+            src = store.source_in_file((art or {}).get("source"), local) or corpus_src
             if restricted(src):
                 store.excluded["restricted_rights"] += 1
                 continue
@@ -717,7 +772,7 @@ def load_tables(store, sub, kind, contexts, records):
             meth = obs.get("method") or ""
             rec["method"] = None if meth in GENERIC_METHODS else meth
             rec["method_basis"] = "printed in the table row/column" if rec["method"] else None
-            measured_src = store.sources.get(obs.get("measured_in"))
+            measured_src = store.source_in_file(obs.get("measured_in"), local)
             if measured_src is None and obs.get("measured_in") and src and obs["measured_in"] in ([src["id"]] + list(src.get("aliases") or [])):
                 measured_src = src
             own, origin = origin_block(obs, store, paper, measured_src)
@@ -743,18 +798,21 @@ def load_text(store, contexts, records):
         if why:
             store.excluded[why] += sum(1 for r in recs if r.get("record_type") == "observation")
             continue
-        arts, reads = {}, {}
+        arts, reads, local = {}, {}, {}
         for r in recs:
             t = r.get("record_type")
             if t == "source":
                 store.add_source(r)
+                for k in [r["id"]] + list(r.get("aliases") or []):
+                    local.setdefault(k, r)
             elif t == "artifact":
                 arts[r["id"]] = r
             elif t == "reading":
                 reads[r["id"]] = r
         for obs in (r for r in recs if r.get("record_type") == "observation"):
             att = obs.get("attribution") or {}
-            src = store.sources.get(att.get("reported_in")) or store.sources.get((arts.get(obs.get("artifact")) or {}).get("source"))
+            src = store.source_in_file(att.get("reported_in"), local) or \
+                store.source_in_file((arts.get(obs.get("artifact")) or {}).get("source"), local)
             if restricted(src):
                 store.excluded["restricted_rights"] += 1
                 continue
@@ -804,7 +862,7 @@ def load_text(store, contexts, records):
             meth = obs.get("method") or ""
             rec["method"] = None if meth in GENERIC_METHODS else meth
             rec["method_basis"] = "printed in the quoted sentence (fix-up 2026-10-22 gate)" if rec["method"] else None
-            measured_src = store.sources.get(obs.get("measured_in"))
+            measured_src = store.source_in_file(obs.get("measured_in"), local)
             if measured_src is None and src and obs.get("measured_in") == att.get("reported_in"):
                 measured_src = src
             own, origin = origin_block(obs, store, paper, measured_src)
@@ -950,11 +1008,11 @@ papers, page images, crops and full text are **not** redistributed.
 | `transition_kind`, `transition_kind_printed` | controlled reaction / transition class (see Controlled vocabularies) and the class as printed or read |
 | `evidence_class` | `experimental`, `model` (value from a CALPHAD/thermodynamic model), `dft` (first-principles), `unspecified` (origin could not be settled). Never mixed or averaged |
 | `origin` | `{{class, basis, measured_in, measured_in_basis, own_work_of_paper, attribution_note}}`: how the evidence class was decided (e.g. `printed_source_experimental`, `cited_work_before_1980_assumed_experimental`), the paper the value was measured/calculated in, and whether that is the containing paper itself |
-| `model` | for `model` values linked unambiguously to a TDB: `{{tdb, tdb_path, tdb_sha256, catalog_entry, link_basis, model_citation, model_doi, reproduced_by_calculation}}`; `model_unlinked_reason` otherwise |
+| `model` | for `model` values linked unambiguously to a TDB: `{{tdb, tdb_path, tdb_sha256, catalog_entry, link_basis, model_citation, model_doi, reproduced_by_calculation}}`; `model_unlinked_reason` otherwise. `model_doi` is null with `model_doi_status: dropped_mismatch` and `model_doi_correction` when the TDB header citation's DOI is a mismatch (`tools/doi_corrections.json`) |
 | `method` | row-level method only when printed (table cell/column, or inside the value's quoted sentence); `method_basis` says which |
 | `conditions` | `{{kind: paper_context, paper}}`: the containing paper's own experimental context applies (see `contexts`); `paper_context_not_extracted`; `cited_source` ("conditions in the cited source"): the value is cited from another work and the containing paper's context does **not** apply; `not_applicable_own_calculation` |
 | `conditions_summary` | (CSV only) accepted context items of that paper, condensed |
-| `cited_sources` | the value's own source(s) as printed in the paper's reference list: `{{label, reference, doi, first_author, year, kind, status, paper}}` |
+| `cited_sources` | the value's own source(s) as printed in the paper's reference list: `{{label, reference, doi, first_author, year, kind, status, paper}}`; a DOI dropped as a mismatch is null with `doi_status: dropped_mismatch` and `doi_correction` (the printed `reference` is kept) |
 | `citations_printed` | (text) citation labels printed in the sentence |
 | `paper` | id of the containing paper (`doi:<doi>` or `sha256:<pdf prefix>`) -> `papers.json`; CSV adds `paper_citation`, `paper_doi` |
 | `quote`, `quote_page` | (running text) the one verbatim sentence backing the value and its page (`null` with `flags.page_unreadable` when the page read was not a page number); for tables `locator` gives table label, caption, page and row instead |
@@ -988,8 +1046,11 @@ reference states and outliers, and the complete variant tables for the vocabular
 ## Paper fields (`papers.json`)
 
 Ids are `doi:<doi>` (corpus papers and cited works with a DOI), `sha256:<16 hex>` (corpus papers without DOI),
-`ref:<hash>` (a cited work without DOI, citation = the printed reference) or `unresolved:...` (a reference label the
-citing paper's list could not resolve). Fields: `id`, `doi`, `doi_url`, `citation` (formatted from local Crossref metadata, the TDB header, or the printed reference),
+`ref:<hash>` (a cited work without DOI, citation = the printed reference), `nodoi:<hash>` (a cited work whose matched
+DOI was dropped as a mismatch, same id as in the bibliography) or `unresolved:...` (a reference label the
+citing paper's list could not resolve). Fields: `id`, `doi`, `doi_status` / `doi_correction` (`dropped_mismatch` and
+the entry id of `tools/doi_corrections.json` when the DOI an upstream matcher assigned was dropped because its Crossref
+record describes a different work; `doi` is then null and the citation is the printed one), `doi_url`, `citation` (formatted from local Crossref metadata, the TDB header, or the printed reference),
 `title`, `authors`, `year`, `container`, `kind` (`corpus_paper`: a paper the values were read from; `cited_work`:
 a work cited for a value), `roles` (`reporting_paper`, `cited_source`), `systems`, `metadata_source`,
 `pdf_sha256_prefix` (first 16 hex of the source PDF's SHA-256, an identifier only; the PDF is not distributed).
@@ -1140,6 +1201,10 @@ def outputs(store, records, papers, contexts):
     index = {"release": RELEASE, "licence": {"derived_data": "CC BY 4.0", "quotes": "fair use, one sentence per value",
                                              "source_papers": "not redistributed"},
              "schema": "SCHEMA.md", "totals": tot, "cite_as": cite,
+             "doi_corrections": dict(CORR.provenance(), papers_affected=sum(1 for p in papers.values() if p.get("doi_status")),
+                                     values_affected=sum(1 for r in records if any(
+                                         x.get("doi_status") for x in r.get("cited_sources") or []) or (r.get("model") or {}).get("model_doi_status")
+                                         or (papers.get(r.get("paper")) or {}).get("doi_status"))),
              "files": {"papers": "papers.json", "contexts": "contexts.json", "jsonl": "orchid-literature.jsonl.gz",
                        "csv": "orchid-literature.csv.gz", "quality_fixes": "QUALITY_FIXES.md",
                        "quality_fixes_json": "quality_fixes.json", "citation_txt": "CITATION.txt",

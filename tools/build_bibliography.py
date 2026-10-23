@@ -45,6 +45,9 @@ HOME = os.path.expanduser("~")
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import doi_corrections  # noqa: E402
+
+DOI_CORR = doi_corrections.load()   # shared DOI correction table (tools/doi_corrections.json)
 DEF_DATA = os.environ.get("ORCHID_DATA") or os.path.join(os.path.dirname(SITE), "orchid-data")
 DEF_OPEN_TDB = os.path.join(HOME, "projects", "open-tdb")
 DEF_CACHE = os.path.join(SITE, "build-cache", "crossref")
@@ -633,6 +636,8 @@ class Bib:
         self.doi_matches = collections.defaultdict(list)  # pid -> verdicts of the printed references that kept the DOI
         self.rejected = []  # DOI matches dropped as mismatches (DOI_MISMATCHES.md)
         self.reject_alias = collections.defaultdict(set)  # rejected DOI -> no-DOI ids that replaced it
+        self.corr_applied = set()  # ids of tools/doi_corrections.json entries met in the sources
+        self._ctx = {}  # context of the DOI being validated (tdb file / handbook system), for reject()
 
     # -- DOI validation against the printed reference
     def crossref_of(self, doi):
@@ -670,10 +675,24 @@ class Bib:
         v["source"] = source
         return v
 
+    def corrected(self, v, corr, source):
+        """Verdict for a DOI that tools/doi_corrections.json drops in this context: the Crossref check's mismatch when it
+        agrees, otherwise the table's entry (the table is authoritative)."""
+        self.corr_applied.add(corr["id"])
+        if v and v["status"] == "mismatch":
+            return v
+        self.stats["doi_correction_table_overrides_crossref_check"] += 1
+        return {"status": "mismatch", "issues": list(corr["issues"]), "evidence": {},
+                "printed": corr.get("matched_printed_reference") or corr["printed_citation"], "source": source}
+
     def reject(self, doi, v, new_pid, systems):
         cr, _ = self.crossref_of(doi)
         a0 = (cr or {}).get("authors") or []
+        corr = (DOI_CORR.tdb(self._ctx.get("tdb"), doi) if v["source"] == "tdb_header" else
+                DOI_CORR.handbook(self._ctx.get("system"), doi) if v["source"] == "handbook_source_line" else
+                DOI_CORR.literature(doi))
         self.rejected.append({"doi": doi, "source": v["source"], "printed": v.get("printed") or "", "issues": v["issues"],
+                              "correction": corr["id"] if corr else None,
                               "evidence": v.get("evidence") or {}, "new_id": new_pid,
                               "systems": sorted({x for x in systems if x}, key=sys_sort),
                               "crossref": {"first_author": author_text(a0[0]) if a0 else None,
@@ -735,6 +754,11 @@ class Bib:
                 self.stats["literature_unresolved_citation_labels_skipped"] += 1
                 continue
             doi = norm_doi(rec.get("doi"))
+            corr = DOI_CORR.by_id.get(rec.get("doi_correction")) if rec.get("doi_status") else None
+            if corr and corr["context"] == "literature_cited_source":
+                doi = corr["doi"]   # dropped upstream by the correction table: reproduce the rejection record here
+            else:
+                corr = None
             authors = rec.get("authors") or []
             fa = None
             if authors:
@@ -743,7 +767,7 @@ class Bib:
                 fa = first_author_surname(rec["citation"])
             ms = rec.get("metadata_source")
             verdict = None
-            if doi and (rec.get("kind") == "cited_work" or ms in ("printed_reference", "tdb_header")):
+            if doi and (corr or rec.get("kind") == "cited_work" or ms in ("printed_reference", "tdb_header")):
                 # the DOI was matched from a printed reference: check it against Crossref
                 printed = []
                 if ms in ("printed_reference", "tdb_header") and rec.get("citation"):
@@ -753,6 +777,10 @@ class Bib:
                     printed.append({"citation": ref, "first_author": fold(cfa.replace("\u03b2", "\u00df")) or None,
                                     "year": cy or None})
                 verdict = self.validate(doi, printed, "literature_cited_source")
+                if corr:
+                    verdict = self.corrected(verdict, corr, "literature_cited_source")
+                elif verdict and verdict["status"] == "mismatch":
+                    self.stats["doi_mismatch_not_in_correction_table"] += 1
             if verdict and verdict["status"] == "mismatch":
                 cit = verdict.get("printed") or rec.get("citation")
                 pfa = first_author_surname(cit) or (fa if ms != "crossref" else None)
@@ -796,6 +824,12 @@ class Bib:
             hc = x.get("header_citation")
             verdict = self.validate(doi, [{"citation": hc, "year": year_of(x.get("year") or hc)}],
                                     "tdb_header") if doi and hc else None
+            corr = DOI_CORR.tdb(tdb, doi) if doi else None
+            self._ctx = {"tdb": tdb}
+            if corr and hc:
+                verdict = self.corrected(verdict, corr, "tdb_header")
+            elif verdict and verdict["status"] == "mismatch":
+                self.stats["doi_mismatch_not_in_correction_table"] += 1
             if verdict and verdict["status"] == "mismatch":
                 p = self.paper(nodoi_id(first_author_surname(hc), year_of(hc), hc))
                 self.reject(doi, verdict, p["id"], [sysn])
@@ -885,6 +919,12 @@ class Bib:
                 cit = src.get("citation")
                 doi = norm_doi(src.get("doi"))
                 verdict = self.validate(doi, [{"citation": cit}], "handbook_source_line") if doi and cit else None
+                corr = DOI_CORR.handbook(sysn, doi) if doi else None
+                self._ctx = {"system": sysn}
+                if corr and cit:
+                    verdict = self.corrected(verdict, corr, "handbook_source_line")
+                elif verdict and verdict["status"] == "mismatch":
+                    self.stats["doi_mismatch_not_in_correction_table"] += 1
                 if verdict and verdict["status"] == "mismatch":
                     p = self.paper(nodoi_id(first_author_surname(cit), year_of(cit), cit))
                     self.reject(doi, verdict, p["id"], [sysn])
@@ -1125,7 +1165,21 @@ class Bib:
         self.from_assemblages()
         self.from_crossref_refs()
         self.reassessments()
+        self.corrections_applied_upstream()
         return self
+
+    def corrections_applied_upstream(self):
+        """Correction-table entries whose DOI no longer reaches this builder (the upstream exporter dropped it and the
+        work now resolves elsewhere, e.g. a PDF filed under the journal-level 10.1557/jmr that the literature export
+        now identifies by its article DOI): listed in DOI_MISMATCHES.md all the same."""
+        for e in DOI_CORR.entries:
+            if e["id"] in self.corr_applied:
+                continue
+            self.rejected.append({"doi": e["doi"], "source": e["context"], "printed": e.get("matched_printed_reference") or
+                                  e["printed_citation"], "issues": list(e["issues"]), "evidence": {},
+                                  "correction": e["id"], "new_id": e["replacement_id"], "systems": list(e["systems"]),
+                                  "crossref": dict(e.get("crossref_record") or {}), "applied_upstream_only": True})
+            self.stats["doi_corrections_applied_upstream_only"] += 1
 
 
 # ----------------------------------------------------------------------------- records
@@ -1757,6 +1811,8 @@ def build_outputs(src, cache, with_pages=True):
                                        "hasPart": graph}, ensure_ascii=False, separators=(",", ":")) + "\n"
     out.update(docs(counts, cite))
     out["DOI_MISMATCHES.md"] = mismatches_md(b.rejected, counts)
+    with open(DOI_CORR.path, "rb") as f:
+        out["doi_corrections.json"] = f.read()
     if with_pages:
         import bibliography_pages
         bibliography_pages._SYSDOCS.clear()
@@ -1939,18 +1995,22 @@ def mismatches_md(rejected, counts):
           "these printed references to DOIs whose Crossref record describes a different work (first author not among "
           "the Crossref authors or no authors deposited, year off by more than one with nothing else agreeing, or "
           "title / journal disagreeing). The DOI was dropped; the work is kept as a no-DOI record (`new_id`) with the "
-          "printed reference. The DOI may still appear in the upstream data (literature `cited_dois`, handbook "
-          "source lines, assessed-assemblage `original_doi`) until those are rebuilt.", "",
+          "printed reference. Every exporter applies the same scoped correction table, `doi_corrections.json` (copied "
+          f"here from `tools/doi_corrections.json`, version {DOI_CORR.version}): in the listed context the DOI is null with "
+          "`doi_status: dropped_mismatch` and `doi_correction: <id>`, the printed citation kept (literature papers and "
+          "values, model links, phase-diagram sources, phase-registry references, assessed-assemblage `original_doi`, "
+          "ESPEI references). `context_only` corrections leave the DOI valid for its own paper elsewhere.", "",
           f"{counts['doi_mismatches_dropped']['dois']} DOIs, {counts['doi_mismatches_dropped']['matches']} matches "
           f"(by source: {', '.join(f'{k} {v}' for k, v in counts['doi_mismatches_dropped']['by_source'].items()) or 'none'}).",
-          "", "| DOI (dropped) | source | printed reference | Crossref record | issues | systems | new id |",
-          "|---|---|---|---|---|---|---|"]
+          "", "| DOI (dropped) | source | printed reference | Crossref record | issues | systems | new id | correction |",
+          "|---|---|---|---|---|---|---|---|"]
     esc = lambda t: str(t or "").replace("|", "\\|").replace("\n", " ")
     for x in rows:
         c = x["crossref"]
         crt = "; ".join(str(v) for v in (c.get("first_author"), c.get("year"), c.get("title"), c.get("container_title")) if v)
         md.append(f"| {esc(x['doi'])} | {esc(x['source'])} | {esc(x['printed'][:200])} | {esc(crt[:200]) or '(none)'} | "
-                  f"{esc(', '.join(x['issues']))} | {esc(';'.join(x['systems']))} | `{x['new_id']}` |")
+                  f"{esc(', '.join(x['issues']))} | {esc(';'.join(x['systems']))} | `{x['new_id']}` | "
+                  f"{esc(x.get('correction') or 'not in table')}{' (upstream only)' if x.get('applied_upstream_only') else ''} |")
     return "\n".join(md) + "\n"
 
 
@@ -1984,7 +2044,8 @@ DOIs matched from a printed reference, checked against Crossref (first author, y
 {c['doi_match'].get('verified', 0)} verified, {c['doi_match'].get('weak', 0)} weak (kept, flagged),
 {c['doi_match'].get('unverifiable', 0)} unverifiable (no Crossref record); {c['doi_mismatches_dropped']['dois']} mismatched
 DOIs ({c['doi_mismatches_dropped']['matches']} matches) were dropped: those works are kept as no-DOI records with the
-printed reference (`DOI_MISMATCHES.md`).
+printed reference (`DOI_MISMATCHES.md`). The same scoped corrections are applied by every ORCHID exporter that emits
+DOIs, from one versioned table (`doi_corrections.json`, v{DOI_CORR.version}).
 Open-access licence deposited with Crossref: {c['open_access_license']} papers. Chemical systems: {c['systems']}.
 
 | edge type | edges |
@@ -2029,7 +2090,9 @@ One record: `https://data.orchid-project.org/bibliography/papers/<key>.json` wit
 
 - Bibliographic metadata only (no abstracts, no full text, no PDFs, no local paths). Crossref metadata is used as
   deposited. A DOI that an upstream matcher found for a printed reference is kept only when its Crossref record agrees
-  with the printed reference (`doi_match`: verified or weak); mismatches are dropped and listed in `DOI_MISMATCHES.md`.
+  with the printed reference (`doi_match`: verified or weak); mismatches are dropped and listed in `DOI_MISMATCHES.md`;
+  `doi_corrections.json` is the shared correction table (context, scope, reason, printed citation) the other datasets
+  apply, so a dropped DOI is null with `doi_status: dropped_mismatch` there too.
 - Roles and evidence counts are derived from the ORCHID release files (literature values, ESPEI bundle, phase
   registry, assessed phase assemblages) and from the SGTE-corpus link tables; see `provenance` in each record.
 - Edges are never inferred: `cites` / `used_in_assessment` come from the citation printed for each value ORCHID

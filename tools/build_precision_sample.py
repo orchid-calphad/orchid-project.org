@@ -1,19 +1,36 @@
 #!/usr/bin/env python3
-"""Build the precision-sample review kit for the ORCHID literature data.
+"""Precision-sample review kit for the ORCHID literature data: draw once, then freeze and verify.
 
-Draws a deterministic stratified random sample of accepted literature records
-(flags.extraction_accepted = true) from data/literature/orchid-literature.jsonl.gz and writes
+The sample is FIXED. It was drawn once (seed 20261022, 300 items) from one literature export and distributed to
+reviewers (index.html and the packets); it is never regenerated from a newer export. Files in
+review/precision-sample/:
 
-  review/precision-sample/sample.json   the sample (records + strata + allocation), canonical JSON
-  review/precision-sample/index.html    a self-contained review page for a human checker
+  sample.json    the sample (records + strata + allocation), canonical JSON; frozen
+  index.html     the self-contained review page embedding sample.json; frozen
+  packets/       the reviewer packets cut from the page; frozen
+  frozen.json    the freeze record: SHA-256 of the files above, the population snapshot the sample was drawn from
+                 (export SHA-256, papers SHA-256, release, accepted population, orchid-data commit), and every sampled
+                 record id with the field values the reviewers see (per review question) and their hash
+
+Commands (standard library only):
+
+  build_precision_sample.py --check [--drift-json PATH]
+      verify (a) sample.json, index.html and the packets are byte-identical to the freeze record, and (b) every
+      sampled record id still exists in the current export (data/literature/orchid-literature.jsonl.gz). Records whose
+      released values changed since sampling are listed (and written to PATH) for the scorer; that is not a failure.
+      Running the script with no command does the same.
+  build_precision_sample.py freeze [--verify-draw]
+      write frozen.json for an existing sample (refuses to change an existing freeze record). --verify-draw re-draws
+      the sample from the population snapshot in the orchid-data git history and requires identical bytes.
+  build_precision_sample.py draw --out NEW_DIR [--seed S] [-n N]
+      draw a NEW sample from the current export into a new directory (refuses an existing sample there) and freeze it.
 
 Strata: evidence class x record kind (invariant_table / general_table / running_text). The sample size
 (300) is allocated proportionally to stratum size with a minimum of 15 per non-empty stratum (all of a
 stratum when it holds fewer than 15). Records are sorted by id within a stratum and drawn with
 random.Random(seed).sample, so the same input file and seed give the same bytes.
 
-Standard library only. `--check` verifies that the outputs are up to date with the input.
-Results downloaded from the page are scored by tools/score_precision_sample.py.
+Results downloaded from the page are scored by tools/score_precision_sample.py against the frozen sample.
 """
 import argparse
 import gzip
@@ -21,7 +38,9 @@ import hashlib
 import json
 import math
 import random
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,6 +53,17 @@ MIN_PER_STRATUM = 15
 KINDS = ("invariant_table", "general_table", "running_text")
 EV_ORDER = ("experimental", "model", "dft", "unspecified")
 SCHEMA = "orchid-precision-sample/1"
+FREEZE_SCHEMA = "orchid-precision-sample-freeze/1"
+DATA_REPO = ROOT.parent / "orchid-data"
+# what a reviewer judges, per review question (the page shows these fields); compared with the current release
+REVIEWED = {
+    "value": ("system", "property", "value", "value_range", "value_expression", "value_printed", "phase_compositions",
+              "temperature_K", "temperature_printed"),
+    "unit": ("unit", "unit_printed", "unit_basis"),
+    "evidence_class": ("evidence_class",),
+    "phases": ("phases",),
+    "citation": ("paper", "paper_doi", "cited_sources"),
+}
 
 
 def canonical(obj):
@@ -392,33 +422,244 @@ def render(sample_text):
     return PAGE.replace("__SAMPLE__", embedded).replace("__SHA__", sha), sha
 
 
-def main(argv=None):
-    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--input", type=Path, default=INPUT, help="literature JSONL.gz (default: %(default)s)")
-    ap.add_argument("--papers", type=Path, default=PAPERS, help="papers.json (default: %(default)s)")
-    ap.add_argument("--out", type=Path, default=OUTDIR, help="output directory (default: %(default)s)")
-    ap.add_argument("--seed", type=int, default=SEED)
-    ap.add_argument("-n", type=int, default=N, help="sample size (default: %(default)s)")
-    ap.add_argument("--check", action="store_true", help="verify the outputs are up to date; write nothing")
-    a = ap.parse_args(argv)
+def sha256_bytes(b):
+    return hashlib.sha256(b).hexdigest()
+
+
+def sha256_file(p):
+    return sha256_bytes(Path(p).read_bytes())
+
+
+def reviewed_view(record, paper_doi):
+    """The reviewed fields of a record, grouped by review question (absent fields are null)."""
+    r = dict(record, paper_doi=paper_doi)
+    out = {}
+    for q, fields in REVIEWED.items():
+        v = {}
+        for f in fields:
+            x = r.get(f)
+            if f == "cited_sources" and x:
+                x = [{k: c.get(k) for k in ("label", "reference", "doi", "paper")} for c in x]
+            v[f] = x
+        out[q] = v
+    return out
+
+
+def view_sha(view):
+    return sha256_bytes(json.dumps(view, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
+
+
+def freeze_record(outdir, sample_bytes, population_commit=None, draw_verified=None):
+    sample = json.loads(sample_bytes)
+    page = outdir / "index.html"
+    pk = outdir / "packets"
+    files = {"sample.json": sha256_bytes(sample_bytes), "index.html": sha256_file(page)}
+    if pk.is_dir():
+        for p in sorted(pk.iterdir()):
+            if p.is_file():
+                files["packets/" + p.name] = sha256_file(p)
+    items = []
+    for it in sample["items"]:
+        view = reviewed_view(it["record"], (it.get("paper") or {}).get("doi"))
+        items.append({"n": it["n"], "id": it["record"]["id"], "stratum": it["stratum"], "reviewed": view,
+                      "reviewed_sha256": view_sha(view)})
+    inp = sample["input"]
+    return {
+        "schema": FREEZE_SCHEMA,
+        "note": "The precision sample is frozen: drawn once and distributed to reviewers; never regenerated. "
+                "tools/build_precision_sample.py --check verifies these hashes and that every sampled id is still released.",
+        "sample_sha256": files["sample.json"],
+        "files_sha256": files,
+        "design": sample["design"],
+        "population": {"file": inp["file"], "sha256": inp["sha256"], "papers_sha256": inp["papers_sha256"],
+                       "release": inp["release"], "population_accepted": inp["population_accepted"],
+                       "orchid_data_commit": population_commit, "draw_reproduced": draw_verified},
+        "reviewed_fields": {q: list(f) for q, f in REVIEWED.items()},
+        "items": items,
+    }
+
+
+def load_release(input_path, papers_path):
+    """({record id: record}, papers) of the current literature export; ids merged into another record by the
+    de-duplication (`merged_ids`) map to the surviving record under the key ("merged", id)."""
+    recs = {}
+    for line in gzip.decompress(Path(input_path).read_bytes()).decode("utf-8").splitlines():
+        if line.strip():
+            r = json.loads(line)
+            recs[r["id"]] = r
+            for m in r.get("merged_ids") or []:
+                recs.setdefault(("merged", m), r)
+    papers = json.loads(Path(papers_path).read_text(encoding="utf-8"))
+    return recs, papers
+
+
+def drift(frozen, recs, papers):
+    """Per sampled item: status 'unchanged' | 'changed' (with the review questions / fields whose released value
+    differs from the reviewed one) | 'missing' (id no longer released). `merged_into` names the surviving record when
+    the de-duplication merged the sampled id into another (its values are compared)."""
+    out = []
+    for it in frozen["items"]:
+        r = recs.get(it["id"])
+        base = {"n": it["n"], "id": it["id"]}
+        if r is None:
+            r = recs.get(("merged", it["id"]))
+            if r is None:
+                out.append(dict(base, status="missing"))
+                continue
+            base["merged_into"] = r["id"]
+        cur = reviewed_view(r, (papers.get(r.get("paper")) or {}).get("doi"))
+        if view_sha(cur) == it["reviewed_sha256"]:
+            out.append(dict(base, status="unchanged"))
+            continue
+        ch = {}
+        for q, fields in it["reviewed"].items():
+            fs = [f for f in fields if fields[f] != cur[q].get(f)]
+            if fs:
+                ch[q] = {f: {"reviewed": fields[f], "released": cur[q].get(f)} for f in fs}
+        out.append(dict(base, status="changed" if ch else "unchanged", questions=sorted(ch), changes=ch))
+    return out
+
+
+def verify(outdir, input_path, papers_path):
+    """-> (problems [str], drift list). Problems: frozen files changed, sampled ids missing from the release."""
+    fp = outdir / "frozen.json"
+    if not fp.exists():
+        return ["%s missing (run `freeze` once for the distributed sample)" % fp], []
+    frozen = json.loads(fp.read_text(encoding="utf-8"))
+    bad = []
+    for rel, sha in frozen["files_sha256"].items():
+        p = outdir / rel
+        if not p.exists():
+            bad.append("frozen file missing: " + rel)
+        elif sha256_file(p) != sha:
+            bad.append("frozen file changed: %s (sha256 %s, frozen %s)" % (rel, sha256_file(p)[:16], sha[:16]))
+    pk = outdir / "packets"
+    if pk.is_dir():
+        for p in sorted(pk.iterdir()):
+            if p.is_file() and "packets/" + p.name not in frozen["files_sha256"]:
+                bad.append("file not in the freeze record: packets/" + p.name)
+    recs, papers = load_release(input_path, papers_path)
+    d = drift(frozen, recs, papers)
+    bad += ["sampled record no longer released: n=%d %s" % (x["n"], x["id"]) for x in d if x["status"] == "missing"]
+    return bad, d
+
+
+def population_commit(sample, repo=DATA_REPO):
+    """orchid-data commit whose literature export has the sample's population SHA-256 (git history, local)."""
+    rel = "literature/orchid-literature.jsonl.gz"
+    try:
+        log = subprocess.run(["git", "-C", str(repo), "log", "--format=%H", "--", rel], capture_output=True, text=True,
+                             check=True).stdout.split()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    for c in log:
+        b = subprocess.run(["git", "-C", str(repo), "show", "%s:%s" % (c, rel)], capture_output=True).stdout
+        if sha256_bytes(b) == sample["input"]["sha256"]:
+            return c
+    return None
+
+
+def redraw_matches(sample, sample_bytes, commit, repo=DATA_REPO):
+    """Re-draw from the population snapshot at `commit` and compare bytes (input paths as recorded)."""
+    with tempfile.TemporaryDirectory() as td:
+        td = Path(td)
+        lit = td / "data" / "literature"
+        lit.mkdir(parents=True)
+        for name in ("orchid-literature.jsonl.gz", "papers.json", "index.json"):
+            b = subprocess.run(["git", "-C", str(repo), "show", "%s:literature/%s" % (commit, name)], capture_output=True).stdout
+            (lit / name).write_bytes(b)
+        if sha256_file(lit / "papers.json") != sample["input"]["papers_sha256"]:
+            return False
+        s = build(lit / "orchid-literature.jsonl.gz", lit / "papers.json", sample["design"]["seed"], sample["design"]["n"])
+        return canonical(s).encode("utf-8") == sample_bytes
+
+
+def cmd_check(a):
+    bad, d = verify(a.out, a.input, a.papers)
+    ch = [x for x in d if x["status"] == "changed"]
+    if a.drift_json:
+        a.drift_json.write_text(json.dumps({"input_sha256": sha256_file(a.input), "items": d}, sort_keys=True, indent=2,
+                                           ensure_ascii=False) + "\n", encoding="utf-8")
+    if bad:
+        print("precision sample: " + "; ".join(bad[:10]) + (" ... (%d)" % len(bad) if len(bad) > 10 else ""), file=sys.stderr)
+        return 1
+    fz = json.loads((a.out / "frozen.json").read_text(encoding="utf-8"))
+    mg = [x for x in d if x.get("merged_into")]
+    print("precision sample frozen and intact (sample sha256 %s, %d items; population %s); all ids released (%d merged "
+          "into a duplicate); "
+          "%d item(s) with a released value changed since sampling%s" % (
+              fz["sample_sha256"][:16], len(fz["items"]), fz["population"]["sha256"][:16], len(mg), len(ch),
+              (": " + ", ".join("n%d %s [%s]" % (x["n"], x["id"], ",".join(x["questions"])) for x in ch[:8])
+               + (" ..." if len(ch) > 8 else "")) if ch else ""))
+    return 0
+
+
+def cmd_freeze(a):
+    sb = (a.out / "sample.json").read_bytes()
+    sample = json.loads(sb)
+    page, _ = render(sb.decode("utf-8"))
+    if (a.out / "index.html").read_text(encoding="utf-8") != page:
+        print("index.html does not embed sample.json; refusing to freeze", file=sys.stderr)
+        return 1
+    commit = population_commit(sample)
+    reproduced = redraw_matches(sample, sb, commit) if (a.verify_draw and commit) else None
+    if a.verify_draw and not reproduced:
+        print("re-draw from the population snapshot (%s) does not reproduce sample.json" % (commit or "commit not found"),
+              file=sys.stderr)
+        return 1
+    rec = freeze_record(a.out, sb, commit, reproduced)
+    text = json.dumps(rec, sort_keys=True, indent=2, ensure_ascii=False) + "\n"
+    fp = a.out / "frozen.json"
+    if fp.exists():
+        old = json.loads(fp.read_text(encoding="utf-8"))
+        if old["files_sha256"] != rec["files_sha256"] or old["items"] != rec["items"]:
+            print("frozen.json exists and differs: the sample is frozen; refusing to overwrite", file=sys.stderr)
+            return 1
+        if old.get("population", {}).get("draw_reproduced") and not reproduced:
+            print("frozen.json is current")
+            return 0
+    fp.write_text(text, encoding="utf-8")
+    print("frozen.json written: sample sha256 %s, %d items, population %s (orchid-data %s)%s" % (
+        rec["sample_sha256"][:16], len(rec["items"]), rec["population"]["sha256"][:16], (commit or "?")[:9],
+        ", re-draw reproduces the sample" if reproduced else ""))
+    return 0
+
+
+def cmd_draw(a):
+    if a.out.resolve() == OUTDIR.resolve() or (a.out / "sample.json").exists() or (a.out / "frozen.json").exists():
+        print("refusing to draw into %s: a sample exists there (samples are frozen; draw into a new directory)" % a.out,
+              file=sys.stderr)
+        return 1
     sample = build(a.input, a.papers, a.seed, a.n)
     text = canonical(sample)
     page, sha = render(text)
-    out = {a.out / "sample.json": text, a.out / "index.html": page}
-    if a.check:
-        bad = [str(p) for p, t in out.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
-        if bad:
-            print("out of date: " + ", ".join(bad), file=sys.stderr)
-            return 1
-        print("precision sample up to date (sha256 %s)" % sha)
-        return 0
     a.out.mkdir(parents=True, exist_ok=True)
-    for p, t in out.items():
-        p.write_text(t, encoding="utf-8")
-    print("sample.json sha256 %s; %d items" % (sha, len(sample["items"])))
+    (a.out / "sample.json").write_text(text, encoding="utf-8")
+    (a.out / "index.html").write_text(page, encoding="utf-8")
+    rec = freeze_record(a.out, text.encode("utf-8"))
+    (a.out / "frozen.json").write_text(json.dumps(rec, sort_keys=True, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print("new sample in %s: sha256 %s; %d items (frozen)" % (a.out, sha, len(sample["items"])))
     for s in sample["strata"]:
         print("  %-30s population %6d  sampled %3d" % (s["stratum"], s["population"], s["sampled"]))
     return 0
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("command", nargs="?", default="check", choices=["check", "freeze", "draw"])
+    ap.add_argument("--input", type=Path, default=INPUT, help="literature JSONL.gz (default: %(default)s)")
+    ap.add_argument("--papers", type=Path, default=PAPERS, help="papers.json (default: %(default)s)")
+    ap.add_argument("--out", type=Path, default=OUTDIR, help="sample directory (default: %(default)s)")
+    ap.add_argument("--seed", type=int, default=SEED, help="draw: seed")
+    ap.add_argument("-n", type=int, default=N, help="draw: sample size (default: %(default)s)")
+    ap.add_argument("--check", action="store_true", help="verify the frozen sample against the current export (default)")
+    ap.add_argument("--drift-json", type=Path, help="check: write the per-item drift list (for the scorer) to this path")
+    ap.add_argument("--verify-draw", action="store_true", help="freeze: require that a re-draw from the population "
+                    "snapshot in the orchid-data git history reproduces sample.json byte for byte")
+    a = ap.parse_args(argv)
+    if a.check or a.command == "check":
+        return cmd_check(a)
+    return {"freeze": cmd_freeze, "draw": cmd_draw}[a.command](a)
 
 
 if __name__ == "__main__":

@@ -46,7 +46,10 @@ from scipy import ndimage
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import doi_corrections  # noqa: E402
 import orchid_cite  # noqa: E402
+
+DOI_CORR = doi_corrections.load()   # shared DOI correction table (tools/doi_corrections.json)
 
 HOME = os.path.expanduser("~")
 OPEN_TDB = os.path.join(HOME, "projects", "open-tdb")
@@ -467,11 +470,19 @@ def build(a, log=print):
         cut_left, cut_right = xs[0] > PURE_TOL, xs[-1] < 1 - PURE_TOL
         edge_cols = max(1, int(round(EDGE_TOL * (nx - 1))))
         table = {p["name"]: p for p in m.get("phases") or []}
-        srcs = m["sources"].get("diagram_sources") or []
+        srcs = []
+        for s in m["sources"].get("diagram_sources") or []:
+            s = dict(s)
+            e = DOI_CORR.handbook(key, s["doi"]) if s.get("doi") else None
+            if e:   # the DOI matched to the printed source line describes a different work: keep the printed citation
+                DOI_CORR.mark(s, e)
+            srcs.append(s)
         src_dois = [s["doi"] for s in srcs if s.get("doi")]
         hb = m["sources"]["handbook"]
-        citations = [{"role": "original_evaluation", "citation": s.get("citation"), "doi": s.get("doi"),
-                      "doi_matched_by": s.get("matched_by"), "kind": s.get("kind")} for s in srcs]
+        citations = [dict({"role": "original_evaluation", "citation": s.get("citation"), "doi": s.get("doi"),
+                           "doi_matched_by": s.get("matched_by"), "kind": s.get("kind")},
+                          **({"doi_status": s["doi_status"], "doi_correction": s["doi_correction"]} if s.get("doi_status") else {}))
+                     for s in srcs]
         citations.append(dict(COMPILATION, page_pdf=hb.get("page"), locator=hb.get("locator")))
         by_tdb, by_paper, rinfo = reg.system(key)
         names = {int(r): (F["name"].split("+") if F.get("name") else None) for r, F in fields.items()}
@@ -906,6 +917,9 @@ def write_outputs(a, records, exclusions, espei_excl, espei_default, espei_tl, c
                             "points": dict(sg_any.most_common())},
         "espei": {"datasets_default": len(espei_default), "datasets_with_tie_lines": len(espei_tl),
                   "points_in_espei": len(records) - len(espei_excl), "points_excluded_from_espei": len(espei_excl)},
+        "doi_corrections": dict(DOI_CORR.provenance(), records_with_dropped_original_doi=sum(
+            1 for r in records if any(c.get("doi_status") for c in r["citations"])),
+            systems=sorted({r["system"] for r in records if any(c.get("doi_status") for c in r["citations"])})),
         "cite_as": cite,
     }
     summ["files"] = {}
@@ -1054,7 +1068,7 @@ Builder: `tools/build_assessed_assemblages.py` (orchid-project.org; deterministi
 | `review_state` | `expert decision (tier 5)`, `expert-reviewed (tier 5)`, or `not reviewed by the expert` |
 | `flags` | `local_conflict`, `carried_against_rules`, `phase_not_in_table`, `hull_support:<both|disagree|mp_only|oqmd_only|none>`, `partly_drawn_dft_corroborated` |
 | `sgte_crosscheck[]` | per calculated SGTE diagram of the system: `{tdb, tdb_sha256, cell{T_K, x}, calculated (TDB phase set at the nearest grid cell), result: agrees / disagrees / not_comparable, reason}`. Phase sets compared as registry ids. Never changes the assessed record |
-| `citations[]` | original evaluation(s) first (`citation`, `doi`, `doi_matched_by`, `kind`), then the handbook (`role: compilation`, `page_pdf`, `locator`) |
+| `citations[]` | original evaluation(s) first (`citation`, `doi`, `doi_matched_by`, `kind`; `doi` null with `doi_status: dropped_mismatch` and `doi_correction` when the DOI matched to the printed source line describes a different work, `tools/doi_corrections.json`), then the handbook (`role: compilation`, `page_pdf`, `locator`) |
 | `method` | builder, version, annotation run, tool hashes |
 
 ## Point placement
