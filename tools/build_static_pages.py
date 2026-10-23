@@ -5,6 +5,7 @@ Reads (never modifies) the data repository (default: ../orchid-data next to this
 
   literature/index.json, literature/systems/<SYS>[.partN].json, literature/papers.json, literature/dft_parity.json
   phase-diagrams/index.json, phase-diagrams/sgte/*.json, hulls/{dft-mp,dft-oqmd,calphad-sgte}/
+  phases/registry.json, phases/systems/<SYS>.json (written by tools/build_phase_registry.py)
 
 and writes, into the data repository (served at https://data.orchid-project.org/):
 
@@ -13,6 +14,8 @@ and writes, into the data repository (served at https://data.orchid-project.org/
   compounds/<FORMULA>.html|.md  formation enthalpies per compound (literature, Materials Project, OQMD)
   compounds/index.html|.md      list of compounds
   papers/index.html|.md         reporting papers (citation, DOI, systems, number of values)
+  phases/pages/<SYS>.html|.md   phase registry per binary system (names, structure, stability, TDB PHASE/CONSTITUENT
+                                statements, example DOIs; DefinedTerm JSON-LD); phases/pages/index.html|.md
   index.html|.md                what the data site is, folder guide, licence, citation
   sitemap.xml, robots.txt, llms.txt, llms-full.txt
 
@@ -55,7 +58,7 @@ CITE_DATA = DEFAULT_DATA  # repository holding zenodo/dois.json (set from --data
 CAP_VALUES = 1500
 QUOTE_MAX = 400
 DATASET_NAME = "ORCHID data: literature thermodynamic data, calculated phase diagrams and DFT hulls"
-OWN_DIRS = ("systems", "compounds", "papers")
+OWN_DIRS = ("systems", "compounds", "papers", "phases/pages")
 ROOT_FILES = ("index.html", "index.md", "sitemap.xml", "robots.txt", "llms.txt", "llms-full.txt")
 AI_BOTS = ("GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-Web", "Claude-User", "Claude-SearchBot",
            "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended", "CCBot", "Applebot-Extended",
@@ -102,7 +105,8 @@ q{font-style:italic}q::before{content:"\\201C"}q::after{content:"\\201D"}
 .b{display:inline-block;font-size:.75rem;font-weight:600;padding:0 7px;border-radius:999px;white-space:nowrap}
 .b-experimental{background:var(--exp-bg);color:var(--exp)}.b-model{background:var(--mod-bg);color:var(--mod)}
 .b-dft{background:var(--dft-bg);color:var(--dft)}.b-unspecified{background:var(--uns-bg);color:var(--uns)}
-code{font-size:.85em;overflow-wrap:anywhere}ol.src li{margin:3px 0}
+code{font-size:.85em;overflow-wrap:anywhere}main p,main li{overflow-wrap:break-word}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem;background:var(--row);border-radius:6px;padding:8px 10px;margin:6px 0}ol.src li{margin:3px 0}
 .cite{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--card);border-radius:8px;padding:4px 16px 10px;margin:28px 0 0}
 .cite h2{margin:10px 0 6px}.cite ul{padding-left:20px;margin:6px 0}.cite li{margin:4px 0;overflow-wrap:anywhere}
 .cite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem;background:var(--row);border-radius:6px;padding:8px 10px;margin:6px 0}
@@ -305,6 +309,8 @@ def render_html(page, page_dir):
             o.append('<h2 id="%s">%s</h2>\n' % (html.escape(b[1]), html.escape(b[2])))
         elif k == "h3":
             o.append("<h3>%s</h3>\n" % html.escape(b[1]))
+        elif k == "pre":
+            o.append("<pre>%s</pre>\n" % html.escape(b[1]))
         elif k in ("ul", "ol"):
             o.append("<%s%s>\n" % (k, ' class="src"' if k == "ol" else ""))
             for i, it in enumerate(b[1], 1):
@@ -341,6 +347,8 @@ def render_md(page):
             o.append("## %s\n\n" % md_esc(b[2]))
         elif k == "h3":
             o.append("### %s\n\n" % md_esc(b[1]))
+        elif k == "pre":
+            o.append("~~~~text\n%s\n~~~~\n\n" % b[1].replace("~~~~", "~ ~ ~ ~"))
         elif k in ("ul", "ol"):
             for i, it in enumerate(b[1], 1):
                 o.append(("%d. " % i if k == "ol" else "- ") + m_parts(it) + "\n")
@@ -536,6 +544,7 @@ def build(data, date):
                     out_.append(("CALPHAD hull " + f[len(s) + 2:-5], DATA_URL + "hulls/calphad-sgte/%s/%s" % (els[0], f)))
         return out_
 
+    phase_reg = load_phase_registry(data)
     systems = sorted(set(lindex["systems"]) | set(pd_by_sys))
     sys_summary = {}
     paper_values = Counter()
@@ -582,6 +591,8 @@ def build(data, date):
                       ("a", "interactive explorer", SITE_URL + "data-explorer/#" + s), " · "]
         if pds:
             links += [("a", "interactive phase diagram", SITE_URL + "phase-diagrams/#%s/%s" % (s, pds[0]["file"])), " · "]
+        if s in phase_reg:
+            links += [("a", "phases (%d)" % len(phase_reg[s]), DATA_URL + "phases/pages/%s.html" % s), " · "]
         links += [("a", "Markdown", md_url)]
         blocks.append(("p", ["Data: "] + links))
         if acc:
@@ -822,7 +833,9 @@ def build(data, date):
                            "exp_n": len(kj)}
 
     # ---- indexes
-    index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_systems, lindex, pindex, date, release)
+    phase_summary = phase_pages(out, data, phase_reg, date)
+    index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_systems, lindex, pindex, date, release,
+                phase_summary)
     return out, capped
 
 
@@ -873,7 +886,243 @@ def system_csv(s, recs, arts, spapers, papers_all):
     return buf.getvalue()
 
 
-def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_systems, lindex, pindex, date, release):
+# ------------------------------------------------------------------------------------------ phase pages --
+PHASE_CTX = {"@vocab": "https://schema.org/", "orchid": "https://orchid-project.org/ns/phase#",
+             "prototype": "orchid:prototype", "strukturbericht": "orchid:strukturbericht",
+             "pearsonSymbol": "orchid:pearsonSymbol", "spaceGroupNumber": "orchid:spaceGroupNumber",
+             "structureBasis": "orchid:structureBasis", "reviewStatus": "orchid:reviewStatus",
+             "chemicalSystem": "orchid:chemicalSystem", "structureType": {"@id": "orchid:structureType", "@type": "@id"}}
+PHASE_DATA = DATA_URL + "phases/"
+TIER_TEXT = {"standard_name": "tier A: standard phase name", "dft_unique_match": "tier B: DFT-supported (unique MP + OQMD match)",
+             "assessment_declared": "tier C: assessor-stated (Hallstedt 2025 crystallographic table)",
+             "liquid": "liquid", "gas": "gas"}
+PHASE_MAX_MODELS = 40
+PHASE_FILES = ("SCHEMA.md", "index.json", "registry.json", "registry.csv", "registry.jsonld", "registry.parquet",
+               "structure_types.json", "structure_types.parquet", "review_queue.json", "CONFLICTS.md")
+PHASE_MAX_NAMES = 40
+BASIS_ORDER = ("standard_name", "dft_unique_match", "assessment_declared", "liquid", "gas", "needs_review",
+               "unresolved_no_candidates")
+
+
+def load_phase_registry(data):
+    """System -> compact registry rows (phases/registry.json), or {} when the registry is absent."""
+    fp = os.path.join(data, "phases", "registry.json")
+    if not os.path.exists(fp):
+        return {}
+    by = defaultdict(list)
+    for e in jload(fp)["phases"]:
+        by[e["system"]].append(e)
+    return dict(by)
+
+
+def sg_text(sg):
+    if not sg:
+        return ""
+    return " ".join(x for x in (sg.get("symbol") or "", "(%s)" % sg["number"] if sg.get("number") is not None else "") if x)
+
+
+def structure_text(st):
+    if not st:
+        return ""
+    if st.get("structure_type") in ("st:liquid", "st:gas"):
+        return st["structure_type"][3:]
+    return " · ".join(x for x in (st.get("prototype"), st.get("strukturbericht"), st.get("pearson"),
+                                  sg_text(st.get("space_group"))) if x)
+
+
+def stability_text(stab):
+    ok = [x for x in stab if x.get("status") == "ok"]
+    st = [x for x in ok if x.get("stable")]
+    if not ok:
+        return "no calculated diagram"
+    if not st:
+        return "not stable in %d calculated diagram(s)" % len(ok)
+    t = "%g–%g K" % (min(x["T_min_K"] for x in st), max(x["T_max_K"] for x in st))
+    xs = [x for x in st if x.get("x_min") is not None]
+    if xs:
+        t += ", x(%s) %g–%g" % (xs[0]["x_element"].capitalize(), min(x["x_min"] for x in xs), max(x["x_max"] for x in xs))
+    return "stable in %d of %d calculated diagram(s): %s" % (len(st), len(ok), t)
+
+
+def phase_anchor(pid):
+    return re.sub(r"[^a-z0-9]+", "-", pid.lower()).strip("-")
+
+
+def phase_pages(out, data, phase_reg, date):
+    """phases/pages/<SYS>.html|.md (one per binary system) and phases/pages/index.html|.md."""
+    if not phase_reg:
+        return {}
+    cite = orchid_cite.entry("phase-registry", CITE_DATA)
+    summary = {}
+    for sy in sorted(phase_reg):
+        doc = jload(os.path.join(data, "phases", "systems", "%s.json" % sy))
+        ph = doc["phases"]
+        label = sys_label(sy)
+        url, md_url = PHASE_DATA + "pages/%s.html" % sy, PHASE_DATA + "pages/%s.md" % sy
+        basis = Counter((e["structure"] or {}).get("basis") or e["status"] for e in ph)
+        n_stable = sum(1 for e in ph if any(x.get("stable") for x in e["stability"]))
+        line = "%d phases (%s); %d stable in a calculated diagram" % (
+            len(ph), ", ".join("%s %d" % (TIER_TEXT.get(k, k).split(":")[0], n) for k, n in sorted(
+                basis.items(), key=lambda kv: (BASIS_ORDER.index(kv[0]) if kv[0] in BASIS_ORDER else 99, kv[0]))), n_stable)
+        summary[sy] = {"n": len(ph), "line": line, "basis": basis}
+        links = [("a", "interactive registry", SITE_URL + "phases/?q=" + sy), " · ",
+                 ("a", "full JSON", PHASE_DATA + "systems/%s.json" % sy), " · "]
+        if os.path.exists(os.path.join(data, "systems", "%s.html" % sy)):
+            links += [("a", "%s system page" % label, DATA_URL + "systems/%s.html" % sy), " · "]
+        links += [("a", "Markdown", md_url), " · ", ("a", "field reference", PHASE_DATA + "SCHEMA.md")]
+        blocks = [("p", ["%s. Structure types are assigned only when certain (tier A: standard phase name; tier B: unique "
+                         "Materials Project + OQMD on-hull match, DFT-supported; tier C: one structure stated by the "
+                         "assessment's crystallographic table, assessor-stated); other phases list candidates and are "
+                         "marked needs_review. Stability is from phase diagrams calculated with pycalphad from the SGTE "
+                         "binary collection (evidence class: model)." % line]),
+                  ("p", ["Data: "] + links)]
+        rows = []
+        for e in ph:
+            st = e["structure"]
+            rows.append([[("a", e["preferred_name"], "#" + phase_anchor(e["id"])), ("br",), ("small", e["id"])],
+                         [structure_text(st)], [TIER_TEXT.get((st or {}).get("basis"), "") or e["status"]],
+                         [stability_text(e["stability"])], [str(e["literature"]["values"])], [str(len(e["models"]))]])
+        blocks.append(("table", "Phases of the %s system (%d)" % (label, len(ph)),
+                       ["Phase", "Structure", "Basis", "Stability (calculated)", "Literature values", "TDB models"], rows, {4, 5}))
+        terms = []
+        for e in ph:
+            st = e["structure"]
+            blocks.append(("h2", phase_anchor(e["id"]), "%s (%s)" % (e["preferred_name"], label)))
+            facts = [["Id: ", ("code", e["id"]), "; status ", ("code", e["status"])]]
+            if st:
+                facts.append(["Structure: ", structure_text(st) or "—", "; type ", ("code", st["structure_type"]),
+                              "; ", TIER_TEXT.get(st.get("basis"), st.get("basis") or ""),
+                              "; confidence " + str(st.get("confidence"))])
+                if st.get("source"):
+                    facts.append(["Structure source: ", st["source"].get("citation") or "", " "] +
+                                 ([("a", "doi:" + st["source"]["doi"], doi_url(st["source"]["doi"]))] if st["source"].get("doi") else []))
+                for c in st.get("caveats") or []:
+                    facts.append(["Caveat: ", c])
+            else:
+                facts.append(["No structure assigned. Why: ", "; ".join(e["review_reasons"]) or "—"])
+                for c in e["candidates"][:8]:
+                    facts.append(["Candidate (%s): " % c.get("source"), " · ".join(x for x in (
+                        c.get("prototype"), c.get("strukturbericht"), c.get("pearson"), sg_text(c.get("space_group"))) if x),
+                        " — ", _short(str(c.get("detail") or ""), 200)])
+            if e["stoichiometry"]:
+                facts.append(["Stoichiometry: ", ", ".join("%s %.4f" % (k.capitalize(), v) for k, v in e["stoichiometry"].items())])
+            facts.append(["Stability: ", stability_text(e["stability"])])
+            facts.append(["Literature: %d values (%d accepted) from %d papers" % (
+                e["literature"]["values"], e["literature"]["accepted_values"], e["literature"]["papers"])])
+            facts.append(["Interactive: ", ("a", "phase registry entry", SITE_URL + "phases/#" + e["id"])])
+            blocks.append(("ul", facts))
+            names = e["names"]
+            by_ns = defaultdict(list)
+            for n in names:
+                by_ns[n["namespace"]].append(n["name"])
+            blocks.append(("p", ["Names (%d): " % len(names)] + sum(
+                [[("small", ns + ": "), ", ".join(v[:PHASE_MAX_NAMES]) + (" … %d more" % (len(v) - PHASE_MAX_NAMES) if len(v) > PHASE_MAX_NAMES else ""), ("br",)]
+                 for ns, v in sorted(by_ns.items())], [])))
+            if e["models"]:
+                blocks.append(("h3", "TDB models of %s (%d): PHASE and CONSTITUENT statements as written" % (e["preferred_name"], len(e["models"]))))
+                for m in e["models"][:PHASE_MAX_MODELS]:
+                    td = m.get("tdb_definition")
+                    prov = (td or {}).get("provenance") or {}
+                    u = prov.get("website_url") or prov.get("github_url")
+                    head = [("a", m["tdb"], u) if u else m["tdb"], ": %s, type code %s, sha256 " % (m["phase_name"], m.get("type_code") or "—"),
+                            ("code", m["sha256"][:16] + "…")]
+                    blocks.append(("p", head))
+                    if td:
+                        v = td["verbatim"]
+                        txt = ["%d: %s" % (v["phase"]["line_start"], v["phase"]["text"])]
+                        if v["constituent"]:
+                            txt.append("%d: %s" % (v["constituent"]["line_start"], v["constituent"]["text"]))
+                        blocks.append(("pre", "\n".join(txt)))
+                if len(e["models"]) > PHASE_MAX_MODELS:
+                    blocks.append(("p", ["… %d more models in " % (len(e["models"]) - PHASE_MAX_MODELS),
+                                         ("a", "systems/%s.json" % sy, PHASE_DATA + "systems/%s.json" % sy)]))
+            refs = e["references"]
+            if refs:
+                blocks.append(("p", ["Example references (%d of %d; assessments first): " % (len(refs), e["total_papers"])]))
+                blocks.append(("ul", [[("a", "doi:" + r["doi"], doi_url(r["doi"])), " ", r.get("citation") or "",
+                                       ("br",), ("small", "; ".join(r["roles"]))] for r in refs]))
+            t = {"@id": PHASE_DATA + "#" + e["id"], "@type": "DefinedTerm", "termCode": e["id"], "name": e["preferred_name"],
+                 "inDefinedTermSet": PHASE_DATA, "chemicalSystem": sy, "reviewStatus": e["status"],
+                 "url": url + "#" + phase_anchor(e["id"]), "alternateName": sorted({n["name"] for n in names})[:60]}
+            if st:
+                t["structureBasis"] = st.get("basis")
+                t["structureType"] = PHASE_DATA + "structure_types.json#" + st["structure_type"]
+                for k, kk in (("prototype", "prototype"), ("strukturbericht", "strukturbericht"), ("pearson", "pearsonSymbol")):
+                    if st.get(k):
+                        t[kk] = st[k]
+                if st.get("space_group"):
+                    t["spaceGroupNumber"] = st["space_group"]["number"]
+            if refs:
+                t["citation"] = [{"@id": doi_url(r["doi"]), "@type": "ScholarlyArticle", "name": r.get("citation") or r["doi"]}
+                                 for r in refs[:5]]
+            terms.append(t)
+        desc = "%s system: %s in the ORCHID phase registry, with names, structure type when certain, calculated stability, " \
+               "verbatim TDB PHASE/CONSTITUENT statements and example references." % (label, line)
+        jl = {"@context": PHASE_CTX, "@type": "Dataset", "name": "%s phases — ORCHID phase registry" % label,
+              "description": desc, "url": url, "license": LICENSE_URL, "creator": creator(), "isPartOf": {
+                  "@type": "Dataset", "name": cite["title"], "url": PHASE_DATA, "identifier": cite["url"]},
+              "isAccessibleForFree": True, "dateModified": date,
+              "keywords": ["CALPHAD", "phase", "crystal structure", "TDB", label],
+              "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": PHASE_DATA + "systems/%s.json" % sy},
+                               {"@type": "DataDownload", "encodingFormat": "text/markdown", "contentUrl": md_url}],
+              "hasPart": {"@type": "DefinedTermSet", "@id": PHASE_DATA, "name": cite["title"], "hasDefinedTerm": terms}}
+        page = {"title": "%s phases — ORCHID phase registry" % label, "h1": "%s phases" % label, "description": desc,
+                "url": url, "md_url": md_url, "jsonld": jl, "blocks": blocks, "footer": phase_footer(), "cite": ["phase-registry"]}
+        out["phases/pages/%s.html" % sy] = render_html(page, "phases/pages")
+        out["phases/pages/%s.md" % sy] = render_md(page)
+    # index
+    rows = []
+    tot = Counter()
+    for sy in sorted(summary):
+        v = summary[sy]
+        tot.update(v["basis"])
+        b = v["basis"]
+        rows.append([[("a", sys_label(sy), PHASE_DATA + "pages/%s.html" % sy)], [str(v["n"])],
+                     [str(b.get("standard_name", 0))], [str(b.get("dft_unique_match", 0))], [str(b.get("assessment_declared", 0))],
+                     [str(b.get("liquid", 0) + b.get("gas", 0))], [str(b.get("needs_review", 0) + b.get("unresolved_no_candidates", 0))],
+                     [("a", "md", PHASE_DATA + "pages/%s.md" % sy)]])
+    n = sum(v["n"] for v in summary.values())
+    url, md_url = PHASE_DATA + "pages/index.html", PHASE_DATA + "pages/index.md"
+    desc = "ORCHID phase registry: %s phases in %d binary systems, one static page per system." % (format(n, ","), len(summary))
+    blocks = [("p", [desc + " Tier A: the standard phase name encodes one structure; tier B (DFT-supported): a "
+                     "stoichiometric compound matching exactly one on-hull entry in both Materials Project and OQMD; tier C "
+                     "(assessor-stated): the Hallstedt 2025 crystallographic table states one consistent structure for that "
+                     "phase name and system. Everything else is a review candidate."]),
+              ("p", ["Data: ", ("a", "registry.json (compact index)", PHASE_DATA + "registry.json"), " · ",
+                     ("a", "registry.csv", PHASE_DATA + "registry.csv"), " · ", ("a", "registry.parquet", PHASE_DATA + "registry.parquet"), " · ",
+                     ("a", "registry.jsonld", PHASE_DATA + "registry.jsonld"), " · ",
+                     ("a", "structure_types.json", PHASE_DATA + "structure_types.json"), " · ",
+                     ("a", "structure_types.parquet", PHASE_DATA + "structure_types.parquet"), " · ",
+                     ("a", "SCHEMA.md", PHASE_DATA + "SCHEMA.md"), " · ", ("a", "interactive registry", SITE_URL + "phases/")]),
+              ("table", "Binary systems (%d)" % len(rows), ["System", "Phases", "Tier A", "Tier B", "Tier C", "Liquid/gas",
+                                                           "Review", "Markdown"], rows, {1, 2, 3, 4, 5, 6})]
+    jl = {"@context": "https://schema.org", "@type": "Dataset", "name": cite["title"], "description": desc, "url": url,
+          "license": LICENSE_URL, "creator": creator(), "identifier": cite["url"], "isPartOf": is_part_of(), "dateModified": date,
+          "distribution": [{"@type": "DataDownload", "encodingFormat": f, "contentUrl": PHASE_DATA + p} for p, f in (
+              ("registry.json", "application/json"), ("registry.csv", "text/csv"), ("registry.parquet", "application/vnd.apache.parquet"),
+              ("registry.jsonld", "application/ld+json"), ("structure_types.json", "application/json"),
+              ("structure_types.parquet", "application/vnd.apache.parquet"))],
+          "hasPart": [PHASE_DATA + "pages/%s.html" % sy for sy in sorted(summary)]}
+    page = {"title": "Phase registry — ORCHID", "h1": "Phase registry (binary systems)", "description": desc, "url": url,
+            "md_url": md_url, "jsonld": jl, "blocks": blocks, "footer": phase_footer(), "cite": ["phase-registry"]}
+    out["phases/pages/index.html"] = render_html(page, "phases/pages")
+    out["phases/pages/index.md"] = render_md(page)
+    return summary
+
+
+def phase_footer():
+    return ["Derived data CC BY 4.0 (", ("a", "licence", LICENSE_URL), "): cite the ORCHID phase registry and the sources "
+            "named on the page (TDB assessments, Hallstedt 2025, Materials Project, OQMD). TDB statements are quoted as "
+            "written; parameter expressions are not reproduced. Field reference: ", ("a", "SCHEMA.md", PHASE_DATA + "SCHEMA.md"),
+            ". Machine-readable guide: ", ("a", "llms.txt", DATA_URL + "llms.txt"), "."]
+
+
+def _short(t, n):
+    return t if len(t) <= n else t[: n - 1].rstrip() + "…"
+
+
+def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_systems, lindex, pindex, date, release,
+                phase_summary):
     foot = footer_parts()
     # systems index
     rows = []
@@ -962,6 +1211,9 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
                  ("a", "Markdown", DATA_URL + "systems/index.md"), "): literature values, invariants, formation enthalpies, calculated phase diagrams."],
                 [("a", "Compounds", DATA_URL + "compounds/index.html"), " — %d formation-enthalpy pages with DFT comparison." % len(comp_summary)],
                 [("a", "Reporting papers", DATA_URL + "papers/index.html"), " — citation, DOI, systems, number of values."],
+                [("a", "Phase registry", DATA_URL + "phases/pages/index.html"), " — %d binary-system pages, %s phases: names, "
+                 "structure (when certain), stability, TDB PHASE/CONSTITUENT statements, example DOIs." % (
+                     len(phase_summary), format(sum(v["n"] for v in phase_summary.values()), ","))],
                 ["Interactive tools: ", ("a", "data explorer", SITE_URL + "data-explorer/"), ", ",
                  ("a", "phase diagrams", SITE_URL + "phase-diagrams/"), ", ", ("a", "phase registry", SITE_URL + "phases/"), ", ",
                  ("a", "DFT vs experiment", SITE_URL + "dft-parity/"), "."]]),
@@ -970,7 +1222,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
             [[("a", "literature/", DATA_URL + "literature/SCHEMA.md")], ["Literature records: index.json, systems/<SYS>.json, papers.json, contexts.json, dft_parity.json, full CSV/JSONL dumps; fields in SCHEMA.md."]],
             [[("a", "phase-diagrams/", DATA_URL + "phase-diagrams/index.json")], ["Calculated binary phase diagrams (pycalphad, SGTE binary collection): index.json and sgte/<TDB>.json (phase regions, invariants, grid)."]],
             [["hulls/"], ["Binary convex hulls: dft-mp/ (Materials Project), dft-oqmd/ (OQMD), calphad-sgte/ (assessed CALPHAD), one JSON per system."]],
-            [[("a", "phases/", DATA_URL + "phases/SCHEMA.md")], ["Phase registry (binary systems): registry.json / .csv / .parquet / .jsonld, structure_types.json, review_queue.json, CONFLICTS.md, systems/<SYS>.json; fields in SCHEMA.md."]],
+            [[("a", "phases/", DATA_URL + "phases/SCHEMA.md")], ["Phase registry (binary systems): registry.json (compact index) / .csv / .parquet / .jsonld, structure_types.json / .parquet, review_queue.json, CONFLICTS.md, systems/<SYS>.json (full records), pages/<SYS>.html|.md (static pages); fields in SCHEMA.md."]],
             [[("a", "systems/", DATA_URL + "systems/index.html")], ["Static pages per chemical system: <SYS>.html, <SYS>.md, <SYS>.csv."]],
             [[("a", "compounds/", DATA_URL + "compounds/index.html")], ["Static pages per compound (reduced formula): <FORMULA>.html, <FORMULA>.md."]],
             [[("a", "papers/", DATA_URL + "papers/index.html")], ["Index of reporting papers."]],
@@ -1012,11 +1264,13 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- CSV: %ssystems/<SYS>.csv (all records incl. not accepted; column extraction_accepted)" % DATA_URL,
         "- Full JSON records: %sliterature/systems/<SYS>.json (large systems: also <SYS>.part2.json ...; see literature/index.json)" % DATA_URL,
         "- Calculated phase diagrams: %sphase-diagrams/index.json -> phase-diagrams/sgte/<file>.json" % DATA_URL,
-        "- Phase registry (names, models, stability, references, structure when certain): %sphases/systems/<SYS>.json; all phases %sphases/registry.json, fields %sphases/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL), "",
+        "- Phases (binary systems): %sphases/pages/<SYS>.md (also .html): every phase with ids, names, structure tier/basis, prototype, Strukturbericht, Pearson, space group, stability, verbatim TDB PHASE/CONSTITUENT statements, example DOIs" % DATA_URL,
+        "- Phase registry JSON (names, models with tdb_definition, stability, references, structure when certain): %sphases/systems/<SYS>.json; compact index of all phases %sphases/registry.json, fields %sphases/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL), "",
         "## Indexes",
         "- [Systems](%ssystems/index.md)" % DATA_URL,
         "- [Compounds (formation enthalpies, literature vs Materials Project / OQMD)](%scompounds/index.md); per compound: %scompounds/<FORMULA>.md" % (DATA_URL, DATA_URL),
         "- [Reporting papers](%spapers/index.md)" % DATA_URL,
+        "- [Phase registry, binary systems](%sphases/pages/index.md); structure types %sphases/structure_types.json (Parquet: phases/structure_types.parquet), all phases %sphases/registry.csv / registry.parquet / registry.jsonld" % (DATA_URL, DATA_URL, DATA_URL),
         "- [All systems with one-line summaries](%sllms-full.txt)" % DATA_URL,
         "- [Field reference](%sliterature/SCHEMA.md)" % DATA_URL, "",
         "## Bulk files",
@@ -1058,6 +1312,10 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
             extra.append("OQMD %s" % fmt_num(v["oqmd"]))
         lines.append("- [%s](%scompounds/%s.md): %d literature value(s)%s" % (f, DATA_URL, f, v["n"],
                      ("; DFT kJ/mol-atom " + ", ".join(extra)) if extra else ""))
+    lines += ["", "## Phases (binary systems)", ""]
+    for sy in sorted(phase_summary):
+        v = phase_summary[sy]
+        lines.append("- [%s phases](%sphases/pages/%s.md): %s" % (sys_label(sy), DATA_URL, sy, v["line"]))
     out["llms-full.txt"] = "\n".join(lines) + "\n"
 
 
@@ -1091,6 +1349,7 @@ def main(argv=None):
     data_out, capped = build(a.data, a.date)
     pages = sorted(p for p in data_out if p.endswith(".html"))
     urls = [DATA_URL + ("" if p == "index.html" else p) for p in pages]
+    urls += [PHASE_DATA + f for f in PHASE_FILES if os.path.exists(os.path.join(a.data, "phases", f))]
     data_out["sitemap.xml"] = urlset(urls, a.date)
     data_out["robots.txt"] = robots([DATA_URL + "sitemap.xml"])
     site_out = {

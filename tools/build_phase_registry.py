@@ -10,6 +10,7 @@ Reads (never writes) local sources and writes <orchid-data>/phases/:
                         example references, structure assignment or review candidates
   registry.jsonld       the same terms as a schema.org DefinedTermSet (context: context.jsonld)
   registry.csv          one flat row per phase
+  structure_types.csv   one flat row per structure type (also structure_types.parquet)
   review_queue.json     phases without an assigned structure that have candidates (with the evidence)
   CONFLICTS.md          same name -> different structures, polymorph families, models that disagree
   index.json            compact search index for the website
@@ -1544,6 +1545,7 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
             "inputs": dict(sorted(inputs.hashes.items())), "counts": counts, "cite_as": cite}
     out = {}
     out["structure_types.json"] = dump(dict(head, counts={"structure_types": len(st_public)}, structure_types=st_public))
+    out["structure_types.csv"] = structure_types_csv(st_public)
     # registry.json is a compact index (kept well under GitHub's 50 MB file limit); the full records, including
     # models[].tdb_definition and references, are in systems/<SYS>.json
     out["registry.json"] = json.dumps(dict(head, record_format="compact", detail="systems/<SYS>.json",
@@ -1638,6 +1640,24 @@ def tdb_def_counts(reg, extra):
             "files_with_type_codes_without_definition": extra["type_codes_without_definition"],
             "with_website_url": sum(1 for t in tds if t["provenance"]["website_url"]),
             "with_github_url": sum(1 for t in tds if t["provenance"]["github_url"])}
+
+
+def structure_types_csv(st_public):
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\n")
+    w.writerow(["id", "prototype", "prototype_spellings", "strukturbericht", "pearson", "space_group_number",
+                "space_group_symbol", "stoichiometry", "verification", "registry_phases", "n_sources", "source_citations",
+                "source_dois"])
+    for t in st_public:
+        sg = t.get("space_group") or {}
+        src = t.get("sources") or []
+        st = t.get("stoichiometry")
+        w.writerow([t["id"], t.get("prototype") or "", ";".join(t.get("prototype_spellings") or []),
+                    t.get("strukturbericht") or "", t.get("pearson") or "", sg.get("number") or "", sg.get("symbol") or "",
+                    json.dumps(st, sort_keys=True) if isinstance(st, (dict, list)) else (st or ""),
+                    t.get("verification") or "", t.get("registry_phases", 0), len(src),
+                    " | ".join(x.get("citation") or "" for x in src), ";".join(x["doi"] for x in src if x.get("doi"))])
+    return buf.getvalue()
 
 
 def registry_csv(reg):
@@ -1790,6 +1810,9 @@ a review candidate. Paper labels come from the machine-extracted literature valu
 | `registry.jsonld`, `context.jsonld` | the phases as a schema.org `DefinedTermSet` of `DefinedTerm`s (`citation`, `isBasedOn`; `additionalProperty`: one `PropertyValue` `orchid:tdbPhaseDefinition` per model with the verbatim statements) |
 | `registry.csv` | one flat row per phase (`references_first5`: first five reference DOIs, `;`-joined; `tdb_first_model`, `tdb_phase_line`, `tdb_constituent_line`: file and verbatim PHASE / CONSTITUENT statements of the first model, models sorted by file and phase name) |
 | `registry.parquet` | the CSV columns as a typed Parquet table (when built with pyarrow) |
+| `structure_types.csv`, `structure_types.parquet` | one row per structure type: `id, prototype, prototype_spellings (;), strukturbericht, pearson, space_group_number, space_group_symbol, stoichiometry, verification, registry_phases, n_sources, source_citations (" \\| "), source_dois (;)` |
+| `parquet.json` | row counts, CSV SHA-256 and content SHA-256 (canonical JSON rows) of the Parquet tables |
+| `pages/<SYS>.html`, `pages/<SYS>.md`, `pages/index.*` | static, JavaScript-free page per binary system (written by `tools/build_static_pages.py`): names, structure, stability, verbatim PHASE/CONSTITUENT statements, example DOIs, DefinedTerm JSON-LD |
 | `review_queue.json` | phases with candidates but no assigned structure (`status: needs_review`) |
 | `CONFLICTS.md` | same name -> different structures, name vs DFT, MP vs OQMD, model compositions, polymorph families |
 | `index.json` | website search index (column arrays) |
@@ -1848,7 +1871,7 @@ import pyarrow as pa, pyarrow.parquet as pq
 src, dst, meta = sys.argv[1], sys.argv[2], json.loads(sys.argv[3])
 rows = list(csv.DictReader(open(src, encoding="utf-8")))
 ints = {"space_group_number", "n_models", "n_names", "literature_values", "literature_accepted_values",
-        "n_candidates", "total_papers"}
+        "n_candidates", "total_papers", "registry_phases", "n_sources"}
 flts = {"stable_T_min_K", "stable_T_max_K"}
 cols = list(rows[0].keys()) if rows else []
 fields = [(c, pa.int32() if c in ints else pa.float64() if c in flts else pa.string()) for c in cols]
@@ -1877,23 +1900,28 @@ def parquet_python(a):
         return a.parquet_python if a.parquet_python and os.path.exists(a.parquet_python) else None
 
 
-def parquet_meta(cite):
-    return {"orchid.dataset": DATASET, "orchid.table": "phase_registry", "orchid.license": "CC-BY-4.0",
+PARQUET_TABLES = (("registry.parquet", "registry.csv", "phase_registry"),
+                  ("structure_types.parquet", "structure_types.csv", "structure_types"))
+PAGES_DIR = "pages"  # phases/pages/ is written by tools/build_static_pages.py, not by this builder
+
+
+def parquet_meta(cite, table="phase_registry"):
+    return {"orchid.dataset": DATASET, "orchid.table": table, "orchid.license": "CC-BY-4.0",
             "orchid.generator": "orchid-project.org/tools/build_phase_registry.py", "orchid.doi": cite["doi"],
             "orchid.citation": cite["text"], "orchid.cite_as": json.dumps(cite, sort_keys=True, ensure_ascii=False)}
 
 
-def meta_hash(cite):
-    return sha256_bytes(json.dumps(parquet_meta(cite), sort_keys=True).encode())
+def meta_hash(cite, table="phase_registry"):
+    return sha256_bytes(json.dumps(parquet_meta(cite, table), sort_keys=True).encode())
 
 
-def write_parquet(a, out_dir, csv_path, cite):
+def write_parquet(a, out_dir, csv_path, cite, name="registry.parquet", table="phase_registry"):
     py = parquet_python(a)
     if not py:
-        print("no pyarrow: registry.parquet not written")
+        print("no pyarrow: %s not written" % name)
         return None
-    meta = parquet_meta(cite)
-    dst = os.path.join(out_dir, "registry.parquet")
+    meta = parquet_meta(cite, table)
+    dst = os.path.join(out_dir, name)
     r = subprocess.run([py, "-c", PARQUET_HELPER, csv_path, dst + ".tmp", json.dumps(meta)], capture_output=True, text=True)
     if r.returncode:
         raise SystemExit("parquet failed: " + r.stderr)
@@ -1943,15 +1971,18 @@ def main(argv=None):
         for d, _, fs in os.walk(out_dir):
             for f in fs:
                 disk.add(os.path.relpath(os.path.join(d, f), out_dir))
-        extra = sorted(disk - set(out) - {"registry.parquet", man_rel})
+        extra = sorted(x for x in disk - set(out) - {pq_ for pq_, _, _ in PARQUET_TABLES} - {man_rel}
+                       if not x.startswith(PAGES_DIR + os.sep))
         bad += ["stale file: " + x for x in extra]
         pm = os.path.join(out_dir, man_rel)
         if parquet_python(a):
-            want = sha256_bytes(out["registry.csv"].encode())
             man = json.load(open(pm)) if os.path.exists(pm) else {}
-            got = (parquet_content_hash(a, os.path.join(out_dir, "registry.parquet")) or " ").split(" ")
-            if man.get("csv_sha256") != want or got[1] != meta_hash(cite) or got[0] != man.get("content_sha256"):
-                bad.append("registry.parquet")
+            for pq_, csv_, table in PARQUET_TABLES:
+                mt = man if table == "phase_registry" else man.get(table, {})
+                want = sha256_bytes(out[csv_].encode())
+                got = (parquet_content_hash(a, os.path.join(out_dir, pq_)) or " ").split(" ")
+                if mt.get("csv_sha256") != want or got[1] != meta_hash(cite, table) or got[0] != mt.get("content_sha256"):
+                    bad.append(pq_)
         if bad:
             print("stale: " + ", ".join(bad[:20]) + (" ... (%d)" % len(bad) if len(bad) > 20 else ""), file=sys.stderr)
             return 1
@@ -1962,7 +1993,8 @@ def main(argv=None):
     for d, _, fs in os.walk(out_dir):
         for f in fs:
             rel = os.path.relpath(os.path.join(d, f), out_dir)
-            if rel not in keep and rel not in ("registry.parquet", man_rel):
+            if rel not in keep and rel not in {pq_ for pq_, _, _ in PARQUET_TABLES} | {man_rel} \
+                    and not rel.startswith(PAGES_DIR + os.sep):
                 os.remove(os.path.join(d, f))
     for rel, text in sorted(out.items()):
         p = os.path.join(out_dir, rel)
@@ -1971,22 +2003,30 @@ def main(argv=None):
             with open(p + ".tmp", "w", encoding="utf-8") as fh:
                 fh.write(text)
             os.replace(p + ".tmp", p)
-    res = write_parquet(a, out_dir, os.path.join(out_dir, "registry.csv"), cite)
-    if res:
+    pm = os.path.join(out_dir, man_rel)
+    manifest = {}
+    for pq_, csv_, table in PARQUET_TABLES:
+        res = write_parquet(a, out_dir, os.path.join(out_dir, csv_), cite, pq_, table)
+        if not res:
+            continue
         dst, ch = res
         ch, mh = ch.split(" ")
-        pm = os.path.join(out_dir, man_rel)
-        man = json.load(open(pm)) if os.path.exists(pm) else {}
         old = (parquet_content_hash(a, dst) or " ").split(" ") if os.path.exists(dst) else ["", ""]
         if old == [ch, mh]:
             os.remove(dst + ".tmp")  # unchanged content: keep the existing bytes
         else:
             os.replace(dst + ".tmp", dst)
+        rows = out[csv_].count("\n") - 1 if table != "phase_registry" else len(reg)
+        entry = {"table": pq_, "rows": rows, "csv_sha256": sha256_bytes(out[csv_].encode()), "content_sha256": ch}
+        if table == "phase_registry":
+            manifest.update(entry)
+            manifest["note"] = ("content_sha256 = SHA-256 of the canonical JSON rows (sorted keys); independent of "
+                                "the Parquet encoder")
+        else:
+            manifest[table] = entry
+    if manifest:
         with open(pm, "w", encoding="utf-8") as fh:
-            fh.write(dump({"table": "registry.parquet", "rows": len(reg), "csv_sha256": sha256_bytes(out["registry.csv"].encode()),
-                           "content_sha256": ch,
-                           "note": "content_sha256 = SHA-256 of the canonical JSON rows (sorted keys); independent of "
-                                   "the Parquet encoder"}))
+            fh.write(dump(manifest))
     print(json.dumps(counts, indent=1))
     return 0
 

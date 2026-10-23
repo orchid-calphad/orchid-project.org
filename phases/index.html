@@ -122,7 +122,8 @@ structures, not the CALPHAD phase itself. Files:
 references per system in <code>phases/systems/&lt;SYS&gt;.json</code>), <a href="../data/phases/registry.csv">registry.csv</a>,
 <a href="../data/phases/registry.jsonld">JSON-LD</a>, <a href="../data/phases/structure_types.json">structure types</a>,
 <a href="../data/phases/review_queue.json">review queue</a>, <a href="../data/phases/CONFLICTS.md">conflicts</a>,
-<a href="../data/phases/SCHEMA.md">schema</a>.</p>
+<a href="../data/phases/SCHEMA.md">schema</a>; static page per system (no JavaScript):
+<a href="../data/phases/pages/index.html">phases/pages/</a>.</p>
 <!-- orchid-cite:begin (DOIs: tools/orchid_cite.py, zenodo/dois.json; replaced by tools/zenodo_release.py writeback) -->
 <section class="ocite" id="cite" aria-labelledby="cite-h">
 <h2 id="cite-h">Please cite</h2>
@@ -315,7 +316,7 @@ async function show(id){
     h("div",{class:"muted"},ref.roles.join("; ")+(ref.labels.length?" · label "+ref.labels.join(", "):"")+(ref.values?" · "+ref.values+" values":""))))));
   // links
   out.push(h("h3",null,"Links"));
-  out.push(h("p",null,link("../phase-diagrams/#"+p.system,"Phase diagrams of "+elCase(p.system)),"  ·  ",link("../data-explorer/#"+p.system,"Data explorer"),"  ·  ",link("#"+p.id,"Permalink")));
+  out.push(h("p",null,link("../phase-diagrams/#"+p.system,"Phase diagrams of "+elCase(p.system)),"  ·  ",link("../data-explorer/#"+p.system,"Data explorer"),"  ·  ",link("#"+p.id,"Permalink"),"  ·  ",link(dataURL("phases/pages/"+encodeURIComponent(p.system)+".html#"+p.id.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")),"Static page")));
   d.replaceChildren(...out);
 }
 async function load(){

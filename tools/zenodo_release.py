@@ -65,10 +65,11 @@ RECORDS = {  # name -> (include patterns, exclude patterns); "dir/**" = everythi
     "dft-benchmark": (DOCS + ["zenodo/dft-benchmark.metadata.json", "literature/dft_parity.json",
                               "literature/kim2017_crosscheck.json", "literature/kim2017_crosscheck.md",
                               "literature/QUALITY_FIXES.md", "parquet/dft_parity.parquet", "parquet/MANIFEST.json"], []),
-    "phase-registry": (DOCS + ["zenodo/phase-registry.metadata.json", "phases/**"], []),
+    "phase-registry": (DOCS + ["zenodo/phase-registry.metadata.json", "phases/**"], ["phases/pages/**"]),
 }
 assert set(RECORDS) == set(orchid_cite.NAMES)
 DATA_DIRS = ("literature", "phase-diagrams", "hulls", "parquet", "phases")  # every file here must be in some record
+WEB_VIEWS = ("phases/pages/",)  # generated static pages inside a data dir (tools/build_static_pages.py): not released
 
 TEXT_EXT = (".json", ".md", ".html", ".txt", ".cff", ".xml", ".csv", ".yml", ".yaml")
 SKIP_DIRS = {".git", "dist", "__pycache__", "node_modules"}
@@ -196,8 +197,14 @@ def verify(data, name, files=None):
 
 # ------------------------------------------------------------------------------------------------ card --
 def card_text(data):
-    """DATASET_CARD.md with num_examples / download_size taken from parquet/MANIFEST.json (rows, bytes)."""
+    """DATASET_CARD.md with num_examples / download_size taken from parquet/MANIFEST.json and phases/parquet.json."""
     man = json.load(open(os.path.join(data, "parquet", "MANIFEST.json"), encoding="utf-8"))["tables"]
+    pj = os.path.join(data, "phases", "parquet.json")  # phase registry tables (tools/build_phase_registry.py)
+    if os.path.exists(pj):
+        pm = json.load(open(pj, encoding="utf-8"))
+        for cfg, ent in (("phases", pm), ("structure_types", pm.get("structure_types"))):
+            if ent and os.path.exists(os.path.join(data, "phases", ent["table"])):
+                man[cfg] = {"rows": ent["rows"], "bytes": os.path.getsize(os.path.join(data, "phases", ent["table"]))}
     out, cur, info = [], None, False
     for line in open(os.path.join(data, "DATASET_CARD.md"), encoding="utf-8").read().split("\n"):
         if line.startswith("dataset_info:"):
@@ -266,7 +273,7 @@ def cmd_plan(a):
             print("    PROBLEM: " + p)
         bad += len(probs)
         print()
-    loose = [f for f in files if f.split("/")[0] in DATA_DIRS and f not in covered]
+    loose = [f for f in files if f.split("/")[0] in DATA_DIRS and f not in covered and not f.startswith(WEB_VIEWS)]
     for f in loose[:20]:
         print("PROBLEM: data file in no record: " + f)
     bad += len(loose)
