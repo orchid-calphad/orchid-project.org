@@ -8,9 +8,9 @@
 <link rel="alternate" type="application/ld+json" href="https://data.orchid-project.org/phases/registry.jsonld" title="ORCHID phase registry (JSON-LD)">
 <meta name="description" content="Every phase of each binary system in ORCHID: its names across CALPHAD databases, papers and DFT databases, the models that describe it, where it is stable, example references, and its crystal structure when certain.">
 <style>
-:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;--ok:#1d7448;--okbg:#e5f3ec;--dft:#a3520a;--dftbg:#fbeee1;--rev:#8a6d00;--revbg:#fbf3d6;--liq:#2c58a8;--liqbg:#e6edf9}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--ok:#74d3a2;--okbg:#17291f;--dft:#f2ad6b;--dftbg:#2d2015;--rev:#e8cd6a;--revbg:#2b2612;--liq:#9dbcf3;--liqbg:#18213a}}
-:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--ok:#74d3a2;--okbg:#17291f;--dft:#f2ad6b;--dftbg:#2d2015;--rev:#e8cd6a;--revbg:#2b2612;--liq:#9dbcf3;--liqbg:#18213a}
+:root{--tc:#0e6b75;--tcbg:#e0f2f3;--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;--ok:#1d7448;--okbg:#e5f3ec;--dft:#a3520a;--dftbg:#fbeee1;--rev:#8a6d00;--revbg:#fbf3d6;--liq:#2c58a8;--liqbg:#e6edf9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--tc:#7fd3dc;--tcbg:#132a2d;--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--ok:#74d3a2;--okbg:#17291f;--dft:#f2ad6b;--dftbg:#2d2015;--rev:#e8cd6a;--revbg:#2b2612;--liq:#9dbcf3;--liqbg:#18213a}}
+:root[data-theme="dark"]{--tc:#7fd3dc;--tcbg:#132a2d;--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--ok:#74d3a2;--okbg:#17291f;--dft:#f2ad6b;--dftbg:#2d2015;--rev:#e8cd6a;--revbg:#2b2612;--liq:#9dbcf3;--liqbg:#18213a}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:var(--accent)}
@@ -28,7 +28,7 @@ label{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap
 input,select,button{font:inherit;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
 #q{width:min(420px,100%)}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
-@media (max-width:900px){.layout{grid-template-columns:1fr}}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
 .list{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
 @media (max-width:600px){th:nth-child(5),td:nth-child(5){display:none}th,td{padding:6px 5px;overflow-wrap:anywhere}.badge{white-space:normal;font-size:.7rem}table{table-layout:fixed}th:nth-child(1),td:nth-child(1){width:22%}th:nth-child(4),td:nth-child(4){width:24%}}
 table{border-collapse:collapse;width:100%;font-size:.86rem}
@@ -39,7 +39,7 @@ tbody tr:hover,tbody tr.sel{background:var(--accent2)}
 tbody tr:focus{outline:2px solid var(--accent);outline-offset:-2px}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .badge{display:inline-block;font-size:.74rem;padding:1px 7px;border-radius:10px;white-space:nowrap;font-weight:600}
-.b-A{background:var(--okbg);color:var(--ok)} .b-B{background:var(--dftbg);color:var(--dft)}
+.b-A{background:var(--okbg);color:var(--ok)} .b-B{background:var(--dftbg);color:var(--dft)} .b-C{background:var(--tcbg);color:var(--tc)}
 .b-rev{background:var(--revbg);color:var(--rev)} .b-liq{background:var(--liqbg);color:var(--liq)} .b-none{background:var(--accent2);color:var(--muted)}
 .pager{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 10px;font-size:.85rem;color:var(--muted)}
 .detail{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:.9rem;min-height:200px;overflow-wrap:anywhere}
@@ -55,6 +55,14 @@ tbody tr:focus{outline:2px solid var(--accent);outline-offset:-2px}
 .chip{font-size:.78rem;border:1px solid var(--line);border-radius:6px;padding:1px 6px;background:var(--bg)}
 details summary{cursor:pointer;color:var(--accent)}
 .note{color:var(--muted);font-size:.85rem;margin-top:14px}
+.model{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:8px 0;background:var(--bg)}
+.model>summary{list-style-position:outside;margin-left:14px}
+.model .mhead{color:var(--fg)}
+.tdbwrap{position:relative;margin:8px 0}
+.tdbdef{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;line-height:1.45;white-space:pre;overflow-x:auto;background:var(--accent2);border-radius:6px;padding:28px 10px 8px;margin:0}
+.copy{position:absolute;top:4px;right:4px;font-size:.72rem;padding:2px 8px;cursor:pointer}
+.kv{border-collapse:collapse;width:100%;font-size:.82rem;margin:6px 0}.kv th{width:34%;background:none;font-weight:500}
+
 .ocite{background:var(--card,#fff);border:1px solid var(--line,#e2dfe6);border-left:4px solid var(--accent,#7b3fa0);border-radius:10px;padding:4px 16px 12px;margin:28px 0 0;overflow-wrap:anywhere}.ocite h2{margin:12px 0 6px;font-size:1.2rem}.ocite ul{padding-left:20px;margin:6px 0}.ocite li{margin:4px 0}.ocite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem;line-height:1.4;background:var(--accent2,#f2eaf7);color:var(--fg,#1d1b20);border-radius:6px;padding:8px 10px;margin:8px 0 0}.ocite .muted{color:var(--muted,#5e5a66);font-size:.9rem}
 footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
 </style>
@@ -69,8 +77,10 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0 40px;colo
 <h1>Phase registry</h1>
 <p class="lead">One entry per phase of each binary system: every name it goes by (CALPHAD databases, papers, Materials Project
 and OQMD), the models that describe it, where the calculated diagrams make it stable, and example references. A crystal
-structure is shown only when it is certain: from a standard phase name (tier A) or from a unique, agreeing
-Materials Project + OQMD ground state (tier B, "DFT-supported"). Everything else is listed with its candidates for review.</p>
+structure is shown when it is certain: from a standard phase name (tier A) or from a unique, agreeing
+Materials Project + OQMD ground state (tier B, "DFT-supported"); or when the assessment's own crystallographic table
+states exactly one consistent structure (tier C, "assessor-stated"). Everything else is listed with its candidates for
+review. Each CALPHAD model shows its definition exactly as written in the TDB file.</p>
 <div class="stats" id="stats" aria-live="polite">Loading…</div>
 <div class="controls">
   <label for="q">Search: elements (Al,Ni or Al-Ni), phase name, paper label, prototype, Strukturbericht, Pearson
@@ -80,6 +90,7 @@ Materials Project + OQMD ground state (tier B, "DFT-supported"). Everything else
       <option value="">all</option>
       <option value="standard_name">tier A: standard name</option>
       <option value="dft_unique_match">tier B: DFT-supported</option>
+      <option value="assessment_declared">tier C: assessment-declared</option>
       <option value="liqgas">liquid / gas</option>
       <option value="needs_review">needs review</option>
       <option value="unresolved_no_candidates">no candidates</option>
@@ -103,7 +114,10 @@ Materials Project + OQMD ground state (tier B, "DFT-supported"). Everything else
 structure (e.g. FCC_A1, BCC_B2, L12_FCC, AL3NI_D011, C15_LAVES, SIGMA) and neither the model stoichiometry, the SGTE
 crystallographic table nor DFT contradicts it. Tier B: a stoichiometric compound whose composition matches exactly one
 on-hull entry in both Materials Project and OQMD, with the same space group and one structure type for that space group
-and stoichiometry. DFT entries are computed 0 K structures, not the CALPHAD phase itself. Files:
+and stoichiometry. Tier C (assessor-stated, approved by the PI): the SGTE crystallographic table (Hallstedt 2025, mmc2;
+CC BY 4.0) lists exactly one structure for this phase name in this system, tiers A/B do not contradict it, and the TDB
+model matches the listed compound; phases whose rows disagree stay in review. DFT entries are computed 0 K
+structures, not the CALPHAD phase itself. Files:
 <a href="../data/phases/registry.json">registry.json</a>, <a href="../data/phases/registry.csv">registry.csv</a>,
 <a href="../data/phases/registry.jsonld">JSON-LD</a>, <a href="../data/phases/structure_types.json">structure types</a>,
 <a href="../data/phases/review_queue.json">review queue</a>, <a href="../data/phases/CONFLICTS.md">conflicts</a>,
@@ -158,6 +172,7 @@ function structText(r){if(r[C.basis]==="liquid")return"liquid";if(r[C.basis]==="
 function badge(basis,status){
   if(basis==="standard_name")return h("span",{class:"badge b-A",title:"tier A: standard phase name"},"A · name");
   if(basis==="dft_unique_match")return h("span",{class:"badge b-B",title:"tier B: unique MP + OQMD on-hull match"},"B · DFT-supported");
+  if(basis==="assessment_declared")return h("span",{class:"badge b-C",title:"tier C: one structure stated by the assessment's crystallographic table (Hallstedt 2025, mmc2)"},"C · assessor-stated");
   if(basis==="liquid"||basis==="gas")return h("span",{class:"badge b-liq"},basis);
   if(status==="needs_review")return h("span",{class:"badge b-rev",title:"no structure assigned; candidates listed"},"needs review");
   return h("span",{class:"badge b-none"},"no candidates");
@@ -192,6 +207,46 @@ function render(){
   $("pageinfo").textContent=n?`${PAGENO*PAGE+1}–${Math.min(n,(PAGENO+1)*PAGE)} of ${n.toLocaleString()}`:"0";
   $("prev").disabled=PAGENO===0; $("next").disabled=PAGENO>=pages-1;
 }
+function copyText(btn,text){
+  const done=()=>{btn.textContent="Copied";setTimeout(()=>{btn.textContent="Copy";},1500);};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done,()=>fallbackCopy(text,done));else fallbackCopy(text,done);
+}
+function fallbackCopy(text,done){const t=h("textarea",{readonly:true,style:"position:fixed;left:-9999px"});t.value=text;document.body.appendChild(t);t.select();try{document.execCommand("copy");done();}catch(e){}t.remove();}
+function kvTable(rows){return h("table",{class:"kv"},h("tbody",null,...rows.filter(r=>r[1]!==null&&r[1]!==undefined&&r[1]!=="").map(([k,v])=>h("tr",{style:"cursor:default"},h("th",{scope:"row"},k),h("td",null,v)))));}
+function paramText(P){
+  if(!P||!P.total)return"no parameters for this phase name in the file";
+  const parts=Object.entries(P.by_kind).map(([k,v])=>k==="L"&&Object.keys(P.L_by_order).length?k+" "+v+" ("+Object.entries(P.L_by_order).map(([o,n])=>"order "+o+": "+n).join(", ")+")":k+" "+v);
+  return P.total+" parameters: "+parts.join(" · ")+(P.interaction_orders.length?" · interaction orders "+P.interaction_orders.join(", "):" · no interaction parameters");
+}
+function modelBlock(m,i){
+  const td=m.tdb_definition, pv=td?td.provenance:null;
+  const links=[];
+  if(pv&&pv.website_url)links.push(link(pv.website_url,"file"));
+  if(pv&&pv.github_url)links.push(link(pv.github_url,"GitHub"));
+  if(!links.length)links.push(link("https://github.com/orchid-calphad/orchid-project.org/blob/main/data/"+m.path,"file"));
+  const head=h("summary",null,h("span",{class:"mhead"},h("b",null,m.phase_name)," in ",m.tdb," "),
+    h("span",{class:"mono"},m.sublattices.map(sl=>"("+sl.constituents.join(",")+")"+sl.site_ratio).join("")),
+    m.disordered_part?h("span",{class:"muted"}," · disordered part "+m.disordered_part):null);
+  const body=[h("div",{class:"muted"},...links.flatMap((a,k)=>k?[" · ",a]:[a]),"  ·  ",h("span",{class:"mono"},"sha256 "+m.sha256))];
+  if(td){
+    const V=td.verbatim, stm=[V.phase].concat(V.constituent?[V.constituent]:[],V.type_definitions);
+    const text=stm.map(x=>x.text).join("\n");
+    const lines=stm.map(x=>x.line_start===x.line_end?""+x.line_start:x.line_start+"–"+x.line_end);
+    const btn=h("button",{type:"button",class:"copy","aria-label":"Copy the TDB definition of "+m.phase_name},"Copy");
+    btn.addEventListener("click",()=>copyText(btn,text));
+    body.push(h("div",{class:"muted",style:"margin-top:6px"},"As written in the file (lines "+lines.join(", ")+"; only line breaks normalised):"),
+      h("div",{class:"tdbwrap"},h("pre",{class:"tdbdef",tabindex:"0"},text),btn));
+    const P=td.parsed, mg=P.magnetic;
+    body.push(kvTable([["Phase",P.phase_name],["Type codes",P.type_codes.join(" ")],["Sublattices",String(P.n_sublattices)],
+      ["Site ratios",P.site_ratios.join(" : ")],
+      ["Constituents",h("span",{class:"mono"},P.constituents.map(c=>"("+c.join(", ")+")").join(" "))],
+      ["Major constituents (%)",P.major_constituents.some(x=>x.length)?P.major_constituents.map(c=>c.join(",")||"—").join(" : "):null],
+      ["Magnetic",mg?"AFM factor "+mg.afm_factor+", structure fraction p = "+mg.structure_fraction+" (type "+mg.type_code+")":"none"],
+      ["Disordered part",P.disordered_part],["Ordered partner",P.ordered_partner],
+      ["Parameters",paramText(td.parameters)]]));
+  }
+  return h("details",{class:"model",open:i===0?true:null},head,...body);
+}
 function go(id){if(location.hash.slice(1)!==id)location.hash=id;else show(id);}
 async function sysData(sys){if(!SYSCACHE[sys])SYSCACHE[sys]=fetch(dataURL("phases/systems/"+encodeURIComponent(sys)+".json")).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();});return SYSCACHE[sys];}
 function sg(s){return s?(s.number?s.number+" ("+(s.symbol||"")+")":(s.symbol||"")):"";}
@@ -214,6 +269,7 @@ async function show(id){
     add("Type",s.structure_type==="st:liquid"?"liquid (no prototype)":s.structure_type==="st:gas"?"gas (no prototype)":s.structure_type);
     add("Prototype",s.prototype);add("Strukturbericht",s.strukturbericht);add("Pearson",s.pearson);add("Space group",sg(s.space_group));
     add("Basis",(s.tier?"tier "+s.tier+": ":"")+s.basis+" — "+(s.label||""));add("Confidence",s.confidence);
+    if(s.source)add("Source",h("span",null,s.source.citation+" ",doiLink(s.source.doi)," ("+s.source.license+"); rows: "+s.source.rows.map(x=>x.phase_name+" "+(x.actual||"")+" · "+[x.prototype,x.strukturbericht,x.pearson,sg(x.space_group)].filter(Boolean).join(" ")).join("; ")));
     if(s.dft)add("DFT",h("span",null,"Materials Project "+s.dft.mp+", OQMD "+s.dft.oqmd+", space group "+s.dft.space_group_number+" ("+s.dft.space_group_symbol+")"));
     out.push(dl);
     if(s.caveats&&s.caveats.length)out.push(h("ul",null,...s.caveats.map(c=>h("li",{class:"muted"},c))));
@@ -247,12 +303,7 @@ async function show(id){
   // models
   out.push(h("h3",null,"CALPHAD models ("+p.models.length+")"));
   if(p.models.length){
-    const ul=h("ul",null,...p.models.map(m=>h("li",null,
-      link("https://github.com/orchid-calphad/orchid-project.org/blob/main/data/"+m.path,m.tdb)," ",h("b",null,m.phase_name)," ",
-      h("span",{class:"mono"},m.sublattices.map(sl=>"("+sl.constituents.join(",")+")"+sl.site_ratio).join("")),
-      m.disordered_part?h("span",{class:"muted"}," · disordered part "+m.disordered_part):null,
-      h("div",{class:"mono muted"},"sha256 "+m.sha256))));
-    out.push(ul);
+    p.models.forEach((m,i)=>out.push(modelBlock(m,i)));
   }else out.push(h("p",{class:"muted"},"Known from the ORCHID corpus only (no bundled TDB declares it under this id)."));
   // literature + references
   out.push(h("h3",null,"Literature"));
@@ -270,7 +321,7 @@ async function load(){
   try{IDX=await (await fetch(dataURL("phases/index.json"))).json();}catch(e){$("stats").textContent="Could not load the registry index.";return;}
   ROWS=IDX.phases; ROWS.forEach(r=>{r._t=norm([r[C.id],r[C.name],r[C.proto],r[C.sb],r[C.pear],r[C.search],r[C.st]].join(" "));});
   const c=IDX.counts;
-  $("stats").replaceChildren(...[["phases",c.phases],["binary systems",c.systems],["names",c.names],["tier A (name)",c.assigned_tier_A_standard_name],["tier B (DFT-supported)",c.assigned_tier_B_dft_unique_match],["liquid / gas",c.liquid+c.gas],["needs review",c.review_queue]].map(([k,v])=>h("span",null,h("b",null,v.toLocaleString())," "+k)));
+  $("stats").replaceChildren(...[["phases",c.phases],["binary systems",c.systems],["names",c.names],["tier A (name)",c.assigned_tier_A_standard_name],["tier B (DFT-supported)",c.assigned_tier_B_dft_unique_match],["tier C (assessor-stated)",c.assigned_tier_C_assessment_declared||0],["liquid / gas",c.liquid+c.gas],["needs review",c.review_queue]].map(([k,v])=>h("span",null,h("b",null,v.toLocaleString())," "+k)));
   ["q","fstatus","fvals"].forEach(k=>$(k).addEventListener("input",filter));
   $("prev").onclick=()=>{PAGENO--;render();}; $("next").onclick=()=>{PAGENO++;render();};
   const hq=new URLSearchParams(location.search).get("q"); if(hq)$("q").value=hq;

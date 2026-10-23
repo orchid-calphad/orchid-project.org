@@ -31,8 +31,14 @@ Structure assignment (PI rule: assign only when certain; otherwise list candidat
   B  dft_unique_match  a stoichiometric compound whose composition matches exactly one on-hull entry in BOTH Materials
                        Project and OQMD, with the same space group, a unique structure type for that space group and
                        stoichiometry, no other phase of the system at that composition, and no structure in the name
+  C  assessment_declared  the Hallstedt 2025 crystallographic table (mmc2) lists exactly one structure for this phase
+                       name in this system, nothing in A/B contradicts it, and the TDB model matches the listed compound
+                       (confidence "assessor-stated"; source cited)
   liquid / gas         structure_type "liquid" / "gas" (no prototype)
-  C  everything else   no structure type; `candidates` with their evidence; status needs_review
+  everything else      no structure type; `candidates` with their evidence; status needs_review
+
+TDB definitions: every model carries `tdb_definition` (verbatim PHASE / CONSTITUENT / TYPE_DEFINITION statements with
+line numbers, a parsed view, parameter counts and provenance links), using open-tdb's statement and parameter parsing.
 
 Deterministic: sorted output, no timestamps; input hashes recorded. `--check` rebuilds in memory and compares.
 
@@ -67,6 +73,7 @@ DATASET = "phase-registry"
 REGISTRY_VERSION = "0.1.0"
 SITE_DATA = "https://data.orchid-project.org/phases/"
 SITE = "https://orchid-project.org"
+PIPELINE_GITHUB = "https://github.com/orchid-calphad/orchid-pipeline"
 MAX_REFS = 10
 TOL = 1e-6
 
@@ -383,6 +390,189 @@ def parse_tdb(path):
     return out, ordis, header
 
 
+# ------------------------------------------------------------------------------- TDB phase definitions --
+# Verbatim PHASE / CONSTITUENT / TYPE_DEFINITION statements with line numbers, a parsed view and a parameter summary
+# per phase model. Statement boundaries, regular expressions and parameter keys are open-tdb's (scripts/validate_tdb.py,
+# scripts/check_subsystem_compat.py, scripts/audit_tdb_models.py); TDB text is read as text and never executed.
+_OT_MODULES = {}
+
+
+def open_tdb_modules(open_tdb):
+    """validate_tdb, check_subsystem_compat, audit_tdb_models from <open-tdb>/scripts (standard library only)."""
+    if not _OT_MODULES:
+        sd = os.path.join(open_tdb, "scripts")
+        sys.path.insert(0, sd)
+        try:
+            import validate_tdb  # noqa: E402
+            import check_subsystem_compat  # noqa: E402
+            import audit_tdb_models  # noqa: E402
+        finally:
+            sys.path.remove(sd)
+        _OT_MODULES.update(vt=validate_tdb, compat=check_subsystem_compat, audit=audit_tdb_models)
+    return _OT_MODULES
+
+
+def statement_spans(text, vt):
+    """Character spans of the statements validate_tdb.statements() yields, in the same order and with the same
+    rules ('$' comments, several statements per line, LIST_OF_REFERENCE blocks, '!' terminators). Each item:
+    (start_offset, end_offset_after_terminator, start_line, end_line, boundary)."""
+    out = []
+    pos = 0
+    pending, start, start_line, last_end, last_line = False, 0, 0, 0, 0
+    reference_block = False
+    for ln, raw in enumerate(text.splitlines(keepends=True), 1):
+        base = pos
+        pos += len(raw)
+        content = raw.splitlines()[0] if raw.splitlines() else ""
+        cut = content.split("$", 1)[0]
+        if not cut.strip():
+            continue
+        if re.match(r"^LIST[-_]OF[-_]REFERENCE", cut.lstrip(), re.IGNORECASE):
+            reference_block = True
+            continue
+        if reference_block:
+            d = cut.lstrip()
+            if not (re.match(r"^(?:ELEMENT|SPECIES)\s+\S+\s+", d, re.I) or
+                    re.match(r"^FUNCTION\s+\S+\s+[+-]?(?:\d|\.)", d, re.I) or
+                    re.match(r"^PHASE\s+\S+\s+%", d, re.I) or re.match(r"^TYPE_DEFINITION\s+\S+", d, re.I)):
+                continue
+            reference_block = False
+        if pending and vt.COMMAND_START_RE.match(cut.lstrip()):
+            out.append((start, last_end, start_line, last_line, "missing"))
+            pending = False
+        off = 0
+        broke = False
+        while "!" in cut[off:]:
+            i = cut.index("!", off)
+            before = cut[off:i]
+            if before.strip() or pending:
+                if not pending:
+                    start, start_line = base + off + (len(before) - len(before.lstrip())), ln
+                out.append((start, base + i + 1, start_line, ln, "complete"))
+                pending = False
+            off = i + 1
+            rem = cut[off:]
+            if rem.strip() and not vt.COMMAND_START_RE.match(rem.lstrip()):
+                broke = True
+                break
+        rem = "" if broke else cut[off:]
+        if rem.strip():
+            if not pending:
+                start, start_line = base + off + (len(rem) - len(rem.lstrip())), ln
+                pending = True
+            last_end, last_line = base + off + len(rem.rstrip()), ln
+    if pending:
+        out.append((start, last_end, start_line, last_line, "trailing"))
+    return out
+
+
+def verbatim(text, s, e):
+    """The statement exactly as in the file; only its line breaks are normalised to LF."""
+    return re.sub(r"\r\n|\r|\n|\x0b|\x0c|\x1c|\x1d|\x1e|\x85| | ", "\n", text[s:e])
+
+
+def _const_lists(body):
+    """CONSTITUENT body ' : AL NI% : VA : ' -> [['AL', 'NI%'], ['VA']] (spelling and '%' markers as printed)."""
+    pieces = body.strip().split(":")
+    pieces = pieces[1:-1] if not pieces[-1].strip() else pieces[1:]
+    return [[t for t in re.split(r"[\s,]+", p.strip()) if t] for p in pieces]
+
+
+def _num(t):
+    try:
+        v = float(t)
+    except ValueError:
+        return t
+    return int(v) if v == int(v) and abs(v) < 1e15 else v
+
+
+def tdb_definitions(path, open_tdb, rel_path, sha, links):
+    """{PHASE_NAME: tdb_definition} for every PHASE statement of one TDB file, plus per-file statistics."""
+    M = open_tdb_modules(open_tdb)
+    vt, compat, audit = M["vt"], M["compat"], M["audit"]
+    data = open(path, "rb").read()
+    text, issue = vt.decode(data)
+    stmts = list(vt.statements(text))
+    spans = statement_spans(text, vt)
+    if len(spans) != len(stmts):
+        raise SystemExit("statement spans disagree with validate_tdb.statements: " + rel_path)
+    phases, consts, typedefs = {}, {}, []
+    for (st, bnd), (s, e, l0, l1, b2) in zip(stmts, spans):
+        vb = verbatim(text, s, e)
+        # the verbatim span must reduce to validate_tdb's statement text (comments dropped, parts joined)
+        red = " ".join(x.split("$", 1)[0].strip() for x in vb.split("\n") if x.split("$", 1)[0].strip())
+        red = red[:-1].rstrip() if red.endswith("!") else red
+        if st.line != l0 or bnd != b2 or red != st.text:
+            raise SystemExit("statement span mismatch in %s line %d" % (rel_path, st.line))
+        rec = {"line_start": l0, "line_end": l1, "text": vb}
+        value = st.text
+        tm = compat.TYPE_DEFINITION_RE.match(value)
+        if tm:
+            typedefs.append((tm.group(1), value, rec))
+            continue
+        pm = compat.PHASE_RE.match(value)
+        if pm:
+            phases[vt.normalize_name(pm.group(1))] = (pm, rec)
+            continue
+        cm = vt.CONSTITUENT_RE.match(value)
+        if cm:
+            consts[vt.normalize_name(cm.group(1))] = (cm, rec)
+    parsed_src = compat.parse_source(path, {})
+    params = collections.defaultdict(list)
+    unmatched = 0
+    for key, recs in parsed_src["parameters"].items():
+        parts = audit.parameter_parts(key)
+        if not parts:
+            unmatched += len(recs)
+            continue
+        kind, ph, conf, order = parts
+        if ph not in phases:
+            unmatched += len(recs)
+            continue
+        inter = any(len(a) > 1 for a in audit.configuration_arrays(conf))
+        for _ in recs:
+            params[ph].append((kind, 0 if order is None else order, inter))
+    out = {}
+    for name, (pm, prec) in phases.items():
+        code = pm.group(2)
+        codes = list(dict.fromkeys(code))
+        tds, magnetic = [], None
+        for ident, value, rec in typedefs:
+            if ident not in codes:
+                continue
+            dm = compat.PHASE_DIRECTIVE_RE.match(value) or re.match(
+                r"^TYPE[-_](?:DEFINITION|DEF)\s+(\S+)\s+GES\s+A_P_D\s+(\S+)\s+(.*)$", value, re.I)
+            target = vt.normalize_name(dm.group(2)) if dm else None
+            tds.append(dict(rec, type_code=ident, amends=target))
+            if dm and target in ("@", name):
+                toks = dm.group(3).split()
+                if toks and toks[0].upper().startswith("MAG") and len(toks) >= 3:
+                    magnetic = {"type_code": ident, "afm_factor": _num(toks[1]), "structure_fraction": _num(toks[2]),
+                                "line": rec["line_start"]}
+        n = int(pm.group(3))
+        ratios = [_num(t) for t in pm.group(4).split()[:n]]
+        cm, crec = consts.get(name, (None, None))
+        cl = _const_lists(cm.group(2)) if cm else []
+        ps = params.get(name, [])
+        kinds = collections.Counter(k for k, _, _ in ps)
+        lorders = collections.Counter(o for k, o, _ in ps if k == "L")
+        out[name] = {
+            "verbatim": {"phase": prec, "constituent": crec, "type_definitions": tds},
+            "parsed": {"phase_name": name, "type_code": code, "type_codes": codes, "n_sublattices": n,
+                       "site_ratios": ratios, "constituents": cl,
+                       "major_constituents": [[c.rstrip("%") for c in sl if c.endswith("%")] for sl in cl],
+                       "magnetic": magnetic},
+            "parameters": {"total": len(ps), "by_kind": dict(sorted(kinds.items())),
+                           "L_by_order": {str(k): v for k, v in sorted(lorders.items())},
+                           "interaction_orders": sorted({o for _, o, i in ps if i}),
+                           "endmember_G": sum(1 for k, _, i in ps if k == "G" and not i)},
+            "provenance": dict({"path": rel_path, "sha256": sha, "decoded_as": "latin-1" if issue else "utf-8"},
+                               **links)}
+    stats = {"unmatched_parameters": unmatched, "type_codes_without_definition":
+             sorted({c for _, (pm, _) in phases.items() for c in pm.group(2)} - {t[0] for t in typedefs})}
+    return out, stats
+
+
 def model_composition(p, elements):
     """Fixed composition of a stoichiometric model ({EL: amount}) or None (a sublattice with >1 constituent, a
     non-element species, or missing data)."""
@@ -632,6 +822,32 @@ def build(a):
             tdbs.append(e)
     tdbs.sort(key=lambda e: e["local_path"])
     tdb_digest = hashlib.sha256()
+    # where each TDB file is published: the website copy (same bytes) and the orchid-pipeline GitHub blob (same git
+    # blob id on the recorded ref, read from the local clone; no network)
+    pipe_blobs, pipe_tree = {}, None
+    if a.pipeline and os.path.isdir(os.path.join(a.pipeline, ".git")):
+        r = subprocess.run(["git", "-C", a.pipeline, "ls-tree", "-r", a.pipeline_ref, "databases"],
+                           capture_output=True, text=True)
+        for line in r.stdout.splitlines():
+            meta, _, rel = line.partition("\t")
+            if meta.split()[1:2] == ["blob"]:
+                pipe_blobs[rel] = meta.split()[2]
+        pipe_tree = subprocess.run(["git", "-C", a.pipeline, "rev-parse", a.pipeline_ref + ":databases"],
+                                   capture_output=True, text=True).stdout.strip() or None
+    if pipe_tree:
+        inputs.hashes["orchid-pipeline %s:databases (git tree id)" % a.pipeline_ref] = pipe_tree
+    tdb_stats = collections.Counter()
+    tdb_codes_undefined = collections.Counter()
+
+    def file_links(rel, data_bytes, sha):
+        out = {"website_url": None, "github_url": None}
+        site_copy = os.path.join(orchid_cite.SITE, "data", rel)
+        if os.path.isfile(site_copy) and sha256_file(site_copy) == sha:
+            out["website_url"] = SITE + "/data/" + rel
+        blob = hashlib.sha1(b"blob %d\0" % len(data_bytes) + data_bytes).hexdigest()
+        if pipe_blobs.get(rel) == blob:
+            out["github_url"] = "%s/blob/%s/%s" % (PIPELINE_GITHUB, a.pipeline_ref.split("/")[-1], rel)
+        return out
 
     # ---- calculated diagrams
     pd_dir = os.path.join(data, "phase-diagrams", "sgte")
@@ -670,6 +886,13 @@ def build(a):
         system = "-".join(elements)
         phases, ordis, header = parse_tdb(path)
         fname = os.path.basename(e["local_path"])
+        defs, dstats = tdb_definitions(path, open_tdb, e["local_path"], sha,
+                                       file_links(e["local_path"], open(path, "rb").read(), sha))
+        if set(defs) != set(phases):
+            raise SystemExit("PHASE statements disagree between parsers in " + e["local_path"])
+        tdb_stats["unmatched_parameters"] += dstats["unmatched_parameters"]
+        for c in dstats["type_codes_without_definition"]:
+            tdb_codes_undefined[c] += 1
         tdb_models_by_file[fname] = (system, phases)
         dis_of = {v: k for k, v in ordis.items()}
         for name in sorted(phases):
@@ -688,6 +911,10 @@ def build(a):
                 m["disordered_part"] = ordis[name]
             if name in dis_of:
                 m["disordered_part_of"] = dis_of[name]
+            td = defs[name]
+            td["parsed"]["disordered_part"] = ordis.get(name)
+            td["parsed"]["ordered_partner"] = dis_of.get(name)
+            m["tdb_definition"] = td
             protos = [c for c in p["comments"] if re.match(r"(?i)^prototypes?\b", c)]
             if protos:
                 m["tdb_comment_structure"] = protos
@@ -899,7 +1126,7 @@ def build(a):
 
     # ---- assignment
     conflicts = {"name_dft_disagreement": [], "polymorph_families": [], "model_composition_disagreement": [],
-                 "same_name_different_structures": [], "mp_oqmd_disagreement": []}
+                 "same_name_different_structures": [], "mp_oqmd_disagreement": [], "assessment_declared_blocked": []}
     for key, pids in sorted(comp_index.items()):
         if len(pids) > 1:
             conflicts["polymorph_families"].append({"system": key[0], "composition": {k: float(v) for k, v in key[1]},
@@ -926,6 +1153,70 @@ def build(a):
                 continue
             hits.append(t["id"])
         return hits
+
+    C_CONFLICT = ("stoichiometry_contradicts_", "site_ratios_contradict_", "order_disorder_ambiguity", "lattice_word_",
+                  "word_", "crystal_word_", "several_structure_tokens", "names_imply_different_structures",
+                  "sgte_mmc2_row_disagrees", "name_suggests_", "models_disagree_on_composition", "words_imply_several")
+
+    def mmc2_system_rows(name, elements):
+        """Hallstedt rows for this phase name whose listed compound has exactly this system's elements."""
+        els, hit = set(elements), []
+        for r in mmc2_by_name.get(name, []):
+            for c in re.split(r",\s*", r["actual"] or ""):
+                cc = formula_counts(c.split("(")[0].strip().replace(" ", ""))
+                if cc and {x.upper() for x in cc} == els:
+                    hit.append((r, cc))
+                    break
+        return hit
+
+    def tier_c(en, tdb_names, analyses, reasons, dft, comp, polymorph):
+        """Tier C: the SGTE crystallographic table (mmc2) states exactly one structure for this phase in this system,
+        nothing in tiers A/B contradicts it, and the TDB model is consistent with the listed compound."""
+        rows = [(n, r, cc) for n in tdb_names for r, cc in mmc2_system_rows(n, en["elements"])]
+        if not rows:
+            return {}
+        brief = [{"phase_name": n, "actual": r["actual"], "model": r["model"], "prototype": r["prototype"],
+                  "strukturbericht": r["sb"], "pearson": r["pearson"],
+                  "space_group": {"number": r["sg_number"], "symbol": r["sg_symbol"]} if r["sg_number"] else None}
+                 for n, r, cc in rows]
+        brief = [json.loads(x) for x in sorted({json.dumps(b, sort_keys=True) for b in brief})]
+        res = {"rows_brief": brief}
+        tids = {type_for_row(r) for _, r, _ in rows}
+        keys = {(r["pearson"], r["sg_number"]) for _, r, _ in rows}
+        if len(keys) > 1 or len(tids) > 1:
+            return dict(res, block="sgte_mmc2_rows_disagree")
+        if None in tids or not all(r["sg_number"] and r["pearson"] for _, r, _ in rows):
+            return dict(res, block="sgte_mmc2_row_incomplete")
+        tid = tids.pop()
+        t = st_by_id[tid]
+        bad = [x for x in reasons if x.startswith(C_CONFLICT)]
+        if bad:
+            return dict(res, block="assessment_declared_blocked_by:" + bad[0].split(":")[0])
+        sbns = {s for x in analyses for s in (x.get("candidate_sbn") or [])}
+        if sbns and t["_sbn"] not in sbns:
+            return dict(res, block="assessment_declared_conflicts_with_name")
+        if comp and not polymorph and dft.get("mp") and dft.get("oqmd"):
+            sgs = {v["spacegroup_number"] for sx in ("mp", "oqmd") for v in dft[sx]}
+            if len(dft["mp"]) == 1 and len(dft["oqmd"]) == 1 and len(sgs) == 1 and not dft["mp"][0]["degenerate"] \
+                    and not dft["oqmd"][0]["degenerate"] and t["space_group"] and sgs.pop() != t["space_group"]["number"]:
+                return dict(res, block="assessment_declared_conflicts_with_dft")
+        cks = {ratio_key(cc) for _, _, cc in rows}
+        for m in en["models"]:
+            p = m["_raw"]
+            if t["_sbn"] in DISORDERED and partitioned(p):
+                return dict(res, block="assessment_declared_order_disorder_ambiguity")
+            if m["_comp"] and len(m["_comp"]) == 2:
+                if ratio_key(m["_comp"]) not in cks:
+                    return dict(res, block="assessment_declared_compound_differs_from_model_composition")
+            elif not partitioned(p):
+                sk = site_ratio_key(p)
+                if sk is not None and sk not in cks:
+                    return dict(res, block="assessment_declared_compound_differs_from_site_ratios")
+        res["struct"] = {"structure_type": tid, "basis": "assessment_declared", "tier": "C",
+                         "confidence": "assessor-stated", "label": "assessment-declared (Hallstedt 2025, mmc2)",
+                         "source": {"citation": HALLSTEDT["citation"], "doi": HALLSTEDT["doi"],
+                                    "license": HALLSTEDT["license"], "table": "mmc2", "rows": brief}}
+        return res
 
     name_struct = collections.defaultdict(set)   # TDB phase name -> structure types assigned/declared (conflicts)
     for pid in sorted(entries):
@@ -1063,6 +1354,17 @@ def build(a):
             else:
                 if not reasons:
                     reasons.append("name_structure_not_unique")
+        # ---- tier C: assessment-declared (Hallstedt 2025 mmc2 lists one structure for this phase in this system)
+        if not struct and kinds == {"crystal"} and en["models"]:
+            tc = tier_c(en, tdb_names, analyses, reasons, dft, comp, polymorph)
+            if tc.get("struct"):
+                struct = tc["struct"]
+                caveats.append("not certain from the name or DFT alone (%s); structure as stated in the SGTE "
+                               "crystallographic table for this phase name and system" % (", ".join(sorted(set(reasons))) or "no name/DFT basis"))
+            elif tc.get("block"):
+                reasons.append(tc["block"])
+                conflicts["assessment_declared_blocked"].append(
+                    {"phase": pid, "names": tdb_names, "reason": tc["block"], "mmc2": tc.get("rows_brief", [])})
         # ---- candidates (evidence for review, recorded for every crystalline phase without an assignment)
         if not struct:
             for n in tdb_names:
@@ -1147,10 +1449,12 @@ def build(a):
                                                                   for p, q, s in sorted(protos, key=str)],
                  "registry_phases": sorted(pid for pid, en in entries.items() if n in {m["phase_name"] for m in en["models"]})})
 
-    return finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, data)
+    return finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, data,
+                    {"unmatched_parameters": tdb_stats["unmatched_parameters"],
+                     "type_codes_without_definition": dict(sorted(tdb_codes_undefined.items()))})
 
 
-def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, data):
+def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, data, tdb_extra):
     cite = orchid_cite.cite_as(DATASET, data)
     reg = []
     for pid in sorted(entries):
@@ -1209,6 +1513,7 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
               "structure_types": len(st_public), "structure_types_used": len([t for t in st_public if t["registry_phases"]]),
               "assigned_tier_A_standard_name": by_basis.get("standard_name", 0),
               "assigned_tier_B_dft_unique_match": by_basis.get("dft_unique_match", 0),
+              "assigned_tier_C_assessment_declared": by_basis.get("assessment_declared", 0),
               "liquid": by_basis.get("liquid", 0), "gas": by_basis.get("gas", 0),
               "no_prototype": sum(1 for e in reg if not e["structure"]),
               "status": dict(sorted(status.items())), "review_queue": status.get("needs_review", 0),
@@ -1223,11 +1528,13 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
               "phases_with_references": sum(1 for e in reg if e["references"]),
               "references_listed": sum(len(e["references"]) for e in reg),
               "distinct_reference_dois": len({r["doi"].lower() for e in reg for r in e["references"]}),
-              "phases_with_stability": sum(1 for e in reg if any(s.get("stable") for s in e["stability"]))}
+              "phases_with_stability": sum(1 for e in reg if any(s.get("stable") for s in e["stability"])),
+              "tdb_definitions": tdb_def_counts(reg, tdb_extra)}
     head = {"dataset": "ORCHID phase registry (binary systems)", "registry_version": REGISTRY_VERSION,
             "release": orchid_cite.RELEASE_TAG, "license": "CC-BY-4.0",
             "description": "One entry per (binary system, phase). Structure types are assigned only when certain "
-                           "(tier A: standard phase name; tier B: unique MP+OQMD on-hull match); otherwise candidates "
+                           "(tier A: standard phase name; tier B: unique MP+OQMD on-hull match; tier C: one structure stated by "
+                           "the assessment's crystallographic table, assessor-stated); otherwise candidates "
                            "are listed and the phase is marked needs_review. Field reference: SCHEMA.md.",
             "id_rule": "phase:<sorted lower-case elements>:<slug>, the SGTE-corpus canonical id convention",
             "stability_rule": "calculated diagrams: pycalphad 0.11.2, 300-2500 K unless calc_T_range_K is given, "
@@ -1284,6 +1591,23 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
     return out, reg, counts
 
 
+def tdb_def_counts(reg, extra):
+    tds = [m["tdb_definition"] for e in reg for m in e["models"] if m.get("tdb_definition")]
+    stm = {(t["provenance"]["path"], d["line_start"]) for t in tds for d in t["verbatim"]["type_definitions"]}
+    return {"models_with_definition": len(tds),
+            "phases_with_definitions": sum(1 for e in reg if any(m.get("tdb_definition") for m in e["models"])),
+            "constituent_statements": sum(1 for t in tds if t["verbatim"]["constituent"]),
+            "type_definition_references": sum(len(t["verbatim"]["type_definitions"]) for t in tds),
+            "distinct_type_definition_statements": len(stm),
+            "magnetic_models": sum(1 for t in tds if t["parsed"]["magnetic"]),
+            "ordered_with_disordered_part": sum(1 for t in tds if t["parsed"]["disordered_part"]),
+            "parameters_counted": sum(t["parameters"]["total"] for t in tds),
+            "parameters_not_matched_to_a_declared_phase": extra["unmatched_parameters"],
+            "files_with_type_codes_without_definition": extra["type_codes_without_definition"],
+            "with_website_url": sum(1 for t in tds if t["provenance"]["website_url"]),
+            "with_github_url": sum(1 for t in tds if t["provenance"]["github_url"])}
+
+
 def registry_csv(reg):
     buf = io.StringIO()
     w = csv.writer(buf, lineterminator="\n")
@@ -1291,7 +1615,7 @@ def registry_csv(reg):
                 "prototype", "strukturbericht", "pearson", "space_group_number", "space_group_symbol", "label",
                 "tdb_names", "n_models", "n_names", "stoichiometry", "stable_T_min_K", "stable_T_max_K",
                 "literature_values", "literature_accepted_values", "n_candidates", "review_reasons",
-                "references_first5", "total_papers"])
+                "references_first5", "total_papers", "tdb_first_model", "tdb_phase_line", "tdb_constituent_line"])
     for e in reg:
         s = e["structure"] or {}
         sg = s.get("space_group") or {}
@@ -1304,8 +1628,19 @@ def registry_csv(reg):
                     ";".join("%s:%.6g" % kv for kv in (e["stoichiometry"] or {}).items()),
                     min(x["T_min_K"] for x in stab) if stab else "", max(x["T_max_K"] for x in stab) if stab else "",
                     e["literature"]["values"], e["literature"]["accepted_values"], len(e["candidates"]),
-                    ";".join(e["review_reasons"]), ";".join(r["doi"] for r in e["references"][:5]), e["total_papers"]])
+                    ";".join(e["review_reasons"]), ";".join(r["doi"] for r in e["references"][:5]), e["total_papers"]]
+                   + first_def(e))
     return buf.getvalue()
+
+
+def first_def(e):
+    """CSV: file, verbatim PHASE and CONSTITUENT statements of the first model (models sorted by file, name)."""
+    for m in e["models"]:
+        td = m.get("tdb_definition")
+        if td:
+            v = td["verbatim"]
+            return [m["path"], v["phase"]["text"], (v["constituent"] or {}).get("text", "")]
+    return ["", "", ""]
 
 
 def jsonld(reg, cite):
@@ -1329,6 +1664,20 @@ def jsonld(reg, cite):
                     t[kk] = s[k]
             if s.get("space_group"):
                 t["spaceGroupNumber"] = s["space_group"]["number"]
+        props = []
+        for m in e["models"]:
+            td = m.get("tdb_definition")
+            if not td:
+                continue
+            v = td["verbatim"]
+            txt = "\n".join([v["phase"]["text"]] + ([v["constituent"]["text"]] if v["constituent"] else []) +
+                             [x["text"] for x in v["type_definitions"]])
+            props.append({"@type": "PropertyValue", "propertyID": "orchid:tdbPhaseDefinition",
+                          "name": "TDB definition of %s in %s (line %d)" % (m["phase_name"], m["tdb"], v["phase"]["line_start"]),
+                          "value": txt, "url": td["provenance"]["website_url"] or td["provenance"]["github_url"],
+                          "description": "verbatim PHASE, CONSTITUENT and TYPE_DEFINITION statements; sha256 " + m["sha256"]})
+        if props:
+            t["additionalProperty"] = props
         if e["references"]:
             t["citation"] = [{"@id": "https://doi.org/" + r["doi"], "@type": "ScholarlyArticle", "name": r["citation"]}
                              for r in e["references"]]
@@ -1371,6 +1720,14 @@ def conflicts_md(conflicts, counts):
     for c in conflicts["model_composition_disagreement"]:
         o.append("- `%s`: %s in %s" % (c["phase"], " | ".join(
             ",".join("%s %.4g" % kv for kv in sorted(x.items())) for x in c["compositions"]), ", ".join(c["tdb_files"])))
+    o += ["", "## Tier C (assessment-declared) not applied", "",
+          "The SGTE crystallographic table (Hallstedt 2025, mmc2) has rows for this phase name and system, but they "
+          "list more than one structure, are incomplete, or something in tiers A/B or the TDB model contradicts them. "
+          "The phase stays in the review queue.", ""]
+    for c in conflicts["assessment_declared_blocked"]:
+        o.append("- `%s` (%s): %s; mmc2: %s" % (c["phase"], ", ".join(c["names"]), c["reason"], "; ".join(
+            "%s %s %s sg %s (%s)" % (r["phase_name"], r["prototype"] or "?", r["pearson"] or "?",
+                                    (r["space_group"] or {}).get("number") or "?", r["actual"]) for r in c["mmc2"])))
     o += ["", "## Polymorph families (several phases of one system at the same composition)", "",
           "Either polymorphs (alpha/beta, LT/HT) or the same phase under different names in different assessments; "
           "a unique DFT match cannot tell which phase it is.", ""]
@@ -1387,8 +1744,9 @@ Registry version %s, release %s. Generated by `tools/build_phase_registry.py` in
 (deterministic; `--check` verifies the files). Licence: CC BY 4.0 (facts and citations; cite ORCHID and the sources
 named in `cite_as`).
 
-**Status.** Version 0 of the registry. Structure types are assigned only when certain; everything else is a review
-candidate. Paper labels come from the machine-extracted literature values (Version 1, machine-extracted).
+**Status.** Version 0 of the registry. Structure types are assigned only when certain (tiers A, B) or when the
+assessment's crystallographic table states exactly one consistent structure (tier C, assessor-stated); everything else is
+a review candidate. Paper labels come from the machine-extracted literature values (Version 1, machine-extracted).
 
 ## Files
 
@@ -1396,8 +1754,8 @@ candidate. Paper labels come from the machine-extracted literature values (Versi
 |---|---|
 | `registry.json` | canonical registry: `{dataset, registry_version, inputs, counts, cite_as, phases[]}` |
 | `structure_types.json` | system-independent structure types, each with its sources |
-| `registry.jsonld`, `context.jsonld` | the phases as a schema.org `DefinedTermSet` of `DefinedTerm`s (`citation`, `isBasedOn`) |
-| `registry.csv` | one flat row per phase (`references_first5`: first five reference DOIs, `;`-joined) |
+| `registry.jsonld`, `context.jsonld` | the phases as a schema.org `DefinedTermSet` of `DefinedTerm`s (`citation`, `isBasedOn`; `additionalProperty`: one `PropertyValue` `orchid:tdbPhaseDefinition` per model with the verbatim statements) |
+| `registry.csv` | one flat row per phase (`references_first5`: first five reference DOIs, `;`-joined; `tdb_first_model`, `tdb_phase_line`, `tdb_constituent_line`: file and verbatim PHASE / CONSTITUENT statements of the first model, models sorted by file and phase name) |
 | `registry.parquet` | the CSV columns as a typed Parquet table (when built with pyarrow) |
 | `review_queue.json` | phases with candidates but no assigned structure (`status: needs_review`) |
 | `CONFLICTS.md` | same name -> different structures, name vs DFT, MP vs OQMD, model compositions, polymorph families |
@@ -1411,11 +1769,12 @@ candidate. Paper labels come from the machine-extracted literature values (Versi
 | `system`, `elements` | chemical system (upper-case elements joined by `-`) |
 | `preferred_name` | the TDB phase name used by most assessments |
 | `status` | `assigned` (structure below), `needs_review` (no structure; `candidates` listed), `unresolved_no_candidates` |
-| `structure` | `{structure_type, basis, tier, confidence, label, prototype, strukturbericht, pearson, space_group, caveats[], dft?}` or `null`. `basis`: `standard_name` (tier A: the TDB name encodes one structure and the model stoichiometry / sublattices and DFT do not contradict it), `dft_unique_match` (tier B, label "DFT-supported": a stoichiometric compound matching exactly one on-hull entry in both Materials Project and OQMD with the same space group, one structure type for that space group and stoichiometry, and no other phase of the system at that composition), `liquid`, `gas` |
+| `structure` | `{structure_type, basis, tier, confidence, label, prototype, strukturbericht, pearson, space_group, caveats[], dft?}` or `null`. `basis`: `standard_name` (tier A: the TDB name encodes one structure and the model stoichiometry / sublattices and DFT do not contradict it), `dft_unique_match` (tier B, label "DFT-supported": a stoichiometric compound matching exactly one on-hull entry in both Materials Project and OQMD with the same space group, one structure type for that space group and stoichiometry, and no other phase of the system at that composition), `assessment_declared` (tier C, confidence `assessor-stated`: tiers A and B do not assign it, the Hallstedt 2025 crystallographic table (mmc2) rows for this TDB phase name whose listed compound has exactly this system's elements all give one structure type with Pearson symbol and space group, nothing in tiers A/B contradicts it (name structure token, DFT ground state, model stoichiometry/sublattices, order/disorder), and every model's fixed composition or two-sublattice site ratio equals the listed compound; `source` cites mmc2 with its rows), `liquid`, `gas`. Phases whose mmc2 rows disagree stay `needs_review` (`sgte_mmc2_rows_disagree`) |
 | `candidates` | for unassigned phases: `{source, structure_type, prototype, strukturbericht, pearson, space_group, detail, material_id?, count?}`; `source` is `name_token`, `sgte_mmc2` (Hallstedt 2025 crystallographic table row for that name), `tdb_comment` (the compiler's comment above the PHASE line), `dft_mp` / `dft_oqmd` (on-hull entries at the composition or within the calculated homogeneity range), `dft_space_group_and_stoichiometry`, `literature_printed` (Pearson / prototype printed beside a label mapped to the phase) |
 | `review_reasons` | why no structure was assigned (`off_stoichiometric_model`, `polymorph_family`, `no_on_hull_entry_in_*`, `mp_oqmd_space_groups_differ`, `dft_space_group_*_matches_n_structure_types`, `order_disorder_ambiguity`, `stoichiometry_contradicts_*`, `name_suggests_*_but_dft_space_group_*`, `unrecognised_name_tokens`, `no_structure_token`, ...) |
 | `names` | every name: `{name, namespace, label, ...}`; namespaces `tdb` (`tdb:<file>:<NAME>`), `corpus` (`corpus:<canonical id>` and its older aliases), `paper` (`paper:<doi>:<label>`, or `paper:sha256-<prefix>:<label>` for papers without DOI; `basis` says how the label was linked), `mp` / `oqmd` (only for assigned phases whose DFT entry was matched) |
-| `models` | `{tdb, path, sha256, phase_name, type_code, sublattices[{site_ratio, constituents}], stoichiometric, composition, disordered_part?, disordered_part_of?, tdb_comment_structure?}` |
+| `models` | `{tdb, path, sha256, phase_name, type_code, sublattices[{site_ratio, constituents}], stoichiometric, composition, disordered_part?, disordered_part_of?, tdb_comment_structure?, tdb_definition}` |
+| `models[].tdb_definition` | the model as written in the TDB (bundled, licence-confirmed files only). `verbatim`: `{phase, constituent, type_definitions[]}`, each `{line_start, line_end, text}` with the exact statement from its first character to the terminating `!` (only line breaks normalised to LF; bytes decoded as UTF-8, Latin-1 fallback, see `provenance.decoded_as`); `type_definitions` are every TYPE_DEFINITION whose code is in the phase's type code (`%%` SEQ, magnetic `GES AMEND_PHASE_DESCRIPTION ... MAGNETIC`, `DIS_PART`, ...), each with `type_code` and `amends` (`@` = every phase with that code). `parsed`: `{phase_name, type_code, type_codes[], n_sublattices, site_ratios[], constituents[[...]] (spelling and `%%` major-constituent markers as printed), major_constituents[[...]], magnetic {type_code, afm_factor, structure_fraction, line} or null, disordered_part, ordered_partner}`. `parameters`: counts only, never expressions: `{total, by_kind {G, L, TC, BM, BMAG, BMAGN, THETA, ...as spelled}, L_by_order, interaction_orders[] (orders of parameters with an interacting sublattice, any kind; a missing order counts as 0), endmember_G}`. `provenance`: `{path, sha256, decoded_as, website_url (https://orchid-project.org/data/<path>, when the site copy has the same SHA-256), github_url (orchid-calphad/orchid-pipeline blob, when that repository holds the same git blob)}`. Statement boundaries follow open-tdb `scripts/validate_tdb.py` (each span is checked to reduce to its statement); parameter keys follow `check_subsystem_compat.py` / `audit_tdb_models.py`. TDB text is never executed |
 | `stoichiometry` | mole fractions when every model of the phase is stoichiometric and they agree |
 | `stability` | per calculated diagram (pycalphad, SGTE TDB): `{tdb, tdb_sha256, diagram, status, stable, T_min_K, T_max_K, x_element, x_min, x_max, stable_at_top_of_range, calc_T_range_K?}` (calculated range 300-2500 K unless `calc_T_range_K` says otherwise); `x` is the mole fraction of `x_element` of the phase itself (boundary, invariant and single-phase grid points; 0.01 grid); `stable: false` = not stable anywhere in the calculated range |
 | `literature` | `{values, accepted_values, papers}`: literature values whose phase list contains this phase |
@@ -1515,6 +1874,9 @@ def main(argv=None):
     ap.add_argument("--open-tdb", default=DEF_OPEN_TDB, help="open-tdb checkout (read only)")
     ap.add_argument("--corpus", default=DEF_CORPUS, help="SGTE corpus build directory (read only)")
     ap.add_argument("--mmc2", default=DEF_MMC2, help="Hallstedt 2025 supplementary table mmc2.xlsx")
+    ap.add_argument("--pipeline", default=os.path.join(HOME, "projects", "orchid-pipeline"),
+                    help="local orchid-pipeline clone (git blob ids for the GitHub links; read only)")
+    ap.add_argument("--pipeline-ref", default="origin/main", help="ref of the orchid-pipeline clone to link to")
     default_ppy = os.path.expanduser("~/orchid-py313/bin/python")
     ap.add_argument("--parquet-python", default=default_ppy, help="interpreter with pyarrow for registry.parquet")
     ap.add_argument("--check", action="store_true", help="exit 1 if phases/ differs from a fresh build")
