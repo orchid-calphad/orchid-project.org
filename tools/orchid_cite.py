@@ -96,7 +96,9 @@ ABSTRACT = {
               "the ORCHID literature values, one folder per evidence class (experimental, model, DFT: literature, "
               "Materials Project, OQMD), every value traced to its published ORCHID observation id and source DOI, "
               "with its uncertainty in physical units (printed, ESPEI's experimental default, or calibrated for "
-              "DFT against experiment) and the ESPEI weight derived from it."),
+              "DFT against experiment) and the ESPEI weight derived from it; plus optional, tagged phase-constraint "
+              "datasets (derived invariant-temperature brackets and liquid-stability points, assessed handbook "
+              "assemblages) in the phase names of each assessment."),
     "bibliography": ("Every paper ORCHID knows about: Crossref bibliographic metadata (CC0), the role of each paper in "
                      "ORCHID, counts of the evidence released from it, and typed relations with provenance (citations of "
                      "values, TDB files, reassessments, handbook diagrams, Crossref reference lists)."),

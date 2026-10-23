@@ -65,6 +65,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build_dft_parity as parity  # noqa: E402  (formula parser shared with the DFT benchmark)
 import export_literature_data as lit  # noqa: E402
 import orchid_cite  # noqa: E402
+import espei_constraints as ec  # noqa: E402
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_ESPEI_PY = os.path.expanduser("~/.venvs/espei/bin/python")
@@ -74,6 +75,7 @@ STATUS_LINE = "Version 1, machine-extracted"
 SOURCES = [("general/espei", "experimental"), ("general/espei-model", "model"), ("invariants/espei", "invariants")]
 FOLDER_CLASS = {"experimental": "experimental", "model": "model", "invariants": "experimental"}
 GROUPS = ("experimental", "model", "invariants", "dft/literature", "dft/mp", "dft/oqmd")
+PGROUPS = ("assessed", "derived/invariant-brackets", "derived/liquid-stability")   # optional phase constraints
 
 CAVEAT_FLAGS = ("magnitude_suspect", "system_mismatch", "source_disputed", "dft_outlier_unexplained",
                 "basis_inferred_from_magnitude", "basis_corrected_from_formula", "sign_from_heading",
@@ -101,6 +103,107 @@ ESPEI_EXCLUSION_TEXT = {
     "null_in_composition": "a composition with a null (not printed) entry next to printed ones (ternary vertex or "
                            "condition); ESPEI 0.9.1 clean_dataset cannot convert it; values are not invented",
 }
+DROP_REASONS["duplicate_read_same_row"] = ("E4: the same printed table row read twice (same ORCHID row id `pid`, "
+                                           "conditions and value); counted once, the other id kept as `also_read_as`")
+DROP_REASONS["duplicate_identical_zpf"] = ("E3: identical ZPF region (same phases, temperature and compositions) "
+                                           "already written from another dataset (another assessment folder or another "
+                                           "paper quoting the same invariant); kept once with every source in "
+                                           "`also_reported_as`")
+
+# E5: activity reference states, audited against the printed text of every activity table in the bundle (build fails
+# for an activity table not listed here). Keyed by the table (ORCHID locator asset). `phases`: the reference phase of
+# each element whose activity the table gives, as the paper states it (TDB phase names); `basis`: printed (with the
+# quote and where it is printed) or not_printed_implied (the paper gives activities in the liquid at temperatures where
+# the element is liquid; the reference is then the pure liquid by convention, recorded as an assumption).
+ACR_REFERENCE_AUDIT = {
+    "doi:10.1016/j.calphad.2006.06.002/p7/tab-3": {
+        "phases": {"CU": "LIQUID", "ZR": "LIQUID"}, "basis": "printed",
+        "quote": "Comparison of the measured [12] and present calculated activities of the components in the Cu-Zr melt "
+                 "(reference states: liquid pure components)", "where": "table 3 caption, p. 7"},
+    "doi:10.1016/j.jallcom.2009.03.044/p3/tab-3": {
+        "phases": {"B": "LIQUID"}, "basis": "printed",
+        "quote": "The calculated boron activities with experimental data [14] (T = 1850 K; and reference states: pure "
+                 "liquid components).", "where": "table 3 caption"},
+    "doi:10.1016/j.jallcom.2007.04.017/p5/tab-6": {
+        "phases": {"MO": "LIQUID"}, "basis": "printed",
+        "quote": "Note: The reference states are the liquid phases for the Mo and Th.", "where": "table 6 note"},
+    "doi:10.1016/j.calphad.2005.06.004/p4/tab-3": {
+        "phases": {"YB": "LIQUID"}, "basis": "printed", "quote": "Ytterbium reference state is Yb(liquid).",
+        "where": "text next to table 3"},
+    "doi:10.1007/bf02667471/p3/tab-3": {
+        "phases": {"GE": "LIQUID", "SI": "LIQUID"}, "basis": "printed",
+        "quote": "Fig. 4 Activities of Si and Ge at 1723 K in Si-Ge liquid alloys referred to both liquid components.",
+        "where": "caption of Fig. 4 (the same activities as table 3)"},
+    "doi:10.1007/s11663-998-0113-z/p2/tab-iii": {
+        "phases": {"TI": "BCC_A2"}, "basis": "printed", "quote": "*In both cases, the reference state is bcc.",
+        "where": "table III footnote"},
+    "doi:10.1361/105497198770341923/p4/tab-2": {
+        "phases": {"TI": "BCC_A2"}, "basis": "printed", "quote": "Note: The reference state is bcc for both phases.",
+        "where": "table 2 note"},
+    "doi:10.1007/s11669-014-0313-y/p6/tab-5": {
+        "phases": {"CR": "BCC_A2"}, "basis": "printed", "quote": "Fig. 2 Activities of Cr (reference state bcc_A2) ...",
+        "where": "caption of Fig. 2 (the same Cr activities as table 5)"},
+    "doi:10.1007/bf02892376/p5/tab-5": {
+        "phases": {"CD": "LIQUID"}, "basis": "not_printed_implied",
+        "quote": "Table 5 Liquid Activities ... (a) Cd activity (Cd boiling point under external pressure).",
+        "where": "table 5 heading and footnote; reference state not printed; Cd is liquid at 1373 K"},
+    "doi:10.1016/0040-6031(89)87205-3/p4/tab-3": {
+        "phases": {"TL": "LIQUID"}, "basis": "not_printed_implied",
+        "quote": "Activity of thallium in liquid Cu-Tl alloys in the temperature range 1273-1473 K",
+        "where": "table 3 caption; reference state not printed; Tl is liquid at these temperatures"},
+    "doi:10.1016/0040-6031(89)87205-3/p4/tab-4": {
+        "phases": {"CU": "LIQUID", "TL": "LIQUID"}, "basis": "not_printed_implied",
+        "quote": "Partial Gibbs free energies and activities of copper and thallium in liquid alloys at T = 1573 K",
+        "where": "table 4 caption; reference state not printed; Cu and Tl are liquid at 1573 K"},
+    "doi:10.1016/0925-8388(95)02178-7/p3/tab-1": {
+        "phases": {"PB": "LIQUID"}, "basis": "not_printed_implied",
+        "quote": "Experimental activity of lead in [Ga + Pb] liquid alloys",
+        "where": "table 1 caption; reference state not printed; Pb is liquid at 1000-1143 K"},
+    "doi:10.1361/105497100770340165/p4/tab-4": {
+        "phases": {"CO": "LIQUID", "CU": "LIQUID"}, "basis": "not_printed_implied",
+        "quote": "... activities aCo, aCu of components Co and Cu in the liquid Co-Cu system at 1537 C",
+        "where": "table 4 caption; reference state not printed; Co and Cu are liquid at 1810 K"},
+}
+WEIGHT_FLOOR_RULE = ("optional minimum-sigma policy (E6): sigma_eff = max(sigma, sigma_floor) with sigma_floor = "
+                     "ESPEI's experimental default for the property (500 J/mol for enthalpies and for the chemical "
+                     "potential of activities, 0.2 J/mol/K for entropies and heat capacities); suggested_weight = "
+                     "min(weight, 1). The printed sigma is unchanged (orchid_uncertainty); use suggested_weight when "
+                     "printed sigmas are much smaller than the scatter between sources (e.g. formation enthalpies "
+                     "printed with +-80 J/mol-atom while other measurements differ by 1-2 kJ/mol-atom)")
+
+
+def acr_reference_state(out, recs, src_rel, res):
+    """E5: reference state of an activity dataset = the one the paper states (ACR_REFERENCE_AUDIT)."""
+    assets = sorted({((r.get("locator") or {}).get("asset")) for _, r in recs})
+    if len(assets) != 1 or assets[0] not in ACR_REFERENCE_AUDIT:
+        raise SystemExit("E5: activity table not audited for its reference state: %s (%s); add it to "
+                         "ACR_REFERENCE_AUDIT after reading the paper" % (assets, src_rel))
+    a = ACR_REFERENCE_AUDIT[assets[0]]
+    el = out["output"].split("_", 1)[1].upper()
+    if el not in a["phases"]:
+        raise SystemExit("E5: %s: no audited reference phase for %s" % (src_rel, el))
+    ph = a["phases"][el]
+    rs = out.get("reference_state") or {}
+    before = list(rs.get("phases") or [])
+    rs["phases"] = [ph]
+    rs.setdefault("conditions", {})
+    out["reference_state"] = rs
+    agree = []
+    for _, r in recs:
+        rp = ((r.get("reference_state") or {}).get(el) or {}).get("phase")
+        ok = rp == ph
+        agree.append(ok)
+        if not ok:
+            res["upstream"]["reference_state"].append({"id": r["id"], "table": assets[0], "element": el,
+                                                       "record_reference_phase": rp, "stated": ph,
+                                                       "basis": a["basis"], "quote": a["quote"]})
+    out["orchid_reference_state"] = {"element": el, "phase": ph, "basis": a["basis"], "quote": a["quote"],
+                                     "where": a["where"], "record_reference_state_agrees": all(agree),
+                                     "written_before_audit": before}
+    res["e5"].append({"dataset": src_rel, "before": before, "after": [ph], "changed": before != [ph],
+                      "basis": a["basis"], "records_disagree": sum(1 for x in agree if not x)})
+
+
 VALUE_RTOL = 1e-4
 T_TOL = 0.051          # K
 X_TOL = 1e-3           # mole fraction; covers the record builder's formula-rounding rule (6e-4)
@@ -133,7 +236,9 @@ CITE_ABSTRACT = ("ESPEI-format datasets (thermochemical, phase-equilibrium ZPF a
                  "the ORCHID literature values, one folder per evidence class (experimental, model, DFT: literature, "
                  "Materials Project, OQMD), every value traced to its published ORCHID observation id and source DOI, "
                  "with its uncertainty in physical units (printed, ESPEI's experimental default, or calibrated for "
-                 "DFT against experiment) and the ESPEI weight derived from it.")
+                 "DFT against experiment) and the ESPEI weight derived from it; plus optional, tagged phase-constraint "
+                 "datasets (derived invariant-temperature brackets and liquid-stability points, assessed handbook "
+                 "assemblages) in the phase names of each assessment.")
 CITE_PAPERS = ("the original source of every value you use (each dataset's `reference` / `bibtex`, references.bib; "
                "index.csv lists the DOIs)")
 
@@ -465,7 +570,8 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                     evals[(tdb, fn)] = (obl[i], pdl[i])
 
     res = {"datasets": {}, "rows": {}, "drops": [], "dropped_datasets": [], "papers": {}, "src_counts": Counter(),
-           "match_kind": Counter(), "sigma_stats": [], "_ustat": {}, "release_has_ra": release_has_ra}
+           "match_kind": Counter(), "sigma_stats": [], "_ustat": {}, "release_has_ra": release_has_ra, "_recs": {},
+           "upstream": {"duplicate_reads": [], "reference_state": []}, "e5": [], "e6": Counter()}
     for sub, default_folder in SOURCES:
         for f in sorted(glob.glob(os.path.join(db, sub, "*", "*.json"))):
             if os.path.basename(f) == "provenance.json":
@@ -524,6 +630,26 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
             if not keep:
                 res["dropped_datasets"].append({"source": src_rel, "reason": sorted(set(reasons)), "values": npts})
                 continue
+            # E4: the same printed row read twice (same pid, conditions and value) counts once
+            seen_k, keep2, recs2, also_read = {}, [], [], defaultdict(list)
+            for i, (oid, rec) in zip(keep, recs):
+                if zpf:
+                    key = (rec.get("pid"), T[i], json.dumps(d["values"][i], sort_keys=True))
+                else:
+                    key = (rec.get("pid"), json.dumps({k: (v[i] if isinstance(v, list) else v)
+                                                       for k, v in d["conditions"].items()}, sort_keys=True), fv[i])
+                if rec.get("pid") and key in seen_k:
+                    first = seen_k[key]
+                    also_read[first].append(rec["id"])
+                    res["drops"].append({"source": src_rel, "index": i, "reason": "duplicate_read_same_row",
+                                         "orchid_id": rec["id"], "same_as": first})
+                    res["upstream"]["duplicate_reads"].append({"kept_id": first, "duplicate_id": rec["id"],
+                                                               "pid": rec.get("pid"), "dataset": src_rel})
+                    continue
+                seen_k[key] = rec["id"]
+                keep2.append(i)
+                recs2.append((oid, rec))
+            keep, recs = keep2, recs2
             out = json.loads(json.dumps(d))
             if len(keep) < npts:
                 if zpf:
@@ -564,7 +690,8 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 per_value.append({k: v for k, v in (("id", r["id"]), ("reader_agreement", a),
                                                     ("paper", r.get("paper")),
                                                     ("measured_in", (r.get("origin") or {}).get("measured_in")),
-                                                    ("caveats", cv or None)) if v is not None})
+                                                    ("caveats", cv or None),
+                                                    ("also_read_as", also_read.get(r["id"]) or None)) if v is not None})
             caveats = sorted(set(caveats))
             weight, ublock, utags, ustat = uncertainty_block(out, recs, cls, zpf, T)
             tags = list(out.get("tags") or [])
@@ -604,6 +731,16 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 ("papers", pids), ("dois", dois), ("source_dataset", "db-v2.1/" + src_rel),
                 ("values_dropped", (npts - len(keep)) or None), ("espei_evaluation", ev)) if v is not None}
             out["orchid_uncertainty"] = ublock
+            if d["output"].startswith("ACR"):                                                         # E5
+                acr_reference_state(out, recs, src_rel, res)
+            if not zpf and cls != "model" and ESPEI_DEFAULT_SIGMA.get(prop_of(d["output"])):         # E6
+                w = weight if weight is not None else 1.0
+                out["orchid_weight_floor"] = {
+                    "suggested_weight": round(min(w, 1.0), 6), "weight_written": w, "changes_weight": w > 1.0,
+                    "sigma_floor": ESPEI_DEFAULT_SIGMA[prop_of(d["output"])],
+                    "sigma_floor_unit": "J/mol" if prop_of(d["output"]) in ("HM", "ACR") else "J/mol/K",
+                    "rule": WEIGHT_FLOOR_RULE}
+                res["e6"][w > 1.0] += 1
             syst = lit.system_name([c for c in d["components"] if c.upper() != "VA"])
             rel = "%s/%s/%s.%s" % (folder, syst, tdb_dir, fname)
             if rel in res["datasets"]:
@@ -617,6 +754,7 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                                    link=me.get("link_basis"), ev=ev, src="db-v2.1/" + src_rel, weight=weight,
                                    ustat=ustat, unit=ublock.get("unit"))
             res["_ustat"][rel] = ustat
+            res["_recs"][rel] = [r for _, r in recs]
     return res
 
 
@@ -1077,7 +1215,7 @@ def run_espei(espei_py, payload, mode):
             os.makedirs(os.path.dirname(p), exist_ok=True)
             with open(p, "wb") as fh:
                 fh.write(data)
-        r = subprocess.run([espei_py, "-I", "-c", VALIDATOR, tmp, mode, json.dumps(GROUPS)], capture_output=True,
+        r = subprocess.run([espei_py, "-I", "-c", VALIDATOR, tmp, mode, json.dumps(GROUPS + PGROUPS)], capture_output=True,
                            text=True, cwd=tmp)
         if r.returncode != 0:
             raise SystemExit("ESPEI validator failed:\n" + r.stderr[-3000:])
@@ -1142,7 +1280,7 @@ def validation_md(S, val, C, D, release):
          % val["espei_version"], "",
          table([[g, val["folders"][g].get("files"), val["folders"][g].get("loaded"),
                  "ok" if val["folders"][g].get("loaded") == val["folders"][g].get("files") else "FAIL"]
-                for g in GROUPS if g in val["folders"]],
+                for g in GROUPS + PGROUPS if g in val["folders"]],
                [("folder", 0), ("files", 1), ("loaded by load_datasets", 1), ("result", 0)]), "",
          "Invalid files in the final bundle: **%d**." % len(val["invalid_final"]), "",
          "### Excluded because ESPEI 0.9.1 rejects them (printed values are never altered)", ""]
@@ -1154,6 +1292,33 @@ def validation_md(S, val, C, D, release):
                        [("reason", 0), ("path (not written)", 0), ("source", 0)]))
     else:
         L.append("None.")
+    fx = S["fixes"]
+    L += ["", "## Encoding fixes (E1-E6)", "",
+          table([["E1", "VA added to `components` (target TDB has a vacancy sublattice; else system TDBs; else "
+                  "metallic system)", fx["E1_va_added_datasets"]],
+                 ["E2", "line-compound ZPF vertices written with composition null (datasets)", "%d vertices (%d datasets; "
+                  "%d hyperplanes added)" % (fx["E2_vertices_nulled"], fx["E2_datasets"], fx["E2_hyperplanes_added"])],
+                 ["E3", "identical ZPF regions written once (regions removed; datasets left empty and dropped)",
+                  "%d (%d)" % (fx["E3_regions_removed"], fx["E3_datasets_emptied_and_dropped"])],
+                 ["E4", "values read twice from the same printed row, counted once", fx["E4_values_removed"]],
+                 ["E5", "activity datasets audited / reference state changed to the stated one / literature records "
+                  "listed for correction", "%d / %d / %d" % (fx["E5_activity_datasets_audited"],
+                                                              fx["E5_reference_state_changed"],
+                                                              fx["E5_records_disagreeing_with_paper"])],
+                 ["E6", "thermochemical datasets with a minimum-sigma weight suggestion / where it changes the weight",
+                  "%d / %d" % (fx["E6_datasets_with_floor_suggestion"], fx["E6_datasets_where_floor_changes_weight"])]],
+                [("fix", 0), ("what", 0), ("count", 1)]), "",
+          "Records to correct in the literature release: UPSTREAM_CORRECTIONS.md.", "",
+          "## Phase constraints (optional)", "",
+          table([[k, v["datasets"], v["points"], v["systems"]] for k, v in S["phase_constraints"]["folders"].items()],
+                [("folder", 0), ("datasets", 1), ("ZPF points", 1), ("systems", 1)]), "",
+          "Invariant brackets written: %s; skipped: %s." % (
+              ", ".join("%s %d" % kv for kv in S["phase_constraints"]["brackets"]["made"].items()),
+              ", ".join("%s %d" % kv for kv in S["phase_constraints"]["brackets"]["skipped"].items())),
+          "Assessed points left out (phase not in the TDB, or ambiguous): %s." % (
+              ", ".join("%s %d" % kv for kv in S["phase_constraints"]["assessed_points_left_out"].items()) or "none"),
+          "Liquid-stability systems: %s." % ", ".join("%s %d" % kv for kv in
+                                                     S["phase_constraints"]["liquid_stability_systems"].items())]
     L += ["", "## Inclusion gate (same rules as the published literature values)", "",
           "| reason | values removed |", "|---|---:|"]
     for k, v in S["values_dropped"].items():
@@ -1278,6 +1443,14 @@ def calibration_md(cal, dp_release):
 
 def readme(S, C, cite):
     bf = S["by_folder"]
+    pc = S["phase_constraints"]["folders"]
+    fx = S["fixes"]
+    pcontent = {"assessed": "assessed (handbook) phase-field points, Dataset assessed-phase-assemblages, in the phase "
+                            "names of each TDB that has ZPF datasets here (tag `assessed_phase_diagram`)",
+                "derived/invariant-brackets": "DERIVED: phase sets just above and below each printed invariant "
+                                              "(tag `derived_bracket`)",
+                "derived/liquid-stability": "DERIVED: single-phase liquid above the highest liquidus where the "
+                                            "sources show complete liquid miscibility (tag `derived_liquid_stability`)"}
     content = {"experimental": "experimental thermochemical tables and phase-composition (ZPF) tables",
                "model": "values the papers calculated with a CALPHAD model, TDB (SHA-256) named where known",
                "invariants": "ZPF datasets from experimental invariant-reaction tables",
@@ -1292,6 +1465,9 @@ def readme(S, C, cite):
         "literature values, and carries its uncertainty in physical units next to the ESPEI weight derived from it.", "",
         table([[f, bf[f]["datasets"], bf[f]["values"], bf[f]["systems"], content[f]] for f in GROUPS],
               [("folder", 0), ("datasets", 1), ("values", 1), ("systems", 1), ("content", 0)]), "",
+        "Optional phase constraints (separate folders; never mixed with measured data; see \"Phase constraints\"):", "",
+        table([[f, pc[f]["datasets"], pc[f]["points"], pc[f]["systems"], pcontent[f]] for f in PGROUPS if f in pc],
+              [("folder", 0), ("datasets", 1), ("ZPF points", 1), ("systems", 1), ("content", 0)]), "",
         "## Use with ESPEI", "",
         "Point ESPEI at one evidence class at a time; classes are never mixed in a folder, and for DFT use **one** of "
         "`dft/mp`, `dft/oqmd`, `dft/literature` per fit (MP uses corrected, OQMD fitted elemental references).", "",
@@ -1365,7 +1541,52 @@ def readme(S, C, cite):
         "after (tag `via_assessment`); a printed compound composition that is its formula rounded is written at the "
         "exact formula value; a `__HYPERPLANE__` vertex is added only where every known composition comes from "
         "stoichiometry. Range temperatures are written at the midpoint (`orchid_value_bases`).",
+        "- **Line compounds (E2).** A ZPF vertex of a phase that is stoichiometric in the target TDB is written with "
+        "composition null: ESPEI 0.9.1 / pycalphad 0.11.2 return NaN for a line compound at a fixed composition (one "
+        "NaN makes the ZPF likelihood -inf), and with null ESPEI evaluates the compound at its formula composition. "
+        "Where that leaves a region with no known composition, a `__HYPERPLANE__` is added at the mean of the compound "
+        "compositions. Known limitation of ESPEI 0.9.1: a single-phase vertex at a line-compound composition gives an "
+        "undefined target hyperplane (zero driving force) once the compound is stable there, so a congruent melting "
+        "point constrains the model in one direction only; the invariant brackets below constrain both.",
+        "- **Duplicates (E3, E4).** Identical ZPF regions in several datasets (several assessment folders, or several "
+        "papers quoting the same invariant) are written once, with every source in `orchid.observations[i]."
+        "also_reported_as`; a printed row read twice (same row id, conditions and value) counts once (`also_read_as`). "
+        "Records concerned are listed in UPSTREAM_CORRECTIONS.md.",
+        "- **Activity reference states (E5).** Every activity table was checked against the paper: the reference state "
+        "written is the one the paper prints (or, where nothing is printed, the pure liquid of an element that is "
+        "liquid at the temperature, recorded as `not_printed_implied`); `orchid_reference_state` gives the basis and "
+        "the printed text. Literature records whose reference state differs are listed in UPSTREAM_CORRECTIONS.md; "
+        "the published literature values are not changed here.",
         "- Values removed by the inclusion gate and datasets ESPEI rejects are listed in VALIDATION.md.", "",
+        "## Optional minimum-sigma policy (E6)", "",
+        "Printed uncertainties are kept as printed. Some are much smaller than the scatter between independent "
+        "measurements of the same quantity (e.g. formation enthalpies printed with ±80 J/mol-atom while other "
+        "measurements of the same compound differ by 1-2 kJ/mol-atom); with the weight derived from such a sigma a few "
+        "values can dominate a fit. Every experimental thermochemical dataset carries `orchid_weight_floor` "
+        "(`suggested_weight` = min(weight, 1), i.e. sigma_eff = max(sigma, ESPEI's experimental default)). The floor "
+        "changes the weight of %d of %d datasets. It is a suggestion, not applied: "
+        "`d['weight'] = d['orchid_weight_floor']['suggested_weight']` before `load_datasets` applies it." % (
+            fx["E6_datasets_where_floor_changes_weight"], fx["E6_datasets_with_floor_suggestion"]), "",
+        "## Phase constraints (optional)", "",
+        "ZPF data alone can let a refinement misfire: ESPEI 0.9.1 penalises a phase that should be present but is not, "
+        "but gives no driving force for a liquid point at a line-compound composition once the compound is stable, so "
+        "a compound can melt far above its printed melting point without cost. Three optional, tagged dataset groups "
+        "add phase evidence. They share the phase names of the assessment folder (TDB) they are written for, so they "
+        "load together with `experimental/` and `invariants/` of that TDB. Use them by choice, never as measured data.",
+        "",
+        "- `derived/invariant-brackets/<SYS>/<TDB>.<file>.json` (tags `derived`, `derived_bracket`): " + ec.BRACKET_RULE
+        + " Each point records its source observation, T, u and offset (`orchid.points`).",
+        "- `derived/liquid-stability/<SYS>/<TDB>.liquid-stability.json` (tags `derived`, `derived_liquid_stability`): "
+        + ec.LIQUID_RULE + " `orchid.basis` gives the temperatures used.",
+        "- `assessed/<SYS>/<TDB>.<DIAGRAM>.json` (tag `assessed_phase_diagram`): the ZPF datasets of "
+        "assessed-phase-assemblages (one point inside each named field of an expert-drawn handbook diagram) with the "
+        "phase names of that TDB (phase registry); points with a phase that the TDB does not model, or models twice, "
+        "are left out; `orchid.confidence` per point. Evidence class assessed_phase_diagram: neither experimental nor "
+        "CALPHAD.", "",
+        "Counts (brackets written and skipped by reason, systems with liquid-stability points) are in validation.json "
+        "(`phase_constraints`). Suggested use: weight each group so that it contributes comparably to the measured "
+        "data (e.g. per-type weights proportional to 1/N), and check the fitted model's invariant temperatures "
+        "against the printed ones after the fit.", "",
         "## Citation", "", cite["text"], "", "Part of: " + cite["part_of"]["text"], "",
         "Also cite " + "; ".join(cite["also_cite"]) + ".", "",
         "Licence: CC BY 4.0 (derived data; MP and OQMD data CC BY 4.0). The source papers are not redistributed; only "
@@ -1382,6 +1603,10 @@ SCHEMA = """# ORCHID ESPEI bundle: schema
 - `dft/<literature|mp|oqmd>/<SYS>/<TDB stem>.<PHASE>.json`: DFT formation enthalpies of endmembers of one phase of one
   TDB file (`solver` datasets, output `HM_FORM`, T = 298.15 K, P = 101325 Pa).
 - `dft/CALIBRATION.json|md`: DFT sigma calibration.
+- Optional phase constraints (ZPF; tagged; never mixed with measured data): `derived/invariant-brackets/<SYS>/<TDB>.<file>.json`
+  (one per source invariant dataset, same phase names), `derived/liquid-stability/<SYS>/<TDB>.liquid-stability.json`,
+  `assessed/<SYS>/<TDB>.<DIAGRAM>.json` (assessed-phase-assemblages in that TDB's phase names).
+- `UPSTREAM_CORRECTIONS.md`: literature records the export had to differ from (reference states, rows read twice).
 
 ## Dataset files (ESPEI 0.9.1 format)
 
@@ -1405,6 +1630,14 @@ from `values` and the matching `conditions` entries.
 | `orchid_value_bases` | ZPF from ranges / central values: how a temperature was derived, keyed by ORCHID id |
 | `orchid_model_evidence` | model datasets: `tdb` (name, path, SHA-256, catalog entry), `link_basis`, `model_citation`, `model_reproduction` |
 | `orchid_uncertainty` | see below |
+| `orchid_reference_state` | activities (E5): `element`, `phase` written, `basis` (`printed` / `not_printed_implied`), `quote`, `where`, `record_reference_state_agrees`, `written_before_audit` |
+| `orchid_weight_floor` | experimental thermochemical data (E6, optional): `suggested_weight` = min(weight, 1), `weight_written`, `changes_weight`, `sigma_floor` (+ unit), `rule` |
+| `orchid_zpf_encoding` | ZPF (E2): number of line-compound vertices written with composition null, hyperplanes added, rule |
+| `orchid.observations[i].also_reported_as` | E3: the same ZPF region from other datasets (`id`, `paper`, `measured_in`, `dataset`) |
+| `orchid.observations[i].also_read_as` | E4: ids of the same printed row read again (not written as separate values) |
+| `orchid.points` (derived brackets) | per point: `source_observation`, `side` (above/below), `T_invariant_K`, `offset_K`, `T_sigma_K`, `T_sigma_basis`, `x0`, `hyperplane_delta`, `reaction_printed`, `reaction_type`, `phases_above`, `phases_below` |
+| `orchid.basis` (liquid stability) | `T_liq_max_K` and the temperatures it was taken from |
+| `orchid.record_ids`, `orchid.confidence` (assessed) | assessed-phase-assemblages record id and confidence per point; `target_tdb`, `points_left_out` |
 
 ## Uncertainties (`orchid_uncertainty`)
 
@@ -1439,21 +1672,82 @@ calibrated sigmas), `sigma_basis_counts`, `dft_calibration_stratum`, `tdb`, `tdb
 
 `espei_version`; `folders` (files and datasets loaded per folder); `invalid_final` (empty); `excluded` (rejected by
 ESPEI, with reason code); `dropped_datasets`; `dropped_values`; `dft_excluded` (compound or compound x TDB model, with
-reason); `summary`.
+reason); `fixes` (E1-E6 counts, E3 merges, E5 audit per activity dataset); `upstream_corrections`; `phase_constraints`;
+`summary`. index.json / index.csv also list the phase-constraint datasets (`evidence_class` `derived` or
+`assessed_phase_diagram`); `totals.datasets` / `totals.values` count the literature and DFT datasets only.
 """
 
 
-def build_files(C, D, val, data, release, dp_release):
+def fixes_summary(C, P):
+    e5 = C["e5"]
+    return {
+        "E1_va_added_datasets": P["counts"].get("E1_va_added", 0),
+        "E1_basis": {k[9:]: v for k, v in sorted(P["counts"].items()) if k.startswith("E1_basis_")},
+        "E2_vertices_nulled": P["counts"].get("E2_vertices_nulled", 0),
+        "E2_datasets": P["counts"].get("E2_datasets", 0),
+        "E2_hyperplanes_added": P["counts"].get("E2_hyperplanes_added", 0),
+        "E3_regions_removed": len(P["e3"]),
+        "E3_datasets_emptied_and_dropped": P["counts"].get("E3_datasets_dropped", 0),
+        "E4_values_removed": len(C["upstream"]["duplicate_reads"]),
+        "E5_activity_datasets_audited": len(e5),
+        "E5_reference_state_changed": sum(1 for x in e5 if x["changed"]),
+        "E5_basis": dict(Counter(x["basis"] for x in e5)),
+        "E5_records_disagreeing_with_paper": len(C["upstream"]["reference_state"]),
+        "E6_datasets_with_floor_suggestion": sum(C["e6"].values()),
+        "E6_datasets_where_floor_changes_weight": C["e6"].get(True, 0),
+    }
+
+
+def phase_constraint_summary(P):
+    rows = P["rows"].values()
+    by = defaultdict(lambda: {"datasets": 0, "points": 0, "systems": set()})
+    for r in rows:
+        b = by[r["folder"]]
+        b["datasets"] += 1
+        b["points"] += r["n_values"]
+        b["systems"].add(r["system"])
+    return {"folders": {k: {"datasets": v["datasets"], "points": v["points"], "systems": len(v["systems"])}
+                        for k, v in sorted(by.items())},
+            "brackets": P["brackets"], "assessed_points_left_out": P["assessed_skipped"],
+            "liquid_stability_systems": P["liquid"]}
+
+
+def upstream_md(C):
+    L = ["# ORCHID ESPEI bundle: literature records to correct upstream", "",
+         "The bundle never changes a published literature value. Where the export had to differ from a published "
+         "literature record, the record is listed here for correction in the literature release.", "",
+         "## Reference states that differ from what the paper states (E5)", ""]
+    rs = C["upstream"]["reference_state"]
+    if rs:
+        L.append(table([[x["id"], x["table"], x["element"], x["record_reference_phase"], x["stated"], x["basis"]]
+                        for x in rs], [("ORCHID id", 0), ("table", 0), ("element", 0), ("record reference phase", 0),
+                                       ("stated in the paper", 0), ("basis", 0)]))
+    else:
+        L.append("None.")
+    L += ["", "## The same printed row read twice (E4)", "",
+          "Two published records with the same row id (`pid`), conditions and value; the bundle counts the value once.",
+          ""]
+    du = C["upstream"]["duplicate_reads"]
+    L.append(table([[x["kept_id"], x["duplicate_id"], x["pid"]] for x in du],
+                   [("kept id", 0), ("duplicate id", 0), ("row (pid)", 0)]) if du else "None.")
+    return "\n".join(L) + "\n"
+
+
+def build_files(C, D, val, data, release, dp_release, P):
     oc = cite_module()
     cite = oc.cite_as(NAME, data)
     S = summarize(C, D, val)
+    S["fixes"] = fixes_summary(C, P)
+    S["phase_constraints"] = phase_constraint_summary(P)
     files = {}
     alld = dict(C["datasets"])
     alld.update(D["datasets"])
+    alld.update(P["datasets"])
     for rel in sorted(alld):
         files[rel] = dumps(alld[rel])
     allr = dict(C["rows"])
     allr.update(D["rows"])
+    allr.update(P["rows"])
     rows = [allr[k] for k in sorted(allr)]
     files["index.json"] = dumps({"release": "orchid-espei %s (literature gate: %s)" % (oc.RELEASE_TAG, release),
                                  "cite_as": cite, "totals": S, "datasets": rows})
@@ -1488,7 +1782,11 @@ def build_files(C, D, val, data, release, dp_release):
                                       "dropped_datasets": C["dropped_datasets"], "dropped_values": C["drops"],
                                       "drop_reasons": DROP_REASONS,
                                       "dft_excluded": sorted(D["excluded"], key=lambda e: json.dumps(e, sort_keys=True)),
+                                      "fixes": {"summary": S["fixes"], "e3_merged": P["e3"], "e5_activity": C["e5"]},
+                                      "upstream_corrections": C["upstream"],
+                                      "phase_constraints": S["phase_constraints"],
                                       "summary": S})
+    files["UPSTREAM_CORRECTIONS.md"] = upstream_md(C).encode("utf-8")
     files["VALIDATION.md"] = validation_md(S, val, C, D, release).encode("utf-8")
     files["UNCERTAINTY_SUMMARY.md"] = uncertainty_md(C, D).encode("utf-8")
     files["dft/CALIBRATION.json"] = dumps({"method": {
@@ -1508,6 +1806,72 @@ def build_files(C, D, val, data, release, dp_release):
     return files, S
 
 
+def prow(rel, d, cls):
+    Ts = d["conditions"]["T"] if isinstance(d["conditions"]["T"], list) else [d["conditions"]["T"]]
+    o = d.get("orchid") or {}
+    return {"path": rel, "folder": "/".join(rel.split("/")[:-2]), "system": rel.split("/")[-2],
+            "components": d["components"], "output": d["output"], "phases": d["phases"], "n_values": len(d["values"]),
+            "n_values_dropped": 0, "T_min_K": min(Ts), "T_max_K": max(Ts), "evidence_class": cls,
+            "reference": d.get("reference"), "bibtex": d.get("bibtex"), "dois": o.get("dois") or [],
+            "papers": o.get("papers") or [], "observation_ids": [], "reader_agreement": {},
+            "reader_agreement_source": None, "caveats": [], "tags": d["tags"], "weight": d.get("weight"),
+            "sigma_unit": None, "sigma_min": None, "sigma_median": None, "sigma_max": None, "sigma_basis_counts": {},
+            "dft_calibration_stratum": None, "tdb": o.get("target_tdb"), "tdb_sha256": None, "model_link_basis": None,
+            "espei_median_abs_driving_force_J": None, "source_dataset": o.get("derived_from") or o.get("source")}
+
+
+def refresh_row(C, rel):
+    d, r = C["datasets"][rel], C["rows"][rel]
+    Ts = d["conditions"]["T"] if isinstance(d["conditions"]["T"], list) else [d["conditions"]["T"]]
+    r.update({"components": d["components"], "phases": d["phases"], "T_min_K": min(Ts), "T_max_K": max(Ts),
+              "n_values": len(d["values"]) if d["output"] == "ZPF" else len(flat_values(d)),
+              "n_values_dropped": d["orchid"].get("values_dropped") or 0, "dois": d["orchid"].get("dois") or [],
+              "papers": d["orchid"].get("papers") or [],
+              "observation_ids": [o["id"] for o in d["orchid"]["observations"]],
+              "espei_median_abs_driving_force_J": (d["orchid"].get("espei_evaluation") or {}).get(
+                  "median_abs_driving_force_J")})
+
+
+def phase_constraints(C, D, data, pub):
+    """E3 (dedup), the derived/assessed phase-constraint datasets, then E1/E2 on every dataset."""
+    R = ec.Registry(data)
+    counts = Counter()
+    merged, changed = ec.dedup_zpf(C)
+    counts["E3_regions_removed"] = len(merged)
+    counts["E3_datasets_dropped"] = sum(1 for x in C["dropped_datasets"] if x["reason"] == ["duplicate_identical_zpf"])
+    brackets, b_skipped, b_made = ec.build_brackets(C, R)        # before E2: printed compositions
+    for rel, d in list(C["datasets"].items()) + list(D["datasets"].items()):
+        sysn = rel.split("/")[-2]
+        stem = ec.stem_of(rel) if not rel.startswith("dft/") else os.path.basename(rel).rsplit(".", 2)[0]
+        ec.apply_e1(d, sysn, stem, R, counts)
+        if not rel.startswith("dft/") and ec.apply_e2(d, stem, R, counts):
+            d["orchid"].pop("espei_evaluation", None)
+            changed.add(rel)
+    for rel in sorted(changed):
+        if rel in C["rows"]:
+            refresh_row(C, rel)
+    for rel in C["rows"]:
+        C["rows"][rel]["components"] = C["datasets"][rel]["components"]
+    for rel in D["rows"]:
+        D["rows"][rel]["components"] = D["datasets"][rel]["components"]
+    for rel, d in brackets.items():
+        ec.apply_e1(d, rel.split("/")[-2], ec.stem_of(rel), R, Counter())
+    stems = defaultdict(set)
+    for rel, d in C["datasets"].items():
+        if rel.split("/")[0] in ("experimental", "invariants") and d["output"] == "ZPF":
+            stems[rel.split("/")[1]].add(ec.stem_of(rel))
+    assessed, a_skipped = ec.assessed_per_tdb(data, R, stems)
+    liquid, l_why = ec.liquid_stability(data, R, pub, stems)
+    P = {"datasets": {}, "rows": {}, "counts": counts, "e3": merged,
+         "brackets": {"made": dict(b_made), "skipped": dict(sorted(b_skipped.items()))},
+         "assessed_skipped": dict(sorted(a_skipped.items())), "liquid": dict(sorted(l_why.items()))}
+    for group, cls in ((brackets, "derived"), (assessed, "assessed_phase_diagram"), (liquid, "derived")):
+        for rel, d in group.items():
+            P["datasets"][rel] = d
+            P["rows"][rel] = prow(rel, d, cls)
+    return P
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--corpus", default=lit.DEFAULT_CORPUS, help="SGTE-corpus build directory (read only)")
@@ -1521,14 +1885,16 @@ def main(argv=None):
     C = build_corpus(a.corpus, a.pdfs, a.data, pub, alias, papers)
     pairs, dp = calibration_pairs(a.data, pub)
     D = build_dft(a.data, pub, papers, pairs)
+    P = phase_constraints(C, D, a.data, pub)
     dp_release = "dft_parity.json inputs literature sha256 %s" % ((dp.get("inputs") or {}).get("literature") or {}).get("sha256")
     alld = dict(C["datasets"])
     alld.update(D["datasets"])
+    alld.update(P["datasets"])
     v1 = run_espei(a.espei_python, {rel: dumps(d) for rel, d in alld.items()}, "check")
     excluded, other = [], {}
     for rel, msg in sorted(v1["invalid"].items()):
         code = next((c for s, c in ESPEI_EXCLUSIONS.items() if s in msg), None)
-        if code and not rel.startswith("dft/"):
+        if code and rel in C["rows"]:
             excluded.append({"path": rel, "source": C["rows"][rel]["source_dataset"], "reason": code, "error": msg[:400]})
         else:
             other[rel] = msg
@@ -1539,8 +1905,12 @@ def main(argv=None):
     for e in excluded:
         C["datasets"].pop(e["path"])
         C["rows"].pop(e["path"])
+        for rel in [r for r, d in P["datasets"].items() if (d.get("orchid") or {}).get("derived_from") == e["path"]]:
+            P["datasets"].pop(rel)
+            P["rows"].pop(rel)
     alld = dict(C["datasets"])
     alld.update(D["datasets"])
+    alld.update(P["datasets"])
     v2 = run_espei(a.espei_python, {rel: dumps(d) for rel, d in alld.items()}, "load")
     val = {"espei_version": v2["espei_version"], "folders": v2["folders"], "invalid_final": v2["invalid"],
            "excluded": excluded}
@@ -1548,10 +1918,10 @@ def main(argv=None):
         raise SystemExit("build failed: final bundle does not validate: %s" % json.dumps(v2)[:2000])
     # sigma statistics only over datasets actually written
     C["sigma_stats"] = [(C["rows"][k]["folder"], C["rows"][k]["output"], C["_ustat"][k]) for k in sorted(C["rows"])]
-    files, S = build_files(C, D, val, a.data, lindex.get("release"), dp_release)
+    files, S = build_files(C, D, val, a.data, lindex.get("release"), dp_release, P)
     managed = set(files)
     existing = set()
-    for g in ("experimental", "model", "invariants", "dft"):
+    for g in ("experimental", "model", "invariants", "dft", "assessed", "derived"):
         for p in glob.glob(os.path.join(out, g, "**", "*.json"), recursive=True):
             existing.add(os.path.relpath(p, out).replace(os.sep, "/"))
     for p in glob.glob(os.path.join(out, "dft", "*.md")):
@@ -1577,7 +1947,7 @@ def main(argv=None):
         with open(p + ".tmp", "wb") as fh:
             fh.write(data)
         os.replace(p + ".tmp", p)
-    for g in ("experimental", "model", "invariants", "dft/literature", "dft/mp", "dft/oqmd"):
+    for g in GROUPS + PGROUPS:
         for dp_ in sorted(glob.glob(os.path.join(out, g, "*")), reverse=True):
             if os.path.isdir(dp_) and not os.listdir(dp_):
                 os.rmdir(dp_)

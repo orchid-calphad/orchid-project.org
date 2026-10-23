@@ -452,8 +452,8 @@ def cmd_writeback(a):
              [py, "tools/add_cite_as.py", "--data", a.data], [ppy, "tools/build_parquet.py", "--data", a.data],
              [py, "tools/build_static_pages.py", "--data", a.data],
              [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy],
+             [ppy, "tools/build_assessed_assemblages.py", "--data", a.data],   # before espei: espei/assessed reads it
              [py, "tools/build_espei_bundle.py", "--data", a.data],
-             [ppy, "tools/build_assessed_assemblages.py", "--data", a.data],
              [ppy, "tools/build_bibliography.py", "build", "--data", a.data], "card", "manifest"]
     for st in steps:
         if st == "sync":
