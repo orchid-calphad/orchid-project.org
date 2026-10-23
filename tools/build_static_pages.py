@@ -5,7 +5,8 @@ Reads (never modifies) the data repository (default: ../orchid-data next to this
 
   literature/index.json, literature/systems/<SYS>[.partN].json, literature/papers.json, literature/dft_parity.json
   phase-diagrams/index.json, phase-diagrams/sgte/*.json, hulls/{dft-mp,dft-oqmd,calphad-sgte}/
-  assessed-phase-assemblages/ (only listed in the folder guide, llms.txt and the sitemap)
+  assessed-phase-assemblages/, espei/ (only listed in the folder guide, llms.txt and the sitemap)
+  bibliography/ (papers.jsonl, systems_index.json, README.md, SCHEMA.md; written by tools/build_bibliography.py)
   phases/registry.json, phases/systems/<SYS>.json (written by tools/build_phase_registry.py)
 
 and writes, into the data repository (served at https://data.orchid-project.org/):
@@ -17,6 +18,8 @@ and writes, into the data repository (served at https://data.orchid-project.org/
   papers/index.html|.md         reporting papers (citation, DOI, systems, number of values)
   phases/pages/<SYS>.html|.md   phase registry per binary system (names, structure, stability, TDB PHASE/CONSTITUENT
                                 statements, example DOIs; DefinedTerm JSON-LD); phases/pages/index.html|.md
+  bibliography/pages/**         per-paper and per-system bibliography pages (tools/bibliography_pages.py hook; the same
+                                bytes tools/build_bibliography.py writes, so both --checks cover them)
   index.html|.md                what the data site is, folder guide, licence, citation
   sitemap.xml, robots.txt, llms.txt, llms-full.txt
 
@@ -29,7 +32,7 @@ Standard library only; no network.
 
   python3 tools/build_static_pages.py                    # write
   python3 tools/build_static_pages.py --check            # exit 1 if any output is missing, stale or orphaned
-  python3 tools/build_static_pages.py --date 2026-10-22  # lastmod date written to the sitemaps
+  python3 tools/build_static_pages.py --date 2026-10-23  # lastmod date written to the sitemaps
 """
 from __future__ import annotations
 
@@ -64,7 +67,7 @@ ROOT_FILES = ("index.html", "index.md", "sitemap.xml", "robots.txt", "llms.txt",
 AI_BOTS = ("GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-Web", "Claude-User", "Claude-SearchBot",
            "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended", "CCBot", "Applebot-Extended",
            "Bytespider", "Amazonbot", "meta-externalagent", "cohere-ai", "DuckAssistBot")
-NUMBER_WORDS = {3: "three", 4: "four", 5: "five", 6: "six", 7: "seven"}
+NUMBER_WORDS = {3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
 SITE_PAGES = ("", "phase-diagrams/", "phases/", "data-explorer/", "dft-parity/", "dataset/", "about/", "workflow/", "catalog/",
               "catalog/binary-thermo.html", "catalog/mixing-energy.html", "catalog/model-audit/",
               "catalog/compatibility/unary-compatibility-network.html", "best-practices.html")
@@ -546,6 +549,7 @@ def build(data, date):
         return out_
 
     phase_reg = load_phase_registry(data)
+    load_bibliography(data)
     systems = sorted(set(lindex["systems"]) | set(pd_by_sys))
     sys_summary = {}
     paper_values = Counter()
@@ -594,6 +598,8 @@ def build(data, date):
             links += [("a", "interactive phase diagram", SITE_URL + "phase-diagrams/#%s/%s" % (s, pds[0]["file"])), " · "]
         if s in phase_reg:
             links += [("a", "phases (%d)" % len(phase_reg[s]), DATA_URL + "phases/pages/%s.html" % s), " · "]
+        if s in BIB["systems"]:
+            links += [("a", "papers (bibliography)", DATA_URL + "bibliography/pages/systems/%s.html" % s), " · "]
         links += [("a", "Markdown", md_url)]
         blocks.append(("p", ["Data: "] + links))
         if acc:
@@ -837,6 +843,9 @@ def build(data, date):
     phase_summary = phase_pages(out, data, phase_reg, date)
     index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_systems, lindex, pindex, date, release,
                 phase_summary)
+    if BIB["counts"] is not None:  # bibliography pages (identical bytes to tools/build_bibliography.py)
+        import bibliography_pages
+        out.update(bibliography_pages.pages_from_files(data))
     return out, capped
 
 
@@ -901,6 +910,49 @@ PHASE_MAX_MODELS = 40
 PHASE_FILES = ("SCHEMA.md", "index.json", "registry.json", "registry.csv", "registry.jsonld", "registry.parquet",
                "structure_types.json", "structure_types.parquet", "review_queue.json", "CONFLICTS.md")
 ASPA_FILES = ("README.md", "SCHEMA.md", "summary.json", "records.jsonl.gz", "records.csv", "records.parquet", "exclusions.jsonl")
+ESPEI_FILES = ("README.md", "SCHEMA.md", "index.csv", "VALIDATION.md", "UNCERTAINTY_SUMMARY.md", "dft/CALIBRATION.md")
+BIB_FILES = ("README.md", "SCHEMA.md", "DOI_MISMATCHES.md", "papers.parquet", "edges.parquet", "papers.jsonl",
+             "orchid-bibliography.bib")
+BIB = {"keys": {}, "systems": set(), "counts": None}  # filled by load_bibliography()
+
+
+def load_bibliography(data):
+    """Literature paper id -> bibliography key, systems with a bibliography page, counts (bibliography/)."""
+    root = os.path.join(data, "bibliography")
+    BIB.update(keys={}, systems=set(), counts=None)
+    if not os.path.exists(os.path.join(root, "papers.jsonl")):
+        return BIB
+    with open(os.path.join(root, "papers.jsonl"), encoding="utf-8") as fh:
+        for line in fh:
+            r = json.loads(line)
+            for a in [r["id"]] + (r.get("aliases") or []):
+                BIB["keys"].setdefault(a, r["key"])
+    sp = os.path.join(root, "pages", "systems")
+    if os.path.isdir(sp):
+        BIB["systems"] = {f[:-5] for f in os.listdir(sp) if f.endswith(".html")}
+    BIB["counts"] = jload(os.path.join(root, "index.json"))["counts"]
+    return BIB
+
+
+def md_demote(text):
+    """Markdown headings one level down ('# x' -> '## x'), leaving fenced code blocks alone."""
+    out, fence = [], False
+    for line in text.split("\n"):
+        if line.startswith("```"):
+            fence = not fence
+        elif not fence and re.match(r"#+ ", line):
+            line = "#" + line
+        out.append(line)
+    return "\n".join(out)
+
+
+def md_section(path, heading):
+    """One '## heading' section of a Markdown file (up to the next '## '), or ''."""
+    if not os.path.exists(path):
+        return ""
+    text = open(path, encoding="utf-8").read()
+    m = re.search(r"(?ms)^## %s\b.*?(?=^## |\Z)" % re.escape(heading), text)
+    return m.group(0).rstrip() + "\n" if m else ""
 PHASE_MAX_NAMES = 40
 BASIS_ORDER = ("standard_name", "dft_unique_match", "assessment_declared", "liquid", "gas", "needs_review",
                "unresolved_no_candidates")
@@ -1175,7 +1227,10 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
     for pid in sorted(rep, key=lambda k: (-(papers_all[k].get("year") or 0), (papers_all[k].get("citation") or k).lower())):
         p = papers_all[pid]
         syss = sorted(paper_systems[pid])
-        rows.append([[p.get("citation") or pid], [("a", "doi:" + p["doi"], doi_url(p["doi"]))] if p.get("doi") else [pid],
+        bk = BIB["keys"].get(pid)
+        rows.append([[p.get("citation") or pid] + ([" · ", ("a", "bibliography", DATA_URL + "bibliography/pages/papers/%s.html" % bk)]
+                                                   if bk else []),
+                     [("a", "doi:" + p["doi"], doi_url(p["doi"]))] if p.get("doi") else [pid],
                      sum([[("a", sys_label(s), DATA_URL + "systems/%s.html" % s), " "] for s in syss[:12]], []) +
                      (["… %d more" % (len(syss) - 12)] if len(syss) > 12 else []),
                      [str(paper_values[pid])]])
@@ -1216,6 +1271,10 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
                 [("a", "Phase registry", DATA_URL + "phases/pages/index.html"), " — %d binary-system pages, %s phases: names, "
                  "structure (when certain), stability, TDB PHASE/CONSTITUENT statements, example DOIs." % (
                      len(phase_summary), format(sum(v["n"] for v in phase_summary.values()), ","))],
+                ] + ([[("a", "Bibliography", DATA_URL + "bibliography/pages/index.html"), " — %s papers ORCHID knows "
+                        "(read, cited as original sources, behind TDB files and assessed diagrams, discovery leads) with "
+                        "roles, evidence counts and typed relations; per paper and per system." % format(BIB["counts"]["papers"], ",")]]
+                      if BIB["counts"] else []) + [
                 ["Interactive tools: ", ("a", "data explorer", SITE_URL + "data-explorer/"), ", ",
                  ("a", "phase diagrams", SITE_URL + "phase-diagrams/"), ", ", ("a", "phase registry", SITE_URL + "phases/"), ", ",
                  ("a", "DFT vs experiment", SITE_URL + "dft-parity/"), "."]]),
@@ -1226,6 +1285,8 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
             [["hulls/"], ["Binary convex hulls: dft-mp/ (Materials Project), dft-oqmd/ (OQMD), calphad-sgte/ (assessed CALPHAD), one JSON per system."]],
             [[("a", "phases/", DATA_URL + "phases/SCHEMA.md")], ["Phase registry (binary systems): registry.json (compact index) / .csv / .parquet / .jsonld, structure_types.json / .parquet, review_queue.json, CONFLICTS.md, systems/<SYS>.json (full records), pages/<SYS>.html|.md (static pages); fields in SCHEMA.md."]],
             [[("a", "assessed-phase-assemblages/", DATA_URL + "assessed-phase-assemblages/README.md")], ["Assessed phase assemblages: one (T, x, P) point deep inside each named phase field of expert-drawn (assessed) binary diagrams (evidence class assessed_phase_diagram): records.jsonl.gz / .csv / .parquet, exclusions, ESPEI ZPF datasets (espei-zpf/, espei-zpf-with-tie-lines/); fields in SCHEMA.md."]],
+            [[("a", "espei/", DATA_URL + "espei/README.md")], ["ESPEI datasets from the literature, one folder per evidence class (experimental/, model/, invariants/, dft/literature, dft/mp, dft/oqmd), with uncertainties and weights: index.csv, references.bib, VALIDATION.md, UNCERTAINTY_SUMMARY.md, dft/CALIBRATION.md; fields in SCHEMA.md."]],
+            [[("a", "bibliography/", DATA_URL + "bibliography/README.md")], ["Bibliography: every paper ORCHID knows, with Crossref metadata, roles, evidence counts and typed relations: papers.parquet / .csv / .jsonl, edges.parquet / .csv / .jsonl, papers/<key>.json, systems/<SYS>.json, orchid-bibliography.bib / .csl.json, DOI_MISMATCHES.md, pages/ (static pages); fields in SCHEMA.md."]],
             [[("a", "systems/", DATA_URL + "systems/index.html")], ["Static pages per chemical system: <SYS>.html, <SYS>.md, <SYS>.csv."]],
             [[("a", "compounds/", DATA_URL + "compounds/index.html")], ["Static pages per compound (reduced formula): <FORMULA>.html, <FORMULA>.md."]],
             [[("a", "papers/", DATA_URL + "papers/index.html")], ["Index of reporting papers."]],
@@ -1276,7 +1337,10 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- [Phase registry, binary systems](%sphases/pages/index.md); structure types %sphases/structure_types.json (Parquet: phases/structure_types.parquet), all phases %sphases/registry.csv / registry.parquet / registry.jsonld" % (DATA_URL, DATA_URL, DATA_URL),
         "- [All systems with one-line summaries](%sllms-full.txt)" % DATA_URL,
         "- [Field reference](%sliterature/SCHEMA.md)" % DATA_URL,
-        "- [Assessed phase assemblages](%sassessed-phase-assemblages/README.md): one (T, x, P) point per named field of expert-drawn binary diagrams, evidence class assessed_phase_diagram (not experimental, not CALPHAD); %sassessed-phase-assemblages/records.jsonl.gz (also .csv, .parquet), ESPEI ZPF datasets espei-zpf/<DIAGRAM>.json, fields %sassessed-phase-assemblages/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL), "",
+        "- [Assessed phase assemblages](%sassessed-phase-assemblages/README.md): one (T, x, P) point per named field of expert-drawn binary diagrams, evidence class assessed_phase_diagram (not experimental, not CALPHAD); %sassessed-phase-assemblages/records.jsonl.gz (also .csv, .parquet), ESPEI ZPF datasets espei-zpf/<DIAGRAM>.json, fields %sassessed-phase-assemblages/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL),
+        "- [ESPEI datasets from the literature](%sespei/README.md): ESPEI 0.9.1 JSON per evidence class (experimental/, model/, invariants/, dft/literature, dft/mp, dft/oqmd), every value with its ORCHID observation id, source DOI, uncertainty and weight; one row per dataset %sespei/index.csv; validation %sespei/VALIDATION.md; uncertainties %sespei/UNCERTAINTY_SUMMARY.md; DFT sigma calibration %sespei/dft/CALIBRATION.md" % (DATA_URL, DATA_URL, DATA_URL, DATA_URL, DATA_URL)] + ([
+        "- [ORCHID bibliography](%sbibliography/README.md): every paper ORCHID knows (%s; roles, evidence counts, typed relations). One paper: %sbibliography/papers/<key>.json (key = \"p\" + sha256(\"doi:<lowercase doi>\")[:16]; lookup table in bibliography/index.json); one system: %sbibliography/systems/<SYS>.json (assessments and the data papers they used); tables: bibliography/papers.parquet, bibliography/edges.parquet; field reference: bibliography/SCHEMA.md; dropped DOI matches: bibliography/DOI_MISMATCHES.md" % (DATA_URL, format(BIB["counts"]["papers"], ","), DATA_URL, DATA_URL)]
+        if BIB["counts"] else []) + ["",
         "## Bulk files",
         "- %sliterature/orchid-literature.jsonl.gz (all records, one JSON object per line)" % DATA_URL,
         "- %sliterature/orchid-literature.csv.gz (all records, flattened)" % DATA_URL,
@@ -1320,6 +1384,15 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
     for sy in sorted(phase_summary):
         v = phase_summary[sy]
         lines.append("- [%s phases](%sphases/pages/%s.md): %s" % (sys_label(sy), DATA_URL, sy, v["line"]))
+    if BIB["counts"] is not None:  # bibliography: README and the Ids / Roles / Edges sections of its SCHEMA
+        bdir = os.path.join(CITE_DATA, "bibliography")
+        lines += ["", "## Bibliography (%sbibliography/README.md)" % DATA_URL, ""]
+        readme = open(os.path.join(bdir, "README.md"), encoding="utf-8").read()
+        lines += [md_demote(readme).rstrip()]
+        for h in ("Ids", "Roles", "Edges"):
+            sec = md_section(os.path.join(bdir, "SCHEMA.md"), h)
+            if sec:
+                lines += ["", md_demote(sec).rstrip()]
     out["llms-full.txt"] = "\n".join(lines) + "\n"
 
 
@@ -1343,7 +1416,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--data", default=DEFAULT_DATA, help="orchid-data repository (inputs read, pages written)")
     ap.add_argument("--site", default=SITE, help="website repository (sitemap.xml, sitemap-pages.xml, robots.txt)")
-    ap.add_argument("--date", default="2026-10-22", help="lastmod date for the sitemaps (YYYY-MM-DD)")
+    ap.add_argument("--date", default="2026-10-23", help="lastmod date for the sitemaps (YYYY-MM-DD)")
     ap.add_argument("--check", action="store_true", help="exit 1 if outputs are missing, stale or orphaned")
     a = ap.parse_args(argv)
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", a.date):
@@ -1356,6 +1429,8 @@ def main(argv=None):
     urls += [PHASE_DATA + f for f in PHASE_FILES if os.path.exists(os.path.join(a.data, "phases", f))]
     urls += [DATA_URL + "assessed-phase-assemblages/" + f for f in ASPA_FILES
              if os.path.exists(os.path.join(a.data, "assessed-phase-assemblages", f))]
+    urls += [DATA_URL + "espei/" + f for f in ESPEI_FILES if os.path.exists(os.path.join(a.data, "espei", f))]
+    urls += [DATA_URL + "bibliography/" + f for f in BIB_FILES if os.path.exists(os.path.join(a.data, "bibliography", f))]
     data_out["sitemap.xml"] = urlset(urls, a.date)
     data_out["robots.txt"] = robots([DATA_URL + "sitemap.xml"])
     site_out = {

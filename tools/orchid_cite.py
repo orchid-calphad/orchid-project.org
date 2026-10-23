@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """How to cite the ORCHID data release: one shared definition for every builder.
 
-The release is archived on Zenodo as five citable datasets plus an umbrella record ("ORCHID data") that links
+The release is archived on Zenodo as eight citable datasets plus an umbrella record ("ORCHID data") that links
 them (DataCite isPartOf / hasPart). Their DOIs live in one file of the data repository,
 
   <orchid-data>/zenodo/dois.json      {"orchid-data": "10.5281/zenodo....", "literature": ..., ...}
@@ -54,18 +54,27 @@ THIRD_PARTY = {
                 "compilation",
     "papers": "the original source of every value you use (paper_citation / paper_doi, and cited_dois for values "
               "the paper cites from earlier work)",
+    "papers_espei": ("the original source of every value you use (each dataset's `reference` / `bibtex`, "
+                     "references.bib; index.csv lists the DOIs)"),
+    "papers_bibliography": "the papers themselves when you use their data (doi / citation of each bibliography record)",
 }
 
 # name -> (title, BibTeX key, sources to cite as well); EXTRACTED: records holding values read from papers
-EXTRACTED = {"orchid-data", "literature", "dft-benchmark", "phase-registry", "assessed-phase-assemblages"}
+EXTRACTED = {"orchid-data", "literature", "dft-benchmark", "phase-registry", "assessed-phase-assemblages", "espei",
+             "bibliography"}
 # per-record status text where the generic STATUS (literature readers) does not describe the record
 STATUS_BY = {"assessed-phase-assemblages": (
     "Version 1, machine-extracted: phase fields of expert-drawn (assessed) diagrams named by deterministic rules, "
     "model readers, an adjudicator and partial expert review (basis and review state per record); one point deep "
-    "inside each field; boundary and tie-line positions are drawing-based and of low credence.")}
+    "inside each field; boundary and tie-line positions are drawing-based and of low credence."),
+    "bibliography": (
+    "Version 1, machine-extracted: roles and evidence counts derive from machine-extracted literature values and link "
+    "tables; bibliographic fields are Crossref metadata as deposited (DOIs matched from printed references checked "
+    "against Crossref: doi_match; mismatches dropped).")}
 ABSTRACT = {
     "orchid-data": "Umbrella record of the ORCHID data release: literature values, calculated binary phase diagrams, "
-                   "binary convex hulls and the DFT-vs-experiment formation-enthalpy benchmark.",
+                   "binary convex hulls, the DFT-vs-experiment formation-enthalpy benchmark, the phase registry, "
+                   "assessed phase assemblages, ESPEI datasets and the bibliography.",
     "literature": "Thermodynamic and phase-equilibrium values read from published papers, each with its evidence "
                   "class, state, source paper, DOI, page and verbatim quote.",
     "phase-diagrams": "Binary phase diagrams calculated with pycalphad from the SGTE binary collection (Hallstedt "
@@ -83,6 +92,14 @@ ABSTRACT = {
                                   "present, phase-registry ids, coordinate uncertainty, naming basis, confidence, review "
                                   "state, a cross-check against calculated SGTE diagrams and ESPEI ZPF datasets; evidence "
                                   "class assessed_phase_diagram.",
+    "espei": ("ESPEI-format datasets (thermochemical, phase-equilibrium ZPF and invariant-reaction ZPF) built from "
+              "the ORCHID literature values, one folder per evidence class (experimental, model, DFT: literature, "
+              "Materials Project, OQMD), every value traced to its published ORCHID observation id and source DOI, "
+              "with its uncertainty in physical units (printed, ESPEI's experimental default, or calibrated for "
+              "DFT against experiment) and the ESPEI weight derived from it."),
+    "bibliography": ("Every paper ORCHID knows about: Crossref bibliographic metadata (CC0), the role of each paper in "
+                     "ORCHID, counts of the evidence released from it, and typed relations with provenance (citations of "
+                     "values, TDB files, reassessments, handbook diagrams, Crossref reference lists)."),
 }
 # name -> (title, BibTeX key, sources to cite as well)
 DATASETS = {
@@ -97,6 +114,8 @@ DATASETS = {
                        ["sgte", "mp", "oqmd", "papers"]),
     "assessed-phase-assemblages": ("ORCHID assessed phase assemblages (binary systems)", "orchid_assessed_assemblages_2026",
                                    ["assessed", "sgte"]),
+    "espei": ("ORCHID ESPEI datasets from the literature", "orchid_espei_2026", ["papers_espei", "mp", "oqmd"]),
+    "bibliography": ("ORCHID bibliography", "orchid_bibliography_2026", ["papers_bibliography"]),
 }
 NAMES = tuple(DATASETS)
 

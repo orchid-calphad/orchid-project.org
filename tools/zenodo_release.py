@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare the ORCHID data release for Zenodo: five citable datasets plus an umbrella record.
+"""Prepare the ORCHID data release for Zenodo: eight citable datasets plus an umbrella record.
 
 Records (names used in DOI placeholders "10.5281/zenodo.PENDING-<name>" and in <orchid-data>/zenodo/):
 
@@ -11,6 +11,13 @@ Records (names used in DOI placeholders "10.5281/zenodo.PENDING-<name>" and in <
   phase-registry   ORCHID phase registry (binary systems)         phases/ (registry JSON/JSON-LD/CSV/Parquet, structure types)
   assessed-phase-assemblages  ORCHID assessed phase assemblages   assessed-phase-assemblages/ (points in assessed
                    phase diagrams: JSONL/CSV/Parquet, ESPEI ZPF datasets; tools/build_assessed_assemblages.py)
+  espei            ORCHID ESPEI datasets from the literature      espei/ (ESPEI JSON per evidence class, index, calibration;
+                   tools/build_espei_bundle.py)
+  bibliography     ORCHID bibliography                            bibliography/ (papers, typed edges, Crossref metadata,
+                   DOI checks; tools/build_bibliography.py; bibliography/pages/ are web views, not released)
+
+The ORCHID benchmark (orchid-bench) is a code repository with its own Zenodo GitHub-integration record, not part of
+this data release.
 
 Per record the data repository holds zenodo/<name>.metadata.json (Zenodo deposition metadata) and
 zenodo/<name>.files.json (the files of the record with sizes and SHA-256, written by `manifest`).
@@ -70,10 +77,13 @@ RECORDS = {  # name -> (include patterns, exclude patterns); "dir/**" = everythi
     "phase-registry": (DOCS + ["zenodo/phase-registry.metadata.json", "phases/**"], ["phases/pages/**"]),
     "assessed-phase-assemblages": (DOCS + ["zenodo/assessed-phase-assemblages.metadata.json",
                                            "assessed-phase-assemblages/**"], []),
+    "espei": (DOCS + ["zenodo/espei.metadata.json", "espei/**"], []),
+    "bibliography": (DOCS + ["zenodo/bibliography.metadata.json", "bibliography/**"], ["bibliography/pages/**"]),
 }
 assert set(RECORDS) == set(orchid_cite.NAMES)
-DATA_DIRS = ("literature", "phase-diagrams", "hulls", "parquet", "phases", "assessed-phase-assemblages")  # every file here must be in some record
-WEB_VIEWS = ("phases/pages/",)  # generated static pages inside a data dir (tools/build_static_pages.py): not released
+DATA_DIRS = ("literature", "phase-diagrams", "hulls", "parquet", "phases", "assessed-phase-assemblages", "espei",
+             "bibliography")  # every file here must be in some record
+WEB_VIEWS = ("phases/pages/", "bibliography/pages/")  # generated static pages inside a data dir (tools/build_static_pages.py): not released
 
 TEXT_EXT = (".json", ".md", ".html", ".txt", ".cff", ".xml", ".csv", ".yml", ".yaml")
 SKIP_DIRS = {".git", "dist", "__pycache__", "node_modules"}
@@ -215,6 +225,14 @@ def card_text(data):
         tp = os.path.join(data, "assessed-phase-assemblages", ent["table"])
         if os.path.exists(tp):
             man["assessed_phase_assemblages"] = {"rows": ent["rows"], "bytes": os.path.getsize(tp)}
+    bp = os.path.join(data, "bibliography", "parquet.json")  # tools/build_bibliography.py: papers and edges tables
+    if os.path.exists(bp):
+        bj = json.load(open(bp, encoding="utf-8"))
+        for cfg, key in (("bibliography_papers", "papers"), ("bibliography_edges", "edges")):
+            ent = bj.get(key)
+            tp = os.path.join(data, "bibliography", ent["table"]) if ent else None
+            if tp and os.path.exists(tp):
+                man[cfg] = {"rows": ent["rows"], "bytes": os.path.getsize(tp)}
     out, cur, info = [], None, False
     for line in open(os.path.join(data, "DATASET_CARD.md"), encoding="utf-8").read().split("\n"):
         if line.startswith("dataset_info:"):
@@ -434,7 +452,9 @@ def cmd_writeback(a):
              [py, "tools/add_cite_as.py", "--data", a.data], [ppy, "tools/build_parquet.py", "--data", a.data],
              [py, "tools/build_static_pages.py", "--data", a.data],
              [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy],
-             [ppy, "tools/build_assessed_assemblages.py", "--data", a.data], "card", "manifest"]
+             [py, "tools/build_espei_bundle.py", "--data", a.data],
+             [ppy, "tools/build_assessed_assemblages.py", "--data", a.data],
+             [ppy, "tools/build_bibliography.py", "build", "--data", a.data], "card", "manifest"]
     for st in steps:
         if st == "sync":
             sync_literature(a.data)
@@ -449,7 +469,9 @@ def cmd_writeback(a):
               [ppy, "tools/build_parquet.py", "--data", a.data, "--check"],
               [py, "tools/build_static_pages.py", "--data", a.data, "--check"],
               [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy, "--check"],
+              [py, "tools/build_espei_bundle.py", "--data", a.data, "--check"],
               [ppy, "tools/build_assessed_assemblages.py", "--data", a.data, "--check"],
+              [ppy, "tools/build_bibliography.py", "build", "--data", a.data, "--check"],
               [py, "tools/build_precision_sample.py", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "card", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "manifest", "--check"]]

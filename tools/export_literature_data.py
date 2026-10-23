@@ -51,7 +51,7 @@ DEFAULT_PDFS = os.path.expanduser("~/data/PD-extraction")
 DEFAULT_OPEN_TDB = os.path.expanduser("~/projects/open-tdb")
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_REL = os.path.join("data", "literature")
-RELEASE = "orchid-literature 2026-10-22 (record store db-v2.1: invariant/general v2.1.19p, text+context fixup-20261022)"
+RELEASE = "orchid-literature 2026-10-23 (record store db-v2.1: invariant/general v2.1.19r, text+context fixup-20261022)"
 MAX_SYSTEM_BYTES = 1_900_000
 
 EVIDENCE = {"experimental": "experimental", "model_value": "model", "model": "model",
