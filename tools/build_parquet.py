@@ -144,7 +144,8 @@ def lit_schema(pa):
         ("artifact", s), ("artifact_label", s), ("artifact_caption", s), ("page", i), ("table_row", i),
         ("model_tdb", s), ("model_tdb_path", s), ("model_tdb_sha256", s), ("model_doi", s),
         ("model_reproduced_by_calculation", b), ("model_unlinked_reason", s),
-        ("readers", ls), ("reader_tier", s), ("tool_release", s), ("release", s), ("split", s),
+        ("readers", ls), ("reader_tier", s), ("reader_agreement", s), ("reader_agreement_label", s),
+        ("tool_release", s), ("release", s), ("split", s),
     ]
     return pa.schema(cols)
 
@@ -234,6 +235,7 @@ def lit_row(r, papers, release):
         "model_doi": mdl.get("model_doi"), "model_reproduced_by_calculation": mdl.get("reproduced_by_calculation"),
         "model_unlinked_reason": r.get("model_unlinked_reason"),
         "readers": list(r.get("readers") or []), "reader_tier": r.get("reader_tier"),
+        "reader_agreement": r.get("reader_agreement"), "reader_agreement_label": r.get("reader_agreement_label"),
         "tool_release": r.get("tool_release"), "release": release, "split": split_of(pid),
     }
     for k in BOOL_FLAGS:

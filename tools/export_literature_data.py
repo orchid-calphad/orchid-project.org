@@ -164,7 +164,26 @@ def system_name(elems):
 def reader_of(reading_id: str) -> str:
     r = reading_id.rsplit(":", 1)[-1]
     r = re.sub(r"-(\d+)-(\d+)(?=-|$)", r"-\1.\2", r)
+    # v2.1.19r: the blind second Claude read 'claude-opus-5.5#2' (reading-id slug claude-opus-5-5-2) keeps its '#2'
+    r = re.sub(r"^(claude-[a-z]+-\d+\.\d+)-(\d+)$", r"\1#\2", r)
     return "text_layer" if r == "text-layer" else r
+
+
+# _export.reader_agreement (record builder, annotate_reader_agreement.py): how many independent visual readers carry
+# the value. Published per value with a human label; the data explorer shows a "single reader" badge.
+READER_AGREEMENT_LABELS = {
+    "multi_reader": "confirmed (two or more readers)",
+    "single_reader": "unconfirmed (single reader)",
+    "single_reader_text_layer": "single reader + PDF text layer",
+}
+
+
+def reader_agreement(exp):
+    """(code, label) from an observation's _export, or (None, None) when the record builder did not set it."""
+    code = (exp or {}).get("reader_agreement")
+    if code not in READER_AGREEMENT_LABELS:
+        return None, None
+    return code, READER_AGREEMENT_LABELS[code]
 
 
 # ----------------------------------------------------------------------------------------------- bibliography
@@ -710,6 +729,7 @@ def load_tables(store, sub, kind, contexts, records):
             fl = quality_flags(obs)
             fl["unsigned_in_print"] = None
             fl["sign_pdf_page_verified"] = None
+            rec["reader_agreement"], rec["reader_agreement_label"] = reader_agreement(exp)
             rec["flags"] = clean(fl)
             rec["flags"]["extraction_accepted"] = bool((obs.get("quality") or {}).get("status", {}).get("extraction_accepted"))
             rec = finish(rec, exp, obs, store, own, ev, contexts, origin)
@@ -831,7 +851,8 @@ CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_grou
                "transition_kind_printed", "evidence_class",
                "origin", "model", "model_unlinked_reason", "method", "method_basis", "conditions",
                "conditions_summary", "cited_sources", "citations_printed", "paper", "paper_citation", "paper_doi", "quote", "quote_page",
-               "locator", "link_rule", "flags", "extraction_accepted", "readers", "reader_tier", "tool_release", "pid",
+               "locator", "link_rule", "flags", "extraction_accepted", "readers", "reader_tier", "reader_agreement",
+               "reader_agreement_label", "tool_release", "pid",
                "merged_ids", "merged_pids"]
 
 
@@ -940,6 +961,7 @@ papers, page images, crops and full text are **not** redistributed.
 | `locator` | `{{artifact: table|text_passage, label, caption, page, row, asset}}` |
 | `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready`, `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check result, model, dT), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts; data-hardening flags (QUALITY_FIXES.md): `page_unreadable`, `reference_state_dropped_not_in_quote`, `basis_inferred_from_magnitude`, `basis_corrected_from_formula`, `sign_from_heading`, `dft_outlier_unexplained` |
 | `link_rule` | (text) the rule that linked the value to its quote: the quote is verbatim on one page/passage and the printed value is inside it |
+| `reader_agreement`, `reader_agreement_label` | (tables) how many independent visual readers carry the value: `multi_reader` ("confirmed (two or more readers)"), `single_reader` ("unconfirmed (single reader)": one visual reader read the row and no second reader has confirmed it; the explorer shows a "single reader" badge), `single_reader_text_layer` ("single reader + PDF text layer": one visual reader, every value also printed in the PDF text layer). Two blind, independent Claude reads (`claude-opus-5.5` and `claude-opus-5.5#2` in `readers`) count as two readers. Absent where the record builder did not classify the value (invariant tables, running text) |
 | `readers`, `reader_tier`, `tool_release` | extraction provenance: the readers whose readings agreed (`text_layer` = the PDF text layer), the reader tier (`preliminary_flash+claude`: two independent model readers agree; `confirmed_pro`: confirmed by a third reader; `+fable_judge`: a judge chose between disagreeing readers; `preliminary_flash` for text: first reader, with the second reader's agreement in `flags.second_reader`), the record-builder release |
 
 ## Controlled vocabularies

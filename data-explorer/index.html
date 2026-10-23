@@ -290,7 +290,7 @@ function renderTable(){const th=$("thead");th.replaceChildren();
       if(c.k==="ev")td=h("td",null,h("span",{class:"badge b-"+r.evidence_class},EVL[r.evidence_class]||r.evidence_class));
       else if(c.k==="src"){td=h("td",null,paperShort(r.paper));const cs=citedShort(r);if(cs&&!(r.origin||{}).own_work_of_paper)td.append(h("div",{class:"muted"},"cites "+cs));}
       else td=h("td",{class:(c.num?"num ":"")+(c.cls||"")},c.v(r));
-      if(c.k==="prop"){if(r.record_kind==="running_text")td.append(h("div",{class:"muted"},"text"));if(!r.flags.extraction_accepted)td.append(h("span",{class:"flag"},"not accepted"));}
+      if(c.k==="prop"){if(r.record_kind==="running_text")td.append(h("div",{class:"muted"},"text"));if(!r.flags.extraction_accepted)td.append(h("span",{class:"flag"},"not accepted"));if(r.reader_agreement==="single_reader")td.append(h("span",{class:"flag",title:r.reader_agreement_label||"unconfirmed (single reader)"},"single reader"));}
       tr.append(td);});
     const toggle=()=>{if(OPEN.has(r.id))OPEN.delete(r.id);else OPEN.add(r.id);renderTable();};
     tr.addEventListener("click",toggle);tr.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}});
@@ -336,6 +336,7 @@ function details(r){const d=h("div",{class:"det"});const dl=h("dl");d.append(dl)
   if(fl.plausibility)fs.push(`CALPHAD check ${fl.plausibility.result}`+(fl.plausibility.model?` vs ${fl.plausibility.model}`:"")+(fl.plausibility.dT_K!==undefined?` (ΔT ${fmtNum(fl.plausibility.dT_K)} K)`:""));
   if(fl.source_disputed)fs.push("source disputed");if(fl.judge_adjudicated)fs.push("judge adjudicated");if(fl.magnitude_suspect)fs.push("magnitude suspect");if(fl.system_mismatch)fs.push("system mismatch");
   if(fl.specification_gaps)fs.push("gaps: "+fl.specification_gaps.join(", "));if(fl.espei_ready)fs.push("ESPEI-ready");
+  if(r.reader_agreement_label)fs.push("readers: "+r.reader_agreement_label);
   kv(dl,"Flags",fs.join(" · "));
   kv(dl,"Provenance",`${r.record_kind.replace(/_/g," ")} · readers ${(r.readers||[]).join(", ")} · tier ${r.reader_tier||"?"} · ${r.tool_release||""}`,h("div",{class:"muted"},"id "+r.id+" · "+(r.pid||"")));
   return d;}
