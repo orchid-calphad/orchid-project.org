@@ -60,7 +60,7 @@ ROOT_FILES = ("index.html", "index.md", "sitemap.xml", "robots.txt", "llms.txt",
 AI_BOTS = ("GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-Web", "Claude-User", "Claude-SearchBot",
            "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended", "CCBot", "Applebot-Extended",
            "Bytespider", "Amazonbot", "meta-externalagent", "cohere-ai", "DuckAssistBot")
-SITE_PAGES = ("", "phase-diagrams/", "data-explorer/", "dft-parity/", "dataset/", "about/", "catalog/",
+SITE_PAGES = ("", "phase-diagrams/", "data-explorer/", "dft-parity/", "dataset/", "about/", "workflow/", "catalog/",
               "catalog/binary-thermo.html", "catalog/mixing-energy.html", "catalog/model-audit/",
               "catalog/compatibility/unary-compatibility-network.html", "best-practices.html")
 
