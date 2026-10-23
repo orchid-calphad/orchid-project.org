@@ -4,13 +4,15 @@
 Reads (never writes) local sources and writes <orchid-data>/phases/:
 
   structure_types.json  system-independent structure types (prototype, Strukturbericht, Pearson, space group), cited
-  registry.json         canonical registry: one entry per phase of each binary system (names, models, stability,
-                        literature counts and example references, structure assignment or review candidates)
+  registry.json         compact index: one row per phase of each binary system (id, system, names, structure summary
+                        with tier and prototype, counts); no TDB definitions or reference details
+  systems/<SYS>.json    full records of one system: names, models with tdb_definition, stability, literature counts,
+                        example references, structure assignment or review candidates
   registry.jsonld       the same terms as a schema.org DefinedTermSet (context: context.jsonld)
   registry.csv          one flat row per phase
   review_queue.json     phases without an assigned structure that have candidates (with the evidence)
   CONFLICTS.md          same name -> different structures, polymorph families, models that disagree
-  index.json            compact search index for the website; systems/<SYS>.json per-system detail
+  index.json            compact search index for the website
   registry.parquet      flat table (only when the running interpreter has pyarrow; --parquet-python otherwise)
   SCHEMA.md, CITATION.cff
 
@@ -1542,7 +1544,11 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
             "inputs": dict(sorted(inputs.hashes.items())), "counts": counts, "cite_as": cite}
     out = {}
     out["structure_types.json"] = dump(dict(head, counts={"structure_types": len(st_public)}, structure_types=st_public))
-    out["registry.json"] = json.dumps(dict(head, phases=reg), ensure_ascii=False, separators=(",", ":")) + "\n"
+    # registry.json is a compact index (kept well under GitHub's 50 MB file limit); the full records, including
+    # models[].tdb_definition and references, are in systems/<SYS>.json
+    out["registry.json"] = json.dumps(dict(head, record_format="compact", detail="systems/<SYS>.json",
+                                           phases=[compact_entry(e) for e in reg]),
+                                      ensure_ascii=False, separators=(",", ":")) + "\n"
     queue = [{"id": e["id"], "system": e["system"], "preferred_name": e["preferred_name"],
               "tdb_names": sorted({m["phase_name"] for m in e["models"]}), "stoichiometry": e["stoichiometry"],
               "review_reasons": e["review_reasons"], "candidates": e["candidates"],
@@ -1589,6 +1595,32 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
     out["SCHEMA.md"] = schema_md(counts)
     out["CITATION.cff"] = orchid_cite.cff(DATASET, data)
     return out, reg, counts
+
+
+MAX_FILE_BYTES = 45 * 1000 * 1000  # every committed file stays below this (GitHub warns at 50 MB)
+COMPACT_STRUCTURE = ("structure_type", "basis", "tier", "confidence", "prototype", "strukturbericht", "pearson",
+                     "space_group")
+
+
+def compact_entry(e):
+    """One registry.json row: identity, names, structure summary and counts; full record in systems/<SYS>.json."""
+    s = e["structure"]
+    return {"id": e["id"], "system": e["system"], "elements": e["elements"], "preferred_name": e["preferred_name"],
+            "status": e["status"],
+            "structure": {k: s[k] for k in COMPACT_STRUCTURE if k in s} if s else None,
+            "names": [n["name"] for n in e["names"]],
+            "tdb_names": sorted({m["phase_name"] for m in e["models"]}),
+            "stoichiometry": e["stoichiometry"],
+            "counts": {"models": len(e["models"]),
+                       "models_with_tdb_definition": sum(1 for m in e["models"] if m.get("tdb_definition")),
+                       "candidates": len(e["candidates"]),
+                       "calculated_diagrams": len(e["stability"]),
+                       "stable_in_diagrams": sum(1 for x in e["stability"] if x.get("stable")),
+                       "literature_values": e["literature"]["values"],
+                       "literature_accepted_values": e["literature"]["accepted_values"],
+                       "literature_papers": e["literature"]["papers"],
+                       "references_listed": len(e["references"]), "total_papers": e["total_papers"]},
+            "detail": "systems/%s.json" % e["system"]}
 
 
 def tdb_def_counts(reg, extra):
@@ -1752,16 +1784,29 @@ a review candidate. Paper labels come from the machine-extracted literature valu
 
 | file | content |
 |---|---|
-| `registry.json` | canonical registry: `{dataset, registry_version, inputs, counts, cite_as, phases[]}` |
+| `registry.json` | compact index of every phase: `{dataset, registry_version, inputs, counts, cite_as, record_format: "compact", detail, phases[]}`; each row is a compact entry (below), without `tdb_definition` text or reference details |
+| `systems/<SYS>.json` | full records of one binary system: `{system, release, phases[], structure_types{}, cite_as}`; `phases[]` are full phase entries (below, with `models[].tdb_definition`, `stability`, `references`) |
 | `structure_types.json` | system-independent structure types, each with its sources |
 | `registry.jsonld`, `context.jsonld` | the phases as a schema.org `DefinedTermSet` of `DefinedTerm`s (`citation`, `isBasedOn`; `additionalProperty`: one `PropertyValue` `orchid:tdbPhaseDefinition` per model with the verbatim statements) |
 | `registry.csv` | one flat row per phase (`references_first5`: first five reference DOIs, `;`-joined; `tdb_first_model`, `tdb_phase_line`, `tdb_constituent_line`: file and verbatim PHASE / CONSTITUENT statements of the first model, models sorted by file and phase name) |
 | `registry.parquet` | the CSV columns as a typed Parquet table (when built with pyarrow) |
 | `review_queue.json` | phases with candidates but no assigned structure (`status: needs_review`) |
 | `CONFLICTS.md` | same name -> different structures, name vs DFT, MP vs OQMD, model compositions, polymorph families |
-| `index.json`, `systems/<SYS>.json` | website search index and per-system detail (same entries as `registry.json`) |
+| `index.json` | website search index (column arrays) |
 
-## Phase entry
+Every file stays below 45 MB: the full records are split by system, and `registry.json` is the index over them.
+To get all full records, read `registry.json` and then each distinct `detail` file (1 file per system).
+
+## Compact entry (`registry.json`)
+
+`{id, system, elements, preferred_name, status, structure, names[], tdb_names[], stoichiometry, counts, detail}`.
+`structure` is `null` or `{structure_type, basis, tier, confidence, prototype, strukturbericht, pearson, space_group}`
+(the full entry adds `label`, `caveats`, `dft`, `source`). `names` are the `name` strings of the full entry's `names`.
+`counts`: `{models, models_with_tdb_definition, candidates, calculated_diagrams, stable_in_diagrams, literature_values,
+literature_accepted_values, literature_papers, references_listed, total_papers}`. `detail`: the per-system file
+(relative to `phases/`) holding the full entry with the same `id`.
+
+## Phase entry (full, `systems/<SYS>.json`)
 
 | field | meaning |
 |---|---|
@@ -1883,6 +1928,9 @@ def main(argv=None):
     a = ap.parse_args(argv)
     out, reg, counts = build(a)
     out_dir = os.path.join(a.data, "phases")
+    big = sorted((len(t.encode()), rel) for rel, t in out.items() if len(t.encode()) > MAX_FILE_BYTES)
+    if big:
+        raise SystemExit("files over %d bytes (GitHub limit 50 MB): %s" % (MAX_FILE_BYTES, ", ".join("%s %d" % (r, n) for n, r in big)))
     cite = orchid_cite.cite_as(DATASET, a.data)
     man_rel = "parquet.json"
     if a.check:

@@ -118,7 +118,8 @@ and stoichiometry. Tier C (assessor-stated, approved by the PI): the SGTE crysta
 CC BY 4.0) lists exactly one structure for this phase name in this system, tiers A/B do not contradict it, and the TDB
 model matches the listed compound; phases whose rows disagree stay in review. DFT entries are computed 0 K
 structures, not the CALPHAD phase itself. Files:
-<a href="../data/phases/registry.json">registry.json</a>, <a href="../data/phases/registry.csv">registry.csv</a>,
+<a href="../data/phases/registry.json">registry.json</a> (compact index; full records with TDB definitions and
+references per system in <code>phases/systems/&lt;SYS&gt;.json</code>), <a href="../data/phases/registry.csv">registry.csv</a>,
 <a href="../data/phases/registry.jsonld">JSON-LD</a>, <a href="../data/phases/structure_types.json">structure types</a>,
 <a href="../data/phases/review_queue.json">review queue</a>, <a href="../data/phases/CONFLICTS.md">conflicts</a>,
 <a href="../data/phases/SCHEMA.md">schema</a>.</p>
@@ -288,7 +289,7 @@ async function show(id){
   ["tdb","paper","corpus","mp","oqmd"].forEach(ns=>{const L=byNs[ns];if(!L)return;
     const chips=h("div",{class:"chips"},...L.slice(0,60).map(n=>h("span",{class:"chip",title:n.name+(n.basis?" · "+n.basis:"")},ns==="tdb"?n.label+" @ "+n.name.split(":")[1]:ns==="paper"?n.label:n.label)));
     out.push(h("div",{style:"margin:6px 0"},h("div",{class:"muted"},nsLabel[ns]+" ("+L.length+")"),chips));
-    if(L.length>60)out.push(h("div",{class:"muted"},"… "+(L.length-60)+" more in registry.json"));});
+    if(L.length>60)out.push(h("div",{class:"muted"},"… "+(L.length-60)+" more in ",h("a",{href:dataURL("phases/systems/"+encodeURIComponent(p.system)+".json")},"phases/systems/"+p.system+".json")));});
   // stability
   const st=p.stability.filter(x=>x.status==="ok");
   out.push(h("h3",null,"Stability in the calculated diagrams ("+st.filter(x=>x.stable).length+" of "+st.length+")"));
