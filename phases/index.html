@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORCHID phase registry</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo/orchid-icon.svg">
+<link rel="alternate" type="application/ld+json" href="https://data.orchid-project.org/phases/registry.jsonld" title="ORCHID phase registry (JSON-LD)">
+<meta name="description" content="Every phase of each binary system in ORCHID: its names across CALPHAD databases, papers and DFT databases, the models that describe it, where it is stable, example references, and its crystal structure when certain.">
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;--ok:#1d7448;--okbg:#e5f3ec;--dft:#a3520a;--dftbg:#fbeee1;--rev:#8a6d00;--revbg:#fbf3d6;--liq:#2c58a8;--liqbg:#e6edf9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--ok:#74d3a2;--okbg:#17291f;--dft:#f2ad6b;--dftbg:#2d2015;--rev:#e8cd6a;--revbg:#2b2612;--liq:#9dbcf3;--liqbg:#18213a}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;--ok:#74d3a2;--okbg:#17291f;--dft:#f2ad6b;--dftbg:#2d2015;--rev:#e8cd6a;--revbg:#2b2612;--liq:#9dbcf3;--liqbg:#18213a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;text-decoration:none;color:var(--fg)}
+nav a{text-decoration:none}
+h1{font-size:1.6rem;margin:24px 0 4px}
+.lead{color:var(--muted);margin:0 0 14px;max-width:780px}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.88rem;color:var(--muted);margin:6px 0 14px}
+.stats b{color:var(--fg);font-variant-numeric:tabular-nums}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;margin:8px 0 12px}
+label{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+input,select,button{font:inherit;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+#q{width:min(420px,100%)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr}}
+.list{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+@media (max-width:600px){th:nth-child(5),td:nth-child(5){display:none}th,td{padding:6px 5px;overflow-wrap:anywhere}.badge{white-space:normal;font-size:.7rem}table{table-layout:fixed}th:nth-child(1),td:nth-child(1){width:22%}th:nth-child(4),td:nth-child(4){width:24%}}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);background:var(--accent2)}
+tbody tr{cursor:pointer}
+tbody tr:hover,tbody tr.sel{background:var(--accent2)}
+tbody tr:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;font-size:.74rem;padding:1px 7px;border-radius:10px;white-space:nowrap;font-weight:600}
+.b-A{background:var(--okbg);color:var(--ok)} .b-B{background:var(--dftbg);color:var(--dft)}
+.b-rev{background:var(--revbg);color:var(--rev)} .b-liq{background:var(--liqbg);color:var(--liq)} .b-none{background:var(--accent2);color:var(--muted)}
+.pager{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 10px;font-size:.85rem;color:var(--muted)}
+.detail{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:.9rem;min-height:200px;overflow-wrap:anywhere}
+.detail h2{font-size:1.15rem;margin:0 0 2px}
+.detail h3{font-size:.95rem;margin:16px 0 6px;border-top:1px solid var(--line);padding-top:10px}
+.detail .id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;color:var(--muted)}
+.detail dl{margin:6px 0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px}
+.detail dt{color:var(--muted)} .detail dd{margin:0}
+.detail ul{margin:4px 0;padding-left:18px} .detail li{margin:2px 0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem}
+.muted{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:.78rem;border:1px solid var(--line);border-radius:6px;padding:1px 6px;background:var(--bg)}
+details summary{cursor:pointer;color:var(--accent)}
+.note{color:var(--muted);font-size:.85rem;margin-top:14px}
+.ocite{background:var(--card,#fff);border:1px solid var(--line,#e2dfe6);border-left:4px solid var(--accent,#7b3fa0);border-radius:10px;padding:4px 16px 12px;margin:28px 0 0;overflow-wrap:anywhere}.ocite h2{margin:12px 0 6px;font-size:1.2rem}.ocite ul{padding-left:20px;margin:6px 0}.ocite li{margin:4px 0}.ocite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem;line-height:1.4;background:var(--accent2,#f2eaf7);color:var(--fg,#1d1b20);border-radius:6px;padding:8px 10px;margin:8px 0 0}.ocite .muted{color:var(--muted,#5e5a66);font-size:.9rem}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+</style>
+<script src="../assets/data-base.js"></script>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
+  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="./" aria-current="page">Phases</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="../data-explorer/">Data</a><a href="../workflow/">Workflow</a><a href="../about/">About</a>
+</nav></div></header>
+<main class="wrap">
+<h1>Phase registry</h1>
+<p class="lead">One entry per phase of each binary system: every name it goes by (CALPHAD databases, papers, Materials Project
+and OQMD), the models that describe it, where the calculated diagrams make it stable, and example references. A crystal
+structure is shown only when it is certain: from a standard phase name (tier A) or from a unique, agreeing
+Materials Project + OQMD ground state (tier B, "DFT-supported"). Everything else is listed with its candidates for review.</p>
+<div class="stats" id="stats" aria-live="polite">Loading…</div>
+<div class="controls">
+  <label for="q">Search: elements (Al,Ni or Al-Ni), phase name, paper label, prototype, Strukturbericht, Pearson
+    <input id="q" type="search" placeholder="e.g. Al,Ni · C15 · MgZn2 · sigma · γ′" autocomplete="off"></label>
+  <label for="fstatus">Structure
+    <select id="fstatus">
+      <option value="">all</option>
+      <option value="standard_name">tier A: standard name</option>
+      <option value="dft_unique_match">tier B: DFT-supported</option>
+      <option value="liqgas">liquid / gas</option>
+      <option value="needs_review">needs review</option>
+      <option value="unresolved_no_candidates">no candidates</option>
+    </select></label>
+  <label for="fvals">Literature values
+    <select id="fvals"><option value="">any</option><option value="1">with values</option></select></label>
+</div>
+<div class="layout">
+  <div class="list">
+    <table aria-label="phases">
+      <thead><tr><th scope="col">System</th><th scope="col">Phase</th><th scope="col">Structure</th><th scope="col">Basis</th><th scope="col" class="num">Values</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="pager"><button id="prev" type="button">← Previous</button><span id="pageinfo"></span><button id="next" type="button">Next →</button></div>
+  </div>
+  <section class="detail" id="detail" aria-live="polite">
+    <p class="muted">Select a phase to see its names, structure, models, stability and references.</p>
+  </section>
+</div>
+<p class="note">Structure rule (PI decision): a prototype is assigned only when certain. Tier A: the phase name encodes one
+structure (e.g. FCC_A1, BCC_B2, L12_FCC, AL3NI_D011, C15_LAVES, SIGMA) and neither the model stoichiometry, the SGTE
+crystallographic table nor DFT contradicts it. Tier B: a stoichiometric compound whose composition matches exactly one
+on-hull entry in both Materials Project and OQMD, with the same space group and one structure type for that space group
+and stoichiometry. DFT entries are computed 0 K structures, not the CALPHAD phase itself. Files:
+<a href="../data/phases/registry.json">registry.json</a>, <a href="../data/phases/registry.csv">registry.csv</a>,
+<a href="../data/phases/registry.jsonld">JSON-LD</a>, <a href="../data/phases/structure_types.json">structure types</a>,
+<a href="../data/phases/review_queue.json">review queue</a>, <a href="../data/phases/CONFLICTS.md">conflicts</a>,
+<a href="../data/phases/SCHEMA.md">schema</a>.</p>
+<!-- orchid-cite:begin (DOIs: tools/orchid_cite.py, zenodo/dois.json; replaced by tools/zenodo_release.py writeback) -->
+<section class="ocite" id="cite" aria-labelledby="cite-h">
+<h2 id="cite-h">Please cite</h2>
+<ul>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID phase registry (binary systems) (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-phase-registry">doi:10.5281/zenodo.PENDING-phase-registry</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID data (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-orchid-data">doi:10.5281/zenodo.PENDING-orchid-data</a></li>
+</ul>
+<p class="muted">Also cite B. Hallstedt, The SGTE collection of binary datasets, Calphad 89 (2025) 102833, https://doi.org/10.1016/j.calphad.2025.102833 (CC BY 4.0), and the original assessment named in each file; A. Jain et al., The Materials Project: A materials genome approach to accelerating materials innovation, APL Materials 1 (2013) 011002, https://doi.org/10.1063/1.4812323 (CC BY 4.0); J. E. Saal et al., JOM 65 (2013) 1501, https://doi.org/10.1007/s11837-013-0755-4 and S. Kirklin et al., npj Comput. Mater. 1 (2015) 15010, https://doi.org/10.1038/npjcompumats.2015.10 (CC BY 4.0); the original source of every value you use (paper_citation / paper_doi, and cited_dois for values the paper cites from earlier work).</p>
+<pre>@misc{orchid_phase_registry_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID phase registry (binary systems)}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-phase-registry},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-phase-registry},
+  note      = {Version 1, machine-extracted}
+}
+
+@misc{orchid_data_2026,
+  author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
+  title     = {{ORCHID data}},
+  version   = {2026.10},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.PENDING-orchid-data},
+  url       = {https://doi.org/10.5281/zenodo.PENDING-orchid-data},
+  note      = {Version 1, machine-extracted}
+}</pre>
+</section>
+<!-- orchid-cite:end -->
+</main>
+<footer><div class="wrap">Phase registry: CC BY 4.0 (facts and citations; cite ORCHID and the sources). TDB files: SGTE binary
+collection (Hallstedt 2025, CC BY 4.0); Materials Project and OQMD: CC BY 4.0, see <a href="../data/NOTICE.md">NOTICE</a>.
+Built by <code>tools/build_phase_registry.py</code>.</div></footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const PAGE=50;
+let IDX=null, ROWS=[], VIEW=[], PAGENO=0, SYSCACHE={}, CUR=null;
+const C={id:0,sys:1,name:2,st:3,proto:4,sb:5,pear:6,basis:7,status:8,vals:9,models:10,search:11};
+function h(tag,attrs,...kids){const e=document.createElement(tag);if(attrs)for(const k in attrs){const v=attrs[k];if(v===null||v===undefined||v===false)continue;if(k==="class")e.className=v;else if(k==="text")e.textContent=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}for(const c of kids){if(c===null||c===undefined||c===false)continue;e.appendChild(typeof c==="string"||typeof c==="number"?document.createTextNode(String(c)):c);}return e;}
+function safeHref(u){return /^(https:\/\/|\.\.\/|#)/.test(u)?u:"#";}
+function link(href,text){return h("a",{href:safeHref(href)},text);}
+function doiLink(doi){return h("a",{href:"https://doi.org/"+encodeURI(doi),rel:"noopener"},"doi:"+doi);}
+const elCase=s=>s.split("-").map(e=>e.charAt(0)+e.slice(1).toLowerCase()).join("–");
+function structText(r){if(r[C.basis]==="liquid")return"liquid";if(r[C.basis]==="gas")return"gas";if(!r[C.proto]&&!r[C.pear])return"—";return[r[C.proto],r[C.sb],r[C.pear]].filter(Boolean).join(" · ");}
+function badge(basis,status){
+  if(basis==="standard_name")return h("span",{class:"badge b-A",title:"tier A: standard phase name"},"A · name");
+  if(basis==="dft_unique_match")return h("span",{class:"badge b-B",title:"tier B: unique MP + OQMD on-hull match"},"B · DFT-supported");
+  if(basis==="liquid"||basis==="gas")return h("span",{class:"badge b-liq"},basis);
+  if(status==="needs_review")return h("span",{class:"badge b-rev",title:"no structure assigned; candidates listed"},"needs review");
+  return h("span",{class:"badge b-none"},"no candidates");
+}
+function norm(s){return String(s||"").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g,"");}
+function parseQuery(q){
+  q=q.trim(); if(!q)return{els:null,text:""};
+  const m=q.match(/^\s*([A-Za-z]{1,2})\s*[,\-–\s]\s*([A-Za-z]{1,2})\s*$/);
+  if(m&&/^[A-Z]/.test(m[1])&&/^[A-Z]/.test(m[2]))return{els:[m[1].toUpperCase(),m[2].toUpperCase()].sort(),text:""};
+  if(/^[A-Z][a-z]?$/.test(q))return{els:[q.toUpperCase()],text:"",single:true};
+  return{els:null,text:norm(q)};
+}
+function filter(){
+  const q=parseQuery($("q").value),fs=$("fstatus").value,fv=$("fvals").value;
+  VIEW=ROWS.filter(r=>{
+    if(q.els){const se=r[C.sys].split("-");if(q.single){if(!se.includes(q.els[0])&&!norm(r[C.search]+" "+r[C.name]).includes(norm(q.els[0])))return false;}else if(se.join("-")!==q.els.join("-"))return false;}
+    if(q.text&&!r._t.includes(q.text))return false;
+    if(fs){if(fs==="liqgas"){if(r[C.basis]!=="liquid"&&r[C.basis]!=="gas")return false;}else if(fs==="needs_review"||fs==="unresolved_no_candidates"){if(r[C.status]!==fs)return false;}else if(r[C.basis]!==fs)return false;}
+    if(fv&&!(r[C.vals]>0))return false;
+    return true;});
+  PAGENO=0; render();
+}
+function render(){
+  const tb=$("rows"); tb.replaceChildren();
+  const n=VIEW.length, pages=Math.max(1,Math.ceil(n/PAGE)); PAGENO=Math.min(PAGENO,pages-1);
+  VIEW.slice(PAGENO*PAGE,(PAGENO+1)*PAGE).forEach(r=>{
+    const tr=h("tr",{tabindex:"0","data-id":r[C.id],class:CUR===r[C.id]?"sel":null,onclick:()=>go(r[C.id]),onkeydown:e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go(r[C.id]);}}},
+      h("td",null,elCase(r[C.sys])),h("td",null,h("span",null,r[C.name]),h("div",{class:"mono muted"},r[C.id].split(":")[2])),
+      h("td",null,structText(r)),h("td",null,badge(r[C.basis],r[C.status])),h("td",{class:"num"},r[C.vals]||""));
+    tb.appendChild(tr);});
+  if(!n)tb.appendChild(h("tr",null,h("td",{colspan:"5",class:"muted"},"No phase matches.")));
+  $("pageinfo").textContent=n?`${PAGENO*PAGE+1}–${Math.min(n,(PAGENO+1)*PAGE)} of ${n.toLocaleString()}`:"0";
+  $("prev").disabled=PAGENO===0; $("next").disabled=PAGENO>=pages-1;
+}
+function go(id){if(location.hash.slice(1)!==id)location.hash=id;else show(id);}
+async function sysData(sys){if(!SYSCACHE[sys])SYSCACHE[sys]=fetch(dataURL("phases/systems/"+encodeURIComponent(sys)+".json")).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();});return SYSCACHE[sys];}
+function sg(s){return s?(s.number?s.number+" ("+(s.symbol||"")+")":(s.symbol||"")):"";}
+async function show(id){
+  const r=ROWS.find(x=>x[C.id]===id); const d=$("detail");
+  if(!r){d.replaceChildren(h("p",{class:"muted"},"Unknown phase id."));return;}
+  CUR=id; document.querySelectorAll("#rows tr").forEach(t=>t.classList.toggle("sel",t.dataset.id===id));
+  d.replaceChildren(h("p",{class:"muted"},"Loading "+id+"…"));
+  let S; try{S=await sysData(r[C.sys]);}catch(e){d.replaceChildren(h("p",{class:"muted"},"Could not load the system file."));return;}
+  if(CUR!==id)return;
+  const p=S.phases.find(x=>x.id===id); if(!p){d.replaceChildren(h("p",{class:"muted"},"Not found in the system file."));return;}
+  const out=[h("h2",null,p.preferred_name+" ",badge((p.structure||{}).basis,p.status)),h("div",{class:"id"},p.id),
+    h("div",{class:"muted"},elCase(p.system)+(p.stoichiometry?" · "+Object.entries(p.stoichiometry).map(([k,v])=>k.charAt(0)+k.slice(1).toLowerCase()+" "+(+v).toFixed(4)).join(", "):""))];
+  // structure
+  out.push(h("h3",null,"Structure"));
+  const s=p.structure;
+  if(s){
+    const dl=h("dl",null);
+    const add=(k,v)=>{if(v!==null&&v!==undefined&&v!=="")dl.append(h("dt",null,k),h("dd",null,v));};
+    add("Type",s.structure_type==="st:liquid"?"liquid (no prototype)":s.structure_type==="st:gas"?"gas (no prototype)":s.structure_type);
+    add("Prototype",s.prototype);add("Strukturbericht",s.strukturbericht);add("Pearson",s.pearson);add("Space group",sg(s.space_group));
+    add("Basis",(s.tier?"tier "+s.tier+": ":"")+s.basis+" — "+(s.label||""));add("Confidence",s.confidence);
+    if(s.dft)add("DFT",h("span",null,"Materials Project "+s.dft.mp+", OQMD "+s.dft.oqmd+", space group "+s.dft.space_group_number+" ("+s.dft.space_group_symbol+")"));
+    out.push(dl);
+    if(s.caveats&&s.caveats.length)out.push(h("ul",null,...s.caveats.map(c=>h("li",{class:"muted"},c))));
+  }else{
+    out.push(h("p",null,"No structure assigned. "),h("div",{class:"muted"},"Why: "+(p.review_reasons.join("; ")||"—")));
+    if(p.candidates.length){
+      const t=h("table",null,h("thead",null,h("tr",null,...["Source","Prototype","SB","Pearson","Space group","Evidence"].map(x=>h("th",null,x)))),
+        h("tbody",null,...p.candidates.map(c=>h("tr",{style:"cursor:default"},h("td",null,c.source),h("td",null,c.prototype||""),h("td",null,c.strukturbericht||""),h("td",null,c.pearson||""),h("td",null,sg(c.space_group)),h("td",null,c.detail+(c.count?" ("+c.count+"×)":""))))));
+      out.push(h("div",{style:"overflow-x:auto;margin-top:6px"},t));
+    }
+  }
+  // names
+  out.push(h("h3",null,"Names ("+p.names.length+")"));
+  const byNs={};p.names.forEach(n=>(byNs[n.namespace]=byNs[n.namespace]||[]).push(n));
+  const nsLabel={tdb:"CALPHAD databases",paper:"Papers (printed labels)",corpus:"ORCHID corpus ids",mp:"Materials Project",oqmd:"OQMD"};
+  ["tdb","paper","corpus","mp","oqmd"].forEach(ns=>{const L=byNs[ns];if(!L)return;
+    const chips=h("div",{class:"chips"},...L.slice(0,60).map(n=>h("span",{class:"chip",title:n.name+(n.basis?" · "+n.basis:"")},ns==="tdb"?n.label+" @ "+n.name.split(":")[1]:ns==="paper"?n.label:n.label)));
+    out.push(h("div",{style:"margin:6px 0"},h("div",{class:"muted"},nsLabel[ns]+" ("+L.length+")"),chips));
+    if(L.length>60)out.push(h("div",{class:"muted"},"… "+(L.length-60)+" more in registry.json"));});
+  // stability
+  const st=p.stability.filter(x=>x.status==="ok");
+  out.push(h("h3",null,"Stability in the calculated diagrams ("+st.filter(x=>x.stable).length+" of "+st.length+")"));
+  if(st.length){
+    const t=h("table",null,h("thead",null,h("tr",null,...["Assessment (TDB)","T range (K)","x range","Diagram"].map(x=>h("th",null,x)))),
+      h("tbody",null,...st.map(x=>h("tr",{style:"cursor:default"},h("td",null,x.tdb),
+        h("td",null,x.stable?(x.T_min_K+" – "+x.T_max_K+(x.stable_at_top_of_range?"+":"")):"not stable"),
+        h("td",null,x.stable&&x.x_min!==null?"x("+x.x_element+") "+x.x_min+" – "+x.x_max:""),
+        h("td",null,link("../phase-diagrams/#"+p.system+"/"+encodeURIComponent(x.diagram.split("/").pop()),"view"))))));
+    out.push(h("div",{style:"overflow-x:auto"},t));
+  }else out.push(h("p",{class:"muted"},"No calculated diagram for this phase."));
+  // models
+  out.push(h("h3",null,"CALPHAD models ("+p.models.length+")"));
+  if(p.models.length){
+    const ul=h("ul",null,...p.models.map(m=>h("li",null,
+      link("https://github.com/orchid-calphad/orchid-project.org/blob/main/data/"+m.path,m.tdb)," ",h("b",null,m.phase_name)," ",
+      h("span",{class:"mono"},m.sublattices.map(sl=>"("+sl.constituents.join(",")+")"+sl.site_ratio).join("")),
+      m.disordered_part?h("span",{class:"muted"}," · disordered part "+m.disordered_part):null,
+      h("div",{class:"mono muted"},"sha256 "+m.sha256))));
+    out.push(ul);
+  }else out.push(h("p",{class:"muted"},"Known from the ORCHID corpus only (no bundled TDB declares it under this id)."));
+  // literature + references
+  out.push(h("h3",null,"Literature"));
+  out.push(h("p",null,p.literature.values+" values ("+p.literature.accepted_values+" accepted) from "+p.literature.papers+" papers. ",
+    p.literature.values?link("../data-explorer/#"+p.system,"Open "+elCase(p.system)+" in the data explorer"):null));
+  out.push(h("div",{class:"muted"},"References (examples: assessments first, then papers with most values; "+p.references.length+" of "+p.total_papers+")"));
+  if(p.references.length)out.push(h("ul",null,...p.references.map(ref=>h("li",null,doiLink(ref.doi)," ",ref.citation||"",
+    h("div",{class:"muted"},ref.roles.join("; ")+(ref.labels.length?" · label "+ref.labels.join(", "):"")+(ref.values?" · "+ref.values+" values":""))))));
+  // links
+  out.push(h("h3",null,"Links"));
+  out.push(h("p",null,link("../phase-diagrams/#"+p.system,"Phase diagrams of "+elCase(p.system)),"  ·  ",link("../data-explorer/#"+p.system,"Data explorer"),"  ·  ",link("#"+p.id,"Permalink")));
+  d.replaceChildren(...out);
+}
+async function load(){
+  try{IDX=await (await fetch(dataURL("phases/index.json"))).json();}catch(e){$("stats").textContent="Could not load the registry index.";return;}
+  ROWS=IDX.phases; ROWS.forEach(r=>{r._t=norm([r[C.id],r[C.name],r[C.proto],r[C.sb],r[C.pear],r[C.search],r[C.st]].join(" "));});
+  const c=IDX.counts;
+  $("stats").replaceChildren(...[["phases",c.phases],["binary systems",c.systems],["names",c.names],["tier A (name)",c.assigned_tier_A_standard_name],["tier B (DFT-supported)",c.assigned_tier_B_dft_unique_match],["liquid / gas",c.liquid+c.gas],["needs review",c.review_queue]].map(([k,v])=>h("span",null,h("b",null,v.toLocaleString())," "+k)));
+  ["q","fstatus","fvals"].forEach(k=>$(k).addEventListener("input",filter));
+  $("prev").onclick=()=>{PAGENO--;render();}; $("next").onclick=()=>{PAGENO++;render();};
+  const hq=new URLSearchParams(location.search).get("q"); if(hq)$("q").value=hq;
+  filter();
+  const id=decodeURIComponent(location.hash.slice(1)); if(id.startsWith("phase:"))show(id);
+}
+window.addEventListener("hashchange",()=>{const id=decodeURIComponent(location.hash.slice(1));if(id.startsWith("phase:"))show(id);});
+load();
+</script>
+</body>
+</html>

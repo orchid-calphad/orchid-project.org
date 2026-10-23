@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare the ORCHID data release for Zenodo: four citable datasets plus an umbrella record.
+"""Prepare the ORCHID data release for Zenodo: five citable datasets plus an umbrella record.
 
 Records (names used in DOI placeholders "10.5281/zenodo.PENDING-<name>" and in <orchid-data>/zenodo/):
 
@@ -8,6 +8,7 @@ Records (names used in DOI placeholders "10.5281/zenodo.PENDING-<name>" and in <
   phase-diagrams   ORCHID calculated binary phase diagrams        phase-diagrams/ + Parquet
   hulls            ORCHID binary convex hulls (MP, OQMD, CALPHAD) hulls/ + Parquet
   dft-benchmark    ORCHID DFT-vs-experiment formation-enthalpy benchmark   dft_parity, Kim 2017 cross-check + Parquet
+  phase-registry   ORCHID phase registry (binary systems)         phases/ (registry JSON/JSON-LD/CSV/Parquet, structure types)
 
 Per record the data repository holds zenodo/<name>.metadata.json (Zenodo deposition metadata) and
 zenodo/<name>.files.json (the files of the record with sizes and SHA-256, written by `manifest`).
@@ -64,9 +65,10 @@ RECORDS = {  # name -> (include patterns, exclude patterns); "dir/**" = everythi
     "dft-benchmark": (DOCS + ["zenodo/dft-benchmark.metadata.json", "literature/dft_parity.json",
                               "literature/kim2017_crosscheck.json", "literature/kim2017_crosscheck.md",
                               "literature/QUALITY_FIXES.md", "parquet/dft_parity.parquet", "parquet/MANIFEST.json"], []),
+    "phase-registry": (DOCS + ["zenodo/phase-registry.metadata.json", "phases/**"], []),
 }
 assert set(RECORDS) == set(orchid_cite.NAMES)
-DATA_DIRS = ("literature", "phase-diagrams", "hulls", "parquet")  # every file here must be in some record
+DATA_DIRS = ("literature", "phase-diagrams", "hulls", "parquet", "phases")  # every file here must be in some record
 
 TEXT_EXT = (".json", ".md", ".html", ".txt", ".cff", ".xml", ".csv", ".yml", ".yaml")
 SKIP_DIRS = {".git", "dist", "__pycache__", "node_modules"}
@@ -413,7 +415,8 @@ def cmd_writeback(a):
     py, ppy = sys.executable, a.parquet_python
     steps = [[py, "tools/export_literature_data.py"], [py, "tools/build_dft_parity.py"], "sync",
              [py, "tools/add_cite_as.py", "--data", a.data], [ppy, "tools/build_parquet.py", "--data", a.data],
-             [py, "tools/build_static_pages.py", "--data", a.data], "card", "manifest"]
+             [py, "tools/build_static_pages.py", "--data", a.data],
+             [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy], "card", "manifest"]
     for st in steps:
         if st == "sync":
             sync_literature(a.data)
@@ -427,6 +430,7 @@ def cmd_writeback(a):
               [py, "tools/add_cite_as.py", "--check", "--data", a.data],
               [ppy, "tools/build_parquet.py", "--data", a.data, "--check"],
               [py, "tools/build_static_pages.py", "--data", a.data, "--check"],
+              [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy, "--check"],
               [py, "tools/build_precision_sample.py", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "card", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "manifest", "--check"]]

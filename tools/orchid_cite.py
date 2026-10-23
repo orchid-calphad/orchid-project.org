@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """How to cite the ORCHID data release: one shared definition for every builder.
 
-The release is archived on Zenodo as four citable datasets plus an umbrella record ("ORCHID data") that links
+The release is archived on Zenodo as five citable datasets plus an umbrella record ("ORCHID data") that links
 them (DataCite isPartOf / hasPart). Their DOIs live in one file of the data repository,
 
   <orchid-data>/zenodo/dois.json      {"orchid-data": "10.5281/zenodo....", "literature": ..., ...}
@@ -54,7 +54,7 @@ THIRD_PARTY = {
 }
 
 # name -> (title, BibTeX key, sources to cite as well); EXTRACTED: records holding values read from papers
-EXTRACTED = {"orchid-data", "literature", "dft-benchmark"}
+EXTRACTED = {"orchid-data", "literature", "dft-benchmark", "phase-registry"}
 ABSTRACT = {
     "orchid-data": "Umbrella record of the ORCHID data release: literature values, calculated binary phase diagrams, "
                    "binary convex hulls and the DFT-vs-experiment formation-enthalpy benchmark.",
@@ -66,6 +66,10 @@ ABSTRACT = {
              "assessed CALPHAD descriptions (SGTE), as interval documents.",
     "dft-benchmark": "Literature formation enthalpies paired with the lowest-energy Materials Project and OQMD entries "
                      "at the same composition, with error statistics and a Kim et al. 2017 cross-check.",
+    "phase-registry": "One entry per phase of each binary system: every name it goes by (TDB, corpus, paper labels, "
+                      "Materials Project / OQMD ids), the CALPHAD models that describe it, where the calculated "
+                      "diagrams make it stable, example literature references, and a structure type assigned only "
+                      "when certain (standard name or unique DFT match), otherwise a review candidate list.",
 }
 # name -> (title, BibTeX key, sources to cite as well)
 DATASETS = {
@@ -76,6 +80,8 @@ DATASETS = {
               ["mp", "oqmd", "sgte"]),
     "dft-benchmark": ("ORCHID DFT-vs-experiment formation-enthalpy benchmark", "orchid_dft_benchmark_2026",
                       ["papers", "mp", "oqmd", "kim2017"]),
+    "phase-registry": ("ORCHID phase registry (binary systems)", "orchid_phase_registry_2026",
+                       ["sgte", "mp", "oqmd", "papers"]),
 }
 NAMES = tuple(DATASETS)
 

@@ -60,7 +60,8 @@ ROOT_FILES = ("index.html", "index.md", "sitemap.xml", "robots.txt", "llms.txt",
 AI_BOTS = ("GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-Web", "Claude-User", "Claude-SearchBot",
            "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended", "CCBot", "Applebot-Extended",
            "Bytespider", "Amazonbot", "meta-externalagent", "cohere-ai", "DuckAssistBot")
-SITE_PAGES = ("", "phase-diagrams/", "data-explorer/", "dft-parity/", "dataset/", "about/", "workflow/", "catalog/",
+NUMBER_WORDS = {3: "three", 4: "four", 5: "five", 6: "six", 7: "seven"}
+SITE_PAGES = ("", "phase-diagrams/", "phases/", "data-explorer/", "dft-parity/", "dataset/", "about/", "workflow/", "catalog/",
               "catalog/binary-thermo.html", "catalog/mixing-energy.html", "catalog/model-audit/",
               "catalog/compatibility/unary-compatibility-network.html", "best-practices.html")
 
@@ -962,12 +963,14 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
                 [("a", "Compounds", DATA_URL + "compounds/index.html"), " — %d formation-enthalpy pages with DFT comparison." % len(comp_summary)],
                 [("a", "Reporting papers", DATA_URL + "papers/index.html"), " — citation, DOI, systems, number of values."],
                 ["Interactive tools: ", ("a", "data explorer", SITE_URL + "data-explorer/"), ", ",
-                 ("a", "phase diagrams", SITE_URL + "phase-diagrams/"), ", ", ("a", "DFT vs experiment", SITE_URL + "dft-parity/"), "."]]),
+                 ("a", "phase diagrams", SITE_URL + "phase-diagrams/"), ", ", ("a", "phase registry", SITE_URL + "phases/"), ", ",
+                 ("a", "DFT vs experiment", SITE_URL + "dft-parity/"), "."]]),
         ("h2", "folders", "Folder guide"),
         ("table", "Folders of the data site", ["Path", "Content"], [
             [[("a", "literature/", DATA_URL + "literature/SCHEMA.md")], ["Literature records: index.json, systems/<SYS>.json, papers.json, contexts.json, dft_parity.json, full CSV/JSONL dumps; fields in SCHEMA.md."]],
             [[("a", "phase-diagrams/", DATA_URL + "phase-diagrams/index.json")], ["Calculated binary phase diagrams (pycalphad, SGTE binary collection): index.json and sgte/<TDB>.json (phase regions, invariants, grid)."]],
             [["hulls/"], ["Binary convex hulls: dft-mp/ (Materials Project), dft-oqmd/ (OQMD), calphad-sgte/ (assessed CALPHAD), one JSON per system."]],
+            [[("a", "phases/", DATA_URL + "phases/SCHEMA.md")], ["Phase registry (binary systems): registry.json / .csv / .parquet / .jsonld, structure_types.json, review_queue.json, CONFLICTS.md, systems/<SYS>.json; fields in SCHEMA.md."]],
             [[("a", "systems/", DATA_URL + "systems/index.html")], ["Static pages per chemical system: <SYS>.html, <SYS>.md, <SYS>.csv."]],
             [[("a", "compounds/", DATA_URL + "compounds/index.html")], ["Static pages per compound (reduced formula): <FORMULA>.html, <FORMULA>.md."]],
             [[("a", "papers/", DATA_URL + "papers/index.html")], ["Index of reporting papers."]],
@@ -976,8 +979,8 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
             [[("a", "llms.txt", DATA_URL + "llms.txt"), ", ", ("a", "llms-full.txt", DATA_URL + "llms-full.txt")], ["Guides for language models and agents."]],
         ], set()),
         ("h2", "licence", "Licence and citation"),
-        ("p", ["Release %s is archived on Zenodo as four citable datasets, each with its own DOI, linked by an umbrella "
-               "record: " % orchid_cite.RELEASE_TAG] +
+        ("p", ["Release %s is archived on Zenodo as %s citable datasets, each with its own DOI, linked by an umbrella "
+               "record: " % (orchid_cite.RELEASE_TAG, NUMBER_WORDS[len(orchid_cite.NAMES) - 1])] +
               sum([[("a", orchid_cite.entry(n, CITE_DATA)["title"], orchid_cite.entry(n, CITE_DATA)["url"]),
                     "; " if i < len(orchid_cite.NAMES) - 1 else "."] for i, n in enumerate(orchid_cite.NAMES)], [])),
         ("p", ["Derived data: CC BY 4.0. Cite the ORCHID release (", ("a", "CITATION.cff", DATA_URL + "CITATION.cff"),
@@ -1008,7 +1011,8 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- HTML page: %ssystems/<SYS>.html" % DATA_URL,
         "- CSV: %ssystems/<SYS>.csv (all records incl. not accepted; column extraction_accepted)" % DATA_URL,
         "- Full JSON records: %sliterature/systems/<SYS>.json (large systems: also <SYS>.part2.json ...; see literature/index.json)" % DATA_URL,
-        "- Calculated phase diagrams: %sphase-diagrams/index.json -> phase-diagrams/sgte/<file>.json" % DATA_URL, "",
+        "- Calculated phase diagrams: %sphase-diagrams/index.json -> phase-diagrams/sgte/<file>.json" % DATA_URL,
+        "- Phase registry (names, models, stability, references, structure when certain): %sphases/systems/<SYS>.json; all phases %sphases/registry.json, fields %sphases/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL), "",
         "## Indexes",
         "- [Systems](%ssystems/index.md)" % DATA_URL,
         "- [Compounds (formation enthalpies, literature vs Materials Project / OQMD)](%scompounds/index.md); per compound: %scompounds/<FORMULA>.md" % (DATA_URL, DATA_URL),

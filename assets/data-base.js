@@ -6,7 +6,7 @@
   window.dataURL = function (p) { return window.ORCHID_DATA + p; };
   document.addEventListener("DOMContentLoaded", function () {
     if (window.ORCHID_DATA === "../data/") return;
-    document.querySelectorAll('a[href^="../data/literature/"],a[href^="../data/phase-diagrams/"],a[href^="../data/hulls/"]').forEach(function (a) {
+    document.querySelectorAll('a[href^="../data/literature/"],a[href^="../data/phase-diagrams/"],a[href^="../data/hulls/"],a[href^="../data/phases/"]').forEach(function (a) {
       a.setAttribute("href", window.ORCHID_DATA + a.getAttribute("href").slice("../data/".length));
     });
   });

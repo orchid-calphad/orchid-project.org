@@ -11,7 +11,7 @@ Only data with clear redistribution rights are published. Version 1, machine-ext
 
 ## Zenodo release
 
-Release v2026.10 is archived as four citable datasets plus an umbrella record (metadata and file manifests in the
+Release v2026.10 is archived as five citable datasets plus an umbrella record (metadata and file manifests in the
 `zenodo/` folder of `orchid-calphad/orchid-data`). `tools/zenodo_release.py plan | bundle | writeback` checks the
 records, builds one deterministic zip per record into the ignored `dist/`, and writes the reserved DOIs back into
 both repositories; every builder reads the DOIs from `zenodo/dois.json` through `tools/orchid_cite.py`.
