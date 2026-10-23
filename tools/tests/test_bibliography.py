@@ -49,10 +49,28 @@ oa = B.oa_license(cr["license"])
 check("oa licence from crossref only", oa["url"] == "http://creativecommons.org/licenses/by/4.0/" and oa["content_version"] == "vor")
 check("no oa without cc", B.oa_license([{"url": "https://www.elsevier.com/tdm/userlicense/1.0/"}]) is None)
 check("404 -> None", B.parse_crossref({"http_status": 404, "body": None}) is None)
-check("doi check consistent", B.doi_check({"first_author": "smith", "year": 1999}, cr)["status"] == "consistent")
-check("doi check fuzzy (OCR)", B.doi_check({"first_author": "smlth", "year": 1999}, cr)["status"] == "consistent")
-bad = B.doi_check({"first_author": "jones", "year": 1960}, cr)
-check("doi check mismatch", bad["status"] == "mismatch_suspect" and set(bad["issues"]) == {"first_author_not_in_crossref_authors", "year_differs"})
+check("doi match verified", B.doi_match({"first_author": "smith", "year": 1999}, cr)["status"] == "verified")
+check("doi match fuzzy (OCR)", B.doi_match({"first_author": "smlth", "year": 1999}, cr)["status"] == "verified")
+bad = B.doi_match({"first_author": "jones", "year": 1960}, cr)
+check("doi match mismatch (author)", bad["status"] == "mismatch" and "first_author_not_in_crossref_authors" in bad["issues"])
+check("doi match year off -> mismatch", B.doi_match({"first_author": "smith", "year": 1980}, cr)["status"] == "mismatch")
+jama = {"authors": [], "title": "Toko-Ginecologia Practica, Madrid", "year": 1964, "container_title": "JAMA",
+        "container_title_short": "JAMA", "volume": "188", "pages": "182"}
+check("no Crossref authors -> mismatch (Kittl/Massalski -> JAMA)",
+      B.doi_match({"citation": "J. E. Kittl, T.B. Massalski, J. Inst. Met. 93 (1964-1965) 182-188."}, jama)["status"] == "mismatch")
+sea = {"authors": [{"family": "Caldwell", "given": "D.R."}], "title": "Determination of thermal expansion of sea-water",
+       "year": 1970, "container_title": "Deep Sea Research and Oceanographic Abstracts", "volume": "17", "pages": "707-719"}
+check("seawater DOI for a Nucl. Metall. source line -> mismatch",
+      B.doi_match({"citation": "D.H. Wood, E.M. Cramer, and P.L. Wallace, Nucl. Metall., 17, 707-719 (1970)"}, sea)["status"] == "mismatch")
+lb = {"authors": [], "title": "Al-Li-Zn (Aluminium - Lithium - Zinc)", "year": 2005, "container_title": "Landolt-Boernstein"}
+check("no authors but title in the printed reference -> weak",
+      B.doi_match({"citation": "O. Bodak, Al-Li-Zn (Aluminium-Lithium-Zinc), in: G. Effenberg (Eds), Springer Materials"}, lb)["status"] == "weak")
+gs = {"authors": [{"family": "Gschneidner", "given": "K. A."}], "title": "The La-Sc (Lanthanum-Scandium) system", "year": 1982,
+      "container_title": "Bulletin of Alloy Phase Diagrams", "volume": "3", "pages": "93-94"}
+check("year typo with journal and volume/page agreeing -> weak",
+      B.doi_match({"citation": "K.A. Gschneidner, Jr. and F.W. Calderwood, Bull. Alloy Phase Diagrams, 3(1), 93-94 (1992)"}, gs)["status"] == "weak")
+check("same, year right -> verified",
+      B.doi_match({"citation": "K.A. Gschneidner, Jr. and F.W. Calderwood, Bull. Alloy Phase Diagrams, 3(1), 93-94 (1982)"}, gs)["status"] == "verified")
 check("system id", B.norm_system(["Ni", "Al"]) == "AL-NI" and B.norm_system("ti-ni") == "NI-TI")
 print(f"{len(fails)} failures")
 sys.exit(1 if fails else 0)

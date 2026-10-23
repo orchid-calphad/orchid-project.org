@@ -203,6 +203,12 @@ class Sources:
             with open(p, newline="", encoding="utf-8") as f:
                 self.assemblages = [{"id": r["id"], "system": r["system"], "original_doi": r["original_doi"]}
                                     for r in csv.DictReader(f)]
+        # printed references of each literature work, from the values that cite it (cited_sources)
+        self.lit_refs = collections.defaultdict(collections.Counter)
+        for r in self.records:
+            for cs in r.get("cited_sources") or []:
+                if cs.get("paper") and cs.get("reference"):
+                    self.lit_refs[cs["paper"]][(cs["reference"], cs.get("first_author") or "", str(cs.get("year") or ""))] += 1
         # bundled TDB files (sha256 of the bytes ORCHID distributes)
         self.tdb_dir = os.path.join(SITE, "data")
         if not os.path.isdir(os.path.join(self.tdb_dir, "databases")):
@@ -419,34 +425,184 @@ def oa_license(lic):
             "delay_in_days": x.get("delay_in_days"), "basis": "crossref_license_field"}
 
 
-def doi_check(local, cr):
-    """Compare a DOI's Crossref record with what ORCHID's source printed (first-author surname, year, title)."""
-    if not cr:
-        return None
-    issues = []
-    sur = local.get("first_author")
-    names = [set(fold(" ".join(x for x in (a.get("given"), a.get("family"), a.get("name")) if x)).split())
-             for a in cr["authors"]]
-    if sur and names:
-        import difflib
-        st = [t for t in sur.split() if len(t) > 1]
+MATCH_RANK = {"mismatch": 0, "weak": 1, "verified": 2}
+STOPWORDS = {"of", "the", "and", "for", "in", "on", "de", "der", "die", "und", "la", "le", "et", "des", "du", "a", "an",
+             "to", "with", "by", "at", "from", "journal", "zeitschrift", "revue", "fur", "f"}
+# printed journal abbreviations whose full (or Crossref) title shares no prefix with them
+JOURNAL_ALIASES = {"jama": ["journal american medical association"],
+                   "international journal of materials research": ["zeitschrift fur metallkunde"],
+                   "int j mater res": ["zeitschrift fur metallkunde"],
+                   "journal of phase equilibria and diffusion": ["journal of phase equilibria"]}
 
-        def hit(tokens):
-            return any(t in tokens or any(difflib.SequenceMatcher(None, t, u).ratio() >= 0.75 for u in tokens) for t in st)
-        if st and not any(hit(n) for n in names):
-            issues.append("first_author_not_in_crossref_authors")
-    y = local.get("year")
-    if y and cr.get("year") and abs(int(y) - int(cr["year"])) > 1:
+
+def _abbrev_of(w, c):
+    """Printed journal word w abbreviates container word c: same first letter and w a subsequence of c
+    ('metallkd' -> 'metallkunde', 'equilib' -> 'equilibria')."""
+    if w == c:
+        return True
+    if len(w) < 3 or w[0] != c[0]:
+        return False
+    if len(w) >= 5 and _ratio(w, c) >= 0.8:  # OCR / typo ('equilibira')
+        return True
+    if len(w) > len(c):
+        return False
+    it = iter(c)
+    return all(ch in it for ch in w)
+
+
+def _ratio(a, b):
+    import difflib
+    return difflib.SequenceMatcher(None, a, b).ratio()
+
+
+def _author_tokens(a):
+    """Folded name tokens of one Crossref author, plus the joined family name ('Ok.am.oto' -> 'okamoto')."""
+    fam = fold(a.get("family") or a.get("name") or "")
+    toks = set(fold(" ".join(x for x in (a.get("given"), a.get("family"), a.get("name")) if x)).split())
+    if fam:
+        toks.add(fam.replace(" ", ""))
+    return toks, set(fam.split()) | ({fam.replace(" ", "")} if fam else set())
+
+
+def _surname_hits(sur, toks):
+    st = [t for t in sur.split() if len(t) > 1] + ([sur.replace(" ", "")] if " " in sur else [])
+    return bool(st) and any(t in toks or any(_ratio(t, u) >= 0.75 for u in toks if len(u) > 1) for t in st)
+
+
+def _first_page(pages):
+    m = re.match(r"^\D*(\d+)", str(pages or ""))
+    return m.group(1) if m else None
+
+
+def doi_match(printed, cr, doi=None):
+    """Does the Crossref record of a DOI describe the work an ORCHID source printed?
+
+    printed: {citation, first_author (folded surname), year, title}; any may be missing. Compares the first-author
+    surname (accent-insensitive, fuzzy for OCR), the year (+-1; any year printed in the reference), title tokens
+    (printed title, or the Crossref title found in the printed reference) and journal / volume / first page.
+    Returns {status: verified | weak | mismatch, issues[], evidence{}}:
+      mismatch  the printed first author is not among the Crossref authors and the Crossref title is not in the
+                printed reference; or Crossref lists no authors and neither the title nor journal + volume + first
+                page + year confirm; or the year differs and nothing else confirms;
+                or the printed title differs from the Crossref title and the journal does not confirm
+      verified  first author = Crossref first author, year within +-1, journal / title not contradicting
+      weak      everything else that is not a mismatch (author found but not first, year off with journal or
+                volume/page agreeing, journal unconfirmed, nothing but the year printed)
+    """
+    issues, ev = [], {}
+    cit = (printed.get("citation") or "").replace("\u03b2", "\u00df")  # OCR: Greek beta for German sharp s
+    ctoks = set(fold(cit).split())
+    # first author
+    sur = first_author_surname(cit) or printed.get("first_author")
+    jwords = set()
+    for n in (cr.get("container_title"), cr.get("container_title_short")):
+        jwords |= set(fold(n).split())
+    if sur and all(t in jwords or t in STOPWORDS for t in sur.split()):
+        sur = None  # 'J. Rare Earths, 37, ...': the parsed "surname" is the journal; no author printed
+    authors = [a for a in cr.get("authors") or [] if a.get("family") or a.get("name")]
+    if not authors:
+        author = "crossref_no_authors"
+    elif not sur:
+        author = "not_printed"
+    else:
+        t0, f0 = _author_tokens(authors[0])
+        if _surname_hits(sur, f0) or _surname_hits(sur, t0):
+            author = "first"
+        elif any(_surname_hits(sur, _author_tokens(a)[0]) for a in authors[1:]):
+            author = "other"
+        else:
+            author = "none"
+    ev["author"] = author
+    # year
+    years = {int(y) for y in YEAR_RE.findall(cit)}
+    if str(printed.get("year") or "").isdigit():
+        years.add(int(printed["year"]))
+    cy = cr.get("year")
+    year = "unknown" if not (years and cy) else ("ok" if any(abs(y - int(cy)) <= 1 for y in years) else "differs")
+    ev["year"] = year
+    # title: Crossref title inside the printed reference, or printed title vs Crossref title
+    crt = [t for t in fold(re.sub(r"<[^>]+>", "", cr.get("title") or "")).split() if len(t) >= 2 and t not in STOPWORDS]
+    title = "unknown"
+    if len(crt) >= 3 and ctoks and sum(t in ctoks for t in crt) / len(crt) >= 0.9:
+        title = "strong"
+    lt = [t for t in fold(printed.get("title")).split() if t not in STOPWORDS]
+    if title != "strong" and len(lt) >= 4 and crt:
+        a, b = set(lt), set(crt)
+        r = len(a & b) / max(1, min(len(a), len(b)))
+        title = "strong" if r >= 0.6 else ("differs" if r < 0.3 else "partial")
+    ev["title"] = title
+    # journal (abbreviation prefixes), volume and first page
+    words = {t for t in ctoks if len(t) >= 2 and not t.isdigit()}
+    journal = "unknown"
+    best = None
+    names = [cr.get("container_title"), cr.get("container_title_short")]
+    for n in list(names):
+        names += JOURNAL_ALIASES.get(fold(n), [])
+        if n and re.search(r" - |: ", n):  # 'Zeitschrift fur Kristallographie - Crystalline Materials'
+            names.append(re.split(r" - |: ", n)[0])
+    for name in names:
+        jt = [t for t in fold(name).split() if t not in STOPWORDS and not t.isdigit()]
+        if not jt or not words:
+            continue
+        sc = sum(any(_abbrev_of(w, c) for w in words) for c in jt) / len(jt)
+        best = sc if best is None else max(best, sc)
+    if best is not None:
+        journal = "match" if best >= 0.6 else ("differs" if best < 0.34 else "partial")
+    ev["journal"] = journal
+    nums = set(re.findall(r"\d+", cit))
+    vol = str(cr.get("volume") or "").strip()
+    fp = _first_page(cr.get("pages") or cr.get("article_number"))
+    vp = bool(vol and fp and vol in nums and fp in nums)
+    ev["volume_page"] = "match" if vp else "unknown"
+    # verdict
+    if author in ("none", "crossref_no_authors"):
+        issues.append("first_author_not_in_crossref_authors" if author == "none" else "crossref_lists_no_authors")
+        # rescued only by the title printed in the reference; with no Crossref authors also by journal + volume +
+        # first page + year all agreeing
+        status = "weak" if title == "strong" or (author == "crossref_no_authors" and journal == "match" and vp
+                                                 and year == "ok") else "mismatch"
+    elif year == "differs" and title != "strong" and not ((vp or journal == "match") and author != "not_printed"
+                                                         or (vp and journal == "match")):
         issues.append("year_differs")
-    lt = fold(local.get("title"))
-    ct = fold(cr.get("title"))
-    if lt and ct and len(lt.split()) >= 4:
-        a, b = set(lt.split()), set(ct.split())
-        if len(a & b) / max(1, min(len(a), len(b))) < 0.5:
-            issues.append("title_differs")
-    if not (sur or y or lt):
-        return {"status": "unchecked", "issues": []}
-    return {"status": "consistent" if not issues else "mismatch_suspect", "issues": issues}
+        status = "mismatch"
+    elif title == "differs" and journal != "match" and not vp:
+        issues.append("title_differs")
+        status = "mismatch"
+    elif author == "not_printed":
+        issues.append("first_author_not_printed")
+        if year == "differs":
+            issues.append("year_differs")
+        if journal == "differs" and title != "strong":
+            issues.append("journal_differs")
+            status = "mismatch"
+        elif year == "ok" and (title == "strong" or (vp and journal == "match")):
+            status = "verified"
+        else:
+            status = "weak"
+    else:
+        if year == "differs":
+            issues.append("year_differs")
+        if author == "other":
+            issues.append("first_author_not_first_in_crossref")
+        if journal == "differs":
+            issues.append("journal_differs")
+        if title in ("differs", "partial"):
+            issues.append("title_" + title)
+        if year == "unknown":
+            issues.append("year_not_printed")
+        ok = author == "first" and year == "ok" and journal != "differs" and title not in ("differs", "partial")
+        if author == "other" and year == "ok" and (title == "strong" or (vp and journal == "match")):
+            ok = True
+        status = "verified" if ok else "weak"
+    return {"status": status, "issues": issues, "evidence": ev}
+
+
+def best_match(results):
+    """Best verdict over several printed references of the same work (any one confirming the DOI is enough)."""
+    results = [r for r in results if r]
+    if not results:
+        return None
+    return sorted(results, key=lambda r: (-MATCH_RANK[r["status"]], len(r["issues"]), r.get("printed") or ""))[0]
 
 
 # ----------------------------------------------------------------------------- assembly
@@ -473,6 +629,58 @@ class Bib:
         self.cr = {}
         self.stats = collections.Counter()
         self.tdb_rows = {}
+        self._crc = {}
+        self.doi_matches = collections.defaultdict(list)  # pid -> verdicts of the printed references that kept the DOI
+        self.rejected = []  # DOI matches dropped as mismatches (DOI_MISMATCHES.md)
+        self.reject_alias = collections.defaultdict(set)  # rejected DOI -> no-DOI ids that replaced it
+
+    # -- DOI validation against the printed reference
+    def crossref_of(self, doi):
+        if doi not in self._crc:
+            cp = cache_path(self.cache, doi)
+            rec = None
+            if os.path.isfile(cp):
+                with open(cp, encoding="utf-8") as f:
+                    rec = json.load(f)
+            self._crc[doi] = (parse_crossref(rec), (rec or {}).get("http_status"))
+        return self._crc[doi]
+
+    def validate(self, doi, printed, source):
+        """Verdict for a DOI matched from printed reference(s); None when nothing printed or no Crossref record.
+        printed: list of {citation, first_author, year, title}."""
+        printed = [p for p in printed if any(p.get(k) for k in ("citation", "first_author", "title"))]
+        if not printed:
+            return None
+        if not re.search(r"\d", doi.split("/", 1)[1]):
+            v = {"status": "mismatch", "issues": ["doi_not_article_level"], "evidence": {}}
+            v["printed"] = printed[0].get("citation") or ""
+        else:
+            cr, http = self.crossref_of(doi)
+            if cr is None:
+                return {"status": "unverifiable", "issues": ["crossref_" + ("not_found" if http == 404 else
+                                                                            "not_fetched" if http is None else
+                                                                            f"http_{http}")],
+                        "evidence": {}, "printed": printed[0].get("citation") or "", "source": source}
+            res = []
+            for p in printed:
+                v = doi_match(p, cr, doi)
+                v["printed"] = p.get("citation") or ""
+                res.append(v)
+            v = best_match(res)
+        v["source"] = source
+        return v
+
+    def reject(self, doi, v, new_pid, systems):
+        cr, _ = self.crossref_of(doi)
+        a0 = (cr or {}).get("authors") or []
+        self.rejected.append({"doi": doi, "source": v["source"], "printed": v.get("printed") or "", "issues": v["issues"],
+                              "evidence": v.get("evidence") or {}, "new_id": new_pid,
+                              "systems": sorted({x for x in systems if x}, key=sys_sort),
+                              "crossref": {"first_author": author_text(a0[0]) if a0 else None,
+                                           "year": (cr or {}).get("year"), "title": (cr or {}).get("title"),
+                                           "container_title": (cr or {}).get("container_title")}})
+        self.reject_alias[doi].add(new_pid)
+        self.stats[f"doi_mismatch_dropped_{v['source']}"] += 1
 
     # -- papers
     def paper(self, pid):
@@ -533,20 +741,40 @@ class Bib:
                 fa = fold(str(authors[0]).split()[-1]) if str(authors[0]).split() else None
             elif rec.get("citation"):
                 fa = first_author_surname(rec["citation"])
-            if doi:
-                pid = "doi:" + doi
+            ms = rec.get("metadata_source")
+            verdict = None
+            if doi and (rec.get("kind") == "cited_work" or ms in ("printed_reference", "tdb_header")):
+                # the DOI was matched from a printed reference: check it against Crossref
+                printed = []
+                if ms in ("printed_reference", "tdb_header") and rec.get("citation"):
+                    printed.append({"citation": rec["citation"], "first_author": fa, "year": rec.get("year"),
+                                    "title": rec.get("title") if ms == "printed_reference" else None})
+                for (ref, cfa, cy), _n in sorted(self.src.lit_refs.get(lid, {}).items(), key=lambda kv: (-kv[1], kv[0])):
+                    printed.append({"citation": ref, "first_author": fold(cfa.replace("\u03b2", "\u00df")) or None,
+                                    "year": cy or None})
+                verdict = self.validate(doi, printed, "literature_cited_source")
+            if verdict and verdict["status"] == "mismatch":
+                cit = verdict.get("printed") or rec.get("citation")
+                pfa = first_author_surname(cit) or (fa if ms != "crossref" else None)
+                pid = nodoi_id(pfa, year_of(cit) or (rec.get("year") if ms != "crossref" else None), cit)
+                self.reject(doi, verdict, pid, [norm_system(s) for s in rec.get("systems") or []])
+                p = self.paper(pid)
+                p.setdefault("doi_rejected", []).append(verdict)
+                self.local(p, "orchid_literature_printed_reference", citation=cit, year=year_of(cit))
             else:
-                pid = nodoi_id(fa, rec.get("year"), rec.get("title") or rec.get("citation"))
+                if doi:
+                    pid = "doi:" + doi
+                else:
+                    pid = nodoi_id(fa, rec.get("year"), rec.get("title") or rec.get("citation"))
+                p = self.paper(pid)
+                if verdict:
+                    self.doi_matches[pid].append(verdict)
+                src_kind = "orchid_literature_" + (ms or "unknown")
+                self.local(p, src_kind, title=rec.get("title"), year=rec.get("year"), container=rec.get("container"),
+                           citation=rec.get("citation"), authors=authors)
             self.lit_map[lid] = pid
-            p = self.paper(pid)
             p["aliases"].add(lid)
             p["provenance"].add("orchid-data/literature/papers.json")
-            src_kind = "orchid_literature_" + (rec.get("metadata_source") or "unknown")
-            self.local(p, src_kind, title=rec.get("title"), year=rec.get("year"), container=rec.get("container"),
-                       citation=rec.get("citation"), authors=authors)
-            if rec.get("metadata_source") == "printed_reference" or rec.get("metadata_source") == "tdb_header":
-                self.local(p, "printed", check_first_author=fa, check_year=rec.get("year"),
-                           check_title=rec.get("title"))
             for s in rec.get("systems") or []:
                 p["systems"].add(norm_system(s))
             roles = set(rec.get("roles") or [])
@@ -566,8 +794,16 @@ class Bib:
             sysn = norm_system(x.get("system"))
             doi = norm_doi(x.get("doi"))
             hc = x.get("header_citation")
-            if doi:
+            verdict = self.validate(doi, [{"citation": hc, "year": year_of(x.get("year") or hc)}],
+                                    "tdb_header") if doi and hc else None
+            if verdict and verdict["status"] == "mismatch":
+                p = self.paper(nodoi_id(first_author_surname(hc), year_of(hc), hc))
+                self.reject(doi, verdict, p["id"], [sysn])
+                p.setdefault("doi_rejected", []).append(verdict)
+            elif doi:
                 p = self.doi_paper(doi)
+                if verdict:
+                    self.doi_matches[p["id"]].append(verdict)
             elif hc:
                 p = self.paper(nodoi_id(first_author_surname(hc), year_of(hc), hc))
                 self.stats[f"tdb_links_without_doi_{st}"] += 1
@@ -575,7 +811,6 @@ class Bib:
                 continue
             p["provenance"].add("open-tdb/build/sgte-corpus/tdb_pdf_links.json")
             self.local(p, "tdb_header", citation=hc, year=year_of(x.get("year") or hc), container=x.get("journal"))
-            self.local(p, "printed", check_first_author=first_author_surname(hc), check_year=year_of(x.get("year") or hc))
             if sysn:
                 p["systems"].add(sysn)
             rel = x.get("tdb_path") or f"databases/sgte-binary/{tdb}"
@@ -649,16 +884,22 @@ class Bib:
             for src in s.get("sources") or []:
                 cit = src.get("citation")
                 doi = norm_doi(src.get("doi"))
-                if doi:
+                verdict = self.validate(doi, [{"citation": cit}], "handbook_source_line") if doi and cit else None
+                if verdict and verdict["status"] == "mismatch":
+                    p = self.paper(nodoi_id(first_author_surname(cit), year_of(cit), cit))
+                    self.reject(doi, verdict, p["id"], [sysn])
+                    p.setdefault("doi_rejected", []).append(verdict)
+                    doi = None
+                elif doi:
                     p = self.doi_paper(doi)
+                    if verdict:
+                        self.doi_matches[p["id"]].append(verdict)
                 elif cit:
                     p = self.paper(nodoi_id(first_author_surname(cit), year_of(cit), cit))
                 else:
                     continue
                 p["provenance"].add("open-tdb/build/sgte-corpus/db-v2.1/okamoto/handbook_labels.json")
                 self.local(p, "handbook_reference", citation=cit, year=year_of(cit))
-                if doi:
-                    self.local(p, "printed", check_first_author=first_author_surname(cit), check_year=year_of(cit))
                 p["systems"].add(sysn)
                 self.role(p, "handbook_diagram_source", systems={sysn}, kind=src.get("kind"))
                 self.edge("handbook_reproduces", node, p["id"],
@@ -775,6 +1016,8 @@ class Bib:
             ids = set()
             for d in (r.get("dois") or "").split(";"):
                 d = norm_doi(d)
+                if d and d in self.reject_alias and "doi:" + d not in self.P:
+                    continue  # DOI dropped as a mismatch; the literature id below carries the work
                 if d:
                     ids.add("doi:" + d)
             for lid in (r.get("papers") or "").split(";"):
@@ -806,14 +1049,20 @@ class Bib:
                     d = norm_doi(ref.get("doi"))
                     if d and "doi:" + d in self.P:
                         self.P["doi:" + d].setdefault("phases", set()).add(ph["id"])
+                    elif d and len(self.reject_alias.get(d, ())) == 1:
+                        self.P[next(iter(self.reject_alias[d]))].setdefault("phases", set()).add(ph["id"])
 
     def from_assemblages(self):
         if self.src.assemblages is None:
             return
         for r in self.src.assemblages:
             d = norm_doi(r["original_doi"])
-            if d and "doi:" + d in self.P:
-                self.P["doi:" + d]["assemblages"] = self.P["doi:" + d].get("assemblages", 0) + 1
+            pid = "doi:" + d if d else None
+            if d and pid not in self.P and len(self.reject_alias.get(d, ())) == 1:
+                pid = next(iter(self.reject_alias[d]))
+                self.stats["assemblage_records_with_rejected_doi"] += 1
+            if pid and pid in self.P:
+                self.P[pid]["assemblages"] = self.P[pid].get("assemblages", 0) + 1
 
     def from_crossref_refs(self):
         for pid, cr in sorted(self.cr.items()):
@@ -933,10 +1182,18 @@ def paper_record(b, p):
     rec["is_referenced_by_count"] = cr["is_referenced_by_count"] if cr else None
     rec["is_referenced_by_count_retrieved"] = (p.get("crossref_retrieved_at") or "")[:10] or None if cr else None
     chk = None
-    if cr and any(k in loc for k in ("check_first_author", "check_year", "check_title")):
-        chk = doi_check({"first_author": loc.get("check_first_author"), "year": loc.get("check_year"),
-                         "title": loc.get("check_title")}, cr)
+    if doi and b.doi_matches.get(pid):
+        v = sorted(b.doi_matches[pid], key=lambda v: (-MATCH_RANK.get(v["status"], -1), len(v["issues"]), v["source"],
+                                                       v.get("printed") or ""))[0]
+        chk = {"status": v["status"], "issues": v["issues"], "evidence": v.get("evidence") or {}, "basis": v["source"],
+               "sources_checked": sorted({x["source"] for x in b.doi_matches[pid]})}
+    elif p.get("doi_rejected"):
+        rj = sorted(p["doi_rejected"], key=lambda v: (v["source"], v.get("printed") or ""))
+        chk = {"status": "mismatch", "issues": rj[0]["issues"], "evidence": rj[0].get("evidence") or {},
+               "basis": rj[0]["source"], "rejected_dois": sorted({b_doi for b_doi in (
+                   x["doi"] for x in b.rejected if x["new_id"] == pid)})}
     rec["doi_check"] = chk
+    rec["doi_match"] = chk["status"] if chk else None
     rec["systems"] = sorted({s for s in p["systems"] if s}, key=sys_sort)
     rec["candidate_systems_inferred"] = dict(sorted(p["inferred_systems"].items()))
     rec["roles"] = [r for r in ROLES + ["espei_reference"] if r in p["roles"]]
@@ -1041,8 +1298,8 @@ CITE_ABSTRACT = ("Every paper ORCHID knows about: Crossref bibliographic metadat
                  "values, TDB files, reassessments, handbook diagrams, Crossref reference lists).")
 CITE_PAPERS = "the papers themselves when you use their data (doi / citation of each bibliography record)"
 CITE_STATUS = ("Version 1, machine-extracted: roles and evidence counts derive from machine-extracted literature values "
-               "and link tables; bibliographic fields are Crossref metadata as deposited (DOI mismatches flagged in "
-               "doi_check).")
+               "and link tables; bibliographic fields are Crossref metadata as deposited (DOIs matched from printed references "
+               "checked against Crossref: doi_match; mismatches dropped).")
 
 
 def cite_module():
@@ -1223,7 +1480,7 @@ CSV_COLS = ["id", "key", "doi", "no_doi", "title", "authors", "orcids", "contain
             "values_cited", "values_cited_accepted", "property_groups", "properties", "n_tables", "n_text_passages",
             "n_espei_datasets", "n_phase_registry_phases", "n_assessed_assemblage_records", "open_access_license",
             "license_urls", "is_referenced_by_count", "is_referenced_by_count_retrieved", "crossref_status",
-            "doi_check", "read_by_orchid", "edges_out", "edges_in", "json_url", "html_url"]
+            "doi_match", "read_by_orchid", "edges_out", "edges_in", "json_url", "html_url"]
 
 
 def flat_row(r, ec):
@@ -1260,7 +1517,7 @@ def flat_row(r, ec):
         "is_referenced_by_count": r.get("is_referenced_by_count"),
         "is_referenced_by_count_retrieved": r.get("is_referenced_by_count_retrieved") or "",
         "crossref_status": r["crossref"]["status"],
-        "doi_check": (r.get("doi_check") or {}).get("status", ""),
+        "doi_match": r.get("doi_match") or "",
         "read_by_orchid": r["availability"]["read_by_orchid"],
         "edges_out": ec.get((r["id"], "out"), 0), "edges_in": ec.get((r["id"], "in"), 0),
         "json_url": r["urls"]["json"], "html_url": r["urls"]["html"],
@@ -1353,8 +1610,10 @@ def build_outputs(src, cache, with_pages=True):
                                           for ro in ROLES + ["espei_reference"]},
               "edges": len(edges), "edges_by_type": {t: sum(1 for e in edges if e["type"] == t) for t in EDGE_TYPES},
               "crossref": dict(sorted(collections.Counter(r["crossref"]["status"] for r in records if r["doi"]).items())),
-              "doi_check": dict(sorted(collections.Counter((r.get("doi_check") or {}).get("status", "not_checked")
+              "doi_match": dict(sorted(collections.Counter(r.get("doi_match") or "not_matched_from_print"
                                                            for r in records if r["doi"]).items())),
+              "doi_mismatches_dropped": {"matches": len(b.rejected), "dois": len({x["doi"] for x in b.rejected}),
+                                         "by_source": dict(sorted(collections.Counter(x["source"] for x in b.rejected).items()))},
               "open_access_license": sum(1 for r in records if r["availability"]["open_access_license"]),
               "read_by_orchid": sum(1 for r in records if r["availability"]["read_by_orchid"] == "yes"),
               "authors_with_orcid": sum(1 for r in records for a in r.get("authors") or [] if a.get("orcid")),
@@ -1497,6 +1756,7 @@ def build_outputs(src, cache, with_pages=True):
                                        "license": "https://creativecommons.org/licenses/by/4.0/",
                                        "hasPart": graph}, ensure_ascii=False, separators=(",", ":")) + "\n"
     out.update(docs(counts, cite))
+    out["DOI_MISMATCHES.md"] = mismatches_md(b.rejected, counts)
     if with_pages:
         import bibliography_pages
         bibliography_pages._SYSDOCS.clear()
@@ -1506,12 +1766,54 @@ def build_outputs(src, cache, with_pages=True):
     return out, counts
 
 
+CROISSANT = os.path.join(SITE, "data", "croissant.json")
+
+
+def croissant_update(path, out):
+    """Add / refresh the bibliography entries of the website's data/croissant.json (other entries untouched):
+    two cr:FileObjects (papers.parquet, edges.parquet with their sha256) and two cr:RecordSets keyed by `id`."""
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    dist = [x for x in d.get("distribution", []) if not str(x.get("@id", "")).startswith("bibliography")]
+    # insert before the DFT-parity and literature entries, which tools/build_dft_parity.py and
+    # tools/export_literature_data.py rewrite in front of / at the end, so every builder's --check stays order-stable
+    at = next((i for i, x in enumerate(dist) if x.get("@id") == "dft-parity" or str(x.get("@id", "")).startswith("literature")),
+              len(dist))
+    for t in ("papers", "edges"):
+        dist.insert(at, {"@type": "cr:FileObject", "@id": f"bibliography-{t}-parquet", "name": f"bibliography-{t}.parquet",
+                     "contentUrl": f"{DATA_URL}bibliography/{t}.parquet", "encodingFormat": "application/x-parquet",
+                     "sha256": sha256_bytes(out[f"{t}.parquet"])})
+        at += 1
+    d["distribution"] = dist
+    rs = [x for x in d.get("recordSet", []) if x.get("@id") not in ("bibliography_papers", "bibliography_edges")]
+    at = next((i for i, x in enumerate(rs) if x.get("@id") == "literature"), len(rs))
+    for t, fields, desc in (
+            ("papers", PAPER_FIELDS, "ORCHID bibliography: one row per paper (stable id doi:<doi> or nodoi:<hash>), "
+                                     "Crossref metadata (CC0), roles, value counts, DOI check; see bibliography/SCHEMA.md."),
+            ("edges", EDGE_FIELDS, "ORCHID bibliography: one row per typed relation (stable id) between papers, TDB files "
+                                   "and handbook diagrams, with provenance; join src/dst to bibliography_papers.id.")):
+        at += 1
+        rs.insert(at - 1, {"@type": "cr:RecordSet", "@id": f"bibliography_{t}", "name": f"bibliography_{t}", "description": desc,
+                   "key": {"@id": f"bibliography_{t}/id"},
+                   "field": [{"@type": "cr:Field", "@id": f"bibliography_{t}/{n}", "name": n, "dataType": ty,
+                              "description": de,
+                              "source": {"fileObject": {"@id": f"bibliography-{t}-parquet"}, "extract": {"column": n}}}
+                             for n, ty, de in fields]})
+    d["recordSet"] = rs
+    return json.dumps(d, indent=1, ensure_ascii=False).encode()
+
+
 def cmd_build(src, args):
     out, counts = build_outputs(src, args.cache, with_pages=not args.no_pages)
     root = os.path.join(args.data, "bibliography")
     managed_dirs = ("papers", "systems", "pages")
+    croissant = croissant_update(CROISSANT, out) if os.path.exists(CROISSANT) else None
     if args.check:
         bad = []
+        if croissant is not None:
+            with open(CROISSANT, "rb") as f:
+                if f.read() != croissant:
+                    bad.append("differs " + os.path.relpath(CROISSANT, SITE))
         for rel, content in sorted(out.items()):
             p = os.path.join(root, rel)
             data = content if isinstance(content, bytes) else content.encode("utf-8")
@@ -1548,6 +1850,12 @@ def cmd_build(src, args):
                     continue
         with open(p, "wb") as f:
             f.write(data)
+    if croissant is not None:
+        with open(CROISSANT, "rb") as f:
+            cur = f.read()
+        if cur != croissant:
+            with open(CROISSANT, "wb") as f:
+                f.write(croissant)
     print(json.dumps(counts, indent=1))
     return 0
 
@@ -1595,7 +1903,7 @@ PAPER_FIELDS = [  # (column, Croissant dataType, description) for papers.csv / p
     ("is_referenced_by_count", "sc:Integer", "Crossref is-referenced-by-count on the retrieval date."),
     ("is_referenced_by_count_retrieved", "sc:Date", "Date the Crossref record was retrieved."),
     ("crossref_status", "sc:Text", "found | not_found (404 at Crossref) | no_doi | not_fetched."),
-    ("doi_check", "sc:Text", "consistent | mismatch_suspect: Crossref first author / year / title compared with the reference printed in ORCHID's source (empty: nothing printed to compare)."),
+    ("doi_match", "sc:Text", "For DOIs matched from a printed reference (handbook source lines, cited sources of values, TDB header citations): verified | weak | unverifiable (Crossref has no record), from comparing the Crossref first author (accent-insensitive), year (+-1), title and journal with the printed reference; mismatch on no-DOI records whose matched DOI was dropped (DOI_MISMATCHES.md). Empty: DOI not matched from a printed reference."),
     ("read_by_orchid", "sc:Text", "yes: ORCHID processed the paper's full text in its extraction corpus; no otherwise."),
     ("edges_out", "sc:Integer", "Edges with this paper as src (edges.*)."),
     ("edges_in", "sc:Integer", "Edges with this paper as dst."),
@@ -1624,6 +1932,28 @@ def _field_table(fields):
     return "\n".join(rows)
 
 
+def mismatches_md(rejected, counts):
+    rows = sorted(rejected, key=lambda x: (x["doi"], x["source"], x["printed"]))
+    md = ["# ORCHID bibliography: DOI mismatches dropped", "",
+          f"Release `{RELEASE_TAG}`. Generated by `tools/build_bibliography.py` (do not edit). Upstream matchers resolved "
+          "these printed references to DOIs whose Crossref record describes a different work (first author not among "
+          "the Crossref authors or no authors deposited, year off by more than one with nothing else agreeing, or "
+          "title / journal disagreeing). The DOI was dropped; the work is kept as a no-DOI record (`new_id`) with the "
+          "printed reference. The DOI may still appear in the upstream data (literature `cited_dois`, handbook "
+          "source lines, assessed-assemblage `original_doi`) until those are rebuilt.", "",
+          f"{counts['doi_mismatches_dropped']['dois']} DOIs, {counts['doi_mismatches_dropped']['matches']} matches "
+          f"(by source: {', '.join(f'{k} {v}' for k, v in counts['doi_mismatches_dropped']['by_source'].items()) or 'none'}).",
+          "", "| DOI (dropped) | source | printed reference | Crossref record | issues | systems | new id |",
+          "|---|---|---|---|---|---|---|"]
+    esc = lambda t: str(t or "").replace("|", "\\|").replace("\n", " ")
+    for x in rows:
+        c = x["crossref"]
+        crt = "; ".join(str(v) for v in (c.get("first_author"), c.get("year"), c.get("title"), c.get("container_title")) if v)
+        md.append(f"| {esc(x['doi'])} | {esc(x['source'])} | {esc(x['printed'][:200])} | {esc(crt[:200]) or '(none)'} | "
+                  f"{esc(', '.join(x['issues']))} | {esc(';'.join(x['systems']))} | `{x['new_id']}` |")
+    return "\n".join(md) + "\n"
+
+
 def docs(counts, cite):
     c = counts
     role_rows = "\n".join(f"| `{r}` | {c['papers_by_role'][r]} | {c['papers_by_role_with_doi'][r]} |"
@@ -1650,8 +1980,11 @@ deterministic, offline from a Crossref response cache; `--check` verifies these 
 Papers without a DOI: {c['papers_without_doi']} (ids derived from first author, year and title, flagged `no_doi`).
 Crossref records: {cr.get('found', 0)} found, {cr.get('not_found', 0)} DOIs unknown to Crossref (404),
 {cr.get('not_fetched', 0)} not fetched; retrieved {' to '.join(c['crossref_retrieved'] or ['-'])}.
-DOI consistency check against the printed reference: {c['doi_check'].get('consistent', 0)} consistent,
-{c['doi_check'].get('mismatch_suspect', 0)} mismatch suspects (flagged, not removed).
+DOIs matched from a printed reference, checked against Crossref (first author, year +-1, title, journal):
+{c['doi_match'].get('verified', 0)} verified, {c['doi_match'].get('weak', 0)} weak (kept, flagged),
+{c['doi_match'].get('unverifiable', 0)} unverifiable (no Crossref record); {c['doi_mismatches_dropped']['dois']} mismatched
+DOIs ({c['doi_mismatches_dropped']['matches']} matches) were dropped: those works are kept as no-DOI records with the
+printed reference (`DOI_MISMATCHES.md`).
 Open-access licence deposited with Crossref: {c['open_access_license']} papers. Chemical systems: {c['systems']}.
 
 | edge type | edges |
@@ -1695,7 +2028,8 @@ One record: `https://data.orchid-project.org/bibliography/papers/<key>.json` wit
 ## What is and is not here
 
 - Bibliographic metadata only (no abstracts, no full text, no PDFs, no local paths). Crossref metadata is used as
-  deposited; `doi_check` flags DOIs whose Crossref record disagrees with the reference ORCHID's source printed.
+  deposited. A DOI that an upstream matcher found for a printed reference is kept only when its Crossref record agrees
+  with the printed reference (`doi_match`: verified or weak); mismatches are dropped and listed in `DOI_MISMATCHES.md`.
 - Roles and evidence counts are derived from the ORCHID release files (literature values, ESPEI bundle, phase
   registry, assessed phase assemblages) and from the SGTE-corpus link tables; see `provenance` in each record.
 - Edges are never inferred: `cites` / `used_in_assessment` come from the citation printed for each value ORCHID
@@ -1740,7 +2074,8 @@ Release `{RELEASE_TAG}`, bibliography {BIB_VERSION}. Generated by `tools/build_b
 | `crossref` | `{{status, retrieved_at, references_deposited, references_count}}` |
 | `license[]` | Crossref `license` entries `{{url, content_version, start, delay_in_days}}` |
 | `is_referenced_by_count`, `is_referenced_by_count_retrieved` | Crossref citation count and its retrieval date |
-| `doi_check` | `{{status: consistent|mismatch_suspect|unchecked, issues[]}}`: Crossref first author / year / title vs the reference printed in ORCHID's source; null when nothing printed to compare |
+| `doi_match` | for DOIs matched from a printed reference (handbook source line, cited source of a value, TDB header): `verified` (Crossref first author = printed first author, accent-insensitive; year within +-1; title / journal not contradicting), `weak` (kept, flagged: author not first, year off but journal or volume/page agreeing, journal unconfirmed), `unverifiable` (no Crossref record); `mismatch` on a no-DOI record whose matched DOI was dropped; null when the DOI was not matched from print |
+| `doi_check` | details of `doi_match`: `{{status, issues[], evidence{{author, year, title, journal, volume_page}}, basis, sources_checked[]}}`; on dropped matches `rejected_dois[]` |
 | `systems[]` | chemical systems (sorted element symbols joined by `-`) |
 | `candidate_systems_inferred` | discovery leads: candidate systems from citation closures, with basis (hypotheses; not in `systems`) |
 | `roles[]`, `role_details{{}}` | roles (below) and their details |

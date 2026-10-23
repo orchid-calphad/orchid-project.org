@@ -180,9 +180,14 @@ def paper_page(r, rels, jsonld_node, cite, citation_text):
     b.append(coins(r) + "\n")
     b.append(f"<p>Data: <a href=\"../../papers/{k}.json\">JSON record</a> · id <code>{esc(r['id'])}</code> · "
              f"metadata: {esc(r.get('metadata_source'))}</p>\n")
-    if r.get("doi_check") and r["doi_check"].get("status") == "mismatch_suspect":
-        b.append("<p><strong>Check:</strong> the Crossref record of this DOI differs from the reference printed in "
-                 f"ORCHID's source ({esc(', '.join(r['doi_check']['issues']))}); the DOI may be mis-resolved.</p>\n")
+    dm = r.get("doi_match")
+    if dm == "weak":
+        b.append("<p><strong>Check:</strong> the DOI was matched from a printed reference and its Crossref record agrees "
+                 f"only partly ({esc(', '.join(r['doi_check']['issues']))}); treat the DOI as unconfirmed.</p>\n")
+    elif dm == "mismatch":
+        b.append("<p><strong>Check:</strong> a DOI matched upstream from this printed reference "
+                 f"({esc(', '.join(r['doi_check'].get('rejected_dois') or []))}) belongs to a different work at Crossref "
+                 f"({esc(', '.join(r['doi_check']['issues']))}); it was dropped.</p>\n")
     b.append("<h2>Roles in ORCHID</h2>\n<ul>\n")
     for ro in r["roles"]:
         d = r["role_details"].get(ro) or {}

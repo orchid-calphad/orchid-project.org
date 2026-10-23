@@ -99,12 +99,28 @@
   },
   {
    "@type": "cr:FileObject",
+   "@id": "bibliography-papers-parquet",
+   "name": "bibliography-papers.parquet",
+   "contentUrl": "https://data.orchid-project.org/bibliography/papers.parquet",
+   "encodingFormat": "application/x-parquet",
+   "sha256": "abb9ff17f42049b5dda63eb8ecbd7ef3fbf3ea40d3f6a368eef1bb8d32f44f36"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "bibliography-edges-parquet",
+   "name": "bibliography-edges.parquet",
+   "contentUrl": "https://data.orchid-project.org/bibliography/edges.parquet",
+   "encodingFormat": "application/x-parquet",
+   "sha256": "6ce3306eea6843ad9e53a6e172a33c00cd13e47de55b433ed48789ad02ea45a3"
+  },
+  {
+   "@type": "cr:FileObject",
    "@id": "dft-parity",
    "name": "dft_parity.json",
    "description": "Literature formation enthalpies (kJ/mol-atom) paired with the lowest-energy Materials Project and OQMD entry at the same composition (never averaged), with per-source statistics. Viewer: https://orchid-project.org/dft-parity/",
    "contentUrl": "https://orchid-project.org/data/literature/dft_parity.json",
    "encodingFormat": "application/json",
-   "sha256": "50a261b86ed9923b129c0cc45f6a22ec729f4f8184bb574358136c8b4e61a3e0"
+   "sha256": "4be547cdcea23f9fff61458992e9d21f70da34a88eec36c9696a367a70dd8724"
   },
   {
    "@type": "cr:FileObject",
@@ -112,7 +128,7 @@
    "name": "orchid-literature.csv.gz",
    "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.csv.gz",
    "encodingFormat": "application/gzip",
-   "sha256": "f0c08071d7ff9d08d02d248f462b25670b8abc56cb9e9d72997eecfe3eb65423"
+   "sha256": "fdaa990ae9c4fe62caafd289cd0c9b23d8274e84f8c4983b5e7d04bb33dc25f0"
   },
   {
    "@type": "cr:FileObject",
@@ -129,7 +145,7 @@
    "name": "orchid-literature.jsonl.gz",
    "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.jsonl.gz",
    "encodingFormat": "application/gzip",
-   "sha256": "a4b72c282ebf7ac96a79d7d2107be820e0fe4369a7351759f8706d1a93390599"
+   "sha256": "6f7555f2dedb06177e127f447f61a3a139223b2a629af886a83a497ff832ff6d"
   },
   {
    "@type": "cr:FileObject",
@@ -137,7 +153,7 @@
    "name": "literature-index.json",
    "contentUrl": "https://orchid-project.org/data/literature/index.json",
    "encodingFormat": "application/json",
-   "sha256": "e1fb9df7b8d14c44bda1525bcfc20c834f57e7c6b61f22ebb731c4a9573c47f5"
+   "sha256": "0a663baee08c0e757b88202714890a6a58edfd219eccee100da801fa122fa649"
   },
   {
    "@type": "cr:FileObject",
@@ -145,7 +161,7 @@
    "name": "literature-papers.json",
    "contentUrl": "https://orchid-project.org/data/literature/papers.json",
    "encodingFormat": "application/json",
-   "sha256": "8f4e8a8b88c612d5fd4451ae4793f145b831c13b852badd0bb72308f39512fc1"
+   "sha256": "298968ec00c23280238a36c2850e317a8ac478e4ab2de3b1458e3962704c5b49"
   },
   {
    "@type": "cr:FileObject",
@@ -390,6 +406,913 @@
       },
       "extract": {
        "column": "notes"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "@type": "cr:RecordSet",
+   "@id": "bibliography_papers",
+   "name": "bibliography_papers",
+   "description": "ORCHID bibliography: one row per paper (stable id doi:<doi> or nodoi:<hash>), Crossref metadata (CC0), roles, value counts, DOI check; see bibliography/SCHEMA.md.",
+   "key": {
+    "@id": "bibliography_papers/id"
+   },
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/id",
+     "name": "id",
+     "dataType": "sc:Text",
+     "description": "Stable bibliography id: 'doi:<lowercase DOI>' or 'nodoi:<16 hex>' (sha256 of folded first-author surname|year|folded title or printed reference). Primary key.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "id"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/key",
+     "name": "key",
+     "dataType": "sc:Text",
+     "description": "URL-safe file key: 'p' + first 16 hex of sha256(id). Record at papers/<key>.json, page at pages/papers/<key>.html.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "key"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/doi",
+     "name": "doi",
+     "dataType": "sc:Text",
+     "description": "DOI in lower case (empty when the work has none).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "doi"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/no_doi",
+     "name": "no_doi",
+     "dataType": "sc:Boolean",
+     "description": "True when the work has no DOI and the id is derived from first author, year and title.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "no_doi"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/title",
+     "name": "title",
+     "dataType": "sc:Text",
+     "description": "Title (Crossref; for works without a Crossref record: the title held by ORCHID's sources, may be empty).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "title"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/authors",
+     "name": "authors",
+     "dataType": "sc:Text",
+     "description": "Authors as 'Given Family', '; '-joined, in Crossref order.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "authors"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/orcids",
+     "name": "orcids",
+     "dataType": "sc:Text",
+     "description": "ORCID iDs deposited with Crossref for the authors, '; '-joined.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "orcids"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/container_title",
+     "name": "container_title",
+     "dataType": "sc:Text",
+     "description": "Journal, book or proceedings title.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "container_title"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/volume",
+     "name": "volume",
+     "dataType": "sc:Text",
+     "description": "Volume.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "volume"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/issue",
+     "name": "issue",
+     "dataType": "sc:Text",
+     "description": "Issue.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "issue"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/pages",
+     "name": "pages",
+     "dataType": "sc:Text",
+     "description": "Page range or article number.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "pages"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/year",
+     "name": "year",
+     "dataType": "sc:Integer",
+     "description": "Publication year (Crossref 'issued'; otherwise as printed).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "year"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/publisher",
+     "name": "publisher",
+     "dataType": "sc:Text",
+     "description": "Publisher (Crossref).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "publisher"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/type",
+     "name": "type",
+     "dataType": "sc:Text",
+     "description": "Crossref work type (journal-article, book-chapter, ...).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "type"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/metadata_source",
+     "name": "metadata_source",
+     "dataType": "sc:Text",
+     "description": "Where the bibliographic fields come from: 'crossref', or the ORCHID source that printed the reference (orchid_literature_printed_reference, tdb_header, handbook_reference, discovery_snapshot, ...).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "metadata_source"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/citation",
+     "name": "citation",
+     "dataType": "sc:Text",
+     "description": "One-line citation built from the metadata (printed reference for works without a Crossref record).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "citation"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/systems",
+     "name": "systems",
+     "dataType": "sc:Text",
+     "description": "Chemical systems the work covers in ORCHID (sorted element symbols joined by '-'), ';'-joined. Discovery leads contribute only systems named in their title.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "systems"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/roles",
+     "name": "roles",
+     "dataType": "sc:Text",
+     "description": "Roles in ORCHID, ';'-joined: corpus_assessment_read, cited_original_source, tdb_source_assessment, tdb_compilation, handbook_diagram_source, discovery_lead, context_source, espei_reference.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "roles"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/tdb_files",
+     "name": "tdb_files",
+     "dataType": "sc:Text",
+     "description": "TDB files whose header cites this work as the assessment (tdb_source_assessment), ';'-joined.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "tdb_files"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/handbook_systems",
+     "name": "handbook_systems",
+     "dataType": "sc:Text",
+     "description": "Systems whose assessed (handbook) diagram names this work as its source, ';'-joined.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "handbook_systems"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/discovery_rank",
+     "name": "discovery_rank",
+     "dataType": "sc:Integer",
+     "description": "Rank in the Crossref higher-order assessment discovery (discovery_lead).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "discovery_rank"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_reported",
+     "name": "values_reported",
+     "dataType": "sc:Integer",
+     "description": "Literature values ORCHID read from this paper (all released records, accepted or not).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_reported"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_reported_accepted",
+     "name": "values_reported_accepted",
+     "dataType": "sc:Integer",
+     "description": "Of those, values with flags.extraction_accepted.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_reported_accepted"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_reported_experimental",
+     "name": "values_reported_experimental",
+     "dataType": "sc:Integer",
+     "description": "Values read from this paper with evidence class experimental.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_reported_experimental"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_reported_model",
+     "name": "values_reported_model",
+     "dataType": "sc:Integer",
+     "description": "... evidence class model.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_reported_model"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_reported_dft",
+     "name": "values_reported_dft",
+     "dataType": "sc:Integer",
+     "description": "... evidence class dft.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_reported_dft"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_reported_unspecified",
+     "name": "values_reported_unspecified",
+     "dataType": "sc:Integer",
+     "description": "... evidence class unspecified.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_reported_unspecified"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_cited",
+     "name": "values_cited",
+     "dataType": "sc:Integer",
+     "description": "Values in other papers whose printed source (cited_sources) is this work.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_cited"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/values_cited_accepted",
+     "name": "values_cited_accepted",
+     "dataType": "sc:Integer",
+     "description": "Of those, accepted values.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "values_cited_accepted"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/property_groups",
+     "name": "property_groups",
+     "dataType": "sc:Text",
+     "description": "Property groups of the values reported in or citing this work, ';'-joined.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "property_groups"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/properties",
+     "name": "properties",
+     "dataType": "sc:Text",
+     "description": "Property codes (HM_FORM, INVARIANT_TEMPERATURE, ...) of those values, ';'-joined.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "properties"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/n_tables",
+     "name": "n_tables",
+     "dataType": "sc:Integer",
+     "description": "Distinct tables of this paper the released values come from.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "n_tables"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/n_text_passages",
+     "name": "n_text_passages",
+     "dataType": "sc:Integer",
+     "description": "Distinct sentences (running-text quotes) of this paper the released values come from.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "n_text_passages"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/n_espei_datasets",
+     "name": "n_espei_datasets",
+     "dataType": "sc:Integer",
+     "description": "ESPEI datasets of the ORCHID bundle derived from values of this work (paths in papers.jsonl).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "n_espei_datasets"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/n_phase_registry_phases",
+     "name": "n_phase_registry_phases",
+     "dataType": "sc:Integer",
+     "description": "Phase-registry phases that cite this work (paper label or reference).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "n_phase_registry_phases"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/n_assessed_assemblage_records",
+     "name": "n_assessed_assemblage_records",
+     "dataType": "sc:Integer",
+     "description": "Assessed phase-assemblage records whose original evaluation is this work.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "n_assessed_assemblage_records"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/open_access_license",
+     "name": "open_access_license",
+     "dataType": "sc:URL",
+     "description": "First Creative Commons licence URL in the Crossref license field (empty: none deposited). Never inferred from elsewhere.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "open_access_license"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/license_urls",
+     "name": "license_urls",
+     "dataType": "sc:Text",
+     "description": "Every licence URL in the Crossref license field (TDM, publisher, CC), ';'-joined.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "license_urls"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/is_referenced_by_count",
+     "name": "is_referenced_by_count",
+     "dataType": "sc:Integer",
+     "description": "Crossref is-referenced-by-count on the retrieval date.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "is_referenced_by_count"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/is_referenced_by_count_retrieved",
+     "name": "is_referenced_by_count_retrieved",
+     "dataType": "sc:Date",
+     "description": "Date the Crossref record was retrieved.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "is_referenced_by_count_retrieved"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/crossref_status",
+     "name": "crossref_status",
+     "dataType": "sc:Text",
+     "description": "found | not_found (404 at Crossref) | no_doi | not_fetched.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "crossref_status"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/doi_match",
+     "name": "doi_match",
+     "dataType": "sc:Text",
+     "description": "For DOIs matched from a printed reference (handbook source lines, cited sources of values, TDB header citations): verified | weak | unverifiable (Crossref has no record), from comparing the Crossref first author (accent-insensitive), year (+-1), title and journal with the printed reference; mismatch on no-DOI records whose matched DOI was dropped (DOI_MISMATCHES.md). Empty: DOI not matched from a printed reference.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "doi_match"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/read_by_orchid",
+     "name": "read_by_orchid",
+     "dataType": "sc:Text",
+     "description": "yes: ORCHID processed the paper's full text in its extraction corpus; no otherwise.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "read_by_orchid"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/edges_out",
+     "name": "edges_out",
+     "dataType": "sc:Integer",
+     "description": "Edges with this paper as src (edges.*).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "edges_out"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/edges_in",
+     "name": "edges_in",
+     "dataType": "sc:Integer",
+     "description": "Edges with this paper as dst.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "edges_in"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/json_url",
+     "name": "json_url",
+     "dataType": "sc:URL",
+     "description": "Resolvable JSON record of this paper.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "json_url"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_papers/html_url",
+     "name": "html_url",
+     "dataType": "sc:URL",
+     "description": "Static HTML page of this paper.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-papers-parquet"
+      },
+      "extract": {
+       "column": "html_url"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "@type": "cr:RecordSet",
+   "@id": "bibliography_edges",
+   "name": "bibliography_edges",
+   "description": "ORCHID bibliography: one row per typed relation (stable id) between papers, TDB files and handbook diagrams, with provenance; join src/dst to bibliography_papers.id.",
+   "key": {
+    "@id": "bibliography_edges/id"
+   },
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/id",
+     "name": "id",
+     "dataType": "sc:Text",
+     "description": "Stable edge id: 'e' + first 16 hex of sha256(type|src|dst|provenance source). Primary key.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "id"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/type",
+     "name": "type",
+     "dataType": "sc:Text",
+     "description": "cites | used_in_assessment | models_system_in_tdb | reassesses | handbook_reproduces | cited_by_crossref.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "type"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/src",
+     "name": "src",
+     "dataType": "sc:Text",
+     "description": "Source node id (paper id, or handbook:okamoto-2010:<SYS> for handbook_reproduces).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "src"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/dst",
+     "name": "dst",
+     "dataType": "sc:Text",
+     "description": "Target node id (paper id, or tdb:<file> for models_system_in_tdb).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "dst"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/src_kind",
+     "name": "src_kind",
+     "dataType": "sc:Text",
+     "description": "paper | handbook_diagram.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "src_kind"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/dst_kind",
+     "name": "dst_kind",
+     "dataType": "sc:Text",
+     "description": "paper | tdb_file.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "dst_kind"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/count",
+     "name": "count",
+     "dataType": "sc:Integer",
+     "description": "cites / used_in_assessment: number of values carrying that citation.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "count"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/provenance_source",
+     "name": "provenance_source",
+     "dataType": "sc:Text",
+     "description": "orchid_extraction | crossref_reference_list | sgte_tdb_header | orchid_literature_model_link | verified_assessment | okamoto_handbook_source_line | citation+same-system.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "provenance_source"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/provenance_dataset",
+     "name": "provenance_dataset",
+     "dataType": "sc:Text",
+     "description": "Input the edge was read from.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "provenance_dataset"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/provenance_method",
+     "name": "provenance_method",
+     "dataType": "sc:Text",
+     "description": "How the edge was established.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "provenance_method"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/systems",
+     "name": "systems",
+     "dataType": "sc:Text",
+     "description": "Chemical system(s) of the edge, ';'-joined.",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "systems"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "bibliography_edges/attrs",
+     "name": "attrs",
+     "dataType": "sc:Text",
+     "description": "Remaining attributes as compact JSON (evidence-class and citation-status counts, TDB sha256, page, ...).",
+     "source": {
+      "fileObject": {
+       "@id": "bibliography-edges-parquet"
+      },
+      "extract": {
+       "column": "attrs"
       }
      }
     }
