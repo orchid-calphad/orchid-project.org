@@ -5,6 +5,7 @@ Reads (never modifies) the data repository (default: ../orchid-data next to this
 
   literature/index.json, literature/systems/<SYS>[.partN].json, literature/papers.json, literature/dft_parity.json
   phase-diagrams/index.json, phase-diagrams/sgte/*.json, hulls/{dft-mp,dft-oqmd,calphad-sgte}/
+  assessed-phase-assemblages/ (only listed in the folder guide, llms.txt and the sitemap)
   phases/registry.json, phases/systems/<SYS>.json (written by tools/build_phase_registry.py)
 
 and writes, into the data repository (served at https://data.orchid-project.org/):
@@ -899,6 +900,7 @@ TIER_TEXT = {"standard_name": "tier A: standard phase name", "dft_unique_match":
 PHASE_MAX_MODELS = 40
 PHASE_FILES = ("SCHEMA.md", "index.json", "registry.json", "registry.csv", "registry.jsonld", "registry.parquet",
                "structure_types.json", "structure_types.parquet", "review_queue.json", "CONFLICTS.md")
+ASPA_FILES = ("README.md", "SCHEMA.md", "summary.json", "records.jsonl.gz", "records.csv", "records.parquet", "exclusions.jsonl")
 PHASE_MAX_NAMES = 40
 BASIS_ORDER = ("standard_name", "dft_unique_match", "assessment_declared", "liquid", "gas", "needs_review",
                "unresolved_no_candidates")
@@ -1223,6 +1225,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
             [[("a", "phase-diagrams/", DATA_URL + "phase-diagrams/index.json")], ["Calculated binary phase diagrams (pycalphad, SGTE binary collection): index.json and sgte/<TDB>.json (phase regions, invariants, grid)."]],
             [["hulls/"], ["Binary convex hulls: dft-mp/ (Materials Project), dft-oqmd/ (OQMD), calphad-sgte/ (assessed CALPHAD), one JSON per system."]],
             [[("a", "phases/", DATA_URL + "phases/SCHEMA.md")], ["Phase registry (binary systems): registry.json (compact index) / .csv / .parquet / .jsonld, structure_types.json / .parquet, review_queue.json, CONFLICTS.md, systems/<SYS>.json (full records), pages/<SYS>.html|.md (static pages); fields in SCHEMA.md."]],
+            [[("a", "assessed-phase-assemblages/", DATA_URL + "assessed-phase-assemblages/README.md")], ["Assessed phase assemblages: one (T, x, P) point deep inside each named phase field of expert-drawn (assessed) binary diagrams (evidence class assessed_phase_diagram): records.jsonl.gz / .csv / .parquet, exclusions, ESPEI ZPF datasets (espei-zpf/, espei-zpf-with-tie-lines/); fields in SCHEMA.md."]],
             [[("a", "systems/", DATA_URL + "systems/index.html")], ["Static pages per chemical system: <SYS>.html, <SYS>.md, <SYS>.csv."]],
             [[("a", "compounds/", DATA_URL + "compounds/index.html")], ["Static pages per compound (reduced formula): <FORMULA>.html, <FORMULA>.md."]],
             [[("a", "papers/", DATA_URL + "papers/index.html")], ["Index of reporting papers."]],
@@ -1272,7 +1275,8 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- [Reporting papers](%spapers/index.md)" % DATA_URL,
         "- [Phase registry, binary systems](%sphases/pages/index.md); structure types %sphases/structure_types.json (Parquet: phases/structure_types.parquet), all phases %sphases/registry.csv / registry.parquet / registry.jsonld" % (DATA_URL, DATA_URL, DATA_URL),
         "- [All systems with one-line summaries](%sllms-full.txt)" % DATA_URL,
-        "- [Field reference](%sliterature/SCHEMA.md)" % DATA_URL, "",
+        "- [Field reference](%sliterature/SCHEMA.md)" % DATA_URL,
+        "- [Assessed phase assemblages](%sassessed-phase-assemblages/README.md): one (T, x, P) point per named field of expert-drawn binary diagrams, evidence class assessed_phase_diagram (not experimental, not CALPHAD); %sassessed-phase-assemblages/records.jsonl.gz (also .csv, .parquet), ESPEI ZPF datasets espei-zpf/<DIAGRAM>.json, fields %sassessed-phase-assemblages/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL), "",
         "## Bulk files",
         "- %sliterature/orchid-literature.jsonl.gz (all records, one JSON object per line)" % DATA_URL,
         "- %sliterature/orchid-literature.csv.gz (all records, flattened)" % DATA_URL,
@@ -1350,6 +1354,8 @@ def main(argv=None):
     pages = sorted(p for p in data_out if p.endswith(".html"))
     urls = [DATA_URL + ("" if p == "index.html" else p) for p in pages]
     urls += [PHASE_DATA + f for f in PHASE_FILES if os.path.exists(os.path.join(a.data, "phases", f))]
+    urls += [DATA_URL + "assessed-phase-assemblages/" + f for f in ASPA_FILES
+             if os.path.exists(os.path.join(a.data, "assessed-phase-assemblages", f))]
     data_out["sitemap.xml"] = urlset(urls, a.date)
     data_out["robots.txt"] = robots([DATA_URL + "sitemap.xml"])
     site_out = {

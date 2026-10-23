@@ -49,12 +49,20 @@ THIRD_PARTY = {
             "npj Comput. Mater. 1 (2015) 15010, https://doi.org/10.1038/npjcompumats.2015.10 (CC BY 4.0)",
     "kim2017": "G. Kim, S. V. Meschel, P. Nash, W. Chen, Experimental formation enthalpies for intermetallic phases "
                "and other inorganic compounds, Scientific Data 4 (2017) 170162, https://doi.org/10.1038/sdata.2017.162",
+    "assessed": "for every diagram used, its original evaluation (citations[role=original_evaluation], DOI where matched) "
+                "and H. Okamoto, Desk Handbook: Phase Diagrams for Binary Alloys, 2nd ed., ASM International (2010) as the "
+                "compilation",
     "papers": "the original source of every value you use (paper_citation / paper_doi, and cited_dois for values "
               "the paper cites from earlier work)",
 }
 
 # name -> (title, BibTeX key, sources to cite as well); EXTRACTED: records holding values read from papers
-EXTRACTED = {"orchid-data", "literature", "dft-benchmark", "phase-registry"}
+EXTRACTED = {"orchid-data", "literature", "dft-benchmark", "phase-registry", "assessed-phase-assemblages"}
+# per-record status text where the generic STATUS (literature readers) does not describe the record
+STATUS_BY = {"assessed-phase-assemblages": (
+    "Version 1, machine-extracted: phase fields of expert-drawn (assessed) diagrams named by deterministic rules, "
+    "model readers, an adjudicator and partial expert review (basis and review state per record); one point deep "
+    "inside each field; boundary and tie-line positions are drawing-based and of low credence.")}
 ABSTRACT = {
     "orchid-data": "Umbrella record of the ORCHID data release: literature values, calculated binary phase diagrams, "
                    "binary convex hulls and the DFT-vs-experiment formation-enthalpy benchmark.",
@@ -70,6 +78,11 @@ ABSTRACT = {
                       "Materials Project / OQMD ids), the CALPHAD models that describe it, where the calculated "
                       "diagrams make it stable, example literature references, and a structure type assigned only "
                       "when certain (standard name or unique DFT match), otherwise a review candidate list.",
+    "assessed-phase-assemblages": "One (T, x, P) point deep inside each named phase field of the expert-drawn (assessed) "
+                                  "binary phase diagrams compiled in Okamoto's Desk Handbook, with the phase assemblage "
+                                  "present, phase-registry ids, coordinate uncertainty, naming basis, confidence, review "
+                                  "state, a cross-check against calculated SGTE diagrams and ESPEI ZPF datasets; evidence "
+                                  "class assessed_phase_diagram.",
 }
 # name -> (title, BibTeX key, sources to cite as well)
 DATASETS = {
@@ -82,6 +95,8 @@ DATASETS = {
                       ["papers", "mp", "oqmd", "kim2017"]),
     "phase-registry": ("ORCHID phase registry (binary systems)", "orchid_phase_registry_2026",
                        ["sgte", "mp", "oqmd", "papers"]),
+    "assessed-phase-assemblages": ("ORCHID assessed phase assemblages (binary systems)", "orchid_assessed_assemblages_2026",
+                                   ["assessed", "sgte"]),
 }
 NAMES = tuple(DATASETS)
 
@@ -135,7 +150,7 @@ def entry(name: str, data_root: str | None = None) -> dict:
 def cite_as(name: str, data_root: str | None = None) -> dict:
     """Top-level `cite_as` object embedded in JSON outputs: this dataset, the umbrella, and what else to cite."""
     d = {"dataset": name, "version": VERSION, "release_tag": RELEASE_TAG, "license": LICENSE,
-         "status": STATUS if name in EXTRACTED else "Version 1 (calculated / third-party derived data)",
+         "status": STATUS_BY.get(name, STATUS) if name in EXTRACTED else "Version 1 (calculated / third-party derived data)",
          **entry(name, data_root),
          "also_cite": [THIRD_PARTY[k] for k in DATASETS[name][2]]}
     if name != UMBRELLA:
@@ -161,7 +176,7 @@ def cff(name: str, data_root: str | None = None, extra_message: str = "") -> str
                   '    orcid: "https://orcid.org/%s"' % orcid, '    affiliation: "%s"' % aff]
     lines += ['version: "%s"' % VERSION, 'doi: "%s"' % e["doi"], "license: %s" % LICENSE,
               'url: "%s"' % DATA_URL, 'repository-code: "https://github.com/orchid-calphad/orchid-data"',
-              'abstract: "%s"' % (ABSTRACT[name] + (" " + STATUS if name in EXTRACTED else "")).replace('"', "'")]
+              'abstract: "%s"' % (ABSTRACT[name] + (" " + STATUS_BY.get(name, STATUS) if name in EXTRACTED else "")).replace('"', "'")]
     if name != UMBRELLA:
         u = entry(UMBRELLA, data_root)
         lines += ["identifiers:", "  - type: doi", '    value: "%s"' % u["doi"],

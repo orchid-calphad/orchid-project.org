@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""Synthetic-fixture tests of tools/build_assessed_assemblages.py: the licensing guard refuses image/crop/page-text
+content, point placement (centroid, pole-of-inaccessibility fallback, too thin), and tie-line side assignment.
+No handbook data are read. usage: ~/orchid-py313/bin/python tools/tests/test_assessed_assemblages.py"""
+import os
+import sys
+
+import numpy as np
+
+sys.dont_write_bytecode = True
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import build_assessed_assemblages as B  # noqa: E402
+
+fails = []
+
+
+def check(name, cond):
+    print(("PASS " if cond else "FAIL ") + name)
+    if not cond:
+        fails.append(name)
+
+
+def refused(obj):
+    try:
+        B.guard(obj, "t")
+    except SystemExit:
+        return True
+    return False
+
+
+# ---- licensing guard
+check("guard: clean record passes", not refused({"assemblage_label": "L+(Al)", "T_K": 900.0, "citations": [{"citation": "A. B., J. Phase Equilib. 1 (1990) 1"}]}))
+check("guard: image key", refused({"page_image": "x"}))
+check("guard: crop key", refused({"crop_box": [1, 2]}))
+check("guard: page_text key", refused({"page_text": "abc"}))
+check("guard: png path value", refused({"note": "see p0046/page.png"}))
+check("guard: pdf path value", refused({"src": "handbook.pdf"}))
+check("guard: base64 blob", refused({"x": "iVBORw0KGgo" + "A" * 200}))
+check("guard: data URI", refused({"x": "data:image/png;base64,AAAA"}))
+check("guard: long free text", refused({"label": "word " * 120}))
+check("guard: build path", refused({"x": "/Users/me/projects/open-tdb/build/okamoto-annotation/x"}))
+try:
+    B.guard_text("a,b\n1,crop.png\n", "csv")
+    check("guard_text refuses an image path in a cell", False)
+except SystemExit:
+    check("guard_text refuses an image path in a cell", True)
+
+# ---- point placement
+nT, nx = 201, 301
+xs, Ts = np.linspace(0, 1, nx), np.linspace(0, 1000, nT)
+m = np.zeros((nT, nx), bool)
+m[50:150, 50:250] = True
+p = B.field_point(m, xs, Ts)
+check("rectangle -> centroid", p["method"] == "centroid" and abs(xs[p["col"]] - 0.5) < 0.01 and abs(Ts[p["row"]] - 500) < 6)
+yy, xx = np.mgrid[0:nT, 0:nx]
+ring = ((yy - 100) ** 2 + (xx - 150) ** 2 < 90 ** 2) & ((yy - 100) ** 2 + (xx - 150) ** 2 > 60 ** 2) & (xx < 150)
+p = B.field_point(ring, xs, Ts)
+check("crescent -> pole of inaccessibility, centroid outside", p["method"] == "pole_of_inaccessibility" and ring[p["row"], p["col"]]
+      and p["centroid"]["inside"] is False)
+thin = np.zeros((nT, nx), bool)
+thin[100, 20:280] = True
+check("one-cell strip -> no point", B.field_point(thin, xs, Ts)["method"] is None)
+
+# ---- tie line: field 2 (a+b) between single-phase fields 1 (a) and 3 (b)
+row = np.array([1] * 100 + [0] + [2] * 100 + [0] + [3] * 100)
+xr = np.linspace(0, 1, len(row))
+names = {1: ["a"], 2: ["a", "b"], 3: ["b"]}
+left, right = B.run_extent(row, 150, 2, -1), B.run_extent(row, 150, 2, +1)
+tl, why = B.tie_line(["a", "b"], left, right, xr, names, {}, 0.001, float(xr[150]), 900.0, False, False)
+check("tie line: endpoints a (left) and b (right)", tl is not None and [e["phase"] for e in tl["endpoints"]] == ["a", "b"]
+      and tl["endpoints"][0]["x"] < xr[150] < tl["endpoints"][1]["x"] and "low credence" in tl["caveat"])
+names_bad = {1: ["c"], 2: ["a", "b"], 3: ["b"]}
+tl, why = B.tie_line(["a", "b"], left, right, xr, names_bad, {}, 0.001, float(xr[150]), 900.0, False, False)
+check("tie line: unrelated neighbour -> omitted with reason", tl is None and why == "side_assignment_ambiguous")
+names_open = {1: None, 2: ["a", "b"], 3: ["b"]}
+tl, why = B.tie_line(["a", "b"], left, right, xr, names_open, {}, 0.001, float(xr[150]), 900.0, False, False)
+check("tie line: unnamed neighbour -> omitted", tl is None and why == "neighbour_field_unnamed")
+# line compound on the left: neighbour field 1 is (c + a) across the compound a, a printed at 30 at.%
+row2 = np.array([1] * 100 + [0] + [2] * 100 + [0] + [3] * 100)
+xr2 = np.linspace(0.0, 1.0, len(row2))
+xb = (xr2[100]) * 100
+names_lc = {1: ["c", "a"], 2: ["a", "b"], 3: ["b"]}
+tl, why = B.tie_line(["a", "b"], B.run_extent(row2, 150, 2, -1), B.run_extent(row2, 150, 2, +1), xr2, names_lc,
+                     {"a": {"composition_at_pct": [xb, xb]}}, 0.001, float(xr2[150]), 900.0, False, False)
+check("tie line: line-compound endpoint takes the printed composition", tl is not None and tl["endpoints"][0].get("line_compound")
+      and abs(tl["endpoints"][0]["x"] - xb / 100) < 1e-9)
+
+print("%d failure(s)" % len(fails))
+sys.exit(1 if fails else 0)

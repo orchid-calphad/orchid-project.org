@@ -9,6 +9,8 @@ Records (names used in DOI placeholders "10.5281/zenodo.PENDING-<name>" and in <
   hulls            ORCHID binary convex hulls (MP, OQMD, CALPHAD) hulls/ + Parquet
   dft-benchmark    ORCHID DFT-vs-experiment formation-enthalpy benchmark   dft_parity, Kim 2017 cross-check + Parquet
   phase-registry   ORCHID phase registry (binary systems)         phases/ (registry JSON/JSON-LD/CSV/Parquet, structure types)
+  assessed-phase-assemblages  ORCHID assessed phase assemblages   assessed-phase-assemblages/ (points in assessed
+                   phase diagrams: JSONL/CSV/Parquet, ESPEI ZPF datasets; tools/build_assessed_assemblages.py)
 
 Per record the data repository holds zenodo/<name>.metadata.json (Zenodo deposition metadata) and
 zenodo/<name>.files.json (the files of the record with sizes and SHA-256, written by `manifest`).
@@ -66,9 +68,11 @@ RECORDS = {  # name -> (include patterns, exclude patterns); "dir/**" = everythi
                               "literature/kim2017_crosscheck.json", "literature/kim2017_crosscheck.md",
                               "literature/QUALITY_FIXES.md", "parquet/dft_parity.parquet", "parquet/MANIFEST.json"], []),
     "phase-registry": (DOCS + ["zenodo/phase-registry.metadata.json", "phases/**"], ["phases/pages/**"]),
+    "assessed-phase-assemblages": (DOCS + ["zenodo/assessed-phase-assemblages.metadata.json",
+                                           "assessed-phase-assemblages/**"], []),
 }
 assert set(RECORDS) == set(orchid_cite.NAMES)
-DATA_DIRS = ("literature", "phase-diagrams", "hulls", "parquet", "phases")  # every file here must be in some record
+DATA_DIRS = ("literature", "phase-diagrams", "hulls", "parquet", "phases", "assessed-phase-assemblages")  # every file here must be in some record
 WEB_VIEWS = ("phases/pages/",)  # generated static pages inside a data dir (tools/build_static_pages.py): not released
 
 TEXT_EXT = (".json", ".md", ".html", ".txt", ".cff", ".xml", ".csv", ".yml", ".yaml")
@@ -205,6 +209,12 @@ def card_text(data):
         for cfg, ent in (("phases", pm), ("structure_types", pm.get("structure_types"))):
             if ent and os.path.exists(os.path.join(data, "phases", ent["table"])):
                 man[cfg] = {"rows": ent["rows"], "bytes": os.path.getsize(os.path.join(data, "phases", ent["table"]))}
+    ap_ = os.path.join(data, "assessed-phase-assemblages", "parquet.json")  # tools/build_assessed_assemblages.py
+    if os.path.exists(ap_):
+        ent = json.load(open(ap_, encoding="utf-8"))
+        tp = os.path.join(data, "assessed-phase-assemblages", ent["table"])
+        if os.path.exists(tp):
+            man["assessed_phase_assemblages"] = {"rows": ent["rows"], "bytes": os.path.getsize(tp)}
     out, cur, info = [], None, False
     for line in open(os.path.join(data, "DATASET_CARD.md"), encoding="utf-8").read().split("\n"):
         if line.startswith("dataset_info:"):
@@ -423,7 +433,8 @@ def cmd_writeback(a):
     steps = [[py, "tools/export_literature_data.py"], [py, "tools/build_dft_parity.py"], "sync",
              [py, "tools/add_cite_as.py", "--data", a.data], [ppy, "tools/build_parquet.py", "--data", a.data],
              [py, "tools/build_static_pages.py", "--data", a.data],
-             [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy], "card", "manifest"]
+             [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy],
+             [ppy, "tools/build_assessed_assemblages.py", "--data", a.data], "card", "manifest"]
     for st in steps:
         if st == "sync":
             sync_literature(a.data)
@@ -438,6 +449,7 @@ def cmd_writeback(a):
               [ppy, "tools/build_parquet.py", "--data", a.data, "--check"],
               [py, "tools/build_static_pages.py", "--data", a.data, "--check"],
               [py, "tools/build_phase_registry.py", "--data", a.data, "--parquet-python", ppy, "--check"],
+              [ppy, "tools/build_assessed_assemblages.py", "--data", a.data, "--check"],
               [py, "tools/build_precision_sample.py", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "card", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "manifest", "--check"]]
