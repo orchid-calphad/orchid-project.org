@@ -126,7 +126,7 @@ NEW_IN_THIS_RELEASE = {"HM_MIX", "GM_MIX", "PARTIAL_ENTHALPY"}
 _E = [(re.compile(r"^kcal", re.I), 4.184), (re.compile(r"^cal", re.I), 0.004184), (re.compile(r"^kj", re.I), 1.0),
       (re.compile(r"^j(\b|[\s/(.·]|$)", re.I), 0.001), (re.compile(r"^ev", re.I), 96.48533212)]
 PER_ATOM = re.compile(
-    r"mol(e)?s?[\s.\-·'’()−‐⁻^]*(of[\s.\-]*)?at(om|oms)?\b(?!\s*\d)|mol(e)?[\s.\-·]*at\b(?!\s*\d)|"
+    r"mol(e)?s?[\s.\-·'’()−‐⁻^/]*(of[\s.\-]*)?at(om|oms)?\b(?!\s*\d)|mol(e)?[\s.\-·]*at\b(?!\s*\d)|"
     r"mol(e)?\s*\^?\{?[−\-‐–⁻'’]?\s*1?\}?[\s.(]*(of\s*)?at(om)?s?\b(?!\s*\d)|"
     r"\bat(om)?s?\.?\s*\^?\{?[−\-‐–⁻]\s*1|\bat\.?[\s\-]*g\b|\bat\.g\b|g(ram)?[\s.\-Æ·]*at(om)?\b|"
     r"\bat[\s.\-−]*mol|molatom|/\s*atom|per\s+(mole?\s+(of\s+)?)?atoms?|mol-atom", re.I)
@@ -408,31 +408,11 @@ def classify_dft_outliers(records, open_tdb, log, counts):
         entry = {"id": r["id"], "system": r.get("system"), "formula_label": label, "evidence_class": r["evidence_class"],
                  "value_before": v, "unit": r.get("unit"), "dft": m, "printed_value": r.get("value_printed"),
                  "printed_unit": unit_txt or None, "kind": "large_residual" if big else "sign"}
-        # (a) per-formula value labelled per atom
-        basis_ok = (not PER_ATOM.search(unit_txt)) or bool(PER_COMPOUND.search(context))
-        cands = []
-        if natoms != 1:
-            for tag, val in (("divided by", v / float(natoms)), ("multiplied by", v * float(natoms))):
-                if all(abs(d - val) <= BASIS_TOL for d in m.values()):
-                    cands.append((tag, val))
-        if basis_ok and big and len(cands) == 1:
-            tag, val = cands[0]
-            r["value_before_quality_fix"] = v
-            r["value"] = _sig(round(val, 6))
-            fl["basis_corrected_from_formula"] = True
-            r["basis_correction"] = {"formula": label, "atoms_per_formula_unit": float(natoms),
-                                     "operation": "%s %g" % (tag, float(natoms))}
-            unc = r.get("uncertainty")
-            if isinstance(unc, dict) and isinstance(unc.get("value"), (int, float)):
-                unc["value"] = _sig(unc["value"] / float(natoms) if tag == "divided by" else unc["value"] * float(natoms))
-            why = ("printed unit %r has no per-atom marker" % unit_txt) if not PER_ATOM.search(unit_txt) else \
-                "caption / quote says per mole of compound"
-            entry.update({"class": "basis_corrected_from_formula", "value_after": r["value"],
-                          "evidence": "%s; %s has %g atoms per formula unit; %g %s %g = %.2f, within %g of DFT (%s)"
-                                      % (why, label, float(natoms), v, tag, float(natoms), val, BASIS_TOL, dtxt)})
-            counts["class_basis_corrected_from_formula"] += 1
-            log.append(entry)
-            continue
+        # (a) removed in audit round 2 (2026-10-24): a per-formula / per-atom conversion was accepted when the converted
+        # value landed within BASIS_TOL of DFT, and the converted values then calibrated the DFT error (circular). The
+        # basis is now decided from the printed page only, one decision per column (literature_r2_thermo.r2_table_basis,
+        # ledger keys table_basis:<asset>); a large residual whose per-formula reading would match DFT stays flagged
+        # dft_outlier_unexplained with that note.
         # (b) unsigned magnitude
         neg_printed = _printed_negative(r)
         if v > 0 and neg_printed is not True and all(abs(d + v) <= BASIS_TOL < abs(d - v) - BASIS_TOL for d in m.values()) \
@@ -583,10 +563,11 @@ def quality_md(report, release):
           "Formation enthalpies (kJ/mol-atom, experimental / model / unspecified) whose single binary formula matches "
           "a Materials Project or OQMD entry and that differ from DFT by more than %g kJ/mol-atom, or have the opposite "
           "sign with |DFT - lit| > %g (%d records), classified in this order:" % (OUTLIER_ABS, SIGN_MIN_RES, c.get("outliers_examined", 0)), "",
-          "* `basis_corrected_from_formula` (%d): a large-residual case where lit / n_atoms (or lit x n_atoms, undoing "
-          "an earlier per-formula division) lies within %g kJ/mol-atom of every matched DFT source, and the printed unit has no per-atom marker or the caption/quote says per mole of "
-          "compound. Value converted; original in `value_before_quality_fix`, operation in `basis_correction`."
-          % (c.get("class_basis_corrected_from_formula", 0), BASIS_TOL),
+          "* `basis_corrected_from_formula`: removed in audit round 2 (2026-10-24). The rule accepted a per-formula / "
+          "per-atom conversion only when the converted value landed within %g kJ/mol-atom of DFT, and the converted "
+          "values then calibrated the DFT error (circular). The basis is now read on the page, one decision per printed "
+          "column (`tools/literature_r2_thermo.py`, ledger keys `table_basis:<asset>`; gate R2 in the gates section)."
+          % BASIS_TOL,
           "* `sign_from_heading` (%d): printed without a minus sign, -lit within %g of DFT, and the record's printed "
           "heading carries the minus (e.g. \"-ΔfH\"): sign applied, heading in `sign_heading_printed`."
           % (c.get("class_sign_from_heading", 0), BASIS_TOL),

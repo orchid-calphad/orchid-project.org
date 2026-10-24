@@ -56,7 +56,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build_dft_parity as parity  # noqa: E402
 import literature_gates as gates  # noqa: E402
 
-VERSION = "orchid-uncertainty-calibration 2026-10-24"
+VERSION = "orchid-uncertainty-calibration 2026-10-24 (audit round 2)"
 BUDGET_VERSION = "orchid-uncertainty-budget 2026-10-24"
 CALIBRATION_FILE = "literature/UNCERTAINTY_CALIBRATION.json"
 ESPEI_COPY = "espei/experimental/CALIBRATION_EXPERIMENT.json"
@@ -107,6 +107,7 @@ PROP_VT = {
     "TRANSITION_ENTHALPY": "H_MIX_PARTIAL",
     "GM_MIX": "G_MIX_PARTIAL", "CHEMICAL_POTENTIAL": "G_MIX_PARTIAL", "GIBBS_ENERGY": "G_MIX_PARTIAL",
     "SM_MIX": "S_MIX_PARTIAL", "SM_EXCESS": "S_MIX_PARTIAL",
+    "HM_FROM_COMPOUNDS": "H_MIX_PARTIAL", "GM_FROM_COMPOUNDS": "G_MIX_PARTIAL", "SM_FROM_COMPOUNDS": "S_MIX_PARTIAL",
     "SM": "S_ABS", "ENTROPY": "S_ABS", "SM_FUSION": "S_ABS", "SM_MAGNETIC": "S_ABS", "SM_INCREMENT": "S_ABS",
     "CPM": "CPM", "HEAT_CONTENT": "HEAT_CONTENT", "ACTIVITY": "ACTIVITY", "EMF": "EMF",
     "INVARIANT_TEMPERATURE": "T_INVARIANT", "TRANSITION_TEMPERATURE": "T_TRANSITION",
@@ -123,6 +124,8 @@ PROP_VT = {
 
 def value_type(rec):
     p = rec.get("property") or ""
+    if p.endswith("_EXPRESSION_TERM") or rec.get("property_expression"):
+        return None                       # a coefficient of a printed expression in T is not a value of a state
     if p.startswith("ACR_"):
         return "ACTIVITY"
     if p == "GIBBS_ENERGY" and "/K" in (rec.get("unit") or "").replace(" ", ""):
@@ -208,22 +211,28 @@ def per_atom(unit):
 
 # ------------------------------------------------------------------------------------------- method classes --
 THERMO_RULES = [   # (class, regex) on the lower-cased printed method; first match wins
+    # audit round 2 (2026-10-24): evaluated / estimated / reviewed values are not independent measurements;
+    # Knudsen-cell / effusion methods are tested before EMF (a bare "cell" no longer means EMF)
+    ("evaluated_compilation", r"evaluat|estimat|review|interpolat|assess|selected|recommend|compil|critical|"
+                              r"\bjanaf\b|tabulat"),
     ("combustion_calorimetry", r"combust|combusion|\bbomb\b|fluorine"),
+    ("kems_vapour", r"knudsen|knusden|kundsen|knudson|effusion|\bkem|keml|kewl|torsion|mass[- ]spectr|transpiration|"
+                    r"langmuir|isopiestic|\bvptm\b|\bhtms\b|dissociation pressure"),
     ("emf", r"\be\.?m\.?f\b|emf|galvanic|potentiomet|electrochem|coulometr|electromotive|solid[- ]electrolyte|"
-            r"\bcell\b|cathodic"),
-    ("kems_vapour", r"knudsen|effusion|\bkem|keml|kewl|torsion|mass[- ]spectr|vapou?r|\bvap\b|vap\.|dissociation "
-                    r"pressure|transpiration|langmuir|isopiestic|boiling point|\bke\b|second[- ]law|third[- ]law|"
-                    r"2nd[- ]law|3rd[- ]law|pressure[- ]temperature"),
+            r"electrolyte cell|concentration cell|cathodic"),
+    ("kems_vapour", r"vapou?r|\bvap\b|vap\.|boiling point|\bke\b|second[- ]law|third[- ]law|2nd[- ]law|3rd[- ]law|"
+                    r"pressure[- ]temperature"),
     ("heat_content_calorimetry", r"adiabatic|levitation|relaxation calor|\bppms\b|low[- ]temperature (?:calor|dsc)|"
                                  r"cp measurement|cp data|from cp|heat[- ]capacity measure"),
     ("dsc_dta", r"\bdsc\b|htdsc|\bdta\b|differential scanning|differential thermal|thermal analysis"),
     ("solution_reaction_calorimetry", r"calori|\bcal\b|\bcal\.|calo\b|calo\.|solution|dissolution|soln|sol\. ?cal|"
                                       r"direct (?:reaction|synthesis)|react\.? ?cal|reaction cal|aneroid|isoperibol|"
                                       r"\bdrop\b|tian|calvet|enthalp"),
-    ("equilibration_other", r"equilibri|p[-–]c[-–]t|\bpct\b|sieverts|h2/h2o|distribution|solub|derived|estimated|"
+    ("equilibration_other", r"equilibri|p[-–]c[-–]t|\bpct\b|sieverts|h2/h2o|distribution|solub|derived|"
                             r"x-ray|xrd|diffraction|chemical analysis|weight loss"),
     ("experimental_unspecified", r"^\s*exp|experiment|measured|^\s*meas"),
 ]
+NOT_INDEPENDENT = {"evaluated_compilation"}   # never paired in the experimental calibration
 HEAT_CONTENT_VT = {"CPM", "HEAT_CONTENT", "S_ABS"}
 PHASE_RULES = {
     "thermal_analysis": r"\bdsc\b|htdsc|\bdta\b|differential scanning|differential thermal|thermal analys|\bta\b|"
@@ -259,6 +268,8 @@ CLASS_TEXT = {
     "equilibration_other": "equilibration and other methods (gas equilibria, p-c-T, solubility, estimates "
                            "derived from other data)",
     "experimental_unspecified": "experimental, method not named ('Exp.', 'measured')",
+    "evaluated_compilation": "evaluated / estimated / reviewed / selected values of a compilation or assessment (not an "
+                             "independent measurement; never paired in the calibration)",
     "unknown": "method not printed",
     "thermal_analysis": "thermal analysis (DTA / DSC / heating-cooling curves)",
     "dilatometry_resistivity": "dilatometry, electrical resistivity, magnetic measurements",
@@ -411,6 +422,51 @@ def comp_of(rec, nd=3):
     return out or None
 
 
+def label_comp(rec, nd=3):
+    """Composition of the record's single compound label (all labels parse to the same formula), or None."""
+    els = [e.capitalize() for e in rec.get("elements") or (rec.get("system") or "").split("-") if e]
+    found = set()
+    for p in rec.get("phases") or []:
+        lab = p.get("label")
+        if not lab:
+            continue
+        c, _ = parity.parse_phase(re.sub(r"\s*\((?:cr|s|c|l|liq|liq-am|am|g)\)\s*$", "", str(lab), flags=re.I), els)
+        if c:
+            tot = float(sum(c.values()))
+            found.add(tuple(sorted((k.upper(), round(float(v) / tot, nd)) for k, v in c.items())))
+    return found.pop() if len(found) == 1 else None
+
+
+def state_comp(rec, nd=3):
+    """Composition of a compound state: the printed label's formula when it disagrees with overall_composition by more
+    than 0.02 (split-row records carry the overall composition of another phase), else overall_composition."""
+    c = comp_of(rec, nd)
+    lc = label_comp(rec, nd)
+    if lc and (not c or {e for e, _ in lc} != {e for e, _ in c} or
+               max(abs(dict(lc).get(e, 0) - dict(c).get(e, 0)) for e in {e for e, _ in lc} | {e for e, _ in c}) > 0.02):
+        return lc
+    return c
+
+
+LIQ_REF = re.compile(r"liq|melt|\bl\b|liquid", re.I)
+NONCRYST = re.compile(r"liq|amorph|glass|\(am\)|\(l\)|liq-am", re.I)
+
+
+def ref_signature(rec):
+    """Reference-state part of a state key: elements referred to their liquid (a liquid reference shifts a formation
+    enthalpy by x * the enthalpy of fusion), and a non-crystalline phase state."""
+    rs = rec.get("reference_state")
+    liq = []
+    if isinstance(rs, dict):
+        for el, v in sorted(rs.items()):
+            ph = v.get("phase") if isinstance(v, dict) else v
+            if isinstance(ph, str) and LIQ_REF.search(ph):
+                liq.append(el.upper())
+    state = "noncrystalline" if any(NONCRYST.search(str(p.get("label") or "")) for p in rec.get("phases") or []) \
+        else "crystalline"
+    return (tuple(liq), state)
+
+
 def tbin(T, step):
     if not isinstance(T, (int, float)):
         return "na"
@@ -469,8 +525,10 @@ def state_keys(rec, vt):
         if not c or not ks or tk in (None, "", "other"):
             return []           # a transition is one state only with its kind and phases printed
         return [(("tr", rec.get("system"), c, tk, ks), v)]
-    c = comp_of(rec, 3 if vt in ("HM_FORM", "GM_FORM", "SM_FORM", "LATTICE_LENGTH", "LATTICE_ANGLE", "VOLUME")
-                else 2)
+    if vt in ("HM_FORM", "GM_FORM", "SM_FORM"):
+        c = state_comp(rec, 3)
+    else:
+        c = comp_of(rec, 3 if vt in ("LATTICE_LENGTH", "LATTICE_ANGLE", "VOLUME") else 2)
     if not c:
         return []
     if vt in ("HM_FORM", "GM_FORM", "SM_FORM") and len(c) < 2:
@@ -478,11 +536,11 @@ def state_keys(rec, vt):
     if vt in ("HM_FORM", "SM_FORM"):
         if not per_atom(rec.get("unit")):
             return []
-        return [((vt, c, tbin(T, 25)), v)]
+        return [((vt, c, tbin(T, 25), ref_signature(rec)), v)]
     if vt == "GM_FORM":
         if not per_atom(rec.get("unit")):
             return []
-        return [((vt, c, tbin(T, 10)), v)]
+        return [((vt, c, tbin(T, 10), ref_signature(rec)), v)]
     if vt in ("LATTICE_LENGTH", "LATTICE_ANGLE", "VOLUME"):
         return [((p, c, first_pkey(rec), tbin(T, 25)), v)]
     if vt in ("S_ABS", "CPM", "HEAT_CONTENT"):
@@ -494,6 +552,24 @@ def state_keys(rec, vt):
     if vt == "EMF":
         return []
     return [((p, c, tbin(T, 10), str(rec.get("component") or ""), first_pkey(rec)), v)]
+
+
+def _ascii(s):
+    import unicodedata
+    return unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode().lower().strip()
+
+
+def source_identity(rec):
+    """One independent source = (first-author surname, year) when the record names exactly one cited work with both
+    (free-text citations of one work printed differently in two papers are one source; audit round 2), else the
+    primary source."""
+    cs = [c for c in rec.get("cited_sources") or [] if c.get("first_author") and c.get("year")]
+    if len(cs) == 1 and len(rec.get("cited_sources") or []) == 1:
+        sur = re.sub(r"[^a-z]", "", _ascii(cs[0]["first_author"]).split(",")[0].split()[-1] if
+                     _ascii(cs[0]["first_author"]).split() else _ascii(cs[0]["first_author"]))
+        if sur:
+            return "author:%s:%s" % (sur, str(cs[0]["year"])[:4])
+    return primary_source(rec)
 
 
 def primary_source(rec):
@@ -511,8 +587,17 @@ def primary_source(rec):
     return "unattributed:" + str(rec.get("paper"))
 
 
+# values whose basis, unit or reliability the page leaves open (audit round 2): kept as printed, never calibration pairs
+CALIBRATION_EXCLUDED_CODES = {"row_basis_contradicts_column_header", "unit_inconsistent_with_figure_on_page",
+                              "energy_basis_not_printed_rows_inconsistent", "source_marks_value_unreliable",
+                              "table_basis_value_not_convertible", "table_basis_formula_unparsed",
+                              "formation_from_compounds_not_from_elements", "expression_coefficient_not_a_value"}
+
+
 def usable(rec):
     fl = rec.get("flags") or {}
+    if any(g.get("code") in CALIBRATION_EXCLUDED_CODES for g in rec.get("gate_failures") or []):
+        return False
     return fl.get("extraction_accepted") and not any(fl.get(b) for b in BLOCKING)
 
 
@@ -608,6 +693,38 @@ def basis_error_pair(key, a, b):
     return bool(n) and abs(q / n - 1.0) <= BASIS_RATIO_TOL
 
 
+BASIS_SCREEN_TOL = 0.15   # a value within 15 % of k x (or 1/k x) the state median, k an atom count >= 2
+
+
+def basis_factors(comp):
+    n = atoms_in_formula(comp)
+    if not n:
+        return []
+    ks = {n} | {round(x * n) for _, x in comp}
+    return sorted(k for k in ks if k >= 2)
+
+
+def basis_screen(key, vals):
+    """Values of one state that differ from the state median by an atom-count factor (one reading per formula, the
+    other per atom; also a per-formula and a per-atom value of one cited work) are left out of the pairs."""
+    comp = key[1] if len(key) > 1 and isinstance(key[1], tuple) else None
+    ks = basis_factors(comp) if comp else []
+    if not ks or len(vals) < 2:
+        return vals
+    m = median([v for _, v, _, _ in vals])
+    if not m:
+        return vals
+    out = []
+    for x in vals:
+        v = x[1]
+        q = v / m if m else None
+        bad = q is not None and q > 0 and any(abs(q - k) < BASIS_SCREEN_TOL * k or abs(q - 1.0 / k) < BASIS_SCREEN_TOL / k
+                                               for k in ks)
+        if not bad:
+            out.append(x)
+    return out
+
+
 # ------------------------------------------------------------------------------------------- calibration --
 def calibrate(records, dft_calibration=None):
     """Calibration of the method floors from the records (experimental between-study scatter; model vs
@@ -624,8 +741,10 @@ def calibrate(records, dft_calibration=None):
             if vt is None:
                 continue
             mc = method_class(r, vt)
+            if ev == "experimental" and mc in NOT_INDEPENDENT:
+                continue
             for key, v in state_keys(r, vt):
-                (exp if ev == "experimental" else mod)[vt][key].append((primary_source(r), v, mc, r["id"]))
+                (exp if ev == "experimental" else mod)[vt][key].append((source_identity(r), v, mc, r["id"]))
     out = {"version": VERSION, "min_pairs": MIN_PAIRS, "n_boot": N_BOOT, "seed": SEED,
            "estimator": "robust sigma = 1.4826 x median|d| / sqrt(2) over pairs of independent same-class "
                         "measurements of one state (zero-mean differences); 95 % percentile bootstrap over states",
@@ -645,10 +764,16 @@ def calibrate(records, dft_calibration=None):
         n_states = Counter()
         relisted = 0
         basis_pairs = 0
+        basis_screened = 0
         src_values = {}
         for key in sorted(groups, key=repr):
             bysrc = defaultdict(list)
-            for s, v, mc, _ in groups[key]:
+            vals = groups[key]
+            if vt in ("HM_FORM", "GM_FORM", "SM_FORM"):
+                kept = basis_screen(key, vals)
+                basis_screened += len(vals) - len(kept)
+                vals = kept
+            for s, v, mc, _ in vals:
                 bysrc[s].append((v, mc))
             items = []
             for s in sorted(bysrc):
@@ -703,6 +828,7 @@ def calibrate(records, dft_calibration=None):
             "states_with_two_or_more_sources": sum(1 for k in src_values if len(src_values[k]) >= 2),
             "relisted_values_counted_once": relisted,
             "basis_error_pairs_excluded": basis_pairs,
+            "basis_screened_values_excluded": basis_screened,
             "pooled_all_classes": {"n_pairs": len(pd), "sigma_robust": round(robust_pair_sigma(pd), 6) if pd else None},
             "classes": classes}
         # model-calculated values vs experiment of the same state
@@ -764,6 +890,8 @@ def _r(x):
     return float("%.4g" % x)
 
 
+TWO_SIGMA = re.compile(r"2\s*σ|2\s*sigma|two standard deviations|twice the standard|95\s*%|95 per ?cent|"
+                       r"expanded uncertaint|\bk\s*=\s*2\b|coverage factor (?:of )?2", re.I)
 NUMTXT = re.compile(r"[-+−]?\d+(?:[.,](\d+))?")
 
 
@@ -778,7 +906,9 @@ def decimals(x):
         if isinstance(x, int):
             return 0
         d = t.split(".")[1] if "." in t else ""
-        return 0 if d == "0" else len(d)
+        # a JSON float such as 1.0 was a token with a decimal point (an integer is stored as int): one decimal at
+        # least (audit round 2: "1.0" has one decimal, not zero)
+        return len(d) if d != "0" else 1
     m = NUMTXT.search(str(x))
     if not m:
         return None
@@ -825,10 +955,14 @@ def printed_component(rec, quantity, vt):
     b = u.get("basis")
     st = rec.get("uncertainty_stored") or {}
     if b in ("printed", "printed_range") and isinstance(u.get("value"), (int, float)):
-        note = str(u.get("note") or "")
+        note = " ".join(str(x or "") for x in (u.get("note"), (rec.get("locator") or {}).get("caption")))
         kind = ("range_half_width" if b == "printed_range" else
-                "standard_deviation" if re.search(r"standard deviation|std\.? dev", note, re.I) else
+                "two_sigma_or_95_percent" if TWO_SIGMA.search(note) else
+                "standard_deviation" if re.search(r"standard deviation|std\.? dev|standard uncertaint", note, re.I) else
                 "standard_error" if re.search(r"standard error", note, re.I) else "plus_minus_coverage_not_stated")
+        if kind == "two_sigma_or_95_percent":   # audit round 2: the printed coverage is resolved from the caption
+            return {"value": _r(abs(u["value"]) / 2.0), "kind": kind, "printed": _r(abs(u["value"])),
+                    "taken_as": "1 sigma = half of the printed 2-sigma / 95 % interval"}, reading_component(rec, quantity)
         return {"value": _r(abs(u["value"])), "kind": kind,
                 "taken_as": "half-width" if kind == "range_half_width" else "1 sigma"}, reading_component(rec, quantity)
     if b in ("scatter_between_sources", "printed_with_composition_offset"):
@@ -896,6 +1030,14 @@ def method_component(rec, quantity, vt, cal):
         return dict(e, value=None, reason="unit %r not convertible to %s" % (rec.get("unit"), unit))
     else:
         e["value"] = _r(e["floor"] / f)
+        if vt in ("HM_FORM", "GM_FORM", "SM_FORM") and not per_atom(rec.get("unit")):
+            # basis unstated: the value may be per formula unit, so the per-atom floor is scaled by the atoms per
+            # formula unit (audit round 2; conservative when the value is in fact per atom)
+            lc = label_comp(rec)
+            n = atoms_in_formula(lc) if lc else None
+            if n and n > 1:
+                e["value"] = _r(e["value"] * n)
+                e["scaled_for_unstated_basis"] = n
     return e
 
 
