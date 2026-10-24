@@ -789,6 +789,10 @@ def assign_phases(d, src_rel, stem, keep, recs, zpf, rule, reg):
             region = d["values"][i]
             T = d["conditions"]["T"][i] if isinstance(d["conditions"]["T"], list) else d["conditions"]["T"]
             names = [vx[0] for vx in region if vx[0] != "__HYPERPLANE__"]
+            rejected = {str(p["model_phase_rejected"].get("model_phase")).upper().split("#")[0]
+                        for p in rec.get("phases") or [] if p.get("model_phase_rejected")}
+            if not why and rejected & {str(n).upper().split("#")[0] for n in names}:
+                why = "model_phase_rejected_by_label_check"   # tools/phase_label_check.py (audit round 2, A2 class 1)
             if not why and models and any(n not in models for n in names):
                 why = "phase_not_in_target_tdb"
             if not why and "GAS" in names and rec.get("pressure_basis") != "printed":

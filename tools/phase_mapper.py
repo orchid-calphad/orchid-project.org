@@ -10,9 +10,22 @@ Rules (first that applies; every mapping records its basis):
   rock salt (B1)       own NaCl-type TDB phase (prototype NaCl, name with B1/HALITE/ROCKSALT), else FCC_A1 (M)(C|N,VA)
                       for carbides/nitrides (SGTE convention); 2026-10-24
 Anything else stays open with its candidates. Usable for handbook phases and for table phases (invariant/general).
+
+Audit round 2 (2026-10-24, A2 classes 2-3; under version control in orchid-project.org/tools since then):
+  * a printed Pearson symbol or Strukturbericht that contradicts the formula-matched TDB phase blocks the match
+    ("polymorph not modelled"); "+pearson" is written only when the printed and the TDB Pearson symbols agree
+    (rhombohedral hR counts compared on both the rhombohedral and the hexagonal cell, x3);
+  * liquid, glass and amorphous TDB phases (LIQUID, IONIC_LIQ, ION, *_L, comment "liquid"/"glass") never match a
+    formula; ION is a liquid for L labels;
+  * the Greek table covers alpha..omega; a Greek prefix selects a variant by whole name token (eta never matches BETA
+    or ZETA);
+  * a solution "(El)" matched by Pearson symbol must have El among the TDB phase's constituents;
+  * Pearson-only standard names (hP4 -> DHCP, hP12 -> C14 ...) apply only when no phase of the printed formula
+    exists; a printed Strukturbericht key still applies first;
+  * a label containing '?' is never mapped.
 """
 import glob, json, os, re, sys
-REPO = "/Users/raymundo.arroyave/projects/open-tdb"
+REPO = os.environ.get("OPEN_TDB", os.path.expanduser("~/projects/open-tdb"))
 STD = {"A1": "FCC_A1", "A2": "BCC_A2", "A3": "HCP_A3", "A4": "DIAMOND_A4", "A5": "BCT_A5", "A6": "TETRAGONAL_A6",
        "A7": "RHOMBOHEDRAL_A7", "A8": "HEXAGONAL_A8", "A9": "GRAPHITE_A9", "A12": "CBCC_A12", "A13": "CUB_A13", "A20": "ORTHORHOMBIC_A20"}
 # standard CALPHAD names for non-A structures (Strukturbericht or Pearson symbol -> name prefix)
@@ -25,19 +38,55 @@ STD_COMPOUND = {"C14": "C14_LAVES", "hP12": "C14_LAVES", "C15": "C15_LAVES", "cF
 # carbide/telluride, sphalerite SiC and the FeSi-type silicides were named DIAMOND_A4. A Pearson-only key now applies only
 # when no contradicting Strukturbericht is printed; rock-salt phases go through map_rocksalt().
 INTERSTITIAL_B1 = ("C", "N")   # SGTE convention: MC / MN rock-salt carbides and nitrides are FCC_A1 (M)(C,VA) / (M)(N,VA)
-GREEK = {"α": "ALPHA", "β": "BETA", "γ": "GAMMA", "δ": "DELTA", "ε": "EPSILON", "ζ": "ZETA", "η": "ETA"}
+GREEK = {"α": "ALPHA", "β": "BETA", "γ": "GAMMA", "δ": "DELTA", "ε": "EPSILON", "ζ": "ZETA", "η": "ETA", "θ": "THETA",
+         "ι": "IOTA", "κ": "KAPPA", "λ": "LAMBDA", "μ": "MU", "ν": "NU", "ξ": "XI", "ο": "OMICRON", "π": "PI", "ρ": "RHO",
+         "σ": "SIGMA", "τ": "TAU", "υ": "UPSILON", "φ": "PHI", "ϕ": "PHI", "χ": "CHI", "ψ": "PSI", "ω": "OMEGA"}
+GREEK_CHARS = "".join(GREEK)
+LIQUID_NAMES = ("LIQUID", "IONIC_LIQ", "ION", "IONIC_LIQUID", "LIQUID_IONIC")
+LIQUID_LIKE = re.compile(r"^(?:LIQUID|LIQ|IONIC_LIQ|IONIC_LIQUID|LIQUID_IONIC|ION|KAP_LIQ|ASSOCI|OXIDE_L|SLAG|GLASS)$|"
+                         r"(?:^|_)(?:LIQ|LIQUID|GLASS|AMORPH\w*)$")   # not '_L' alone: CU6SN5_L is the low-T phase
+
+
+def liquid_like(name, info=None):
+    """A TDB phase that is a liquid, glass or amorphous phase (never matched to a printed solid compound)."""
+    return bool(LIQUID_LIKE.search(name.upper())) or bool(re.search(r"(?i)liquid|glass|amorph|\bmelt\b",
+                                                                    (info or {}).get("comment") or ""))
+
+
+def pearson_equal(a, b):
+    """Printed and TDB Pearson symbols denote the same cell: equal after '*' is stripped, or rhombohedral hR counts that
+    differ by the factor 3 between the rhombohedral and the hexagonal setting (the handbook prints hexagonal counts)."""
+    a, b = (a or "").rstrip("*").strip(), (b or "").rstrip("*").strip()
+    if not a or not b:
+        return None
+    if a == b:
+        return True
+    ma, mb = re.fullmatch(r"(hR)(\d+)", a), re.fullmatch(r"(hR)(\d+)", b)
+    if ma and mb:
+        na, nb = int(ma.group(2)), int(mb.group(2))
+        return na == 3 * nb or nb == 3 * na
+    return False
+
+
+def name_tokens(p):
+    return [t for t in re.split(r"[_#]+", p.upper()) if t]
 
 def tdb_phases(path):
     """{phase: {'pearson':..,'prototype':..}} from PHASE lines and the comment just before each."""
-    out, last = {}, None
+    out, last, comment = {}, None, None
     for line in open(path, encoding="latin-1"):
         m = re.match(r"\s*\$\s*(?:Prototype\s+)?(\S.*?)\s*\((\w+\*?),\s*([^)]*)\)", line)
         if m:
             last = {"prototype": m.group(1), "pearson": m.group(2), "space_group": m.group(3)}
             continue
+        mc = re.match(r"\s*\$+\s*(\S.*)$", line)
+        if mc:
+            comment = mc.group(1).strip()
+            continue
         m = re.match(r"\s*PHASE\s+([A-Z0-9_#]+)(?::\S+)?\s", line, re.I)
         if m:
-            out[m.group(1).upper()] = dict(last or {}); last = None
+            out[m.group(1).upper()] = dict(last or {}, **({"comment": comment} if comment else {})); last = None
+            comment = None
     txt = open(path, encoding="latin-1").read()
     for m in re.finditer(r"CONST\w*\s+([A-Z0-9_#]+)(?::\S+)?\s*:(.*?)!", txt, re.I | re.S):
         ph = m.group(1).upper()
@@ -111,7 +160,7 @@ def tdb_compositions(path, elements):
     return out
 
 def formula_dict(s):
-    s = re.sub(r"[()\s'’*]", "", s); s = re.sub(r"^[αβγδεζηθ]+", "", s)
+    s = re.sub(r"[()\s'’*]", "", s); s = re.sub(r"^[%s]+" % GREEK_CHARS, "", s)
     d = {}
     for e, n in re.findall(r"([A-Z][a-z]?)(\d*\.?\d*)", s):
         d[e.upper()] = d.get(e.upper(), 0) + float(n or 1)
@@ -119,7 +168,7 @@ def formula_dict(s):
     return {k: round(v / t, 4) for k, v in d.items()}
 
 def norm_formula(s):
-    s = re.sub(r"[()\s'’*]", "", s); s = re.sub(r"^[αβγδεζηθ]+", "", s)
+    s = re.sub(r"[()\s'’*]", "", s); s = re.sub(r"^[%s]+" % GREEK_CHARS, "", s)
     parts = re.findall(r"([A-Z][a-z]?)(\d*\.?\d*)", s)
     return "".join(f"{e.upper()}{n if n not in ('', '1') else ''}" for e, n in parts), [e for e, _ in parts]
 
@@ -129,44 +178,73 @@ def norm_sb(sb):
 def map_phase(name, info, tdb, comps=None, elements=None):
     """name: printed phase; info: {'pearson','strukturbericht','prototype'} (any may be None); tdb: from tdb_phases."""
     n = (name or "").strip(); pear = (info or {}).get("pearson") or (info or {}).get("pearson_symbol"); sb = norm_sb((info or {}).get("strukturbericht"))
+    if "?" in n:
+        return None, "label uncertain ('?' printed): never mapped", []
     if re.fullmatch(r"L\d?|L#\d", n):
-        for c in ("LIQUID", "IONIC_LIQ"):
+        for c in LIQUID_NAMES:
             if c in tdb: return c, "liquid", [c]
         return None, "no liquid phase in TDB", []
     if n == "G":
         return ("GAS", "gas", ["GAS"]) if "GAS" in tdb else (None, "no gas phase in TDB", [])
     solution = n.startswith("(") and n.endswith(")")
     if solution:
+        named = {e.upper() for e in re.findall(r"[A-Z][a-z]?", re.sub("[%s]" % GREEK_CHARS, "", n))}
         if pear:
-            c = [p for p, v in tdb.items() if (v.get("pearson") or "").rstrip("*") == pear.rstrip("*")]
+            c = [p for p, v in tdb.items() if pearson_equal(v.get("pearson"), pear) and not liquid_like(p, v)
+                 and (not v.get("constituents") or named <= {x for sl in v["constituents"] for x in sl})]
             std = [p for p in c if p in STD.values()]
             if len(std) == 1: return std[0], "solution_by_pearson", c
             if len(c) == 1: return c[0], "solution_by_pearson", c
-        if sb in STD and STD[sb] in tdb:
+        if sb in STD and STD[sb] in tdb and (not tdb[STD[sb]].get("constituents") or
+                                             named <= {x for sl in tdb[STD[sb]]["constituents"] for x in sl}):
             return STD[sb], "solution_by_strukturbericht", [STD[sb]]
+        pref = STD_COMPOUND.get(pear or "") or STD_COMPOUND.get(sb or "")
+        if pref == "DHCP" and "DHCP" in tdb and (not tdb["DHCP"].get("constituents") or
+                                                  named <= {x for sl in tdb["DHCP"]["constituents"] for x in sl}):
+            return "DHCP", "solution_by_standard_structure_name (hP4 / A3' -> DHCP)", ["DHCP"]
         return None, "solution unresolved", [p for p in STD.values() if p in tdb]
-    for key in (norm_sb((info or {}).get("strukturbericht")), pear):   # standard compound names (Laves, sigma, mu ...)
-        pref = STD_COMPOUND.get(key or "")
-        if pref and key == pear and sb and STD_COMPOUND.get(sb) != pref and STD.get(sb) != pref:
-            continue          # a Pearson-only key never overrides a printed Strukturbericht of another structure
-        if pref:
-            hit = [p for p in tdb if p == pref or p.startswith(pref)]
-            if len(hit) == 1:
-                return hit[0], "standard_name_by_structure", hit
+    def standard_names(keys):
+        for key in keys:   # standard compound names (Laves, sigma, mu ...)
+            pref = STD_COMPOUND.get(key or "")
+            if pref and key == pear and sb and STD_COMPOUND.get(sb) != pref and STD.get(sb) != pref:
+                continue          # a Pearson-only key never overrides a printed Strukturbericht of another structure
+            if pref:
+                hit = [p for p in tdb if (p == pref or p.startswith(pref)) and not liquid_like(p, tdb[p])]
+                if len(hit) == 1:
+                    return hit[0], "standard_name_by_structure", hit
+        return None
+    if sb:   # a printed Strukturbericht names the structure directly
+        hit = standard_names([sb])
+        if hit:
+            return hit
     if re.fullmatch(r"[PFICRA][a-z]?\d*", n):
         return None, "not a phase (space-group fragment from the table)", []
     f, els = norm_formula(n)
     fd = formula_dict(n)
     c = [p for p in tdb if fd and len(fd) >= 2 and formula_dict(p.split("_")[0]) == fd] or \
         [p for p in tdb if re.sub(r"_[A-Z0-9]+$", "", p) == f or p == f or p.split("_")[0] == f]
-    if pear:
-        agree = [p for p in c if not tdb[p].get("pearson") or tdb[p]["pearson"].rstrip("*") == pear.rstrip("*")]
-        if agree: c = agree
+    c = [p for p in c if not liquid_like(p, tdb[p])]      # a printed solid is never the liquid / glass phase
+    if c and (pear or sb):
+        # polymorphs: a printed Pearson symbol / Strukturbericht that contradicts the TDB phase blocks the match
+        def contradicts(p):
+            toks = [t for t in name_tokens(p)[1:] if re.fullmatch(r"[A-L]\d{1,2}[A-Z]?|[A-L]\d\d?P?", t)]
+            if sb and toks:   # the TDB name carries a Strukturbericht: it decides (a printed Pearson may be misread)
+                return sb not in toks and sb.rstrip("'") not in toks
+            tp = tdb[p].get("pearson")
+            return bool(pear and tp and pearson_equal(tp, pear) is False)
+        ok = [p for p in c if not contradicts(p)]
+        if not ok:
+            return None, ("compound_by_formula blocked: printed structure %s contradicts %s (polymorph not modelled)"
+                          % ("/".join(x for x in (pear, sb) if x), ", ".join("%s %s" % (p, tdb[p].get("pearson") or "")
+                                                                         for p in c))), c
+        c = ok
     if len(c) == 1:
-        return c[0], "compound_by_formula" + ("+pearson" if pear and tdb[c[0]].get("pearson") else ""), c
+        agree = bool(pear and pearson_equal(tdb[c[0]].get("pearson"), pear))
+        return c[0], "compound_by_formula" + ("+pearson" if agree else ""), c
     if len(c) > 1:
         g = next((GREEK[ch] for ch in n[:2] if ch in GREEK), None)
-        pick = [p for p in c if g and g in p] if g else [p for p in c if not any(x in p for x in GREEK.values())]
+        pick = [p for p in c if g and g in name_tokens(p)] if g else \
+            [p for p in c if not any(x in name_tokens(p) for x in GREEK.values())]
         if len(pick) == 1:
             return pick[0], "compound_variant_by_greek_prefix" if g else "compound_plain_variant", c
         return None, "compound: several variants", c
@@ -174,17 +252,22 @@ def map_phase(name, info, tdb, comps=None, elements=None):
         hit = map_rocksalt(n, info, tdb, comps, fd, elements)
         if hit:
             return hit
+    if not (fd and len(fd) >= 2):   # Pearson-only standard names only for a phase not named by a formula
+        hit = standard_names([pear])
+        if hit:
+            return hit
     # a phase named by letter (eta, sigma, gamma0 ...): Pearson symbol + composition range against the TDB phases
     rng = (info or {}).get("composition_at_pct")
     if comps is not None and rng and (len(fd) < 2):
         lo, hi = rng[0] / 100 - 0.03, rng[1] / 100 + 0.03
         cand = [p for p, (x0, x1) in comps.items() if x0 <= hi and x1 >= lo and (x1 - x0) < 0.5   # overlapping, not a full solution
-                and p not in STD.values() and p not in ("LIQUID", "GAS", "IONIC_LIQ")]
+                and p not in STD.values() and p not in ("LIQUID", "GAS") and not liquid_like(p, tdb.get(p))]
         if pear:
-            cand = [p for p in cand if (tdb.get(p, {}).get("pearson") or "").rstrip("*") == pear.rstrip("*")] or \
+            cand = [p for p in cand if pearson_equal(tdb.get(p, {}).get("pearson"), pear)] or \
                    ([] if any(tdb.get(p, {}).get("pearson") for p in cand) else cand)
         if len(cand) == 1:
-            return cand[0], "letter_name_by_composition" + ("+pearson" if pear and tdb.get(cand[0], {}).get("pearson") else ""), cand
+            agree = bool(pear and pearson_equal(tdb.get(cand[0], {}).get("pearson"), pear))
+            return cand[0], "letter_name_by_composition" + ("+pearson" if agree else ""), cand
         if cand:
             return None, "letter name: several candidates", cand
     return None, "compound not in TDB", []

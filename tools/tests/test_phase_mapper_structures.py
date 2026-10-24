@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests of the annotation pipeline's phase_mapper.py structure rules (2026-10-24, James Saal review): cF8 alone no longer
+"""Tests of tools/phase_mapper.py (version-controlled copy of the annotation pipeline's mapper) structure rules (2026-10-24, James Saal review): cF8 alone no longer
 names DIAMOND_A4; rock-salt (B1) carbides map to the TDB's own NaCl-type phase or to FCC_A1 (M)(C,VA); sphalerite SiC to
 SIC_B3; FeSi-type silicides never to DIAMOND_A4; a Pearson-only standard name never overrides a printed Strukturbericht.
 Reads the SGTE TDB files of open-tdb (read only).
@@ -11,7 +11,7 @@ import sys
 sys.dont_write_bytecode = True
 HOME = os.path.expanduser("~")
 ap = argparse.ArgumentParser()
-ap.add_argument("--tools", default=os.path.join(HOME, "projects", "open-tdb", "build", "okamoto-pilot", "tools"))
+ap.add_argument("--tools", default=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # tools/phase_mapper.py
 ap.add_argument("--tdb-dir", default=os.path.join(HOME, "projects", "open-tdb", "databases", "sgte-binary"))
 A = ap.parse_args()
 sys.path.insert(0, A.tools)

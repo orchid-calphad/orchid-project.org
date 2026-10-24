@@ -17,7 +17,7 @@ review state. Never images, crops, renders, paths to page images, or handbook te
 Inputs (read only): the annotation run (calibrated.json, evidence.json, metadata.json, grid.npz per diagram;
 summary.jsonl), the DFT-hull decisions of tier 4, the phase registry (<data>/phases/systems/<SYS>.json), the calculated
 SGTE diagrams (<data>/phase-diagrams/sgte/*.json) and the SGTE TDB files (phase mapping, via the annotation pipeline's
-phase_mapper.py). Output: <data>/assessed-phase-assemblages/. Deterministic; no network, no model calls.
+tools/phase_mapper.py, version-controlled; its git blob id is recorded in the method). Output: <data>/assessed-phase-assemblages/. Deterministic; no network, no model calls.
 
   ~/orchid-py313/bin/python tools/build_assessed_assemblages.py            # write
   ~/orchid-py313/bin/python tools/build_assessed_assemblages.py --check    # exit 1 if the outputs differ from a rebuild
@@ -61,7 +61,7 @@ HOME = os.path.expanduser("~")
 OPEN_TDB = os.path.join(HOME, "projects", "open-tdb")
 DEF_RUN = os.path.join(OPEN_TDB, "build", "okamoto-annotation", "run-20261021h-full")
 DEF_HULL = os.path.join(OPEN_TDB, "build", "okamoto-annotation", "tier4", "hull", "review_input", "decisions_hull.jsonl")
-DEF_TOOLS = os.path.join(OPEN_TDB, "build", "okamoto-pilot", "tools")
+DEF_TOOLS = os.path.dirname(os.path.abspath(__file__))   # tools/phase_mapper.py (version-controlled since audit round 2)
 DEF_TDB_DIR = os.path.join(OPEN_TDB, "databases", "sgte-binary")
 DEF_ESPEI = os.path.join(HOME, ".venvs", "espei", "bin", "python")
 
@@ -73,6 +73,7 @@ EVIDENCE_CLASS = "assessed_phase_diagram"
 MARGIN = 0.006            # minimum distance of a point to any drawn line or frame, in frame-normalised units (~1.4 pt)
 EDGE_TOL = 0.006          # a field reaching within this (normalised) of a cut-off x frame edge is "partly drawn"
 PURE_TOL = 0.005          # an x frame edge within this mole fraction of 0 or 1 is a pure-element edge, not a cut
+SCHEMATIC_T_MIN_K = 298.15   # a point of a full-width field without a drawn lower boundary must lie above room temperature
 LINE_COMPOUND_AT = 1.0    # a phase whose printed range is at most this wide (at.%) is treated as a line compound
 GAP_MAX = 0.02            # tie-line: a drawn line wider than this (normalised) is not a clean single boundary
 P_PA = 101325.0
@@ -130,6 +131,15 @@ def guard_text(text, where):
 # -------------------------------------------------------------------------------------------------- helpers --
 def sha256_bytes(b):
     return hashlib.sha256(b).hexdigest()
+
+
+def git_blob(p):
+    """{path, git_blob} of a version-controlled tool: the git object id is content-addressed (git hash-object), so the
+    exact code is recoverable from the repository history; path relative to the repository root."""
+    data = open(p, "rb").read()
+    blob = hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+    return {"path": "orchid-project.org/tools/" + os.path.basename(p), "git_blob": blob,
+            "repository": "https://github.com/orchid-calphad/orchid-project.org"}
 
 
 def sha256_file(p):
@@ -251,7 +261,8 @@ class Registry:
         import phase_mapper  # noqa: E402  (annotation pipeline, deterministic)
         self.PM = phase_mapper
         self.pm_sha = sha256_file(os.path.join(tools, "phase_mapper.py"))
-        self.sys_cache, self.tdb_cache, self.od = {}, {}, {}
+        self.pm_git = git_blob(os.path.join(tools, "phase_mapper.py"))
+        self.sys_cache, self.tdb_cache, self.od, self.partners = {}, {}, {}, {}
         self.grid_index = collections.defaultdict(list)   # system -> calculated diagram files (loaded per system)
         for p in sorted(glob.glob(os.path.join(data, "phase-diagrams", "sgte", "*.json"))):
             els = re.findall(r"[A-Z][a-z]?", os.path.basename(p).split("-")[0])
@@ -296,6 +307,15 @@ class Registry:
                 info[e["id"]] = {"preferred_name": e["preferred_name"], "tdb_names": sorted(set(tdbn)), "va": va}
             self.sys_cache[key] = (by_tdb, by_paper, info)
             self.od[key] = od
+            # order/disorder partners: the ordered model and its DIS_PART disordered part are one Gibbs-energy model
+            # (audit round 2, A2 class 6); canonical id = the disordered part's registry id
+            part = {}
+            for e in phases:
+                for mo in e.get("models", []):
+                    dp = mo.get("disordered_part")
+                    if dp and (mo.get("tdb"), str(dp).upper()) in by_tdb:
+                        part[e["id"]] = by_tdb[(mo.get("tdb"), str(dp).upper())]
+            self.partners[key] = part
         return self.sys_cache[key]
 
     def tdb(self, fname, axis_order):
@@ -431,7 +451,7 @@ def build(a, log=print):
     run_id = os.path.basename(os.path.normpath(run))
     method = {"name": "assessed phase-assemblage points (ORCHID)", "version": METHOD_VERSION, "annotation_run": run_id,
               "annotation_tools_sha256": manifest.get("tools_sha256", {}).get("pd_fields.py"),
-              "phase_mapper_sha256": reg.pm_sha, "builder": "orchid-project.org/tools/build_assessed_assemblages.py"}
+              "phase_mapper_sha256": reg.pm_sha, "phase_mapper": reg.pm_git, "builder": "orchid-project.org/tools/build_assessed_assemblages.py"}
     records, exclusions, espei_excl = [], [], []
     espei_default, espei_tl = {}, {}
     cnt = collections.Counter()
@@ -462,6 +482,13 @@ def build(a, log=print):
             F["name_history"] = [{"name": c["machine_name"], "basis": F.get("basis"), "superseded_by": c["basis"],
                                   "reviewed_at": c["reviewed_at"]}]
             F["name"] = c["expert_name"]
+            if c["basis"] == "page_check":   # read on the rendered page (audit round 2); not an expert decision
+                F["page_check"] = {k: c[k] for k in ("reviewer", "reviewed_at", "source", "confidence") if c.get(k)}
+                ev = c.get("evidence") or {}
+                F["page_check"].update({"page_pdf": ev.get("page_pdf"), "pdf_sha256_prefix": ev.get("pdf_sha256_prefix"),
+                                        "page_view_sha256": ev.get("image_sha256"), "seen": ev.get("seen")})
+                cnt["page_check_corrections_applied"] += 1
+                continue
             F["tier5"] = {"decision": c["expert_name"], "confidence": c.get("confidence") or "high",
                           "reviewer": c["reviewer"], "reviewed_at": c["reviewed_at"], "source": c["source"]}
             cnt["expert_corrections_applied"] += 1
@@ -580,6 +607,20 @@ def build(a, log=print):
             r, c = pt["row"], pt["col"]
             x, T_C = float(xs[c]), float(Ts[r])
             T_K = T_C + 273.15
+            # schematic fields (audit round 2, A1 C8): a full-width two-phase field that reaches the bottom of the frame
+            # has no drawn lower boundary; its centroid below room temperature (down to -347 degC) is an artefact of
+            # where the frame ends, not a drawn state
+            bottom = int(np.argmin(Ts))
+            unbounded_below = bool(mask[bottom, :].any())
+            full_width = bool(mask[:, :edge_cols + 1].any() and mask[:, nx - edge_cols - 1:].any())
+            if T_K <= 0 or (unbounded_below and full_width and T_K < SCHEMATIC_T_MIN_K):
+                exclusions.append(dict(base_ex, reason="schematic_field_unbounded_below",
+                                       detail="point at %.1f K in a full-width field with no drawn lower boundary" % T_K,
+                                       assemblage=phases))
+                cnt["excl:schematic_field_unbounded_below"] += 1
+                continue
+            if unbounded_below and full_width:
+                flags.append("schematic_field_unbounded_below")
             row = lab[r]
             jl, nl, kl = run_extent(row, c, fid, -1)
             jr, nr, kr = run_extent(row, c, fid, +1)
@@ -621,7 +662,11 @@ def build(a, log=print):
                    "flags": flags, "citations": citations, "method": method}
             if F.get("name_history"):
                 rec["name_history"] = F["name_history"]
-                rec["expert_review"] = {k: F["tier5"][k] for k in ("reviewer", "reviewed_at", "source", "confidence")}
+                if F.get("tier5"):
+                    rec["expert_review"] = {k: F["tier5"][k] for k in ("reviewer", "reviewed_at", "source", "confidence")}
+                if F.get("page_check"):
+                    rec["page_check"] = F["page_check"]
+                    flags.append("name_corrected_on_page_check")
             # ---- tie line (two-phase points only; drawing-based, low credence)
             tl, why = None, None
             if len(phases) == 2:
@@ -631,7 +676,8 @@ def build(a, log=print):
             rec["uncertainty_budget"] = assessed_budget(rec)
             rec["tie_line_omitted"] = why
             # ---- SGTE cross-check
-            rec["sgte_crosscheck"] = [crosscheck(gd, x, T_K, comp, asm, by_tdb, reg.od.get(key, frozenset())) for gd in sgte]
+            rec["sgte_crosscheck"] = [crosscheck(gd, x, T_K, comp, asm, by_tdb, reg.od.get(key, frozenset()),
+                                                 reg.partners.get(key, {})) for gd in sgte]
             records.append(rec)
             cnt["points"] += 1
             cnt["boundary_basis:%s" % bbasis] += 1
@@ -719,7 +765,7 @@ def grid_cells(gd):
     return gd["_dec"]
 
 
-def crosscheck(gd, x, T_K, comp, asm, by_tdb, od=frozenset()):
+def crosscheck(gd, x, T_K, comp, asm, by_tdb, od=frozenset(), partners=None):
     g = gd["grid"]
     base = {"tdb": gd["tdb"], "tdb_sha256": gd["sha256"]}
     xg = x if gd["x_component"].upper() == comp.upper() else 1.0 - x
@@ -740,6 +786,11 @@ def crosscheck(gd, x, T_K, comp, asm, by_tdb, od=frozenset()):
     calc = [(by_tdb.get((gd["tdb"], p.upper()), "tdb:" + p.upper()), (gd["tdb"], p.upper()) in od) for p in labl.split("+")]
     if {c for c, _ in calc} == set(ids):
         return dict(base, result="agrees", reason=None)
+    canon = (lambda i_: (partners or {}).get(i_, i_))
+    if len(calc) == len(ids) and {canon(c) for c, _ in calc} == {canon(i_) for i_ in ids}:
+        # the ordered and the disordered state of one order/disorder model (B2_BCC / A2_BCC, L12 / FCC_A1): the grid
+        # label does not resolve the order parameter, the handbook names the state; treated as agreement
+        return dict(base, result="agrees", reason="order/disorder partners (one Gibbs-energy model)")
     if any(o for _, o in calc) and {c for c, o in calc if not o} <= set(ids) and len(calc) == len(ids):
         return dict(base, result="not_comparable",
                     reason="order-disorder model: the grid label does not tell the ordered from the disordered state")
@@ -1370,7 +1421,7 @@ def main(argv=None):
     ap.add_argument("--data", default=orchid_cite.DEFAULT_DATA, help="orchid-data checkout (writes %s/)" % OUT_DIR)
     ap.add_argument("--run", default=DEF_RUN, help="annotation run directory (read only)")
     ap.add_argument("--hull", default=DEF_HULL, help="tier-4 DFT-hull decisions (JSONL, read only)")
-    ap.add_argument("--tools", default=DEF_TOOLS, help="annotation pipeline tools (phase_mapper.py)")
+    ap.add_argument("--tools", default=DEF_TOOLS, help="directory of phase_mapper.py (default: this tools/ directory)")
     ap.add_argument("--tdb-dir", default=DEF_TDB_DIR, help="SGTE binary TDB files (read only)")
     ap.add_argument("--espei-python", default=DEF_ESPEI, help="interpreter with ESPEI for validation")
     ap.add_argument("--check", action="store_true", help="exit 1 if the outputs differ from a fresh build")

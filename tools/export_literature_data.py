@@ -47,6 +47,7 @@ import doi_corrections  # noqa: E402
 import literature_quality as quality  # noqa: E402
 import literature_gates as gates  # noqa: E402
 import phase_rule  # noqa: E402
+import phase_label_check  # noqa: E402
 import orchid_cite  # noqa: E402
 import uncertainty_budget as ub  # noqa: E402
 import ml_folds  # noqa: E402
@@ -1070,7 +1071,7 @@ papers, page images, crops and full text are **not** redistributed.
 | `uncertainty_budget` | uncertainty budget of the record's measured quantities, components kept separate (PI decision 2026-10-24; tools/uncertainty_budget.py; calibration in UNCERTAINTY_CALIBRATION.json / .md): `{{calibration (version and sha256 of UNCERTAINTY_CALIBRATION.json), sigma_rule, quantities{{value, composition, temperature_K}}}}`; `value` = the record's value, `composition` = its printed phase compositions (mole fraction), `temperature_K` = the equilibration temperature of a phase-composition / assemblage observation. Per quantity, in its `unit`: `sigma_printed` `{{value, kind, taken_as}}` as printed (null if none; ORCHID placeholders are not printed sigmas), `sigma_reading` `{{value, basis}}` half of the last printed digit (`last_printed_digit`; compositions: `last_stored_digit`), `sigma_method` `{{class, value, floor, floor_unit, basis (calibrated / prior / calibrated vs experiment), n_pairs, ci95, entry}}` the method-class floor (robust between-study scatter of independent same-method measurements in ORCHID, or a documented prior; DFT: calibrated sigma_DFT; model values: model-vs-experiment deviation), `sigma_composition` (value measured at a historical formula: `{{value, dx, slope}}`), `sigma_scatter` (page-checked mutually inconsistent group: `{{value, n_sources, group}}`), `sigma_conversion` (reference-state conversion), then `sigma_effective` = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter) (`sigma_effective_reason` when none applies). Null = the component does not apply. CSV: the budget as JSON plus `sigma_effective` and `sigma_method_class` of the value |
 | `temperature_K` | equilibrium / measurement temperature in K; `temperature_printed` as printed (unit as printed, often °C); `temperature_basis` how it was obtained (`printed`, `quantity_label`, `caption`, `assumed_room_temperature`, `not_printed`, ...); `temperature_bound` `{{op, value_K, printed}}` for a printed bound (`op` `<` upper bound, `>` lower bound), `temperature_max_K` / `temperature_range_K` for ranges; `temperature_uncertainty` `{{value,basis}}` |
 | `pressure_Pa`, `pressure_basis` | pressure and how it was set: `printed`, or `assumed_default_1_atm_not_printed` (1 atm assumed, no pressure printed; the record builder's label kept in `pressure_basis_stored`) |
-| `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype, label_variants, label_source}}]`: printed phase label and, where mapped, the CALPHAD model phase; `label_variants`: other readers' spellings of the same printed label (kept when duplicate readings were merged, e.g. 'NiAl (B2)' beside 'B2'); `label_source: page_check` for a phase added from the printed reaction on a page check |
+| `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype, label_variants, label_source}}]`: printed phase label and, where mapped, the CALPHAD model phase; `label_variants`: other readers' spellings of the same printed label (kept when duplicate readings were merged, e.g. 'NiAl (B2)' beside 'B2'); `label_source: page_check` for a phase added from the printed reaction on a page check; `structure_basis: mapped_model_phase`: the Pearson symbol / prototype are those of the mapped model phase, not printed; `model_phase_rejected` {{model_phase, reason, pearson_symbol, prototype}}: a corpus mapping the label cannot carry (tools/phase_label_check.py) |
 | `phase_compositions` | `[{{phase, composition{{EL: x}}, basis, composition_source}}]`. `basis` is `mole_fraction` (possibly "converted from atomic/mass percent") or `unresolved` (printed basis disputed/mixed, or values outside 0..1: do not use as mole fractions). `composition_source`: `printed`, `stoichiometry`, `formula_nominal`, `congruent_same_composition`, `printed_range`, `printed_bound`, ... |
 | `overall_composition`, `overall_composition_basis` | alloy / sample composition (mole fraction) where given |
 | `reference_state` | reference state of a thermodynamic quantity, always an object: per element `{{EL: {{phase, fixed_state_variables}}}}`, or `{{printed: "..."}}` when only free text was read |
@@ -1172,6 +1173,10 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
         describe=lambda pk: store.bib.describe(pk[4:]) if pk and pk.startswith("doi:") else {})
     for r in records:
         r["flags"]["extraction_accepted"] = bool(r["flags"].get("extraction_accepted"))
+    # model-phase sanity of the corpus label mapping (tools/phase_label_check.py; audit round 2, A2 class 1): a Greek
+    # letter or a compound mapped to an element structure, a liquid label on a solid model, a printed composition
+    # outside the model phase's field -> mapping removed (kept in model_phase_rejected)
+    qreport["phase_labels"] = phase_label_check.apply(records, _pr.PhaseRule(data or orchid_cite.DEFAULT_DATA))
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     qreport["espei_phase_rule"] = phase_rule.RULE_TEXT
     records.sort(key=lambda r: (r["system"], r["record_kind"], r.get("pid") or "", r["id"]))
@@ -1329,7 +1334,8 @@ def outputs(store, records, papers, contexts):
     files["orchid-literature.csv.gz"] = gz(sbuf.getvalue().encode())
     files["SCHEMA.md"] = SCHEMA_MD.format(release=RELEASE, status=orchid_cite.STATUS, kinds=", ".join("`%s`" % k for k in quality.TRANSITION_KINDS),
                                           propmap=", ".join("`%s` -> `%s`" % (k, v) for k, v in sorted(quality.PROPERTY_FIX.items()))).encode()
-    files["QUALITY_FIXES.md"] = (quality.quality_md(store.quality, RELEASE) + "\n" + gates.gates_md(store.quality["gates"])).encode()
+    files["QUALITY_FIXES.md"] = (quality.quality_md(store.quality, RELEASE) + "\n" + gates.gates_md(store.quality["gates"])
+                                + (phase_label_check.report_md(store.quality["phase_labels"]) if store.quality.get("phase_labels") else "")).encode()
     files["quality_fixes.json"] = dumps(dict(store.quality, release=RELEASE)).encode()
     # the CSV cannot carry metadata (a leading comment line breaks CSV readers): citation in a file beside it
     files["CITATION.txt"] = orchid_cite.citation_txt("literature", intro=(
