@@ -45,6 +45,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import doi_corrections  # noqa: E402
 import literature_quality as quality  # noqa: E402
+import literature_gates as gates  # noqa: E402
 import phase_rule  # noqa: E402
 import orchid_cite  # noqa: E402
 
@@ -964,7 +965,9 @@ CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_grou
                "conditions_summary", "cited_sources", "citations_printed", "paper", "paper_citation", "paper_doi", "quote", "quote_page",
                "locator", "link_rule", "flags", "extraction_accepted", "espei_ready", "espei_certified", "calphad_check", "readers", "reader_tier", "reader_agreement",
                "reader_agreement_label", "tool_release", "pid",
-               "merged_ids", "merged_pids"]
+               "merged_ids", "merged_pids", "corrections", "gate_failures", "reader_agreement_basis",
+               "temperature_K_stored", "system_stored", "property_code_before_gates", "evidence_class_before_gates",
+               "phases_stored", "phases_dropped", "unit_stored", "pressure_basis_stored"]
 
 
 def summarize_context(ctx):
@@ -1048,11 +1051,13 @@ papers, page images, crops and full text are **not** redistributed.
 | `value`, `unit` | value in the normalized unit (temperatures: K; formation enthalpies and Gibbs energies of formation, mixing enthalpies, Gibbs energies of mixing and partial molar enthalpies: kJ/mol-atom when the per-atom basis is explicit, otherwise kJ/mol (basis unstated)). `value_stored`, `unit_stored`: the value before that conversion. `value_printed`, `unit_printed`: as printed (tables) |
 | `unit_basis` | how the per-atom / per-formula basis of an energy was established: `printed_unit` (in the printed unit), `column_header`, `caption`, `reviewer`, `state_completion_<where>` (a quoted header / caption / footnote / sentence), `eV_per_atom_printed`, `magnitude_heuristic` (inferred by the record builder from the magnitude; formation values flagged `basis_inferred_from_magnitude`), `assumed_per_mole_of_atoms` (solution phase, not printed), `not_printed`, `unstated`. For mixing / partial quantities only an explicit basis gives kJ/mol-atom. `per_formula_unit_divisor`: the record builder divided a per-formula-unit value by this number of atoms |
 | `value_before_quality_fix`, `basis_correction`, `sign_heading_printed` | set when a DFT-parity outlier was corrected (QUALITY_FIXES.md): the value before the fix; `{{formula, atoms_per_formula_unit, operation}}` for a per-formula value that was labelled per atom; the printed heading that carries a minus sign |
+| `corrections` | literature-level gate corrections (QUALITY_FIXES.md section 7): `[{{gate, field, before, after, rule, evidence, visual_check}}]`; `visual_check` = `{{page, pdf_sha256_prefix, image_sha256, verdict, seen, checked}}` (the PDF page was rendered and inspected; no image or page text is published). The value before a correction is kept in `value_stored`, `temperature_K_stored`, `unit_stored`, `system_stored`, `property_code_before_gates`, `evidence_class_before_gates`, `phases_stored` (with `phases_dropped` [{{label, reason}}]), `pressure_basis_stored` |
+| `gate_failures` | `[{{gate, code, effect, detail, visual_check}}]`: a gate demoted (`effect` `not_accepted`: `flags.extraction_accepted` false) or flagged (`not_espei_ready`: `espei_ready` and `espei_certified` false; `flag_only`) the value; codes also in `flags.gate_failures`; see QUALITY_FIXES.md section 7 |
 | `merged_ids`, `merged_pids` | ids (and persistent locators) of records that were exact duplicates of this one and were merged into it |
 | `value_range` | `{{min,max}}` when a range was printed; `value_expression`: a printed expression (model parameters) |
 | `uncertainty` | `{{value, basis, note}}`; `basis: printed` is the source's own; `stated_default` / `reading_resolution` are ORCHID placeholders (e.g. "5% default", "10% placeholder; none printed") and are **not** measured uncertainties |
 | `temperature_K` | equilibrium / measurement temperature in K; `temperature_printed` as printed (unit as printed, often °C); `temperature_basis` how it was obtained (`printed`, `quantity_label`, `caption`, `assumed_room_temperature`, `not_printed`, ...); `temperature_bound` `{{op, value_K, printed}}` for a printed bound (`op` `<` upper bound, `>` lower bound), `temperature_max_K` / `temperature_range_K` for ranges; `temperature_uncertainty` `{{value,basis}}` |
-| `pressure_Pa`, `pressure_basis` | pressure and how it was set (`stated_default_1_atm`, `unstated_assumed`, `printed`) |
+| `pressure_Pa`, `pressure_basis` | pressure and how it was set: `printed`, or `assumed_default_1_atm_not_printed` (1 atm assumed, no pressure printed; the record builder's label kept in `pressure_basis_stored`) |
 | `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype}}]`: printed phase label and, where mapped, the CALPHAD model phase |
 | `phase_compositions` | `[{{phase, composition{{EL: x}}, basis, composition_source}}]`. `basis` is `mole_fraction` (possibly "converted from atomic/mass percent") or `unresolved` (printed basis disputed/mixed, or values outside 0..1: do not use as mole fractions). `composition_source`: `printed`, `stoichiometry`, `formula_nominal`, `congruent_same_composition`, `printed_range`, `printed_bound`, ... |
 | `overall_composition`, `overall_composition_basis` | alloy / sample composition (mole fraction) where given |
@@ -1070,10 +1075,10 @@ papers, page images, crops and full text are **not** redistributed.
 | `paper` | id of the containing paper (`doi:<doi>` or `sha256:<pdf prefix>`) -> `papers.json`; CSV adds `paper_citation`, `paper_doi` |
 | `quote`, `quote_page` | (running text) the one verbatim sentence backing the value and its page (`null` with `flags.page_unreadable` when the page read was not a page number); for tables `locator` gives table label, caption, page and row instead |
 | `locator` | `{{artifact: table|text_passage, label, caption, page, row, asset}}` |
-| `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready` (the value CAN be used in ESPEI: complete state, phases mapped to a model, phase-rule / unit checks, proper format, and the physical phase rule of QUALITY_FIXES.md section 6; `espei_ready_upstream` true and `espei_phase_rule` {{result, reason, detail}} when only the phase rule turned it false), `espei_certified` (`espei_ready` AND agreement with a CALPHAD prediction: `plausibility.result` = pass), `espei_certified_basis` (`pycalphad_invariant_agreement`; later bases may be added, e.g. `espei_driving_force`), `calphad_check` (`agrees`, `disagrees`, `not_available`), `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check: result, model, dT, tolerance {{dT_K, dx}}), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts; data-hardening flags (QUALITY_FIXES.md): `page_unreadable`, `reference_state_dropped_not_in_quote`, `basis_inferred_from_magnitude`, `basis_corrected_from_formula`, `sign_from_heading`, `dft_outlier_unexplained` |
+| `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready` (the value CAN be used in ESPEI: complete state, phases mapped to a model, phase-rule / unit checks, proper format, and the physical phase rule of QUALITY_FIXES.md section 6; `espei_ready_upstream` true and `espei_phase_rule` {{result, reason, detail}} when only the phase rule turned it false), `espei_certified` (`espei_ready` AND agreement with a CALPHAD prediction: `plausibility.result` = pass), `espei_certified_basis` (`pycalphad_invariant_agreement`; later bases may be added, e.g. `espei_driving_force`), `calphad_check` (`agrees`, `disagrees`, `not_available`), `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check: result, model, dT_K, dx {{phase: mole-fraction difference}}, calculation, tolerance {{dT_K, dx}}, `fail_reason` for fails with |dT| < 5 K), `plausibility_before_correction` (the cross-check of a value whose temperature a gate corrected; computed on the old temperature), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts; data-hardening flags (QUALITY_FIXES.md): `page_unreadable`, `reference_state_dropped_not_in_quote`, `basis_inferred_from_magnitude`, `basis_corrected_from_formula`, `sign_from_heading`, `dft_outlier_unexplained` |
 | `link_rule` | (text) the rule that linked the value to its quote: the quote is verbatim on one page/passage and the printed value is inside it |
-| `reader_agreement`, `reader_agreement_label` | (tables) how many independent visual readers carry the value: `multi_reader` ("confirmed (two or more readers)"), `single_reader` ("unconfirmed (single reader)": one visual reader read the row and no second reader has confirmed it; the explorer shows a "single reader" badge), `single_reader_text_layer` ("single reader + PDF text layer": one visual reader, every value also printed in the PDF text layer). Two blind, independent Claude reads (`claude-opus-5.5` and `claude-opus-5.5#2` in `readers`) count as two readers. Absent where the record builder did not classify the value (invariant tables, running text) |
-| `readers`, `reader_tier`, `tool_release` | extraction provenance: the readers whose readings agreed (`text_layer` = the PDF text layer), the reader tier (`preliminary_flash+claude`: two independent model readers agree; `confirmed_pro`: confirmed by a third reader; `+fable_judge`: a judge chose between disagreeing readers; `preliminary_flash` for text: first reader, with the second reader's agreement in `flags.second_reader`), the record-builder release |
+| `reader_agreement`, `reader_agreement_label` | (tables) how many independent visual readers carry the value: `multi_reader` ("confirmed (two or more readers)"), `single_reader` ("unconfirmed (single reader)": one visual reader read the row and no second reader has confirmed it; the explorer shows a "single reader" badge), `single_reader_text_layer` ("single reader + PDF text layer": one visual reader, every value also printed in the PDF text layer). Two blind, independent Claude reads (`claude-opus-5.5` and `claude-opus-5.5#2` in `readers`) count as two readers. Where the record builder did not classify the value (invariant tables, running text) it is derived from `readers` (`reader_agreement_basis: derived_from_readers`, settled rows only) |
+| `readers`, `reader_tier`, `tool_release` | extraction provenance: the readers whose readings agreed (`text_layer` = the PDF text layer), the reader tier, a pipeline status of the table or passage (which reader passes ran), not an agreement claim (`preliminary_flash+claude`: two independent model readers agree; `confirmed_pro`: confirmed by a third reader; `+fable_judge`: a judge chose between disagreeing readers; `preliminary_flash` for text: first reader, with the second reader's agreement in `flags.second_reader`), the record-builder release |
 
 ## Controlled vocabularies
 
@@ -1144,6 +1149,15 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     assert len({r["id"] for r in records}) == len(records)
     records = [clean(r) for r in records]
     records, qreport = quality.apply(records, open_tdb)
+    for r in records:
+        r["flags"]["extraction_accepted"] = bool(r["flags"].get("extraction_accepted"))
+    # literature-level consistency gates (tools/literature_gates.py): corrections only when evidenced and confirmed on
+    # the page (tools/literature_visual_checks.json), otherwise demotions / flags; never a printed value or quote
+    units, plaus = gates.load_store_evidence(corpus)
+    import phase_rule as _pr
+    records, qreport["gates"] = gates.apply(
+        records, _pr.PhaseRule(data or orchid_cite.DEFAULT_DATA), store_units=units, plaus_store=plaus,
+        describe=lambda pk: store.bib.describe(pk[4:]) if pk and pk.startswith("doi:") else {})
     for r in records:
         r["flags"]["extraction_accepted"] = bool(r["flags"].get("extraction_accepted"))
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
@@ -1247,6 +1261,9 @@ def outputs(store, records, papers, contexts):
         "context_items": sum(len(c["items"]) for c in contexts.values()),
         "excluded": dict(sorted(store.excluded.items())),
         "espei": store.quality["espei"],
+        "gates": {k: store.quality["gates"][k] for k in ("release", "records_in", "records_out", "accepted_before",
+                                                          "accepted_after", "espei_ready_before", "espei_ready_after",
+                                                          "records_corrected", "records_with_gate_failures", "visual_checks")},
         "quality": dict(store.quality["counts"], duplicates_merged=store.quality["duplicates"].get("records_removed", 0),
                         duplicate_groups=store.quality["duplicates"].get("groups", 0),
                         formation_basis_inferred_from_magnitude=sum(
@@ -1288,7 +1305,7 @@ def outputs(store, records, papers, contexts):
     files["orchid-literature.csv.gz"] = gz(sbuf.getvalue().encode())
     files["SCHEMA.md"] = SCHEMA_MD.format(release=RELEASE, status=orchid_cite.STATUS, kinds=", ".join("`%s`" % k for k in quality.TRANSITION_KINDS),
                                           propmap=", ".join("`%s` -> `%s`" % (k, v) for k, v in sorted(quality.PROPERTY_FIX.items()))).encode()
-    files["QUALITY_FIXES.md"] = quality.quality_md(store.quality, RELEASE).encode()
+    files["QUALITY_FIXES.md"] = (quality.quality_md(store.quality, RELEASE) + "\n" + gates.gates_md(store.quality["gates"])).encode()
     files["quality_fixes.json"] = dumps(dict(store.quality, release=RELEASE)).encode()
     # the CSV cannot carry metadata (a leading comment line breaks CSV readers): citation in a file beside it
     files["CITATION.txt"] = orchid_cite.citation_txt("literature", intro=(
