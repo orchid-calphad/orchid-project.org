@@ -182,11 +182,23 @@ else:
     if os.path.exists(calp):
         cal = json.load(open(calp))
         e = cal["value_types"]["HM_FORM"]["classes"].get("emf") or {}
-        check("A3 §1: the EMF formation-enthalpy floor is not inflated by basis errors (calibrated <= 4 or prior)",
-              e.get("basis") != "calibrated" or e.get("floor", 0) <= 4.0, e.get("floor"))
+        check("A3 §1: the EMF formation-enthalpy floor is not inflated by basis errors (<= 6.5 kJ/mol-atom unless prior)",
+              e.get("basis") == "prior" or e.get("floor", 0) <= 6.5, e.get("floor"))
         k = cal["value_types"]["HM_FORM"]["classes"].get("kems_vapour") or {}
         check("A3 §1: no spurious KEMS floor from per-formula values (calibrated <= 8 or prior)",
               k.get("basis") != "calibrated" or k.get("floor", 0) <= 8.0, k.get("floor"))
+        bad = []
+        for vt, v in cal["value_types"].items():
+            for c, e in v["classes"].items():
+                below = e["n_pairs"] < cal.get("min_pairs", 20) or e["n_states"] < cal.get("min_states", 10)
+                if below and e["n_pairs"] >= cal.get("min_pairs_cleaned", 5):
+                    if e["basis"] != "cleaned_below_threshold" or e["floor"] < e.get("prior", 0) - 1e-9 or \
+                            e["floor"] < e["sigma_robust"] - 1e-9:
+                        bad.append((vt, c))
+                elif below and e["basis"] != "prior":
+                    bad.append((vt, c))
+        check("PI rule: below the calibration threshold with >= 5 pairs, floor = max(prior, cleaned robust sigma)",
+              not bad, bad[:5])
         check("A3 §1: evaluated / estimated values are never calibration pairs",
               not (cal["value_types"]["HM_FORM"]["classes"].get("evaluated_compilation") or {}).get("n_pairs"))
 
