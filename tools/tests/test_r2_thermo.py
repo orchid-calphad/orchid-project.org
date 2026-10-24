@@ -191,7 +191,7 @@ else:
         for vt, v in cal["value_types"].items():
             for c, e in v["classes"].items():
                 below = e["n_pairs"] < cal.get("min_pairs", 20) or e["n_states"] < cal.get("min_states", 10)
-                if below and e["n_pairs"] >= cal.get("min_pairs_cleaned", 5):
+                if below and e["n_pairs"] >= cal.get("min_pairs_cleaned", 5) and e["n_states"] >= cal.get("min_states_cleaned", 3):
                     if e["basis"] != "cleaned_below_threshold" or e["floor"] < e.get("prior", 0) - 1e-9 or \
                             e["floor"] < e["sigma_robust"] - 1e-9:
                         bad.append((vt, c))

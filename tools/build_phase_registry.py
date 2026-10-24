@@ -1733,8 +1733,12 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
     counts = {"systems": len(systems), "phases": len(reg), "names": sum(ns.values()), "names_by_namespace": dict(sorted(ns.items())),
               "structure_types": len(st_public), "structure_types_used": len([t for t in st_public if t["registry_phases"]]),
               "assigned_tier_A_standard_name": by_basis.get("standard_name", 0),
+              # FCC_A1 (M)(X,VA) phases given their B1 / C1 structure (audit round 2, A2 class 5); also tier A
+              "assigned_tier_A_interstitial_compound": by_basis.get("interstitial_fcc_a1_compound", 0),
               "assigned_tier_B_dft_unique_match": by_basis.get("dft_unique_match", 0),
               "assigned_tier_C_assessment_declared": by_basis.get("assessment_declared", 0),
+              # structure from the TDB's own comment (e.g. NiTi B19'; audit round 2, A2 class 8); also tier C
+              "assigned_tier_C_tdb_comment_structure": by_basis.get("tdb_comment_structure", 0),
               "liquid": by_basis.get("liquid", 0), "gas": by_basis.get("gas", 0),
               "no_prototype": sum(1 for e in reg if not e["structure"]),
               "status": dict(sorted(status.items())), "review_queue": status.get("needs_review", 0),

@@ -85,6 +85,8 @@ CAVEAT_FLAGS = ("magnitude_suspect", "system_mismatch", "source_disputed", "dft_
                 "unsigned_in_print", "judge_adjudicated", "page_unreadable")
 COMPOUND_X_TOL = 0.01      # printed composition vs the compound's formula composition (mole fraction)
 DROP_REASONS = {
+    "model_phase_rejected_by_label_check": "the record's model phase was rejected by the printed-label check "
+                                           "(tools/phase_label_check.py; audit round 2, A2 class 1)",
     "not_in_release": "observation not published in the literature release (added or re-read after the release)",
     "not_accepted": "published with extraction_accepted = false",
     "evidence_class_mismatch": "published evidence class differs from the folder's class (classes are never mixed)",
@@ -2865,6 +2867,9 @@ def main(argv=None):
     ap.add_argument("--data", default=orchid_cite.DEFAULT_DATA, help="orchid-data checkout (reads; writes espei/)")
     ap.add_argument("--espei-python", default=DEFAULT_ESPEI_PY)
     ap.add_argument("--check", action="store_true", help="verify the files on disk match a fresh build")
+    ap.add_argument("--first-pass", action="store_true",
+                    help="write the bundle (and dft/CALIBRATION.json) even when the literature budgets carry an older DFT "
+                         "calibration; then re-export the literature release and build again without this flag")
     a = ap.parse_args(argv)
     out = os.path.join(a.data, NAME)
     pub, alias, papers, lindex = published(os.path.join(a.data, "literature"))
@@ -2874,7 +2879,8 @@ def main(argv=None):
     C["uncal_md"] = open(os.path.join(a.data, "literature", "UNCERTAINTY_CALIBRATION.md"), "rb").read()
     pairs, dp = calibration_pairs(a.data, pub)
     D = build_dft(a.data, pub, papers, pairs)
-    check_dft_calibration(ucal, D["calibration"])
+    if not a.first_pass:
+        check_dft_calibration(ucal, D["calibration"])
     P = phase_constraints(C, D, a.data, pub)
     dp_release = "dft_parity.json inputs literature sha256 %s" % ((dp.get("inputs") or {}).get("literature") or {}).get("sha256")
     alld = dict(C["datasets"])

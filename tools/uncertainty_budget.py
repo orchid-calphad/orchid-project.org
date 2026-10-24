@@ -32,7 +32,7 @@ counted once, as one measurement re-listed), all pairs within the same method cl
 1.4826 x median|d| / sqrt(2) (pairs of zero-mean differences), 95 % percentile bootstrap over states (N_BOOT,
 fixed seed). Floor = the robust sigma rounded up to the value type's step, never below the minimum (ESPEI's
 experimental default sigma where ESPEI has one: 0.5 kJ/mol-atom, 0.2 J/K/mol-atom). Fewer than MIN_PAIRS pairs or
-MIN_STATES states but at least MIN_PAIRS_CLEANED independent pairs (PI rule 2026-10-24): floor = max(documented prior,
+MIN_STATES states but at least MIN_PAIRS_CLEANED independent pairs from MIN_STATES_CLEANED states (PI rule 2026-10-24): floor = max(documented prior,
 cleaned robust sigma), basis cleaned_below_threshold (n, sigma and CI recorded). Fewer pairs: the documented prior
 (PRIORS, basis prior). Printed values and printed uncertainties are never altered.
 
@@ -65,6 +65,8 @@ ESPEI_COPY = "espei/experimental/CALIBRATION_EXPERIMENT.json"
 DFT_CALIBRATION_FILE = "espei/dft/CALIBRATION.json"
 MIN_PAIRS = 20
 MIN_STATES = 10            # a calibrated floor needs pairs from at least this many distinct states
+MIN_STATES_CLEANED = 3     # ... and the pairs must come from >= 3 states (pairs of one state are not independent
+#                            estimates of a method scatter: one disputed state would set the whole class floor)
 MIN_PAIRS_CLEANED = 5      # PI rule (2026-10-24): below the calibration threshold but with >= 5 independent pairs, the
 #                            floor is max(documented prior, cleaned robust sigma), basis cleaned_below_threshold
 BASIS_RATIO_TOL = 0.03     # a pair whose ratio is within 3 % of the formula's atom count is a per-formula / per-atom
@@ -749,7 +751,7 @@ def calibrate(records, dft_calibration=None):
                 continue
             for key, v in state_keys(r, vt):
                 (exp if ev == "experimental" else mod)[vt][key].append((source_identity(r), v, mc, r["id"]))
-    out = {"version": VERSION, "min_pairs": MIN_PAIRS, "min_states": MIN_STATES, "min_pairs_cleaned": MIN_PAIRS_CLEANED, "n_boot": N_BOOT, "seed": SEED,
+    out = {"version": VERSION, "min_pairs": MIN_PAIRS, "min_states": MIN_STATES, "min_pairs_cleaned": MIN_PAIRS_CLEANED, "min_states_cleaned": MIN_STATES_CLEANED, "n_boot": N_BOOT, "seed": SEED,
            "estimator": "robust sigma = 1.4826 x median|d| / sqrt(2) over pairs of independent same-class "
                         "measurements of one state (zero-mean differences); 95 % percentile bootstrap over states",
            "independence": "one value per primary source and state (origin.measured_in, else the single cited source, "
@@ -815,14 +817,14 @@ def calibrate(records, dft_calibration=None):
                           "sigma_robust_unweighted": round(robust_pair_sigma(d), 6),
                           "median_abs_diff": round(median([abs(x) for x in d]), 6),
                           "floor": max(ceil_step(s, step), mn)})
-            elif len(d) >= MIN_PAIRS_CLEANED:
+            elif len(d) >= MIN_PAIRS_CLEANED and len(cl) >= MIN_STATES_CLEANED:
                 pv, src = PRIORS[vt].get(c) or PRIORS[vt]["*"]
                 s = robust_state_sigma(cl)
                 ci = boot_ci(cl, robust_state_sigma, SEED + len(d))
                 e.update({"basis": "cleaned_below_threshold", "prior_source": src, "prior": pv,
                           "why": "%d pairs from %d states (below the >= %d pairs / >= %d states calibration rule, "
-                                 ">= %d pairs): floor = max(documented prior, cleaned robust sigma)"
-                                 % (len(d), len(cl), MIN_PAIRS, MIN_STATES, MIN_PAIRS_CLEANED),
+                                 ">= %d pairs from >= %d states): floor = max(documented prior, cleaned robust sigma)"
+                                 % (len(d), len(cl), MIN_PAIRS, MIN_STATES, MIN_PAIRS_CLEANED, MIN_STATES_CLEANED),
                           "sigma_robust": round(s, 6), "ci95": ci,
                           "floor": max(pv, ceil_step(s, step), mn)})
             else:
@@ -866,7 +868,7 @@ def calibrate(records, dft_calibration=None):
                                 "estimator": "1.4826 x median|model - experiment| over states with both (includes the "
                                              "experimental error; conservative); the models were often fitted to "
                                              "these experiments, so it is a lower bound of the model's error"}
-        elif vt in MODEL_CALIBRATED and len(d) >= MIN_PAIRS_CLEANED:
+        elif vt in MODEL_CALIBRATED and len(d) >= MIN_PAIRS_CLEANED and len(md) >= MIN_STATES_CLEANED:
             s = est(md)
             out["model"][vt] = {"basis": "cleaned_below_threshold", "n_pairs": len(d), "n_states": len(md),
                                 "sigma_robust": round(s, 6), "ci95": boot_ci(md, est, SEED + 7 + len(d)),
