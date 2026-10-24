@@ -339,7 +339,10 @@ def parity_schema(pa):
         ("method_class", s), ("method", s), ("temperature_K", f), ("record_kind", s), ("paper_id", s),
         ("page", pa.int32()), ("table", s), ("quote", s), ("cited_dois", L(s)), ("default_subset", b),
         ("dft_release", s), ("quality_fix", s), ("unit_basis", s), ("basis_inferred_from_magnitude", b),
-        ("chemical_system", s), ("fold_lso", pa.int32()), ("fold_lpo", pa.int32())])
+        ("chemical_system", s), ("fold_lso", pa.int32()), ("fold_lpo", pa.int32()),
+        ("ehull_upstream_kJ_per_mol_atom", f), ("dft_structure_match", s), ("structure_designators", L(s)),
+        ("dft_ground_state_id", s), ("x_offset_measured", f), ("sigma_composition_kJ_per_mol_atom", f),
+        ("excluded_from_default_by", L(s))])
 
 
 def pd_index_schema(pa):
@@ -427,8 +430,9 @@ def build_tables(data, pa):
     drow = []
     for pt in par["points"]:
         r = par["records"][pt["rid"]]
-        default = (r["ev"] == "experimental" and r["acc"] and not r["unsigned"] and not r["sign_lost"]
-                   and "magnitude_suspect" not in (r.get("suspect") or []))
+        default = (pt["default"] if "default" in pt else
+                   (r["ev"] == "experimental" and r["acc"] and not r["unsigned"] and not r["sign_lost"]
+                    and "magnitude_suspect" not in (r.get("suspect") or [])))
         drow.append({
             "record_id": pt["rid"], "dft_source": pt["src"], "system": r["sys"], "elements": r["elements"],
             "formula": r["formula"], "phase_label": r["phase"],
@@ -446,8 +450,15 @@ def build_tables(data, pa):
             "cited_dois": sorted({c["doi"] for c in r["cited"] if c.get("doi")}), "default_subset": default,
             "dft_release": rel.get(pt["src"]), "quality_fix": r.get("qfix"), "unit_basis": r.get("basis"),
             "basis_inferred_from_magnitude": bool(r.get("basis_inferred")),
-            "chemical_system": ml_folds.chemical_system(r["elements"]),
-            "fold_lso": ml_folds.fold(ml_folds.chemical_system(r["elements"])), "fold_lpo": ml_folds.fold(r["paper"])})
+            # the literature record's own ML keys (audit A1 C5: one fold per record_id in both tables)
+            "chemical_system": r.get("chemical_system") or r["sys"],
+            "fold_lso": r["fold_lso"] if r.get("fold_lso") is not None else ml_folds.fold(r.get("chemical_system") or r["sys"]),
+            "fold_lpo": r["fold_lpo"] if r.get("fold_lpo") is not None else ml_folds.fold(r["paper"]),
+            "ehull_upstream_kJ_per_mol_atom": fnum(pt.get("ehull_upstream")),
+            "dft_structure_match": pt.get("smatch"), "structure_designators": sorted(r.get("designators") or []),
+            "dft_ground_state_id": pt.get("ground_id"), "x_offset_measured": fnum(r.get("dx_measured")),
+            "sigma_composition_kJ_per_mol_atom": fnum(pt.get("sigma_comp")),
+            "excluded_from_default_by": [str(x) for x in pt.get("excluded_by") or []]})
     drow.sort(key=lambda x: (x["system"], x["record_id"], x["dft_source"]))
     tables["dft_parity"] = (drow, parity_schema(pa))
 
@@ -510,7 +521,7 @@ def build_tables(data, pa):
                         "collinear": v.get("collinear"),
                         "degenerate_ids": [d.get("phase") for d in v.get("degenerate") or []],
                         "is_endpoint": fnum(v.get("x")) in (0.0, 1.0), "reference_kind": ref.get("kind"),
-                        "release": pv.get("mp_release"), "thermo_type": pv.get("thermo_type"),
+                        "release": pv.get("source_release", pv.get("mp_release")), "thermo_type": pv.get("thermo_type"),
                         "entry_pool": pv.get("entry_pool"), "snapshot_sha256": pv.get("snapshot_sha256")})
     hrow.sort(key=lambda x: (x["system"], x["source"], x["x"], x["material_id"] or ""))
     tables["hull_vertices"] = (hrow, hull_schema(pa))

@@ -110,6 +110,7 @@ references and are shown side by side, never averaged. Hover or tap a point for 
   <label><input type="checkbox" id="facc" checked> accepted extractions only</label>
   <label title="Values printed without a minus sign (magnitudes by the paper's convention); drawn hollow"><input type="checkbox" id="funs"> include unsigned-in-print</label>
   <label title="Values flagged magnitude_suspect by the extraction checks (often a per-formula value labelled per atom); drawn hollow"><input type="checkbox" id="fmag"> include magnitude-suspect</label>
+  <label title="Points kept out of the default subset by the pairing: the printed structure (e.g. B2, C14) has no entry of that space group in the DFT source, the measured composition is more than 0.02 from the compound, or an experimental value is stored at 0 K; drawn hollow"><input type="checkbox" id="fpex"> include structure-unmatched / off-stoichiometric</label>
   <label><input type="checkbox" id="fmed"> median per compound</label>
   <label>Elements <input type="search" id="fel" placeholder="e.g. Al, Ni" aria-label="Element filter (contains all)" style="width:9em"></label>
   <label>Axes <select id="frange"><option value="-200,50">−200 to 50</option><option value="-100,20">−100 to 20</option><option value="-60,10">−60 to 10</option><option value="auto">all points</option></select></label>
@@ -235,12 +236,12 @@ function buildCredits(){const c=$("credits");c.replaceChildren();
 
 function filters(){const on=sel=>new Set([...document.querySelectorAll(sel)].filter(x=>x.checked).map(x=>x.dataset[Object.keys(x.dataset)[0]]));
   const els=$("fel").value.split(/[\s,;\-–+]+/).filter(Boolean).map(e=>e.charAt(0).toUpperCase()+e.slice(1).toLowerCase());
-  return {ev:on("input[data-ev]"),m:on("input[data-m]"),c:on("input[data-c]"),acc:$("facc").checked,uns:$("funs").checked,mag:$("fmag").checked,med:$("fmed").checked,els};}
+  return {ev:on("input[data-ev]"),m:on("input[data-m]"),c:on("input[data-c]"),acc:$("facc").checked,uns:$("funs").checked,mag:$("fmag").checked,pex:$("fpex").checked,med:$("fmed").checked,els};}
 function pass(r,F){const mag=(r.suspect||[]).includes("magnitude_suspect");
   return F.ev.has(r.ev)&&F.m.has(r.mcls)&&F.c.has(r.ccls)&&(!F.acc||r.acc)&&(F.uns||!(r.unsigned||r.sign_lost))&&(F.mag||!mag)&&F.els.every(e=>r.elements.includes(e));}
 function median(a){a=[...a].sort((x,y)=>x-y);const n=a.length;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;}
 function selectPoints(F){const out={mp:[],oqmd:[]};
-  D.points.forEach(p=>{const r=REC[p.rid];if(pass(r,F))out[p.src].push({p,r,lit:r.lit,dft:p.dft,hollow:r.unsigned||r.sign_lost||(r.suspect||[]).includes("magnitude_suspect"),ev:r.ev});});
+  D.points.forEach(p=>{const r=REC[p.rid];const pex=(p.excluded_by||[]).length>0;if(pass(r,F)&&(F.pex||!pex))out[p.src].push({p,r,lit:r.lit,dft:p.dft,hollow:r.unsigned||r.sign_lost||(r.suspect||[]).includes("magnitude_suspect")||pex,ev:r.ev});});
   if(F.med)SRC.forEach(k=>{const g=new Map();out[k].forEach(q=>{const key=q.r.formula;if(!g.has(key))g.set(key,[]);g.get(key).push(q);});
     out[k]=[...g.values()].map(v=>{const lits=v.map(q=>q.lit);const best=v.reduce((a,b)=>Math.abs(b.lit-median(lits))<Math.abs(a.lit-median(lits))?b:a);
       const evs=new Set(v.map(q=>q.ev));return {p:best.p,r:best.r,lit:median(lits),dft:v[0].dft,group:v,ev:evs.has("experimental")?"experimental":evs.has("model")?"model":"unspecified",hollow:v.every(q=>q.hollow)};});});
