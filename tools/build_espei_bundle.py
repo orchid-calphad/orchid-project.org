@@ -67,6 +67,7 @@ import export_literature_data as lit  # noqa: E402
 import orchid_cite  # noqa: E402
 import espei_constraints as ec  # noqa: E402
 import phase_rule as PR  # noqa: E402
+import uncertainty_budget as ub  # noqa: E402
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_ESPEI_PY = os.path.expanduser("~/.venvs/espei/bin/python")
@@ -255,7 +256,14 @@ def nvals_of(d):
 
 ESPEI_T_FLOOR = 298.15     # ESPEI filter_temperatures drops non-equilibrium values below 298.15 K
 STD_T_EQUIV = (298.0, 298.1, 298.2)
-WEIGHT_FLOOR_RULE = ("optional minimum-sigma policy (E6): sigma_eff = max(sigma, sigma_floor) with sigma_floor = "
+WEIGHT_FLOOR_SUPERSEDED = (
+    "superseded on 2026-10-24 (PI decision): the dataset weight now follows sigma_effective of the published "
+    "uncertainty budget (method-class floors calibrated from ORCHID, never below ESPEI's experimental default) by "
+    "default, so no opt-in is needed; this block keeps the former optional suggestion (sigma floor = ESPEI's "
+    "default) for comparison only")
+SIGMA_RULE_BUDGET = ("sigma_effective = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), "
+                     "scatter) (literature release `uncertainty_budget`; components kept per value in `budget`)")
+WEIGHT_FLOOR_RULE = ("former optional minimum-sigma policy (E6, superseded): sigma_eff = max(sigma, sigma_floor) with sigma_floor = "
                      "ESPEI's experimental default for the property (500 J/mol for enthalpies and for the chemical "
                      "potential of activities, 0.2 J/mol/K for entropies and heat capacities); suggested_weight = "
                      "min(weight, 1). The printed sigma is unchanged (orchid_uncertainty); use suggested_weight when "
@@ -588,8 +596,40 @@ def printed_sigma(rec, v_espei):
     return s, info
 
 
+def budget_of(rec, quantity="value"):
+    """The record's published uncertainty-budget entry for one quantity (literature release, tools/
+    uncertainty_budget.py), or None."""
+    return ((rec.get("uncertainty_budget") or {}).get("quantities") or {}).get(quantity)
+
+
+BUDGET_KEYS = ("sigma_printed", "sigma_reading", "sigma_method", "sigma_composition", "sigma_scatter",
+               "sigma_conversion")
+
+
+def budget_in_units(q, fac, prop=None, T=None, v=None):
+    """Budget components (value only, plus method class / basis / n / entry) converted to the ESPEI value's units by
+    `fac` (record unit -> ESPEI unit); activities: also the chemical-potential equivalent sigma_mu = R T sigma_a / a."""
+    out = {}
+    for k in BUDGET_KEYS + ("sigma_effective",):
+        c = q.get(k)
+        x = c if k == "sigma_effective" else (c or {}).get("value") if isinstance(c, dict) else None
+        out[k] = rnd(x * fac, 6) if isinstance(x, (int, float)) else None
+        if prop == "ACR" and isinstance(x, (int, float)) and T and v:
+            out[k + "_mu_J_per_mol"] = rnd(R_GAS * T * x / abs(v), 6)
+    m = q.get("sigma_method") or {}
+    out["method_class"] = m.get("class")
+    out["method_basis"] = m.get("basis")
+    out["method_n_pairs"] = m.get("n_pairs")
+    out["method_entry"] = m.get("entry")
+    if q.get("sigma_effective") is None:
+        out["sigma_effective_reason"] = q.get("sigma_effective_reason")
+    return out
+
+
 def uncertainty_block(out, recs, cls, zpf, T):
-    """Per-value sigma (physical units), basis, weight; returns (dataset weight or None, block, tags, summary)."""
+    """Per-value uncertainty budget (physical units), basis, weight; returns (dataset weight or None, block, tags,
+    summary). The weight follows sigma_effective of the published uncertainty budget (method floors; PI decision
+    2026-10-24); the printed sigma and every component are kept per value."""
     output = out["output"]
     unit = value_unit(output)
     tags = []
@@ -603,85 +643,100 @@ def uncertainty_block(out, recs, cls, zpf, T):
                 e["temperature_sigma_K"] = tu["value"]
                 e["temperature_sigma_basis"] = tu["basis"] + (" (coverage not stated, taken as 1 sigma)"
                                                               if tu["basis"] == "printed" else " (half-width)")
+            qt = budget_of(r, "value") if r.get("property") in ("INVARIANT_TEMPERATURE", "TRANSITION_TEMPERATURE") \
+                else budget_of(r, "temperature_K")
+            qx = budget_of(r, "composition")
+            e["budget"] = {"temperature_K": budget_in_units(qt, 1.0) if qt else None,
+                           "composition_mole_fraction": budget_in_units(qx, 1.0) if qx else None}
             vals.append(e)
-        return None, {"unit": "K (temperature only)", "values": vals,
-                      "weight_rule": "none: ZPF scale is ESPEI's driving-force tolerance; weight left at 1"}, tags, \
+        return None, {"unit": "K (temperature), mole fraction (composition)", "values": vals,
+                      "weight_rule": "none: ZPF scale is ESPEI's driving-force tolerance; weight left at 1 (the "
+                                     "temperature and composition budgets are information for the user)"}, tags, \
             {"basis_counts": {"zpf": len(vals)}, "sigmas": []}
     prop = prop_of(output)
     default = ESPEI_DEFAULT_SIGMA.get(prop)
+    dsig = default if default is not None else ESPEI_FALLBACK_SIGMA
     vflat = flat_values(out)
-    vals, sig_eff, basis_counts, sigmas = [], [], Counter(), []
+    vals, sig_eff, sig_old, basis_counts, sigmas = [], [], [], Counter(), []
+    Tc = out["conditions"].get("T")
     for (oid, r), v in zip(recs, vflat):
-        if cls == "model":
-            s, info = printed_sigma(r, v)
-            e = {"sigma": None, "sigma_basis": "none (model-calculated; no measurement uncertainty)"}
-            if info:
-                e["printed_uncertainty_not_used"] = info
-            basis_counts["none_model"] += 1
-            vals.append(e)
-            continue
+        fac = unit_factor(r.get("unit")) if prop != "ACR" else 1.0
+        q = budget_of(r)
+        if q is None:
+            raise SystemExit("published record without an uncertainty budget: %s (re-export the literature release)"
+                             % r["id"])
+        Tv = Tc if not isinstance(Tc, list) else None
+        bud = budget_in_units(q, fac, prop, Tv, v)
         s, info = printed_sigma(r, v)
-        if prop == "ACR" and s is not None:
-            Tv = out["conditions"]["T"]
-            s_mu = R_GAS * Tv * s / abs(v) if v else None
-            e = {"sigma": rnd(s, 6), "sigma_basis": "printed", "printed": info,
-                 "sigma_mu_J_per_mol": rnd(s_mu, 6) if s_mu else None}
-            if s_mu:
-                sig_eff.append(s_mu)
-            basis_counts["printed"] += 1
-            sigmas.append(s)
+        e = {"sigma": rnd(s, 6) if s is not None else None, "sigma_basis": "printed" if s is not None else
+             "not printed", "budget": bud}
+        if info:
+            e["printed"] = info
+        if prop == "ACR":
+            se = bud.get("sigma_effective_mu_J_per_mol")
+            if s is not None and v:
+                e["sigma_mu_J_per_mol"] = rnd(R_GAS * Tv * s / abs(v), 6) if Tv else None
+        else:
+            se = bud.get("sigma_effective")
+        if se is None:
+            se = default
+            e["sigma_effective_used"] = default
+            e["sigma_effective_note"] = ("no sigma_effective in the budget (%s): ESPEI's experimental default used"
+                                         % bud.get("sigma_effective_reason")) if default is not None else None
+        else:
+            e["sigma_effective_used"] = se
+        if se is not None:
+            sig_eff.append(se)
+        # the superseded rule (2026-10-23): printed sigma, the default below a tenth of it or when none was printed
+        old = (e.get("sigma_mu_J_per_mol") if prop == "ACR" else s)
+        if old is not None and default is not None and prop != "ACR" and old < SIGMA_RESOLUTION_FRACTION * default:
+            old = default
+        if old is None:
+            old = default
+        if old is not None:
+            sig_old.append(old)
+        new = e.get("sigma_effective_used")
+        if old is not None and new is not None:
+            basis_counts["sigma_raised_vs_before"] += 1 if new > old * (1 + 1e-9) else 0
+            basis_counts["sigma_lowered_vs_before"] += 1 if new < old * (1 - 1e-9) else 0
+        pr = e.get("sigma_mu_J_per_mol") if prop == "ACR" else s
+        if pr is not None and new is not None and new > pr * (1 + 1e-9):
+            basis_counts["sigma_effective_above_printed"] += 1
+        if cls == "model":
+            basis_counts["model_budget"] += 1
         elif s is not None:
-            e = {"sigma": rnd(s, 6), "sigma_basis": "printed", "printed": info}
-            if default is not None and s < SIGMA_RESOLUTION_FRACTION * default:
-                # a printed sigma below a tenth of ESPEI's experimental default is below any calorimetric
-                # resolution (e.g. +-0.011 kJ/mol): the weight uses the default instead (printed sigma kept)
-                e["sigma_floor_applied"] = {"sigma_used": default, "rule": SIGMA_FLOOR_RULE}
-                sig_eff.append(default)
-                basis_counts["printed_below_resolution_floor"] += 1
-            else:
-                sig_eff.append(s)
             basis_counts["printed"] += 1
             sigmas.append(s)
         else:
-            e = {"sigma": None, "sigma_printed": None}
-            if default is not None:
-                e["sigma_assumed"] = default
-                e["sigma_basis"] = "espei_default_experimental (assumed, not printed)"
-                sig_eff.append(default)
-            else:
-                e["sigma_assumed"] = None
-                e["sigma_basis"] = ("none (not printed; ESPEI has no experimental default for %s, its code uses "
-                                    "sigma = %g)" % (prop, ESPEI_FALLBACK_SIGMA))
-            basis_counts["none_assumed_default" if default is not None else "none"] += 1
+            basis_counts["not_printed_method_floor"] += 1
+        basis_counts["method_" + str(bud.get("method_basis"))] += 1
         vals.append(e)
-    weight, rule = None, None
-    dsig = default if default is not None else ESPEI_FALLBACK_SIGMA
     dname = ("ESPEI experimental default sigma_%s = %g %s" % (prop, dsig, "J/mol" if prop in ("HM", "ACR") else
                                                              "J/mol/K") if default is not None else
              "ESPEI fallback sigma = %g (no default for %s)" % (dsig, prop))
+    m = median(sig_eff) if sig_eff else None
+    weight = round(dsig / m, 6) if m else None
+    rule = ("dataset weight = %s / median sigma_effective of the dataset's values (uncertainty budget of the "
+            "published values: max(printed, reading, method floor) with composition / conversion in quadrature, "
+            "group scatter when larger%s); ESPEI 0.9.1 %s data take one weight per dataset"
+            % (dname, "; activities: sigma_mu = R T sigma_a / a" if prop == "ACR" else "",
+               "non-equilibrium" if out.get("solver") else "equilibrium/activity"))
     if cls == "model":
-        weight = 1.0
-        rule = ("weight 1 only because ESPEI needs a value; model-calculated values have no measurement "
-                "uncertainty: choose your own weight or exclude them with the `model` tag")
         tags.append("model")
-    elif basis_counts["printed"]:
-        m = median(sig_eff)
-        weight = round(dsig / m, 6) if m else None
-        rule = ("dataset weight = %s / median sigma of the dataset's values (printed sigma; assumed default where "
-                "none was printed%s); ESPEI 0.9.1 equilibrium%s data take one weight per dataset"
-                % (dname, "; activities: sigma_mu = R T sigma_a / a" if prop == "ACR" else "",
-                   "/activity" if prop == "ACR" else ""))
-        for e in vals:
-            ref = e.get("sigma_mu_J_per_mol") if prop == "ACR" else (e.get("sigma") or e.get("sigma_assumed"))
-            e["weight_per_value_equivalent"] = round(dsig / ref, 6) if ref else None
-    else:
-        weight = None
-        rule = "no printed uncertainty: weight left at 1 (ESPEI default)"
+        rule += ("; model-calculated values: sigma_method is the model class's deviation from experiment (or its "
+                 "prior), not a measurement uncertainty; exclude them with the `model` tag if you prefer")
+    if not basis_counts["printed"] and cls != "model":
         tags.append("no_printed_uncertainty")
     for e in vals:
+        ref = e.get("sigma_effective_used")
+        e["weight_per_value_equivalent"] = round(dsig / ref, 6) if ref else None
         e["weight_used"] = weight if weight is not None else 1.0
-    block = {"unit": unit, "default_sigma": {"value": dsig, "name": dname}, "weight_rule": rule, "values": vals}
-    return weight, block, tags, {"basis_counts": dict(basis_counts), "sigmas": sigmas}
+    mo = median(sig_old) if sig_old else None
+    old_w = round(dsig / mo, 6) if mo and (cls != "model") and (basis_counts["printed"]) else 1.0
+    block = {"unit": unit, "default_sigma": {"value": dsig, "name": dname}, "weight_rule": rule,
+             "sigma_rule": SIGMA_RULE_BUDGET, "values": vals}
+    return weight, block, tags, {"basis_counts": dict(basis_counts), "sigmas": sigmas, "sigma_effective": sig_eff,
+                                 "weight_superseded": old_w}
 
 
 # ------------------------------------------------------------------------------------------- corpus datasets --
@@ -1125,14 +1180,18 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 out["orchid_uncertainty"] = ublock
                 if d["output"].startswith("ACR"):                                                         # E5
                     acr_reference_state(out, recs, src_rel, res)
-                if not zpf and cls != "model" and ESPEI_DEFAULT_SIGMA.get(prop_of(d["output"])):         # E6
+                if not zpf and ESPEI_DEFAULT_SIGMA.get(prop_of(d["output"])):                            # E6
                     w = weight if weight is not None else 1.0
+                    ow = ustat.get("weight_superseded", 1.0)
                     out["orchid_weight_floor"] = {
-                        "suggested_weight": round(min(w, 1.0), 6), "weight_written": w, "changes_weight": w > 1.0,
+                        "superseded": WEIGHT_FLOOR_SUPERSEDED, "suggested_weight": round(min(ow, 1.0), 6),
+                        "weight_before_2026_10_24": ow, "weight_written": w,
                         "sigma_floor": ESPEI_DEFAULT_SIGMA[prop_of(d["output"])],
                         "sigma_floor_unit": "J/mol" if prop_of(d["output"]) in ("HM", "ACR") else "J/mol/K",
                         "rule": WEIGHT_FLOOR_RULE}
-                    res["e6"][w > 1.0] += 1
+                    res["e6"]["lower" if w < ow * (1 - 1e-9) else "higher" if w > ow * (1 + 1e-9) else "same"] += 1
+                    res["e6"][("lower" if w < ow * (1 - 1e-9) else "higher" if w > ow * (1 + 1e-9) else "same")
+                              + ":" + cls] += 1
                 if not zpf:
                     out["orchid_phase_assignment"] = g["assignment"]
                 if g["kind"] == "compound_endmember":
@@ -1173,6 +1232,7 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
 def row(rel, folder, syst, out, nvals, ndrop, tmin, tmax, cls, dois, pids, ids, ra_counts, ra_src, caveats,
         tdb=None, sha=None, link=None, ev=None, src=None, weight=None, ustat=None, unit=None, calib=None):
     s = (ustat or {}).get("sigmas") or []
+    se = (ustat or {}).get("sigma_effective") or []
     return {
         "path": rel, "folder": folder, "system": syst, "components": out["components"], "output": out["output"],
         "phases": out["phases"], "n_values": nvals, "n_values_dropped": ndrop, "T_min_K": tmin, "T_max_K": tmax,
@@ -1181,6 +1241,7 @@ def row(rel, folder, syst, out, nvals, ndrop, tmin, tmax, cls, dois, pids, ids, 
         "caveats": caveats, "tags": out["tags"], "weight": out.get("weight") if not isinstance(out.get("weight"), list)
         else "per_value", "sigma_unit": unit, "sigma_min": rnd(min(s), 6) if s else None,
         "sigma_median": rnd(median(s), 6) if s else None, "sigma_max": rnd(max(s), 6) if s else None,
+        "sigma_effective_median": rnd(median(se), 6) if se else None,
         "sigma_basis_counts": (ustat or {}).get("basis_counts") or {}, "dft_calibration_stratum": calib,
         "tdb": tdb, "tdb_sha256": sha, "model_link_basis": link,
         "espei_median_abs_driving_force_J": (ev or {}).get("median_abs_driving_force_J"), "source_dataset": src,
@@ -1510,6 +1571,12 @@ def build_dft(data, pub, papers, pairs):
                                    "conversion that makes ESPEI use the calibrated sigma; 500 J/mol is not a DFT "
                                    "uncertainty",
                  "dft_value_printed": it["printed"], "id": it["id"], "compound": it["compound"]}
+            e["budget"] = {"sigma_printed": None, "sigma_reading": None, "sigma_method": e["sigma"],
+                           "sigma_composition": None, "sigma_scatter": None, "sigma_conversion": None,
+                           "sigma_effective": e["sigma"], "method_class": "dft_" + src,
+                           "method_basis": "calibrated (leave-system-out robust sigma of DFT - experiment)",
+                           "method_n_pairs": L["n"], "method_entry": "dft/CALIBRATION.json#lso/%s|%s|%s"
+                                                                     % (src, sk, sid)}
             unc_vals.append(e)
         tags = ["dft_" + src, "orchid"]
         if any(it.get("match") == "polymorph_ambiguous" for it, _, _, _ in lst):
@@ -1567,7 +1634,8 @@ def build_dft(data, pub, papers, pairs):
                                    "calibrated DFT sigma into an ESPEI weight)"},
                                    "weight_rule": "weight per value = 500 J/mol / calibrated sigma_DFT (leave-system-"
                                                   "out robust sigma of the value's stratum; bias recorded, not "
-                                                  "applied)", "values": unc_vals},
+                                                  "applied)", "sigma_rule": SIGMA_RULE_BUDGET + "; DFT: sigma_method "
+                                                  "= calibrated sigma_DFT, no printed sigma", "values": unc_vals},
         }
         ds["orchid"] = {k: v for k, v in ds["orchid"].items() if v is not None}
         folder = "dft/" + src
@@ -1576,7 +1644,7 @@ def build_dft(data, pub, papers, pairs):
         sig = [e["sigma"] for e in unc_vals if e["sigma"]]
         rows[rel] = row(rel, folder, sid, ds, len(vals), 0, 298.15, 298.15, "dft", dois, pids, ids, {},
                         "not_applicable", sorted({c for it, _, _, _ in lst for c in it.get("caveats") or []}),
-                        tdb=tdb, sha=m["sha256"], link="registry", src=src, ustat={"sigmas": sig,
+                        tdb=tdb, sha=m["sha256"], link="registry", src=src, ustat={"sigmas": sig, "sigma_effective": sig,
                         "basis_counts": {"dft_calibrated": len(sig)}}, unit="J/mol-atom",
                         calib=";".join(sorted(set(strata))))
     return {"datasets": datasets, "rows": rows, "excluded": excluded, "calibration": cal, "papers": used_papers,
@@ -1736,8 +1804,12 @@ def validation_md(S, val, C, D, release):
                   "listed for correction", "%d / %d / %d" % (fx["E5_activity_datasets_audited"],
                                                               fx["E5_reference_state_changed"],
                                                               fx["E5_records_disagreeing_with_paper"])],
-                 ["E6", "thermochemical datasets with a minimum-sigma weight suggestion / where it changes the weight",
-                  "%d / %d" % (fx["E6_datasets_with_floor_suggestion"], fx["E6_datasets_where_floor_changes_weight"])]],
+                 ["E6", "thermochemical datasets whose weight follows sigma_effective (method floors, 2026-10-24): "
+                  "weight lower / higher / unchanged vs 2026-10-23", "%d: %d / %d / %d" % (
+                      fx["E6_weights_from_sigma_effective"]["datasets"],
+                      fx["E6_weights_from_sigma_effective"]["weight_lower_than_before"],
+                      fx["E6_weights_from_sigma_effective"]["weight_higher_than_before"],
+                      fx["E6_weights_from_sigma_effective"]["weight_unchanged"])]],
                 [("fix", 0), ("what", 0), ("count", 1)]), "",
           "Records to correct in the literature release: UPSTREAM_CORRECTIONS.md.", "",
           "## Phase constraints (optional)", "",
@@ -1776,22 +1848,32 @@ def validation_md(S, val, C, D, release):
           "## Self-check against the corpus ESPEI evaluation", "",
           "%d invariant ZPF datasets carry the corpus driving-force evaluation against their assessment "
           "(`orchid.espei_evaluation`; only datasets kept unchanged)." % S["datasets_with_espei_evaluation"], ""]
+    L += ["## Uncertainty budget and method floors (2026-10-24)", "",
+          "Weights follow sigma_effective = max(sqrt(max(printed, reading, method)^2 + composition^2 + "
+          "conversion^2), scatter) of the published uncertainty budgets (README.md, 'Uncertainties'); calibration "
+          "`%s` (experimental/CALIBRATION_EXPERIMENT.json, a byte copy of the literature release's "
+          "UNCERTAINTY_CALIBRATION.json). Calibrated floors (>= 20 pairs from >= 10 states):"
+          % ub.calibration_id(C["uncal"]), ""] + ub.floor_table(C["uncal"], only_calibrated=True) + [
+          "", "Values per folder and output (sigma_effective in ESPEI units):", "",
+          table(sigma_table(sigma_rows(C, D)), SIGMA_COLS), ""]
     return "\n".join(L) + "\n"
 
 
 def sigma_table(rows_iter):
-    """rows of (folder, output, basis_counts, sigmas) -> summary table rows."""
-    agg = defaultdict(lambda: [Counter(), []])
-    for folder, output, bc, sig in rows_iter:
+    """rows of (folder, output, basis_counts, sigma_effective list) -> summary table rows."""
+    agg = defaultdict(lambda: [Counter(), [], 0])
+    for folder, output, bc, sig, n in rows_iter:
         a = agg[(folder, output)]
         a[0].update(bc)
         a[1].extend(sig)
+        a[2] += n
     out = []
     for (folder, output) in sorted(agg):
-        bc, sig = agg[(folder, output)]
-        n = sum(bc.values())
-        out.append([folder, output, n, bc.get("printed", 0), bc.get("dft_calibrated", 0),
-                    bc.get("none_assumed_default", 0), bc.get("none", 0), bc.get("none_model", 0), bc.get("zpf", 0),
+        bc, sig, n = agg[(folder, output)]
+        out.append([folder, output, n, bc.get("printed", 0), bc.get("not_printed_method_floor", 0),
+                    bc.get("model_budget", 0), bc.get("dft_calibrated", 0), bc.get("zpf", 0),
+                    bc.get("method_calibrated", 0), bc.get("method_prior", 0),
+                    bc.get("sigma_effective_above_printed", 0), bc.get("sigma_raised_vs_before", 0),
                     value_unit(output) if output != "ZPF" else "",
                     rnd(min(sig), 4) if sig else "", rnd(quantile(sig, .25), 4) if sig else "",
                     rnd(median(sig), 4) if sig else "", rnd(quantile(sig, .75), 4) if sig else "",
@@ -1799,22 +1881,36 @@ def sigma_table(rows_iter):
     return out
 
 
-def uncertainty_md(C, D):
-    rows = [(f, o, s["basis_counts"], s["sigmas"]) for f, o, s in C["sigma_stats"]]
+def sigma_rows(C, D):
+    rows = [(f, o, s["basis_counts"], s.get("sigma_effective") or [],
+             sum(v for k, v in s["basis_counts"].items() if k in ("printed", "not_printed_method_floor",
+                                                                   "model_budget", "zpf")))
+            for f, o, s in C["sigma_stats"]]
     rows += [(r["folder"], r["output"], r["sigma_basis_counts"],
-              [e["sigma"] for e in D["datasets"][r["path"]]["orchid_uncertainty"]["values"] if e["sigma"]])
-             for r in D["rows"].values()]
-    T = sigma_table(rows)
+              [e["sigma"] for e in D["datasets"][r["path"]]["orchid_uncertainty"]["values"] if e["sigma"]],
+              r["n_values"]) for r in D["rows"].values()]
+    return rows
+
+
+SIGMA_COLS = [("folder", 0), ("output", 0), ("values", 1), ("printed sigma", 1), ("not printed (method floor)", 1),
+              ("model (budget)", 1), ("dft calibrated", 1), ("ZPF", 1), ("floor calibrated", 1), ("floor prior", 1),
+              ("sigma_eff > printed", 1), ("sigma raised vs 2026-10-23", 1), ("sigma unit", 0), ("min", 1),
+              ("q25", 1), ("median", 1), ("q75", 1), ("max", 1)]
+
+
+def uncertainty_md(C, D):
+    T = sigma_table(sigma_rows(C, D))
     return "\n".join([
         "# ORCHID ESPEI bundle: uncertainty summary", "",
-        "Per folder and output: how many values carry a printed uncertainty, a calibrated DFT sigma, ESPEI's assumed "
-        "experimental default (not printed), no sigma at all (no default exists, or model-calculated), or are ZPF "
-        "(driving-force tolerance). Sigma distributions are over values with a printed or calibrated sigma, in the "
-        "dataset's units (ESPEI units: J/mol-atom, J/mol-atom/K, activity). Rules: README.md, section "
-        "\"Uncertainties\".", "",
-        table(T, [("folder", 0), ("output", 0), ("values", 1), ("printed", 1), ("dft calibrated", 1),
-                  ("assumed ESPEI default", 1), ("none", 1), ("none (model)", 1), ("ZPF", 1), ("sigma unit", 0),
-                  ("min", 1), ("q25", 1), ("median", 1), ("q75", 1), ("max", 1)]), ""]) + "\n"
+        "Per folder and output: how many values carry a printed uncertainty, how many have none printed (the "
+        "method-class floor applies), model-calculated values (budget with the model-class component), calibrated "
+        "DFT sigmas, and ZPF values (driving-force tolerance); whether the method floor is calibrated from ORCHID or "
+        "a documented prior; how many values have sigma_effective above the printed sigma, and how many sigmas the "
+        "weights use are larger than under the rule of 2026-10-23 (printed sigma, ESPEI default where none or below "
+        "a tenth of it). Distributions are of sigma_effective (the sigma the weight uses), in ESPEI units (J/mol-atom, "
+        "J/mol-atom/K, activities: J/mol on the chemical potential). Rules: README.md, section \"Uncertainties\"; "
+        "floors: experimental/CALIBRATION_EXPERIMENT.md.", "",
+        table(T, SIGMA_COLS), ""]) + "\n"
 
 
 def calibration_md(cal, dp_release):
@@ -1935,22 +2031,26 @@ def readme(S, C, cite):
         "so ESPEI's `filter_temperatures` (non-equilibrium values below 298.15 K) removes nothing; a non-equilibrium "
         "value really below 298.15 K is left out and listed (`below_espei_temperature_floor`).",
         "- One published observation supplies at most one value per folder (`duplicate_of_other_dataset`).",
-        "- A printed sigma below 0.1 x ESPEI's experimental default (e.g. +-0.011 kJ/mol) is below any measurement "
-        "resolution: the dataset weight uses the default for that value (`sigma_floor_applied` in "
-        "`orchid_uncertainty`; the printed sigma is kept).",
+        "- Method-based uncertainty floors (PI decision 2026-10-24): every value's weight follows `sigma_effective` "
+        "of its published uncertainty budget, which is never below the method-class floor calibrated from ORCHID's "
+        "independent measurements (or a documented prior) and never below ESPEI's experimental default; printed "
+        "values and printed sigmas are unchanged. This replaces the former resolution floor (a printed sigma below "
+        "0.1 x the default used the default) and the opt-in `orchid_weight_floor` suggestion.",
         "- `experimental/MG-O/MgO-18Lia.zpf-00.json`, `invariants/PD-TI/PdTi-11Guo.zpf-00.json` and "
         "`invariants/AL-S/AlS-19Shi.zpf-01.json` are left out: "
         "their pycalphad driving-force evaluation is not reproducible (`pycalphad_evaluation_unstable`).",
         "- A compound whose independent measured formation enthalpies disagree by more than their printed sigmas "
         "carries a scatter-aware sigma (`uncertainty.basis = scatter_between_sources`, sample standard deviation of the "
-        "independent values; page-checked); the dataset weight uses it.",
+        "independent values; page-checked); it is the budget's `sigma_scatter` and replaces sigma_effective when larger.",
         "- A formation enthalpy that the source measured at the historical formula of a phase (e.g. Cu4Zr or Cu9Zr2 "
         "for Cu5Zr, Cu3Zr for Cu51Zr14, Cu3Zr2 for Cu10Zr7, as the source table itself attributes them) is used for "
-        "the modern phase with sigma = sqrt(sigma_printed^2 + (|dx| x local hull slope)^2) "
+        "the modern phase; the offset |dx| x local hull slope is the budget's `sigma_composition`, added in quadrature "
         "(`uncertainty.basis = printed_with_composition_offset`; the flag `stoichiometry_mismatch` stays, flag-only).",
         "- A value printed relative to a non-SER reference phase that the page states (e.g. bcc-Zr at 1123 K) is "
         "written converted to the TDB's SER phases at the same temperature with the SGTE unary lattice stability "
-        "(`orchid_value_note`; the record's `corrections` entry gives the conversion and keeps the printed value).", "",
+        "(`orchid_value_note`; the record's `corrections` entry gives the conversion and keeps the printed value); "
+        "the lattice-stability uncertainty is the budget's `sigma_conversion` (prior: 10 %% of the lattice stability "
+        "times x).", "",
         "## Phase assignment", "",
         PR.RULE_TEXT, "",
         "Every value's phase comes from its published literature record (printed label -> phase registry -> the "
@@ -1971,23 +2071,42 @@ def readme(S, C, cite):
         "ESPEI 0.9.1 has no per-value uncertainty field: the sigma it uses is a reference sigma divided by the "
         "dataset's `weight` (500 J/mol for HM, 0.2 J/K/mol for SM and CPM, 500 J/mol on the chemical potential for "
         "activities; ESPEI: \"estimated from NIST TRC uncertainties\", i.e. for experiments). Every value carries its "
-        "sigma in physical units in `orchid_uncertainty.values[]` (`sigma`, `sigma_basis`, printed text and coverage "
-        "or calibration provenance, `weight_used`). **Weights are derived from these sigmas; you can recompute your "
-        "own weights from them.**", "",
+        "**uncertainty budget** in `orchid_uncertainty.values[].budget`, in the dataset's units, with the components "
+        "kept separate so that you can recombine them: `sigma_printed` (as printed), `sigma_reading` (half of the "
+        "last printed digit), `sigma_method` (method-class floor, with `method_class`, `method_basis`, "
+        "`method_n_pairs`, `method_entry` into `experimental/CALIBRATION_EXPERIMENT.json`), `sigma_composition` "
+        "(value measured at a historical formula), `sigma_scatter` (page-checked mutually inconsistent group), "
+        "`sigma_conversion` (reference-state conversion) and `sigma_effective`. Printed printed values and sigmas are "
+        "never altered; the budget comes from the literature release (`uncertainty_budget`).", "",
+        "**Rule** (`sigma_rule`): sigma_effective = max( sqrt( max(sigma_printed, sigma_reading, sigma_method)^2 + "
+        "sigma_composition^2 + sigma_conversion^2 ), sigma_scatter ). The method floor is a between-study scatter, "
+        "so it already contains each study's statistical error: printed sigma and floor are not added in quadrature "
+        "(that would count the statistical part twice); the larger is used. Composition offset and conversion are "
+        "independent of the measurement and are added in quadrature; a group scatter replaces the result when "
+        "larger. **The weight written is ESPEI's reference sigma / median sigma_effective of the dataset, by "
+        "default** (the former opt-in `orchid_weight_floor.suggested_weight` is kept, marked superseded).", "",
+        "**Method floors** are calibrated from ORCHID itself, like the DFT sigma: for each value type and method "
+        "class, independent measurements of the same state from different primary sources (one value per source, "
+        "re-listings counted once), robust between-study sigma = 1.4826 x state-weighted median|d| / sqrt(2), "
+        "95 %% bootstrap CI over states; floor = that sigma rounded up, never below ESPEI's experimental default; "
+        "classes with fewer than 20 pairs or 10 states use a documented prior (`method_basis` prior). Floors used "
+        "for the outputs of this bundle (all value types: experimental/CALIBRATION_EXPERIMENT.md):", ""] + \
+        cal_table_bundle(C["uncal"]) + ["",
         "Which sigma applies to which data:", "",
-        table([["experimental, uncertainty printed", "printed (±x taken as 1 sigma: coverage is not printed with the "
-                "values; a printed range gives sigma = half-width, bounds kept)", "ESPEI default / median sigma of the "
-                "dataset (one weight per equilibrium dataset in ESPEI 0.9.1); per-value equivalents recorded"],
-               ["experimental, nothing printed", "`sigma_printed` null; `sigma_assumed` = ESPEI's experimental default "
-                "(500 J/mol, 0.2 J/K/mol), basis `espei_default_experimental (assumed, not printed)`; GM has no "
-                "default (null)", "1 (tag `no_printed_uncertainty`)"],
+        table([["experimental thermochemical", "uncertainty budget: max(printed, reading, method floor) (+ composition "
+                "/ conversion in quadrature; group scatter when larger)", "ESPEI default / median sigma_effective of "
+                "the dataset (one weight per dataset in ESPEI 0.9.1); per-value equivalents recorded"],
                ["DFT (literature, MP, OQMD)", "calibrated against experiment (dft/CALIBRATION.md): robust sigma of "
-                "the value's stratum, leave-system-out; bias recorded, not applied", "500 J/mol / sigma_DFT per value "
-                "(a conversion, not a claim that DFT is accurate to 500 J/mol)"],
-               ["model-calculated (model/)", "none (model-calculated; no measurement uncertainty)", "1 only because "
-                "ESPEI needs a value: **choose your own weight** or exclude with the `model` tag"],
-               ["ZPF (experimental/ ZPF, invariants/)", "none on the value; printed temperature uncertainty kept where "
-                "printed; ESPEI weighs ZPF by a driving-force tolerance", "1 (not set)"]],
+                "the value's stratum, leave-system-out, as `sigma_method`; bias recorded, not applied",
+                "500 J/mol / sigma_DFT per value (a conversion, not a claim that DFT is accurate to 500 J/mol)"],
+               ["model-calculated (model/)", "budget with `sigma_method` = the model class's robust deviation from "
+                "experiment (formation quantities) or a documented prior; not a measurement uncertainty",
+                "ESPEI default / median sigma_effective; exclude with the `model` tag if you prefer"],
+               ["ZPF (experimental/ ZPF, invariants/)", "temperature and composition budgets per region (printed, "
+                "method floor of the invariant / phase-composition class); ESPEI weighs ZPF by a driving-force "
+                "tolerance", "1 (not set)"],
+               ["phase constraints (assessed/, derived/)", "`orchid_uncertainty_budget` of the points (assessed: "
+                "digitisation, boundary margin, handbook class; derived: the offset rule)", "1 (not set)"]],
               [("data", 0), ("sigma", 0), ("ESPEI weight", 0)]), "",
         "Per folder and output: UNCERTAINTY_SUMMARY.md.", "",
         "## What each dataset carries", "",
@@ -2038,15 +2157,15 @@ def readme(S, C, cite):
         "the printed text. Literature records whose reference state differs are listed in UPSTREAM_CORRECTIONS.md; "
         "the published literature values are not changed here.",
         "- Values removed by the inclusion gate and datasets ESPEI rejects are listed in VALIDATION.md.", "",
-        "## Optional minimum-sigma policy (E6)", "",
-        "Printed uncertainties are kept as printed. Some are much smaller than the scatter between independent "
-        "measurements of the same quantity (e.g. formation enthalpies printed with ±80 J/mol-atom while other "
-        "measurements of the same compound differ by 1-2 kJ/mol-atom); with the weight derived from such a sigma a few "
-        "values can dominate a fit. Every experimental thermochemical dataset carries `orchid_weight_floor` "
-        "(`suggested_weight` = min(weight, 1), i.e. sigma_eff = max(sigma, ESPEI's experimental default)). The floor "
-        "changes the weight of %d of %d datasets. It is a suggestion, not applied: "
-        "`d['weight'] = d['orchid_weight_floor']['suggested_weight']` before `load_datasets` applies it." % (
-            fx["E6_datasets_where_floor_changes_weight"], fx["E6_datasets_with_floor_suggestion"]), "",
+        "## Former optional minimum-sigma policy (E6, superseded)", "",
+        "Until 2026-10-23 every experimental thermochemical dataset carried `orchid_weight_floor.suggested_weight` "
+        "(sigma floor = ESPEI's experimental default, 500 J/mol), which users had to opt into. Since 2026-10-24 the "
+        "written `weight` follows sigma_effective (method floors) by default. The block is kept, with `superseded`, "
+        "the former suggestion and `weight_before_2026_10_24`, for comparison: %d datasets, weight lower than before "
+        "in %d, higher in %d, unchanged in %d." % (
+            fx["E6_weights_from_sigma_effective"]["datasets"], fx["E6_weights_from_sigma_effective"]["weight_lower_than_before"],
+            fx["E6_weights_from_sigma_effective"]["weight_higher_than_before"],
+            fx["E6_weights_from_sigma_effective"]["weight_unchanged"]), "",
         "## Phase constraints (optional)", "",
         "ZPF data alone can let a refinement misfire: ESPEI 0.9.1 penalises a phase that should be present but is not, "
         "but gives no driving force for a liquid point at a line-compound composition once the compound is stable, so "
@@ -2113,7 +2232,8 @@ from `values` and the matching `conditions` entries.
 | `orchid_phase_assignment` | literature property datasets: `phases`, `basis` (counts: `printed_labels`, `caption_names_liquid`), `rule`, `outside_calculated_field[]` {id, phase, x, T_K} (flag only), `endmember` {tdb, path, sha256, phase, reference} for compound formation datasets |
 | `orchid_certification` | literature datasets: `basis` (`pycalphad_invariant_agreement`), `all_values_certified`, `n_certified`, `values[]` {id, espei_certified, calphad_check}; tag `calphad_certified` when all values are certified |
 | `orchid_reference_state` | activities (E5): `element`, `phase` written, `basis` (`printed` / `not_printed_implied`), `quote`, `where`, `record_reference_state_agrees`, `written_before_audit` |
-| `orchid_weight_floor` | experimental thermochemical data (E6, optional): `suggested_weight` = min(weight, 1), `weight_written`, `changes_weight`, `sigma_floor` (+ unit), `rule` |
+| `orchid_weight_floor` | thermochemical data (E6, **superseded** 2026-10-24): `superseded` (text), `suggested_weight` (the former opt-in suggestion), `weight_before_2026_10_24`, `weight_written` (from sigma_effective), `sigma_floor` (+ unit), `rule` |
+| `orchid_uncertainty_budget` | phase-constraint datasets (assessed/, derived/): per point, the temperature and composition budget (components as in `orchid_uncertainty.values[].budget`) |
 | `orchid_zpf_encoding` | ZPF (E2): number of line-compound vertices written with composition null, hyperplanes added, rule |
 | `orchid.observations[i].also_reported_as` | E3: the same ZPF region from other datasets (`id`, `paper`, `measured_in`, `dataset`) |
 | `orchid.observations[i].also_read_as` | E4: ids of the same printed row read again (not written as separate values) |
@@ -2123,18 +2243,19 @@ from `values` and the matching `conditions` entries.
 
 ## Uncertainties (`orchid_uncertainty`)
 
-`{unit, default_sigma {value, name}, weight_rule, values[]}`, one entry per value in value order:
+`{unit, default_sigma {value, name}, weight_rule, sigma_rule, values[]}`, one entry per value in value order:
 
 | field | meaning |
 |---|---|
-| `sigma` | the value's standard uncertainty in the dataset's units (`unit`), or `null` when none is available (never invented) |
-| `sigma_basis` | `printed`; `dft_calibrated`; `espei_default_experimental (assumed, not printed)`; `none (...)` with the reason (model-calculated; no ESPEI default); `zpf (...)` |
+| `sigma` | the printed standard uncertainty in the dataset's units (`unit`) (DFT: the calibrated sigma), or `null` when none was printed (never invented) |
+| `sigma_basis` | `printed`; `not printed`; `dft_calibrated`; `zpf (...)` |
+| `budget` | the uncertainty budget in the dataset's units: `sigma_printed`, `sigma_reading`, `sigma_method`, `sigma_composition`, `sigma_scatter`, `sigma_conversion`, `sigma_effective` (activities: also `*_mu_J_per_mol`), `method_class`, `method_basis` (calibrated / prior / calibrated vs experiment), `method_n_pairs`, `method_entry` (entry of experimental/CALIBRATION_EXPERIMENT.json; DFT: dft/CALIBRATION.json), `sigma_effective_reason` when none; ZPF: `{temperature_K, composition_mole_fraction}` budgets |
+| `sigma_effective_used` | the sigma_effective the weight uses (ESPEI's default, with `sigma_effective_note`, only where the budget has none) |
 | `printed` | `{value, unit, interval, coverage, lower?, upper?, note?}`: printed uncertainty as published (`coverage`: `1sigma_assumed` for a bare ±x, `range_half_width` for a printed range) |
-| `sigma_printed`, `sigma_assumed` | for experimental values without a printed uncertainty: `null` and ESPEI's experimental default (or `null` where ESPEI has none) |
 | `sigma_mu_J_per_mol` | activities: R T sigma_a / a, the chemical-potential sigma ESPEI's activity residual uses |
 | `calibration` | DFT: `{source, stratum, used (stratum or source_level), leave_system_out, system_left_out, n, sigma_robust_kJ, bias_median_kJ_not_applied, ci95_sigma_robust_kJ_full_stratum, n_full_stratum}` |
 | `temperature_sigma_K`, `temperature_sigma_basis` | ZPF: printed temperature uncertainty |
-| `weight_used` | the ESPEI weight that applies to this value; `weight_per_value_equivalent` = default sigma / this value's sigma |
+| `weight_used` | the ESPEI weight that applies to this value; `weight_per_value_equivalent` = default sigma / this value's sigma_effective |
 | `printed_uncertainty_not_used` | model-calculated values: a printed uncertainty kept as printed, not used |
 
 Caveat codes (published flags of the value): `magnitude_suspect`, `system_mismatch`, `source_disputed`,
@@ -2175,8 +2296,11 @@ def fixes_summary(C, P):
         "E5_reference_state_changed": sum(1 for x in e5 if x["changed"]),
         "E5_basis": dict(Counter(x["basis"] for x in e5)),
         "E5_records_disagreeing_with_paper": len(C["upstream"]["reference_state"]),
-        "E6_datasets_with_floor_suggestion": sum(C["e6"].values()),
-        "E6_datasets_where_floor_changes_weight": C["e6"].get(True, 0),
+        "E6_weights_from_sigma_effective": {"datasets": sum(v for k, v in C["e6"].items() if ":" not in k),
+                                            "weight_lower_than_before": C["e6"].get("lower", 0),
+                                            "weight_higher_than_before": C["e6"].get("higher", 0),
+                                            "weight_unchanged": C["e6"].get("same", 0),
+                                            "by_class": {k: v for k, v in sorted(C["e6"].items()) if ":" in k}},
     }
 
 
@@ -2300,6 +2424,8 @@ def build_files(C, D, val, data, release, dp_release, P):
         "weight": "500 J/mol / (sigma_robust_kJ * 1000)", "eV_to_J_per_mol": EV_TO_J_PER_MOL,
         "chemistry_classes": CHEM_TEXT, "match_quality": MATCH_TEXT}, "pairs_release": dp_release, **D["calibration"]})
     files["dft/CALIBRATION.md"] = calibration_md(D["calibration"], dp_release).encode("utf-8")
+    files["experimental/CALIBRATION_EXPERIMENT.json"] = C["uncal_bytes"]      # byte copy of the literature release's
+    files["experimental/CALIBRATION_EXPERIMENT.md"] = C["uncal_md"]           # UNCERTAINTY_CALIBRATION.json / .md
     files["README.md"] = readme(S, C, cite).encode("utf-8")
     files["SCHEMA.md"] = SCHEMA.encode("utf-8")
     files["CITATION.cff"] = oc.cff(NAME, data).replace(
@@ -2319,7 +2445,8 @@ def prow(rel, d, cls):
             "reference": d.get("reference"), "bibtex": d.get("bibtex"), "dois": o.get("dois") or [],
             "papers": o.get("papers") or [], "observation_ids": [], "reader_agreement": {},
             "reader_agreement_source": None, "caveats": [], "tags": d["tags"], "weight": d.get("weight"),
-            "sigma_unit": None, "sigma_min": None, "sigma_median": None, "sigma_max": None, "sigma_basis_counts": {},
+            "sigma_unit": None, "sigma_min": None, "sigma_median": None, "sigma_max": None,
+            "sigma_effective_median": None, "sigma_basis_counts": {},
             "dft_calibration_stratum": None, "tdb": o.get("target_tdb"), "tdb_sha256": None, "model_link_basis": None,
             "espei_median_abs_driving_force_J": None, "source_dataset": o.get("derived_from") or o.get("source")}
 
@@ -2453,6 +2580,28 @@ def phase_constraints(C, D, data, pub):
     P = {"datasets": {}, "rows": {}, "counts": counts, "e3": merged,
          "brackets": {"made": dict(b_made), "skipped": dict(sorted(b_skipped.items()))},
          "assessed_skipped": dict(sorted(a_skipped.items())), "liquid": dict(sorted(l_why.items()))}
+    for rel, d in brackets.items():
+        d["orchid_uncertainty_budget"] = {
+            "sigma_rule": "derived point: placed offset_K = max(2u, 10 K) beyond the invariant, u = the invariant "
+                          "temperature's sigma_effective; the constraint holds while the invariant's error is below "
+                          "offset_K (no sigma of its own)",
+            "points": [{"source_observation": pt.get("source_observation"),
+                        "temperature_K": {"sigma_printed": None, "sigma_reading": None, "sigma_method": None,
+                                          "sigma_composition": None, "sigma_scatter": None, "sigma_conversion": None,
+                                          "sigma_effective": None, "source_invariant_sigma_effective": pt.get("T_sigma_K"),
+                                          "source_invariant_sigma_basis": pt.get("T_sigma_basis"),
+                                          "offset_K": pt.get("offset_K"),
+                                          "sigma_effective_reason": "derived constraint, not a measurement"}}
+                       for pt in (d.get("orchid") or {}).get("points") or []]}
+    for rel, d in liquid.items():
+        d["orchid_uncertainty_budget"] = {
+            "sigma_rule": "derived point at T_liq_max + margin_K (orchid.basis); not a measurement, no sigma",
+            "points": [{"temperature_K": {"sigma_printed": None, "sigma_reading": None, "sigma_method": None,
+                                          "sigma_composition": None, "sigma_scatter": None, "sigma_conversion": None,
+                                          "sigma_effective": None,
+                                          "margin_K": ((d.get("orchid") or {}).get("basis") or {}).get("margin_K"),
+                                          "sigma_effective_reason": "derived constraint, not a measurement"}}
+                       for _ in d["values"]]}
     for group, cls in ((brackets, "derived"), (assessed, "assessed_phase_diagram"), (liquid, "derived")):
         for rel, d in group.items():
             P["datasets"][rel] = d
@@ -2626,6 +2775,45 @@ def evaluation_summary(ev, alld):
             "all_finite": all((ev.get(r) or {}).get("status") == "ok" for r in alld), "by_folder_kind": res}
 
 
+def uncertainty_calibration(lit_dir, pub):
+    """The literature release's method-floor calibration (bytes, dict); every published record must carry a budget
+    made with exactly this calibration (else the literature release is stale: re-export it)."""
+    p = os.path.join(lit_dir, "UNCERTAINTY_CALIBRATION.json")
+    if not os.path.exists(p):
+        raise SystemExit("literature release has no UNCERTAINTY_CALIBRATION.json: re-export it "
+                         "(tools/export_literature_data.py)")
+    b = open(p, "rb").read()
+    cal = json.loads(b)
+    cid = ub.calibration_id(cal)
+    bad = [r["id"] for r in pub.values() if (r.get("uncertainty_budget") or {}).get("calibration") != cid]
+    if bad:
+        raise SystemExit("%d published records carry no budget of calibration %s (e.g. %s): re-export the literature "
+                         "release" % (len(bad), cid, bad[:3]))
+    return b, cal
+
+
+def check_dft_calibration(ucal, dcal):
+    """The DFT component of the literature budgets must be this build's DFT calibration (literature source)."""
+    a = json.loads(json.dumps((ucal.get("dft") or {}).get("literature"), sort_keys=True))
+    b = json.loads(json.dumps(round_floats(((dcal.get("sources") or {}).get("literature"))), sort_keys=True))
+    if a != b:
+        raise SystemExit("the literature release's DFT budget component differs from this build's DFT calibration "
+                         "(espei/dft/CALIBRATION.json changed): rebuild the bundle once, re-export the literature "
+                         "release, then rebuild the bundle again")
+
+
+def round_floats(x):
+    return json.loads(dumps(x).decode("utf-8")) if x is not None else None
+
+
+def cal_table_bundle(cal):
+    """README table: floors of the value types used by the thermochemical outputs of this bundle."""
+    keep = {"HM_FORM", "SM_FORM", "H_MIX_PARTIAL", "G_MIX_PARTIAL", "S_MIX_PARTIAL", "S_ABS", "CPM", "ACTIVITY",
+            "T_INVARIANT", "X_PHASE"}
+    L = ub.floor_table(cal)
+    return L[:2] + [r for r in L[2:] if r.split("|")[1].strip() in keep]
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--corpus", default=lit.DEFAULT_CORPUS, help="SGTE-corpus build directory (read only)")
@@ -2636,9 +2824,13 @@ def main(argv=None):
     a = ap.parse_args(argv)
     out = os.path.join(a.data, NAME)
     pub, alias, papers, lindex = published(os.path.join(a.data, "literature"))
+    ucal_bytes, ucal = uncertainty_calibration(os.path.join(a.data, "literature"), pub)
     C = build_corpus(a.corpus, a.pdfs, a.data, pub, alias, papers)
+    C["uncal"], C["uncal_bytes"] = ucal, ucal_bytes
+    C["uncal_md"] = open(os.path.join(a.data, "literature", "UNCERTAINTY_CALIBRATION.md"), "rb").read()
     pairs, dp = calibration_pairs(a.data, pub)
     D = build_dft(a.data, pub, papers, pairs)
+    check_dft_calibration(ucal, D["calibration"])
     P = phase_constraints(C, D, a.data, pub)
     dp_release = "dft_parity.json inputs literature sha256 %s" % ((dp.get("inputs") or {}).get("literature") or {}).get("sha256")
     alld = dict(C["datasets"])
@@ -2682,7 +2874,7 @@ def main(argv=None):
     for g in ("experimental", "model", "invariants", "dft", "assessed", "derived"):
         for p in glob.glob(os.path.join(out, g, "**", "*.json"), recursive=True):
             existing.add(os.path.relpath(p, out).replace(os.sep, "/"))
-    for p in glob.glob(os.path.join(out, "dft", "*.md")):
+    for p in glob.glob(os.path.join(out, "dft", "*.md")) + glob.glob(os.path.join(out, "experimental", "*.md")):
         existing.add(os.path.relpath(p, out).replace(os.sep, "/"))
     stale = sorted(existing - managed)
     if a.check:

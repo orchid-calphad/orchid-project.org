@@ -803,6 +803,21 @@ def build(data, date):
         blocks.append(("table", "Enthalpy of formation of %s reported in the literature (%d)" % (f, len(items)),
                        ["Value", "Phase as printed", "T (K)", "Class", "Method", "System", "Source", "Location", "Quote"],
                        rows, {0, 2}))
+        brows = budget_rows(sorted(items, key=lambda it: (EV_ORDER.index(it[0].get("evidence_class")) if it[0].get(
+            "evidence_class") in EV_ORDER else 9, it[0].get("value") if isinstance(it[0].get("value"), (int, float))
+            else 0, it[0]["id"])))
+        if brows:
+            blocks.append(("h3", "Uncertainty budget"))
+            blocks.append(("p", ["Components kept separate, in the value's unit (literature ",
+                                 ("a", "SCHEMA.md", DATA_URL + "literature/SCHEMA.md"), ", ",
+                                 ("a", "UNCERTAINTY_CALIBRATION.md", DATA_URL + "literature/UNCERTAINTY_CALIBRATION.md"),
+                                 "): effective = max(sqrt(max(printed, reading, method)^2 + composition^2 + "
+                                 "conversion^2), scatter). The method floor is the robust between-study scatter of "
+                                 "the method class in ORCHID (calibrated) or a documented prior; printed values and "
+                                 "printed uncertainties are unchanged."]))
+            blocks.append(("table", "Uncertainty budget of the literature values of %s" % f,
+                           ["Value", "Unit", "Printed", "Reading", "Method (class, basis)", "Composition", "Scatter",
+                            "Conversion", "Effective"], brows, {0, 2, 3, 5, 6, 7, 8}))
         if dfts:
             blocks.append(("h2", "dft", "DFT formation energies"))
             blocks.append(("p", ["Lowest-energy entries at this composition. Materials Project and OQMD use different "
@@ -852,6 +867,27 @@ def build(data, date):
     return out, capped
 
 
+def budget_rows(items):
+    """Compact budget table rows (value quantity of each record's uncertainty_budget)."""
+    rows = []
+
+    def c(q, k):
+        x = q.get(k)
+        return [fmt_num(x.get("value"))] if isinstance(x, dict) and x.get("value") is not None else [""]
+    for r, *_ in items:
+        q = ((r.get("uncertainty_budget") or {}).get("quantities") or {}).get("value")
+        if not q:
+            continue
+        m = q.get("sigma_method") or {}
+        mt = ("%s (%s, %s)" % (fmt_num(m["value"]), m.get("class"), m.get("basis")) if m.get("value") is not None
+              else "%s" % (m.get("reason") or ""))
+        rows.append([[fmt_num(r.get("value"))], [q.get("unit") or ""], c(q, "sigma_printed"), c(q, "sigma_reading"),
+                     [mt], c(q, "sigma_composition"), c(q, "sigma_scatter"), c(q, "sigma_conversion"),
+                     [fmt_num(q.get("sigma_effective")) if q.get("sigma_effective") is not None else
+                      (q.get("sigma_effective_reason") or "")]])
+    return rows
+
+
 def formula_of(P, r):
     system = [e.capitalize() for e in (r.get("elements") or r.get("system", "").split("-")) if e]
     found = {}
@@ -874,9 +910,17 @@ def formula_of(P, r):
     return None
 
 
+def budget_csv(r):
+    q = ((r.get("uncertainty_budget") or {}).get("quantities") or {}).get("value") or {}
+    m = q.get("sigma_method") or {}
+    return ["" if q.get("sigma_effective") is None else q["sigma_effective"],
+            "" if m.get("value") is None else m["value"], m.get("class") or ""]
+
+
 def system_csv(s, recs, arts, spapers, papers_all):
     cols = ["id", "system", "property", "property_group", "property_printed", "record_kind", "value", "unit",
-            "value_expression", "uncertainty", "uncertainty_basis", "temperature_K", "temperature_printed", "pressure_Pa",
+            "value_expression", "uncertainty", "uncertainty_basis", "sigma_effective", "sigma_method", "sigma_method_class",
+            "temperature_K", "temperature_printed", "pressure_Pa",
             "phases", "reaction_type", "reaction_printed", "compositions", "evidence_class", "method",
             "extraction_accepted", "paper", "paper_doi", "paper_citation", "location", "page", "quote"]
     buf = io.StringIO()
@@ -889,6 +933,7 @@ def system_csv(s, recs, arts, spapers, papers_all):
         w.writerow([r.get("id"), s, r.get("property"), r.get("property_group"), r.get("property_printed") or "",
                     r.get("record_kind"), "" if r.get("value") is None else r["value"], r.get("unit") or "",
                     r.get("value_expression") or "", "" if u.get("value") is None else u["value"], u.get("basis") or "",
+                    *budget_csv(r),
                     "" if r.get("temperature_K") is None else r["temperature_K"], r.get("temperature_printed") or "",
                     "" if r.get("pressure_Pa") is None else r["pressure_Pa"],
                     "; ".join(x.get("label", "") for x in r.get("phases") or []), rx.get("type") or "", rx.get("printed") or "",
@@ -1358,6 +1403,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- Derived data CC BY 4.0. Cite the ORCHID release (%sCITATION.cff) and each value's source paper (DOI given per value)." % DATA_URL,
         "- Quotes: one verbatim sentence per value, fair use. Source papers, page images and full text are not redistributed.",
         "- Use values with extraction_accepted = true unless you handle disputes; uncertainty with basis stated_default is a placeholder, not a measurement.",
+        "- Every value carries uncertainty_budget (components printed / reading / method floor / composition / scatter / conversion kept separate; sigma_effective = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter) is the recommended sigma; floors: %sliterature/UNCERTAINTY_CALIBRATION.md)." % DATA_URL,
         "- Project site: %s (interactive explorer %sdata-explorer/#<SYS>)" % (SITE_URL, SITE_URL), ""])
     lines = ["# ORCHID data: all systems", "", "> One line per chemical system: accepted literature values by evidence class, "
              "invariants, formation enthalpies, calculated phase diagrams. Append .md to read a system.", "",

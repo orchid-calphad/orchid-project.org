@@ -85,5 +85,44 @@ tl, why = B.tie_line(["a", "b"], B.run_extent(row2, 150, 2, -1), B.run_extent(ro
 check("tie line: line-compound endpoint takes the printed composition", tl is not None and tl["endpoints"][0].get("line_compound")
       and abs(tl["endpoints"][0]["x"] - xb / 100) < 1e-9)
 
+# ---- uncertainty budget (PI decision 2026-10-24): components separate; synthetic record
+import copy  # noqa: E402
+rec = {"id": "aspa-test", "coordinate_uncertainty": {"T_K": 3.5, "x": 0.004, "calibration_max_residual_T_K": 1.0},
+       "positional_margin": {"normalized": 0.01, "isotherm_mole_fraction": 0.05, "isopleth_K": 40.0}}
+before = copy.deepcopy(rec)
+b = B.assessed_budget(rec)
+qT, qX = b["quantities"]["temperature_K"], b["quantities"]["composition"]
+check("budget: same structure as the release", set(b) == {"calibration", "sigma_rule", "quantities"}
+      and all(k in qT for k in ("sigma_printed", "sigma_reading", "sigma_method", "sigma_composition", "sigma_scatter",
+                                "sigma_conversion", "sigma_effective")))
+check("budget: digitisation = coordinate uncertainty", qT["sigma_reading"]["value"] == 3.5 and qX["sigma_reading"]["value"] == 0.004)
+check("budget: handbook prior 10 K / 0.02", qT["sigma_method"]["value"] == 10.0 and qX["sigma_method"]["value"] == 0.02
+      and qT["sigma_method"]["basis"] == "prior")
+check("budget: margin reported, not combined", qT["sigma_boundary_margin"]["value"] == 40.0 and qT["sigma_effective"] == 10.0)
+rec2 = dict(rec, coordinate_uncertainty={"T_K": 25.0, "x": 0.03})
+b2 = B.assessed_budget(rec2)
+check("budget: effective = max(reading, prior)", b2["quantities"]["temperature_K"]["sigma_effective"] == 25.0
+      and b2["quantities"]["composition"]["sigma_effective"] == 0.03)
+check("budget: coordinate fields unchanged", rec == before)
+# release part: every published record has a budget with sigma_effective >= reading and >= the handbook prior
+import gzip, json  # noqa: E402,E401
+rp = os.path.join(os.path.expanduser("~/projects/orchid-data"), "assessed-phase-assemblages", "records.jsonl.gz")
+if os.path.exists(rp):
+    recs = [json.loads(l) for l in gzip.open(rp, "rt", encoding="utf-8")]
+    bad = []
+    for r in recs:
+        q = ((r.get("uncertainty_budget") or {}).get("quantities") or {})
+        good = True
+        for qn, key, pk in (("temperature_K", "T_K", "T"), ("composition", "x", "x")):
+            e = q.get(qn)
+            if not e or e["sigma_effective"] is None or e["sigma_effective"] < B.HANDBOOK_PRIOR[pk] - 1e-12 or \
+                    (e["sigma_reading"] and e["sigma_effective"] < e["sigma_reading"]["value"] - 1e-12) or \
+                    (e["sigma_reading"] or {}).get("value") != r["coordinate_uncertainty"][key]:
+                good = False
+        if not good:
+            bad.append(r["id"])
+    check("release: every record has a budget, effective >= reading and >= prior (%d records)" % len(recs),
+          bool(recs) and not bad)
+
 print("%d failure(s)" % len(fails))
 sys.exit(1 if fails else 0)

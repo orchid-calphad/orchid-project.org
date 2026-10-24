@@ -48,6 +48,7 @@ import literature_quality as quality  # noqa: E402
 import literature_gates as gates  # noqa: E402
 import phase_rule  # noqa: E402
 import orchid_cite  # noqa: E402
+import uncertainty_budget as ub  # noqa: E402
 
 CORR = doi_corrections.load()   # shared DOI correction table (tools/doi_corrections.json)
 
@@ -959,7 +960,7 @@ CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_grou
                "property_printed", "value", "unit", "unit_basis", "per_formula_unit_divisor", "value_before_quality_fix",
                "basis_correction", "sign_heading_printed", "value_stored", "unit_stored", "value_printed", "unit_printed", "uncertainty", "value_range", "value_expression",
                "temperature_K", "temperature_printed", "temperature_basis", "temperature_bound", "temperature_max_K",
-               "temperature_uncertainty", "pressure_Pa", "pressure_basis", "phases", "phase_compositions",
+               "temperature_uncertainty", "uncertainty_budget", "sigma_effective", "sigma_method_class", "pressure_Pa", "pressure_basis", "phases", "phase_compositions",
                "overall_composition", "overall_composition_basis", "reference_state", "reaction", "transition_kind",
                "transition_kind_printed", "evidence_class",
                "origin", "model", "model_unlinked_reason", "method", "method_basis", "conditions",
@@ -1063,6 +1064,7 @@ papers, page images, crops and full text are **not** redistributed.
 | `merged_ids`, `merged_pids` | ids (and persistent locators) of records that were exact duplicates of this one and were merged into it |
 | `value_range` | `{{min,max}}` when a range was printed; `value_expression`: a printed expression (model parameters) |
 | `uncertainty` | `{{value, basis, note}}`; `basis: printed` is the source's own; `stated_default` / `reading_resolution` are ORCHID placeholders (e.g. "5% default", "10% placeholder; none printed") and are **not** measured uncertainties |
+| `uncertainty_budget` | uncertainty budget of the record's measured quantities, components kept separate (PI decision 2026-10-24; tools/uncertainty_budget.py; calibration in UNCERTAINTY_CALIBRATION.json / .md): `{{calibration (version and sha256 of UNCERTAINTY_CALIBRATION.json), sigma_rule, quantities{{value, composition, temperature_K}}}}`; `value` = the record's value, `composition` = its printed phase compositions (mole fraction), `temperature_K` = the equilibration temperature of a phase-composition / assemblage observation. Per quantity, in its `unit`: `sigma_printed` `{{value, kind, taken_as}}` as printed (null if none; ORCHID placeholders are not printed sigmas), `sigma_reading` `{{value, basis}}` half of the last printed digit (`last_printed_digit`; compositions: `last_stored_digit`), `sigma_method` `{{class, value, floor, floor_unit, basis (calibrated / prior / calibrated vs experiment), n_pairs, ci95, entry}}` the method-class floor (robust between-study scatter of independent same-method measurements in ORCHID, or a documented prior; DFT: calibrated sigma_DFT; model values: model-vs-experiment deviation), `sigma_composition` (value measured at a historical formula: `{{value, dx, slope}}`), `sigma_scatter` (page-checked mutually inconsistent group: `{{value, n_sources, group}}`), `sigma_conversion` (reference-state conversion), then `sigma_effective` = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter) (`sigma_effective_reason` when none applies). Null = the component does not apply. CSV: the budget as JSON plus `sigma_effective` and `sigma_method_class` of the value |
 | `temperature_K` | equilibrium / measurement temperature in K; `temperature_printed` as printed (unit as printed, often °C); `temperature_basis` how it was obtained (`printed`, `quantity_label`, `caption`, `assumed_room_temperature`, `not_printed`, ...); `temperature_bound` `{{op, value_K, printed}}` for a printed bound (`op` `<` upper bound, `>` lower bound), `temperature_max_K` / `temperature_range_K` for ranges; `temperature_uncertainty` `{{value,basis}}` |
 | `pressure_Pa`, `pressure_basis` | pressure and how it was set: `printed`, or `assumed_default_1_atm_not_printed` (1 atm assumed, no pressure printed; the record builder's label kept in `pressure_basis_stored`) |
 | `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype, label_variants, label_source}}]`: printed phase label and, where mapped, the CALPHAD model phase; `label_variants`: other readers' spellings of the same printed label (kept when duplicate readings were merged, e.g. 'NiAl (B2)' beside 'B2'); `label_source: page_check` for a phase added from the printed reaction on a page check |
@@ -1170,6 +1172,11 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     qreport["espei_phase_rule"] = phase_rule.RULE_TEXT
     records.sort(key=lambda r: (r["system"], r["record_kind"], r.get("pid") or "", r["id"]))
+    # uncertainty budget of every value (tools/uncertainty_budget.py; PI decision 2026-10-24): components kept
+    # separate, method floors calibrated from the release's own independent measurements; printed values and printed
+    # uncertainties are not altered
+    store.uncertainty_calibration = ub.calibrate(records, ub.load_dft_calibration(data or orchid_cite.DEFAULT_DATA))
+    ub.annotate(records, store.uncertainty_calibration)
 
     for r in records:
         for pk in [r.get("paper")] + [c.get("paper") for c in r.get("cited_sources") or []] + [(r.get("origin") or {}).get("measured_in")]:
@@ -1268,6 +1275,7 @@ def outputs(store, records, papers, contexts):
         "context_items": sum(len(c["items"]) for c in contexts.values()),
         "excluded": dict(sorted(store.excluded.items())),
         "espei": store.quality["espei"],
+        "uncertainty_budget": ub.totals(records, store.uncertainty_calibration),
         "gates": {k: store.quality["gates"][k] for k in ("release", "records_in", "records_out", "accepted_before",
                                                           "accepted_after", "espei_ready_before", "espei_ready_after",
                                                           "records_corrected", "records_with_gate_failures", "visual_checks")},
@@ -1288,7 +1296,8 @@ def outputs(store, records, papers, contexts):
              "files": {"papers": "papers.json", "contexts": "contexts.json", "jsonl": "orchid-literature.jsonl.gz",
                        "csv": "orchid-literature.csv.gz", "quality_fixes": "QUALITY_FIXES.md",
                        "quality_fixes_json": "quality_fixes.json", "citation_txt": "CITATION.txt",
-                       "citation_cff": "CITATION.cff"},
+                       "citation_cff": "CITATION.cff", "uncertainty_calibration": "UNCERTAINTY_CALIBRATION.json",
+                       "uncertainty_calibration_md": "UNCERTAINTY_CALIBRATION.md"},
              "systems": index_systems}
     files["index.json"] = dumps(index).encode()
     papers = repair_replacement_chars(papers, crossref_name_words(store.bib.cache_dir))
@@ -1306,6 +1315,9 @@ def outputs(store, records, papers, contexts):
         row["extraction_accepted"] = r["flags"]["extraction_accepted"]
         for k in ("espei_ready", "espei_certified", "calphad_check"):
             row[k] = r["flags"].get(k)
+        qv = ((r.get("uncertainty_budget") or {}).get("quantities") or {}).get("value") or {}
+        row["sigma_effective"] = qv.get("sigma_effective")
+        row["sigma_method_class"] = (qv.get("sigma_method") or {}).get("class")
         row["conditions_summary"] = summarize_context(contexts.get(r["paper"])) if (r.get("conditions") or {}).get("kind") == "paper_context" else (
             "conditions in the cited source" if (r.get("conditions") or {}).get("kind") == "cited_source" else None)
         w.writerow([csv_value(row.get(c)) for c in CSV_COLUMNS])
@@ -1319,12 +1331,15 @@ def outputs(store, records, papers, contexts):
         "ORCHID literature values: orchid-literature.csv.gz, orchid-literature.jsonl.gz, index.json, "
         "systems/*.json, papers.json, contexts.json (release %s)." % RELEASE)).encode()
     files["CITATION.cff"] = orchid_cite.cff("literature").encode()
+    files["UNCERTAINTY_CALIBRATION.json"] = ub.calibration_bytes(store.uncertainty_calibration)
+    files["UNCERTAINTY_CALIBRATION.md"] = ub.calibration_md(store.uncertainty_calibration, records).encode()
     return files, tot
 
 
 LIT_FIELDS = [("id", "sc:Text"), ("system", "sc:Text"), ("record_kind", "sc:Text"), ("observation_type", "sc:Text"),
               ("property_group", "sc:Text"), ("property", "sc:Text"), ("value", "sc:Float"), ("unit", "sc:Text"),
-              ("uncertainty", "sc:Text"), ("temperature_K", "sc:Float"), ("temperature_printed", "sc:Text"),
+              ("uncertainty", "sc:Text"), ("uncertainty_budget", "sc:Text"), ("sigma_effective", "sc:Float"),
+              ("temperature_K", "sc:Float"), ("temperature_printed", "sc:Text"),
               ("pressure_Pa", "sc:Float"), ("phases", "sc:Text"), ("phase_compositions", "sc:Text"),
               ("reaction", "sc:Text"), ("evidence_class", "sc:Text"), ("origin", "sc:Text"), ("model", "sc:Text"),
               ("method", "sc:Text"), ("conditions", "sc:Text"), ("cited_sources", "sc:Text"), ("paper", "sc:Text"),

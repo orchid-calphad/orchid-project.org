@@ -66,7 +66,8 @@ ELEMENT_TM_TB = {
 BRACKET_RULE = (
     "For each binary invariant reaction (eutectic, peritectic, monotectic, eutectoid, peritectoid, metatectic, "
     "syntectic, congruent melting or transformation, polymorphic) with printed temperature T and printed temperature "
-    "uncertainty u (else u = %g K, documented default), two ZPF points are written at the invariant composition x0: "
+    "uncertainty u (u = sigma_effective of the value's uncertainty budget: the printed sigma or the method floor, "
+    "whichever is larger; else the printed sigma; else %g K, documented default), two ZPF points are written at the invariant composition x0: "
     "at T + max(2u, %g K) the phase set stable above the reaction and at T - max(2u, %g K) the set stable below. The "
     "reaction is read as printed with the cooling convention (left side = high temperature; a reaction written on "
     "heating, i.e. a single liquid formed from solids, is turned round). x0 is the composition of the phase alone on "
@@ -345,6 +346,13 @@ def parse_reaction(printed):
 
 
 def _t_sigma(rec):
+    """u of the bracket rule: sigma_effective of the invariant temperature's published uncertainty budget (method
+    floor, never below the printed sigma; PI decision 2026-10-24), else the printed sigma, else DEFAULT_T_SIGMA."""
+    q = ((rec.get("uncertainty_budget") or {}).get("quantities") or {}).get("value") or {}
+    if isinstance(q.get("sigma_effective"), (int, float)) and q["sigma_effective"] > 0 and q.get("unit") == "K":
+        m = q.get("sigma_method") or {}
+        return float(q["sigma_effective"]), "sigma_effective of the uncertainty budget (method class %s, %s)" % (
+            m.get("class"), m.get("basis"))
     tu = rec.get("temperature_uncertainty") or {}
     if tu.get("basis") in ("printed", "printed_range") and isinstance(tu.get("value"), (int, float)) and tu["value"] > 0:
         return float(tu["value"]), tu["basis"]
@@ -513,13 +521,14 @@ def build_brackets(C, R, folders=("experimental", "invariants")):
 # ------------------------------------------------------------------------------------------- assessed per TDB --
 def assessed_per_tdb(data, R, stems_by_sys):
     root = os.path.join(data, "assessed-phase-assemblages")
-    conf = {}
+    conf, budget = {}, {}
     rp = os.path.join(root, "records.jsonl.gz")
     if os.path.exists(rp):
         with gzip.open(rp, "rt", encoding="utf-8") as fh:
             for line in fh:
                 r = json.loads(line)
                 conf[r["id"]] = r.get("confidence")
+                budget[r["id"]] = r.get("uncertainty_budget")
     out, skipped = {}, Counter()
     for f in sorted(glob.glob(os.path.join(root, "espei-zpf", "*.json"))):
         d = json.load(open(f, encoding="utf-8"))
@@ -568,7 +577,29 @@ def assessed_per_tdb(data, R, stems_by_sys):
                            "points_left_out": len(d["values"]) - len(vals),
                            "source": "assessed-phase-assemblages/espei-zpf/%s.json" % diag},
             }
+            ubud = assessed_budget_points(ids2, budget)
+            if ubud:
+                out[rel]["orchid_uncertainty_budget"] = ubud
     return out, skipped
+
+
+def assessed_budget_points(ids, budget):
+    """Per point (value order) the component values of the assessed record's uncertainty budget (temperature and
+    composition), or None when the records carry no budget."""
+    if not any(budget.get(r) for r in ids):
+        return None
+    keys = ("sigma_printed", "sigma_reading", "sigma_method", "sigma_boundary_margin", "sigma_effective")
+
+    def comp(q):
+        q = q or {}
+        return {k: (q.get(k) or {}).get("value") if isinstance(q.get(k), dict) else q.get(k) for k in keys}
+    first = next(budget[r] for r in ids if budget.get(r))
+    pts = []
+    for r in ids:
+        q = (budget.get(r) or {}).get("quantities") or {}
+        pts.append({"record_id": r, "temperature_K": comp(q.get("temperature_K")),
+                    "composition_mole_fraction": comp(q.get("composition"))})
+    return {"sigma_rule": first.get("sigma_rule"), "calibration": first.get("calibration"), "points": pts}
 
 
 # ------------------------------------------------------------------------------------------- liquid stability --

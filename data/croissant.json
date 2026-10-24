@@ -103,7 +103,7 @@
    "name": "bibliography-papers.parquet",
    "contentUrl": "https://data.orchid-project.org/bibliography/papers.parquet",
    "encodingFormat": "application/x-parquet",
-   "sha256": "ac528ef151f16fb7ccd3bfa34fa90df8b722aa02da136291fe2025a275b3e96a"
+   "sha256": "6d88e025872d2c392ad23b767b5734237ec850522335cce4e18605a51d21f994"
   },
   {
    "@type": "cr:FileObject",
@@ -120,7 +120,7 @@
    "description": "Literature formation enthalpies (kJ/mol-atom) paired with the lowest-energy Materials Project and OQMD entry at the same composition (never averaged), with per-source statistics. Viewer: https://orchid-project.org/dft-parity/",
    "contentUrl": "https://orchid-project.org/data/literature/dft_parity.json",
    "encodingFormat": "application/json",
-   "sha256": "07a17ca312c445cec268b179a379772f9ac3f1e6fc52e8b3454be029f4c8bc66"
+   "sha256": "cbde5f56d3dd50f24ca414f37405f6cd4a703bc2ff30cbb7aff463d35678f0ee"
   },
   {
    "@type": "cr:FileObject",
@@ -128,7 +128,7 @@
    "name": "orchid-literature.csv.gz",
    "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.csv.gz",
    "encodingFormat": "application/gzip",
-   "sha256": "ac90b5262077cfebe2f44fe1d69b80ec205b1bf277cc5a1efa5135590943334d"
+   "sha256": "d8a1ddcd3405a9588fe60979c3c1c905bd16f281ea210a48f62cd2ce40fab208"
   },
   {
    "@type": "cr:FileObject",
@@ -145,7 +145,7 @@
    "name": "orchid-literature.jsonl.gz",
    "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.jsonl.gz",
    "encodingFormat": "application/gzip",
-   "sha256": "63bef7562ee527c54c762ca5e841ce8c3132ce8dd5d6fccffbe81726b8bc3b22"
+   "sha256": "25f304d75c818f3e728a656787873cad6ec9c9bf32dddd1f59ea6dbfb76cdfc7"
   },
   {
    "@type": "cr:FileObject",
@@ -153,7 +153,7 @@
    "name": "literature-index.json",
    "contentUrl": "https://orchid-project.org/data/literature/index.json",
    "encodingFormat": "application/json",
-   "sha256": "509ba79e2d96884c68a83201b6020f6b2ceeca230dad84b6cb16965cf38385c2"
+   "sha256": "f43bc92338b4116f5fc391c3331298fdafdc504ad7bde09283afc6b93ef0237f"
   },
   {
    "@type": "cr:FileObject",
@@ -1447,6 +1447,34 @@
       },
       "extract": {
        "column": "uncertainty"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/uncertainty_budget",
+     "name": "uncertainty_budget",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "uncertainty_budget"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/sigma_effective",
+     "name": "sigma_effective",
+     "dataType": "sc:Float",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "sigma_effective"
       }
      }
     },

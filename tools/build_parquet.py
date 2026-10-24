@@ -119,6 +119,12 @@ def lit_schema(pa):
         ("value", f), ("value_min", f), ("value_max", f), ("value_expression", s), ("unit", s),
         ("value_stored", f), ("unit_stored", s), ("value_printed", f), ("unit_printed", s),
         ("uncertainty_value", f), ("uncertainty_basis", s), ("uncertainty_note", s),
+        ("sigma_printed", f), ("sigma_printed_kind", s), ("sigma_reading", f), ("sigma_method", f),
+        ("sigma_method_class", s), ("sigma_method_basis", s), ("sigma_method_n_pairs", i), ("sigma_method_floor", f),
+        ("sigma_method_floor_unit", s), ("sigma_composition", f), ("sigma_scatter", f), ("sigma_conversion", f),
+        ("sigma_effective", f), ("sigma_unit", s), ("sigma_rule", s), ("uncertainty_calibration", s),
+        ("sigma_x_effective", f), ("sigma_x_method", f), ("sigma_x_method_class", s),
+        ("sigma_T_condition_effective", f), ("uncertainty_budget", s),
         ("bound", s), ("temperature_bound_K", f),
         ("temperature_K", f), ("temperature_min_K", f), ("temperature_max_K", f), ("temperature_printed", s),
         ("temperature_basis", s), ("temperature_approximate", b), ("temperature_uncertainty_value", f),
@@ -256,7 +262,35 @@ def lit_row(r, papers, release):
     }
     for k in BOOL_FLAGS:
         out["flag_" + k] = bool(fl.get(k))
+    out.update(budget_columns(r.get("uncertainty_budget")))
     return out
+
+
+def budget_columns(b):
+    """Flat columns of the record's uncertainty budget (literature SCHEMA.md, `uncertainty_budget`): the value
+    quantity's components, the phase-composition and equilibration-temperature effective sigmas, the full JSON."""
+    b = b or {}
+    qs = b.get("quantities") or {}
+    q = qs.get("value") or {}
+    qx = qs.get("composition") or {}
+    qt = qs.get("temperature_K") or {}
+
+    def v(c):
+        return fnum((c or {}).get("value")) if isinstance(c, dict) else None
+    m = q.get("sigma_method") or {}
+    mx = qx.get("sigma_method") or {}
+    n = m.get("n_pairs")
+    return {"sigma_printed": v(q.get("sigma_printed")), "sigma_printed_kind": (q.get("sigma_printed") or {}).get("kind"),
+            "sigma_reading": v(q.get("sigma_reading")), "sigma_method": v(m), "sigma_method_class": m.get("class"),
+            "sigma_method_basis": m.get("basis"), "sigma_method_n_pairs": int(n) if isinstance(n, int) else None,
+            "sigma_method_floor": fnum(m.get("floor")), "sigma_method_floor_unit": m.get("floor_unit"),
+            "sigma_composition": v(q.get("sigma_composition")), "sigma_scatter": v(q.get("sigma_scatter")),
+            "sigma_conversion": v(q.get("sigma_conversion")), "sigma_effective": fnum(q.get("sigma_effective")),
+            "sigma_unit": q.get("unit") if q else None, "sigma_rule": b.get("sigma_rule"),
+            "uncertainty_calibration": b.get("calibration"),
+            "sigma_x_effective": fnum(qx.get("sigma_effective")), "sigma_x_method": v(mx),
+            "sigma_x_method_class": mx.get("class"), "sigma_T_condition_effective": fnum(qt.get("sigma_effective")),
+            "uncertainty_budget": jstr(b) if b else None}
 
 
 # ---------------------------------------------------------------- other tables

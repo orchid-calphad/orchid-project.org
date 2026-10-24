@@ -608,6 +608,7 @@ def build(a, log=print):
                 tl, why = tie_line(phases, (jl, nl, kl), (jr, nr, kr), xs, names, table, u_x, x, T_K, cut_left, cut_right)
                 cnt["tie_line" if tl else "tie_line_omitted:" + why] += 1
             rec["tie_line"] = tl
+            rec["uncertainty_budget"] = assessed_budget(rec)
             rec["tie_line_omitted"] = why
             # ---- SGTE cross-check
             rec["sgte_crosscheck"] = [crosscheck(gd, x, T_K, comp, asm, by_tdb, reg.od.get(key, frozenset())) for gd in sgte]
@@ -724,6 +725,40 @@ def crosscheck(gd, x, T_K, comp, asm, by_tdb, od=frozenset()):
     return dict(base, result="disagrees", reason=None)
 
 
+# ---- uncertainty budget (PI decision 2026-10-24: components kept separate, as in the literature release)
+BUDGET_CALIBRATION = "assessed-phase-assemblages handbook-class prior 2026-10-24"
+BUDGET_RULE = ("max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter); boundary margin "
+               "reported, not combined")
+HANDBOOK_PRIOR = {"T": 10.0, "x": 0.02}   # K, mole fraction (ORCHID assumption; see SCHEMA.md)
+HANDBOOK_PRIOR_BASIS = (
+    "ORCHID assumption (PI decision 2026-10-24), not fitted: an expert-drawn assessed diagram reproduces its "
+    "experimental evidence to about 10 K and 0.02 mole fraction, the same priors the literature release uses for "
+    "model / assessment values (tools/uncertainty_budget.py MODEL_PRIORS T_INVARIANT, X_PHASE)")
+
+
+def _bq(unit, vt, reading, prior, margin):
+    eff = max(x for x in (reading, prior) if x is not None)
+    return {"unit": unit, "value_type": vt, "sigma_printed": None,
+            "sigma_reading": {"value": reading, "basis": "digitisation (max axis-calibration residual + half a raster "
+                                                         "cell)"} if reading is not None else None,
+            "sigma_method": {"class": "assessed_phase_diagram", "value": prior, "floor": prior, "floor_unit": unit,
+                             "basis": "prior", "n_pairs": 0, "ci95": None, "entry": "assessed handbook class prior",
+                             "prior_source": "orchid_assumed"},
+            "sigma_composition": None, "sigma_scatter": None, "sigma_conversion": None,
+            "sigma_boundary_margin": {"value": margin, "basis": "distance of the point to the nearest drawn boundary "
+                                      "(drawing-based, low credence; describes placement, NOT added to "
+                                      "sigma_effective)"},
+            "sigma_effective": r6(eff)}
+
+
+def assessed_budget(rec):
+    cu, pm = rec["coordinate_uncertainty"], rec["positional_margin"]
+    return {"calibration": BUDGET_CALIBRATION, "sigma_rule": BUDGET_RULE,
+            "quantities": {"temperature_K": _bq("K", "T_ASSESSED", cu["T_K"], HANDBOOK_PRIOR["T"], pm["isopleth_K"]),
+                           "composition": _bq("mole fraction", "X_ASSESSED", cu["x"], HANDBOOK_PRIOR["x"],
+                                              pm["isotherm_mole_fraction"])}}
+
+
 def espei_dataset(diag, pts, comp, elements, citations, with_tl):
     comps = sorted(e.upper() for e in elements)
     if any(va for _, _, va, _ in pts):
@@ -759,18 +794,34 @@ def espei_dataset(diag, pts, comp, elements, citations, with_tl):
     return {"components": comps, "phases": sorted(phases), "conditions": {"P": P_PA, "T": temps}, "output": "ZPF",
             "values": values, "reference": ref, "comment": comment,
             "tags": ["assessed_phase_diagram", "orchid"] + (["tie_line_variant"] if with_tl else []),
-            "orchid": {"evidence_class": EVIDENCE_CLASS, "diagram": diag, "record_ids": [r["id"] for r, _, _, _ in pts]}}
+            "orchid": {"evidence_class": EVIDENCE_CLASS, "diagram": diag, "record_ids": [r["id"] for r, _, _, _ in pts]},
+            "orchid_uncertainty_budget": budget_points([r for r, _, _, _ in pts])}
+
+
+def budget_points(recs):
+    """ESPEI metadata: per point (value order) the component values of the record's uncertainty budget."""
+    def comp(q):
+        return {k: (q.get(k) or {}).get("value") if isinstance(q.get(k), dict) else q.get(k)
+                for k in ("sigma_printed", "sigma_reading", "sigma_method", "sigma_boundary_margin", "sigma_effective")}
+    return {"sigma_rule": BUDGET_RULE, "calibration": BUDGET_CALIBRATION,
+            "points": [{"record_id": r["id"],
+                        "temperature_K": comp(r["uncertainty_budget"]["quantities"]["temperature_K"]),
+                        "composition_mole_fraction": comp(r["uncertainty_budget"]["quantities"]["composition"])}
+                       for r in recs]}
 
 
 # ------------------------------------------------------------------------------------------------ outputs --
 CSV_COLS = ["id", "system", "diagram", "field", "assemblage_label", "n_phases", "phase_labels", "canonical_names",
-            "phase_ids", "T_K", "T_C", "x", "x_component", "P_Pa", "u_T_K", "u_x", "point_method", "margin_normalized",
+            "phase_ids", "T_K", "T_C", "x", "x_component", "P_Pa", "u_T_K", "u_x", "sigma_T_reading_K", "sigma_x_reading",
+            "sigma_T_method_K", "sigma_x_method", "sigma_T_effective_K", "sigma_x_effective", "point_method",
+            "margin_normalized",
             "margin_isotherm_x", "margin_isopleth_K", "basis", "confidence", "review_state", "flags",
             "tie_line_x_left", "tie_line_phase_left", "tie_line_x_right", "tie_line_phase_right", "tie_line_omitted",
             "sgte_n", "sgte_agrees", "sgte_disagrees", "sgte_not_comparable", "sgte_results",
             "original_citation", "original_doi", "handbook_page_pdf", "evidence_class"]
 INT_COLS = {"field", "n_phases", "sgte_n", "sgte_agrees", "sgte_disagrees", "sgte_not_comparable", "handbook_page_pdf"}
-FLT_COLS = {"T_K", "T_C", "x", "P_Pa", "u_T_K", "u_x", "margin_normalized", "margin_isotherm_x", "margin_isopleth_K",
+FLT_COLS = {"T_K", "T_C", "x", "P_Pa", "u_T_K", "u_x", "sigma_T_reading_K", "sigma_x_reading", "sigma_T_method_K",
+            "sigma_x_method", "sigma_T_effective_K", "sigma_x_effective", "margin_normalized", "margin_isotherm_x", "margin_isopleth_K",
             "tie_line_x_left", "tie_line_x_right"}
 
 
@@ -780,6 +831,8 @@ def flat(rec):
     sg = rec["sgte_crosscheck"]
     oc = [c for c in rec["citations"] if c["role"] == "original_evaluation"]
     hb = [c for c in rec["citations"] if c["role"] == "compilation"][0]
+    bT = rec["uncertainty_budget"]["quantities"]["temperature_K"]
+    bX = rec["uncertainty_budget"]["quantities"]["composition"]
     return {"id": rec["id"], "system": rec["system"], "diagram": rec["diagram"], "field": rec["field"],
             "assemblage_label": rec["assemblage_label"], "n_phases": rec["n_phases"],
             "phase_labels": ";".join(p["label"] for p in rec["assemblage"]),
@@ -787,6 +840,10 @@ def flat(rec):
             "phase_ids": ";".join(p["phase_id"] or "" for p in rec["assemblage"]),
             "T_K": rec["T_K"], "T_C": rec["T_C"], "x": rec["x"], "x_component": rec["x_component"], "P_Pa": rec["P_Pa"],
             "u_T_K": rec["coordinate_uncertainty"]["T_K"], "u_x": rec["coordinate_uncertainty"]["x"],
+            "sigma_T_reading_K": (bT["sigma_reading"] or {}).get("value"),
+            "sigma_x_reading": (bX["sigma_reading"] or {}).get("value"),
+            "sigma_T_method_K": bT["sigma_method"]["value"], "sigma_x_method": bX["sigma_method"]["value"],
+            "sigma_T_effective_K": bT["sigma_effective"], "sigma_x_effective": bX["sigma_effective"],
             "point_method": rec["point_method"], "margin_normalized": rec["positional_margin"]["normalized"],
             "margin_isotherm_x": rec["positional_margin"]["isotherm_mole_fraction"],
             "margin_isopleth_K": rec["positional_margin"]["isopleth_K"], "basis": rec["basis"],
@@ -1026,6 +1083,14 @@ lines). Fields too thin for that margin have no point (listed in `exclusions.jso
 stable at (T, x, 1 atm)" then does not depend on where exactly the expert drew the boundaries. Coordinate uncertainty
 comes from the axis calibration (printed tick labels vs the fitted axis) plus half a raster cell.
 
+Each record carries an `uncertainty_budget` with the components kept separate, in the same structure as the ORCHID
+literature release (PI decision 2026-10-24): digitisation (`sigma_reading`, the coordinate uncertainty above), a
+handbook-class prior (`sigma_method`: 10 K and 0.02 mole fraction for an expert-drawn assessed diagram; an ORCHID
+assumption, the same as the release's model / assessment priors, not fitted) and the distance to the nearest drawn
+boundary (`sigma_boundary_margin`, reported but not combined, since boundary positions carry low credence);
+`sigma_effective` = max(digitisation, handbook prior). The ESPEI datasets carry the per-point components in
+`orchid_uncertainty_budget` (ZPF data are not weighted by a sigma in ESPEI).
+
 Two-phase points carry the two phases with **unknown compositions** (`phase_compositions: null`; ESPEI null vertices
 with a `__HYPERPLANE__` vertex at the point's overall composition). A separate `tie_line` block gives the isotherm
 through the point intersected with the drawn boundaries, with the caveat that it is drawing-based and of low credence
@@ -1082,6 +1147,7 @@ Builder: `tools/build_assessed_assemblages.py` (orchid-project.org; deterministi
 | `x`, `x_component`, `composition_axis`, `composition_basis` | mole fraction of `x_component`; every diagram here is drawn in at.%% (no wt.%% conversion) |
 | `P_Pa`, `pressure_basis` | 101325; 1 atm assumed |
 | `coordinate_uncertainty` | `{T_K, x}` bounds = max axis-calibration residual + half a raster cell; also the residuals and number of calibration pairs per axis |
+| `uncertainty_budget` | `{calibration, sigma_rule, quantities{temperature_K, composition}}`, the same separate-component structure as the literature release (PI decision 2026-10-24). Per quantity (`unit` K / mole fraction, `value_type` `T_ASSESSED` / `X_ASSESSED`): `sigma_printed` null (the handbook prints no uncertainty); `sigma_reading` = digitisation, i.e. the `coordinate_uncertainty` bound (max axis-calibration residual + half a raster cell); `sigma_method` = handbook-class prior `{class: assessed_phase_diagram, value, floor, basis: prior, n_pairs: 0, entry, prior_source: orchid_assumed}`, 10 K and 0.02 mole fraction: ORCHID assumption, not fitted: an expert-drawn assessed diagram reproduces its experimental evidence to about 10 K and 0.02 mole fraction, the priors the literature release uses for model / assessment values; `sigma_composition`, `sigma_scatter`, `sigma_conversion` null (do not apply); `sigma_boundary_margin` = `positional_margin` isopleth_K / isotherm_mole_fraction (drawing-based, reported, **not** combined); `sigma_effective` = max(sigma_reading, sigma_method). Rule: `max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter); boundary margin reported, not combined`. Flat columns: `sigma_T_reading_K`, `sigma_x_reading`, `sigma_T_method_K`, `sigma_x_method`, `sigma_T_effective_K`, `sigma_x_effective`. Tie-line endpoints keep their own `x_uncertainty` (drawing-based, not part of the budget) |
 | `point_method` | `centroid` or `pole_of_inaccessibility`; for the fallback `centroid` gives the centroid, whether it was inside, and its clearance |
 | `positional_margin` | `{normalized, isotherm_mole_fraction, isopleth_K}`: distance to the nearest drawn line or frame edge (frame-normalised; along the isotherm; along the isopleth). Drawing-based, low credence: describes placement only, not an uncertainty of any phase composition |
 | `phase_compositions` | always `null`: the record does not claim phase compositions |
@@ -1125,7 +1191,9 @@ compositions unknown, the target hyperplane at the point's overall composition. 
 is written with composition null (ESPEI 0.9.1 / pycalphad 0.11.2 return NaN for a line compound at a fixed composition),
 and where both endpoints are line compounds the hyperplane is set at the point. `tags`: `assessed_phase_diagram`,
 `orchid` (+ `tie_line_variant`). `reference`: original evaluation(s) and the handbook; `comment`: evidence class, point
-method and (variant) the caveat; `orchid`: record ids. Points whose phases do not all map to a registry phase with a TDB
+method and (variant) the caveat; `orchid`: record ids; `orchid_uncertainty_budget`: `{sigma_rule, calibration,
+points[{record_id, temperature_K, composition_mole_fraction}]}` with the budget component values of each point (value
+order); ESPEI weighs ZPF by its driving-force tolerance, so the budget is information, not a weight. Points whose phases do not all map to a registry phase with a TDB
 name are left out (`espei_exclusions.jsonl`) but stay in `records.*`. The ESPEI bundle (`espei/assessed/`) carries the
 same points in the phase names of each assessment (TDB) that has ESPEI ZPF datasets, for use together with them.
 

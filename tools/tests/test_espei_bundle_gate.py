@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ESPEI bundle inclusion gate (tools/build_espei_bundle.py, cleanup 2026-10-24): every value the literature release
 marks not ESPEI-ready is excluded; 298 K is the standard temperature 298.15 K; no solver dataset lies below ESPEI's
-298.15 K temperature filter; tiny printed sigmas use the resolution floor. Unit part always; release part when the
+298.15 K temperature filter (the method-based sigma floors are tested in test_uncertainty_budget.py). Unit part always; release part when the
 orchid-data checkout is present (no written dataset carries a not_espei_ready value; no solver dataset below 298.15 K).
 usage: python3 tools/tests/test_espei_bundle_gate.py"""
 import glob, gzip, json, os, re, sys
