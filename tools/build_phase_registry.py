@@ -136,6 +136,7 @@ CRYSTAL_WORDS = {"CUB": "c", "CUBIC": "c", "CBCC": "c", "TETRAGONAL": "t", "TETR
 SB_TOKEN = re.compile(r"^[A-L](\d+[A-Z]?\d*|[A-Z])$")
 BENIGN = {"OLD", "NEW", "PHASE", "OXIDE", "HT", "LT", "RT", "HT1", "HT2", "LT1", "LT2"}
 LIQ_TOKENS = {"LIQUID", "LIQ", "L", "IONIC", "ION", "IONIC_LIQ"}
+EXTRA_LIQUID_NAMES = {"KAP_LIQ", "ASSOCI", "OXIDE_L", "SLAG"}
 GREEK_WORDS = ("ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON", "ZETA", "ETA", "THETA", "KAPPA", "LAMBDA", "MU", "NU",
                "XI", "PI", "RHO", "SIGMA", "TAU", "PHI", "CHI", "PSI", "OMEGA")
 
@@ -264,8 +265,19 @@ def load_mmc2(path):
 
 
 # ----------------------------------------------------------------------------------------- structure types --
+# Pearson symbols printed with the hexagonal-cell atom count for a rhombohedral (hR) structure; the Pearson symbol counts
+# the rhombohedral (primitive) cell (audit round 2, A2: Al4C3 D7_1 is hR7, not hR21)
+PEARSON_SETTING_FIX = {("Al4C3", "hR21"): "hR7"}
+
+
 def build_structure_types(mmc2):
     types = {}       # key -> type
+    fixed = {}
+    for r in mmc2:
+        fx = PEARSON_SETTING_FIX.get(((r.get("prototype") or "").replace("\t", "").strip(), r.get("pearson")))
+        if fx:
+            fixed[fx] = r["pearson"]
+            r = r.update(pearson=fx) or r
 
     def key_of(sbn, proto, pearson, sgn):
         return ("sb", sbn, pearson, sgn) if sbn else ("proto", proto_key(proto or "?"), pearson, sgn)
@@ -316,6 +328,9 @@ def build_structure_types(mmc2):
             "space_group": {"number": t["sg_number"], "symbol": t["sg_symbol"]} if t["sg_number"] else None,
             "stoichiometry": "".join("%s%s" % (k2, counts[k2]) for k2 in sorted(counts)) if counts else None,
             "sources": src,
+            **({"pearson_as_printed_in_source": fixed[t["pearson"]],
+                "pearson_note": "the source prints the hexagonal-cell atom count; the Pearson symbol counts the "
+                                "rhombohedral cell"} if t["pearson"] in fixed and t["from_mmc2"] else {}),
             "verification": ("in Hallstedt 2025 mmc2" if t["from_mmc2"] and not t["builtin"] else
                              "built-in row confirmed by Hallstedt 2025 mmc2 (Strukturbericht, Pearson, space group)"
                              if t["verified"] else "%TODO verify (built-in row written from memory; not in mmc2)"),
@@ -365,13 +380,16 @@ def parse_tdb(path):
                 except ValueError:
                     n, ratios = None, []
                 phases[name] = {"type_code": toks[2], "n_sublattices": n, "site_ratios": ratios,
-                                "comments": list(recent[-6:])}
+                                "comments": list(recent[-6:]),
+                                "liquid_flag": bool(re.search(r":[A-Z]*L[A-Z]*$", toks[1].upper()))}
             elif kw.startswith("CONST") and len(toks) >= 2:
                 rest = stmt.split(None, 1)[1]
                 nm, _, subl = rest.partition(":")
                 nm = nm.strip().split()[0].upper() if nm.strip() else ""
                 parts = subl.split(":")
-                if parts and re.match(r"^[A-Z]$", parts[0].strip().upper()):
+                # a type letter attached to the name (NAME:L : ...) is not a sublattice; a first sublattice that holds
+                # one single-letter element (CONST U3O8 : U : O :) is (audit round 2, A2 class 4)
+                if parts and re.match(r"^\s*[A-Za-z0-9_#]+:[A-Za-z]\s*:", rest) and re.match(r"^[A-Z]$", parts[0].strip().upper()):
                     parts = parts[1:]  # NAME:L : ...
                 sl = []
                 for p in parts:
@@ -882,6 +900,7 @@ def build(a):
         e["names"].setdefault(name, dict({"name": name, "namespace": ns}, **kw))
 
     system_phase_names = collections.defaultdict(set)   # SYS -> TDB phase names (for literature linking)
+    dis_targets = {}
     tdb_models_by_file = {}
     for e in tdbs:
         path = os.path.join(open_tdb, e["local_path"])
@@ -901,6 +920,7 @@ def build(a):
         for c in dstats["type_codes_without_definition"]:
             tdb_codes_undefined[c] += 1
         tdb_models_by_file[fname] = (system, phases)
+        dis_targets[fname] = set(ordis.values())
         dis_of = {v: k for k, v in ordis.items()}
         for name in sorted(phases):
             p = phases[name]
@@ -976,9 +996,17 @@ def build(a):
                             pts[ph[0].upper()].append((round((xi + k) * g["x_step"], 6), T))
                     xi += cnt
         tr = d.get("T_range") or [None, None]
+        indep = {}
+        for ph in phases:
+            indep.setdefault(canonical_phase_id(elements, ph, phases.keys(), mmc2_sb_by_name), set()).add(ph)
         for ph in sorted(set(phases) | {q.upper() for q in d.get("phases") or []}):
             pid = canonical_phase_id(elements, ph, phases.keys(), mmc2_sb_by_name)
             if pid not in entries:
+                continue
+            # a DIS_PART target (A2_BCC of B2_BCC) is never computed on its own: no stability row for it when the same
+            # registry phase has an independent model in this TDB (audit round 2, A2 class 6: two rows per TDB that
+            # contradicted each other)
+            if ph in dis_targets.get(fname, set()) and len(indep.get(pid, ())) > 1:
                 continue
             P, Ts = pts.get(ph, []), trow.get(ph, [])
             st = {"tdb": fname, "tdb_sha256": d.get("sha256"), "diagram": "phase-diagrams/sgte/" + pfile,
@@ -1251,6 +1279,11 @@ def build(a):
         analyses = [classify_name(n, en["elements"], sb_types, None, st_by_id) for n in tdb_names] or \
                    [classify_name(pid.split(":")[2].upper().replace("-", "_"), en["elements"], sb_types, None, st_by_id)]
         kinds = {x["kind"] for x in analyses}
+        # a liquid declared with the ':L' phase flag (KAP_LIQ:L, ASSOCI:L) or named as one (OXIDE_L, *_LIQ) is a liquid
+        # whatever its name tokens (audit round 2, A2 class 8)
+        if en["models"] and all((m["_raw"] or {}).get("liquid_flag") or m["phase_name"] in EXTRA_LIQUID_NAMES or
+                                re.search(r"(?:^|_)(?:LIQ|LIQUID)$", m["phase_name"]) for m in en["models"]):
+            kinds = {"liquid"}
         # DFT at the fixed composition
         dft = {}
         if comp and len(comp) == 2:
@@ -1458,16 +1491,192 @@ def build(a):
                                                                   for p, q, s in sorted(protos, key=str)],
                  "registry_phases": sorted(pid for pid, en in entries.items() if n in {m["phase_name"] for m in en["models"]})})
 
+    conflicts["merged_orphan_ids"] = merge_orphans(entries)
     return finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, data,
                     {"unmatched_parameters": tdb_stats["unmatched_parameters"],
                      "type_codes_without_definition": dict(sorted(tdb_codes_undefined.items()))})
 
 
+def merge_orphans(entries):
+    """Registry ids with no TDB model that duplicate a modelled id of the same system (corpus ids such as dhcp beside
+    dhcp-a3, fcc-a1-2 = a '#2' composition set, liquid-2, v6c5-2, a 'liquid' where the TDBs name the liquid ION) are
+    merged into that id: their names, literature counts and references move, the old id stays as an alias. An id with no
+    model that carries its own printed labels (an unmodelled polymorph such as Cu33Si7-ht) is kept. Returns the merge log
+    (audit round 2, A2 class 8)."""
+    log = []
+    by_sys = collections.defaultdict(list)
+    for pid, en in entries.items():
+        by_sys[en["system"]].append(pid)
+    for pid in sorted(entries):
+        en = entries.get(pid)
+        if en is None or en["models"]:
+            continue
+        has_labels = any(n.get("namespace") == "paper" for n in en["names"].values())
+        sib = [q for q in by_sys[en["system"]] if q != pid and q in entries and entries[q]["models"]]
+        base = re.sub(r"-(?:\d+|ht|lt|rt)$", "", pid)
+        target = [q for q in sib if q.startswith(pid + "-")] or [q for q in sib if base != pid and q == base]
+        why = "duplicate_id_of_modelled_phase"
+        if not target and pid.endswith(":liquid") or (not target and re.search(r":liquid-\d+$", pid)):
+            target = [q for q in sib if (entries[q].get("structure") or {}).get("structure_type") == "st:liquid"]
+            why = "liquid_named_otherwise_in_the_tdbs"
+        if len(target) != 1 or (has_labels and why == "duplicate_id_of_modelled_phase" and not pid.endswith(("-2", "-3"))):
+            continue
+        tgt = entries[target[0]]
+        for k, v in en["names"].items():
+            tgt["names"].setdefault(k, v)
+        tgt["lit"].update(en["lit"])
+        tgt["lit_acc"].update(en["lit_acc"])
+        for k, v in en["refs"].items():
+            tgt["refs"].setdefault(k, v)
+        tgt["corpus"]["aliases"] |= set(en["corpus"]["aliases"]) | {pid}
+        tgt["corpus"]["mappings"].update(en["corpus"]["mappings"])
+        tgt.setdefault("merged_ids", []).append(pid)
+        log.append({"merged": pid, "into": target[0], "reason": why,
+                    "literature_values": sum(en["lit"].values()) if hasattr(en["lit"], "values") else 0})
+        del entries[pid]
+    return log
+
+
+INTERSTITIAL_X = ("C", "N", "H", "O", "B")
+
+
+def interstitial_structure(en, st_by_id):
+    """FCC_A1 (M)(X,VA) phases that are stable only as the interstitial compound MX_y (x_X > 0.25 wherever stable in the
+    calculated diagrams): NaCl-type B1 (X = C, N, O, B; also H up to x_H 0.55) or fluorite C1 (H, x_H > 0.55), sharing
+    the FCC_A1 model (SGTE convention). Returns (structure, caveat) or None (audit round 2, A2 class 5)."""
+    st = en.get("structure") or {}
+    if st.get("strukturbericht") != "A1":
+        return None
+    xs, tetra = set(), False
+    for m in en["models"]:
+        subs = [sl.get("constituents") or [] for sl in m.get("sublattices") or []]
+        if len(subs) >= 2 and all("VA" in sl for sl in subs[1:]):
+            for sl in subs[1:]:
+                xs |= {c for c in sl if c in INTERSTITIAL_X}
+            tetra |= any(abs((sl.get("site_ratio") or 0) - 2.0) < 1e-9 for sl in (m.get("sublattices") or [])[1:])
+    xs &= set(en["elements"])
+    if len(xs) != 1:
+        return None
+    X = xs.pop()
+    rows = [r for r in en["stability"] if r.get("stable") and r.get("x_min") is not None]
+    if not rows:
+        return None
+    lo = min(r["x_min"] if r["x_element"] == X else 1 - r["x_max"] for r in rows)
+    hi = max(r["x_max"] if r["x_element"] == X else 1 - r["x_min"] for r in rows)
+    if lo <= 0.25:
+        return None
+    # hydrides: fluorite (C1, tetrahedral sites filled; MH2) when the model has the 2:1 tetrahedral sublattice or reaches
+    # x_H > 0.6; rock salt (B1, octahedral sites) otherwise
+    tid = "st:c1-caf2-cf12" if X == "H" and (tetra or hi > 0.6) else "st:b1-nacl-cf8"
+    t = st_by_id.get(tid)
+    if not t:
+        return None
+    new = {"structure_type": tid, "basis": "interstitial_fcc_a1_compound", "tier": "A", "confidence": "high",
+           "label": "interstitial compound M%s modelled as FCC_A1 (M)(%s,VA): %s structure where stable (x_%s %.2f-%.2f "
+                    "in the calculated diagrams)" % (X, X, "fluorite (C1)" if tid.startswith("st:c1") else
+                                                     "NaCl-type (B1)", X, lo, hi),
+           "prototype": t["prototype"], "strukturbericht": t["strukturbericht"], "pearson": t["pearson"],
+           "space_group": t["space_group"], "model_lattice": {"strukturbericht": "A1", "pearson": "cF4",
+                                                              "note": "metal sublattice of the FCC_A1 model"}}
+    return new, "structure from the stable interstitial composition, not from the FCC_A1 model name"
+
+
+_COMMENT_PROTO = re.compile(r"(?i)^prototypes?\s+(.+?)\s*\(\s*([a-z][A-Z]\d+)\*?\s*,")
+
+
+ORDERED_SB = {"B2", "L12", "L1_2", "D03", "D0_3", "L21", "L2_1", "B32", "D019", "D0_19", "L10", "L1_0", "D022", "D0_22",
+              "D024", "D0_24", "L60", "L6_0"}
+
+
+def order_disorder_caveat(en):
+    """An ordered structure (B2, L1_2, D0_3 ...) of an order/disorder model (DIS_PART partner or identically
+    partitioned sublattices) whose calculated field reaches a pure end (x < 0.03 or > 0.97): the diagrams report the
+    model name also where the sublattices are disordered (A2 / A1 / A3), so the ordered structure is not resolved over
+    the whole calculated range (order parameters not evaluated). Returns the caveat or None (audit round 2, A2 class 6)."""
+    st = en.get("structure") or {}
+    if re.sub(r"[_\s]", "", st.get("strukturbericht") or "") not in {re.sub("_", "", x) for x in ORDERED_SB}:
+        return None
+    capable = any(m.get("disordered_part") or partitioned({"constituents": [sl.get("constituents") or []
+                                                                           for sl in m.get("sublattices") or []]})
+                  for m in en["models"])
+    if not capable:
+        return None
+    if not any(r.get("stable") and r.get("x_min") is not None and (r["x_min"] < 0.03 or r["x_max"] > 0.97)
+               for r in en["stability"]):
+        return None
+    return ("order/disorder model: the ordered %s structure holds only where the sublattices are ordered; the calculated "
+            "stability range (rows flagged ordered_structure_range_not_resolved) includes disordered states; order "
+            "parameters were not evaluated" % st.get("strukturbericht"))
+
+
+def comment_conflict(en, stypes_=None):
+    """A TDB's own structure comment ('Prototype NiTi (mP4, P2_1/m)') that contradicts the assigned structure: a
+    different lattice (crystal family + centring) for a name-token assignment (NITI_B19 commented mP4 = B19', not B19
+    oP4), or a self-named prototype (Cu2P7 commented 'Prototype Cu2P7') against a DFT-matched prototype of another
+    compound. Returns the reason or None (audit round 2, A2 class 8)."""
+    st = en.get("structure") or {}
+    if st.get("basis") not in ("standard_name", "dft_unique_match") or not st.get("pearson"):
+        return None
+    for m in en["models"]:
+        for c in m.get("tdb_comment_structure") or []:
+            mm = _COMMENT_PROTO.match(c.strip())
+            if not mm:
+                continue
+            proto, pear = mm.group(1).strip(), mm.group(2)
+            if st["basis"] == "standard_name" and pear.lower() != st["pearson"].lower():
+                # only the primed / unprimed sibling of the name token (B19 <-> B19'), which the TDB comment identifies by
+                # its own Pearson symbol, counts; other comment mismatches are left (comment noise is common)
+                sb = (st.get("strukturbericht") or "").rstrip("'")
+                sib = [t for t in (stypes_ or []) if (t.get("strukturbericht") or "").rstrip("'") == sb and
+                       t.get("strukturbericht") != st.get("strukturbericht") and (t.get("pearson") or "") == pear]
+                if len(sib) == 1:
+                    return ("reassign", sib[0], "tdb_comment_identifies_%s_%s_not_%s (%s)" % (
+                        sib[0]["strukturbericht"], pear, st["pearson"], m["tdb"]))
+                continue
+            own = m.get("composition") and formula_counts(proto)
+            if st["basis"] == "dft_unique_match" and own and len(own) >= 2 and \
+                    re.sub(r"\W", "", proto).upper() == re.sub(r"\W", "", m["phase_name"].split("_")[0]).upper() and \
+                    re.sub(r"\W", "", proto).upper() != re.sub(r"\W", "", st.get("prototype") or "").upper():
+                return "tdb_comment_names_own_prototype_%s_not_%s (%s)" % (proto, st.get("prototype"), m["tdb"])
+    return None
+
+
 def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, data, tdb_extra):
     cite = orchid_cite.cite_as(DATASET, data)
     reg = []
+    st_by_id_ = {t["id"]: t for t in stypes}
     for pid in sorted(entries):
         en = entries[pid]
+        hit = interstitial_structure(en, st_by_id_)
+        if hit:
+            en["structure"] = hit[0]
+        od = order_disorder_caveat(en)
+        if od:
+            en["structure"] = dict(en["structure"], caveat=od)
+            for r in en["stability"]:
+                if r.get("stable") and r.get("x_min") is not None and (r["x_min"] < 0.03 or r["x_max"] > 0.97):
+                    r["ordered_structure_range_not_resolved"] = True
+        why = comment_conflict(en, stypes)
+        if isinstance(why, tuple):
+            t = why[1]
+            en["structure"] = {"structure_type": t["id"], "basis": "tdb_comment_structure", "tier": "A",
+                               "confidence": "high", "label": "the TDB's own structure comment names the primed variant "
+                               "of the name token", "prototype": t["prototype"], "strukturbericht": t["strukturbericht"],
+                               "pearson": t["pearson"], "space_group": t["space_group"], "name_token_structure":
+                               (en["structure"] or {}).get("strukturbericht")}
+            conflicts.setdefault("tdb_comment_contradicts_assignment", []).append({"phase": pid, "reason": why[2]})
+            why = None
+        if why:
+            st = en["structure"]
+            en["candidates"] = list(en["candidates"]) + [{"source": st.get("basis"), "structure_type": st.get("structure_type"),
+                                                          "prototype": st.get("prototype"),
+                                                          "strukturbericht": st.get("strukturbericht"),
+                                                          "pearson": st.get("pearson"), "space_group": st.get("space_group"),
+                                                          "detail": "assignment withdrawn: " + why}]
+            en["reasons"] = list(en["reasons"]) + [why]
+            en["structure"] = None
+            en["status"] = "needs_review"
+            conflicts.setdefault("tdb_comment_contradicts_assignment", []).append({"phase": pid, "reason": why})
         names = [en["names"][k] for k in sorted(en["names"])]
         names.append({"name": "corpus:" + pid, "namespace": "corpus", "label": pid,
                       "in_sgte_corpus": en["corpus"]["in_corpus"]})
@@ -1478,7 +1687,10 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
                 ns = "mp" if mid.startswith("mp-") else "oqmd"
                 names.append({"name": "%s:%s" % (ns, mid), "namespace": ns, "label": mid,
                               "basis": en["structure"]["basis"]})
-        tdbn = collections.Counter(m["phase_name"] for m in en["models"])
+        # preferred name: the independent PHASE most assessments use; a disordered part (DIS_PART target, e.g. A2_BCC of
+        # B2_BCC) only when no independent model exists (audit round 2, A2 class 7)
+        tdbn = collections.Counter(m["phase_name"] for m in en["models"] if not m.get("disordered_part_of")) or \
+            collections.Counter(m["phase_name"] for m in en["models"])
         pref = sorted(tdbn, key=lambda n: (-tdbn[n], n))[0] if tdbn else pid.split(":")[2].upper()
         refs = []
         for k, r in en["refs"].items():
@@ -1758,6 +1970,11 @@ def conflicts_md(conflicts, counts):
          "| kind | items |", "|---|---|"]
     for k, v in conflicts.items():
         o.append("| %s | %d |" % (k, len(v)))
+    o += ["", "## Merged ids (no TDB model; duplicate of a modelled phase)", "",
+          "Corpus ids without any TDB model that duplicate a modelled phase of the same system were merged into it; the "
+          "old id is kept as a `corpus` alias (`alias_of`).", ""]
+    for c in conflicts.get("merged_orphan_ids", []):
+        o.append("- `%s` -> `%s` (%s)" % (c["merged"], c["into"], c["reason"]))
     o += ["", "## Same TDB name, different structures (Hallstedt 2025 mmc2)", "",
           "A phase name the SGTE collection uses for more than one structure (Pearson symbol / space group). The name "
           "alone therefore cannot fix the structure.", ""]
@@ -1841,7 +2058,7 @@ literature_accepted_values, literature_papers, references_listed, total_papers}`
 |---|---|
 | `id` | `phase:<sorted lower-case elements>:<slug>`; the SGTE-corpus canonical id convention (token order folded, liquid synonyms, `#n` instance and non-distinguishing HT/LT tags dropped), so corpus ids carry over |
 | `system`, `elements` | chemical system (upper-case elements joined by `-`) |
-| `preferred_name` | the TDB phase name used by most assessments |
+| `preferred_name` | the TDB phase name used by most assessments, counting independent PHASEs only (a DIS_PART disordered part, e.g. A2_BCC of B2_BCC, only when the phase has no independent model) |
 | `status` | `assigned` (structure below), `needs_review` (no structure; `candidates` listed), `unresolved_no_candidates` |
 | `structure` | `{structure_type, basis, tier, confidence, label, prototype, strukturbericht, pearson, space_group, caveats[], dft?}` or `null`. `basis`: `standard_name` (tier A: the TDB name encodes one structure and the model stoichiometry / sublattices and DFT do not contradict it), `dft_unique_match` (tier B, label "DFT-supported": a stoichiometric compound matching exactly one on-hull entry in both Materials Project and OQMD with the same space group, one structure type for that space group and stoichiometry, and no other phase of the system at that composition), `assessment_declared` (tier C, confidence `assessor-stated`: tiers A and B do not assign it, the Hallstedt 2025 crystallographic table (mmc2) rows for this TDB phase name whose listed compound has exactly this system's elements all give one structure type with Pearson symbol and space group, nothing in tiers A/B contradicts it (name structure token, DFT ground state, model stoichiometry/sublattices, order/disorder), and every model's fixed composition or two-sublattice site ratio equals the listed compound; `source` cites mmc2 with its rows), `liquid`, `gas`. Phases whose mmc2 rows disagree stay `needs_review` (`sgte_mmc2_rows_disagree`) |
 | `candidates` | for unassigned phases: `{source, structure_type, prototype, strukturbericht, pearson, space_group, detail, material_id?, count?}`; `source` is `name_token`, `sgte_mmc2` (Hallstedt 2025 crystallographic table row for that name), `tdb_comment` (the compiler's comment above the PHASE line), `dft_mp` / `dft_oqmd` (on-hull entries at the composition or within the calculated homogeneity range), `dft_space_group_and_stoichiometry`, `literature_printed` (Pearson / prototype printed beside a label mapped to the phase) |
