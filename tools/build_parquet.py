@@ -103,7 +103,8 @@ BOOL_FLAGS = ["espei_ready", "judge_adjudicated", "magnitude_suspect", "source_d
               "unsigned_in_print", "sign_pdf_page_verified", "has_dropped_fields",
               "composition_conflict_between_readers", "unit_conflict_between_readers", "page_unreadable",
               "basis_inferred_from_magnitude", "basis_corrected_from_formula", "sign_from_heading",
-              "dft_outlier_unexplained", "reference_state_dropped_not_in_quote"]
+              "dft_outlier_unexplained", "reference_state_dropped_not_in_quote", "espei_certified",
+              "espei_ready_upstream"]
 
 
 def lit_schema(pa):
@@ -137,6 +138,8 @@ def lit_schema(pa):
         ("flag_state_fully_specified", b), ("flag_value_in_quote", b), ("dropped_field_count", i),
         ("review_state", s), ("row_state", s), ("review_flags", ls), ("specification_gaps", ls),
         ("plausibility_result", s), ("plausibility_dT_K", f), ("plausibility_model", s),
+        ("calphad_check", s), ("espei_certified_basis", s), ("espei_phase_rule_result", s),
+        ("espei_phase_rule_reason", s), ("espei_blocked_by", ls),
         ("method", s), ("method_basis", s), ("conditions_kind", s), ("conditions_paper", s),
         ("paper_id", s), ("paper_doi", s), ("paper_citation", s), ("paper_year", i),
         ("cited_dois", ls), ("cited_labels", ls),
@@ -222,6 +225,10 @@ def lit_row(r, papers, release):
         "specification_gaps": [str(x) for x in fl.get("specification_gaps") or []],
         "plausibility_result": pl.get("result"), "plausibility_dT_K": fnum(pl.get("dT_K")),
         "plausibility_model": pl.get("model"),
+        "calphad_check": fl.get("calphad_check"), "espei_certified_basis": fl.get("espei_certified_basis"),
+        "espei_phase_rule_result": (fl.get("espei_phase_rule") or {}).get("result"),
+        "espei_phase_rule_reason": (fl.get("espei_phase_rule") or {}).get("reason"),
+        "espei_blocked_by": [str(x) for x in fl.get("espei_blocked_by") or []],
         "method": r.get("method"), "method_basis": r.get("method_basis"),
         "conditions_kind": cond.get("kind"), "conditions_paper": cond.get("paper"),
         "paper_id": pid, "paper_doi": pap.get("doi") or (pid[4:] if pid.startswith("doi:") else None),

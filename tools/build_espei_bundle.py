@@ -66,9 +66,11 @@ import build_dft_parity as parity  # noqa: E402  (formula parser shared with the
 import export_literature_data as lit  # noqa: E402
 import orchid_cite  # noqa: E402
 import espei_constraints as ec  # noqa: E402
+import phase_rule as PR  # noqa: E402
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_ESPEI_PY = os.path.expanduser("~/.venvs/espei/bin/python")
+EVAL_WORKERS = int(os.environ.get("ORCHID_EVAL_WORKERS", "6"))
 NAME = "espei"
 STATUS_LINE = "Version 1, machine-extracted"
 
@@ -80,6 +82,7 @@ PGROUPS = ("assessed", "derived/invariant-brackets", "derived/liquid-stability")
 CAVEAT_FLAGS = ("magnitude_suspect", "system_mismatch", "source_disputed", "dft_outlier_unexplained",
                 "basis_inferred_from_magnitude", "basis_corrected_from_formula", "sign_from_heading",
                 "unsigned_in_print", "judge_adjudicated", "page_unreadable")
+COMPOUND_X_TOL = 0.01      # printed composition vs the compound's formula composition (mole fraction)
 DROP_REASONS = {
     "not_in_release": "observation not published in the literature release (added or re-read after the release)",
     "not_accepted": "published with extraction_accepted = false",
@@ -92,6 +95,64 @@ DROP_REASONS = {
                              "J/K/mol-atom, |H| or |G| > 1000 kJ/mol-atom): a unit error in the source or the "
                              "extraction; the value stays in the literature release with its flags",
 }
+PHASE_DROP_TEXT = {
+    "phase_rule:phase_not_printed": "physical phase rule: no phase printed for the value and the caption does not "
+                                    "name the liquid (no default phase is assigned)",
+    "phase_rule:phase_label_not_mapped": "physical phase rule: the printed phase label is not mapped to a model "
+                                         "phase by the phase registry",
+    "phase_rule:phase_label_ambiguous": "physical phase rule: the printed label maps to several registry phases",
+    "phase_rule:phase_without_tdb_model": "physical phase rule: the registry phase has no TDB model",
+    "phase_rule:compound_property_not_fittable": "physical phase rule: a property of a stoichiometric compound that "
+                                                 "ESPEI 0.9.1 cannot fit (only HM_FORM / SM_FORM of endmembers)",
+    "phase_rule:liquid_impossible_at_T": "physical phase rule: liquid printed at a temperature below the lowest "
+                                         "possible liquid temperature of the system",
+    "phase_rule:not_espei_ready": "the published value is not espei_ready",
+    "phase_not_in_target_tdb": "the value's phase has no model in the target TDB (the assessment folder)",
+    "phase_several_models_in_target_tdb": "the value's registry phase has several models in the target TDB",
+    "composition_not_at_compound": "compound formation value whose printed composition differs from the compound's "
+                                   "formula composition in the target TDB by more than %g" % COMPOUND_X_TOL,
+    "no_unique_endmember_in_target_tdb": "no single endmember of the compound's TDB model at its composition",
+    "duplicate_identical_property_dataset": "E3 (property datasets): identical to another dataset of the same "
+                                            "folder and system (output, phases, conditions, values); written once, "
+                                            "ids in `orchid.also_reported_as`",
+    "espei_evaluation_nonfinite_region": "ZPF region with a non-finite driving force against the target TDB "
+                                         "(ESPEI 0.9.1 likelihood evaluation); region not written",
+    "espei_evaluation_error": "dataset raises an error in the ESPEI 0.9.1 likelihood evaluation against its TDB",
+    "espei_evaluation_nonfinite": "dataset gives a non-finite value in the ESPEI 0.9.1 likelihood evaluation",
+    "espei_evaluation_tdb_error": "target TDB cannot be loaded by pycalphad",
+    "espei_evaluation_tdb_not_found": "target TDB not found",
+    "espei_evaluation_timeout": "likelihood evaluation timed out",
+    "reference_phase_not_in_target_tdb": "a reference-state phase is not a phase of the target TDB (e.g. the SER "
+                                         "name 1/2_MOLE_O2(G), truncated to '1' by the record builder); ESPEI 0.9.1 "
+                                         "stops with a KeyError",
+    "blocked_by_flag:unsigned_in_print": "the published value is flagged unsigned_in_print (minus sign absent in "
+                                         "print; sign uncertain)",
+    "blocked_by_flag:magnitude_suspect": "the published value is flagged magnitude_suspect",
+    "blocked_by_flag:system_mismatch": "the published value is flagged system_mismatch",
+    "blocked_by_flag:source_disputed": "the published value is flagged source_disputed",
+    "phase_rule:temperature_implausible": "physical phase rule: the temperature is zero, a composition, or (phase "
+                                          "equilibria) below 0.25 x the lowest element melting point",
+    "gas_without_printed_pressure": "ZPF region with a gas phase and no printed pressure",
+    "three_phase_region_off_invariant": "binary three-phase ZPF region more than %g K from every calculated "
+                                        "invariant of the system (a binary three-phase equilibrium is invariant)"
+                                        % PR.INVARIANT_T_TOL,
+    "zpf_region_inert": "ZPF region without any composition and without a hyperplane after E2: ESPEI 0.9.1 gives "
+                        "it zero driving force, so it constrains nothing (not written, not counted)",
+    "duplicate_value_same_dataset": "identical conditions and value under another id in the same dataset (another "
+                                    "row or paper quoting the same value): counted once, the other id in `also_read_as`",
+    "activity_out_of_range": "activity outside (0, 1] (a printed scale factor such as x10^3 not applied, or a zero "
+                             "endpoint that gives -inf in ESPEI); excluded, not rescaled",
+    "increment_not_absolute": "printed quantity is an increment (H(T)-H(298), S(T)-S(298)), not the absolute "
+                              "property of the dataset",
+    "absolute_entropy_negative": "negative absolute entropy (a formation entropy or a model parameter printed as S)",
+    "heat_capacity_unit_implausible": "heat capacity below %g J/K/mol-atom above 100 K (a per-gram value)" % 5.0,
+    "formation_magnitude_implausible": "formation enthalpy / Gibbs energy outside [-450, +100] kJ/mol-atom "
+                                       "(per-formula value or unit error)",
+    "mixing_magnitude_implausible": "mixing enthalpy / Gibbs energy outside [-200, +100] kJ/mol-atom",
+    "reference_state_not_ser": "compound formation value relative to a reference phase other than the TDB's SER "
+                               "phase (ESPEI _FORM is relative to SER)",
+}
+DROP_REASONS.update(PHASE_DROP_TEXT)
 PLAUSIBLE_MAX = {"SM": 150.0, "CPM": 200.0, "HM": 1e6, "GM": 1e6}
 ESPEI_EXCLUSIONS = {  # substring of the ESPEI error -> reason code
     "sum to greater than one": "mole_fractions_sum_above_one",
@@ -541,7 +602,183 @@ def uncertainty_block(out, recs, cls, zpf, T):
 
 
 # ------------------------------------------------------------------------------------------- corpus datasets --
+# ------------------------------------------------------------------------------------------- value gates --
+INCREMENT_RE = re.compile(r"(?i)[-−–]\s*[HS]\s*[°o0]?\s*\(?\s*298|[HS]\s*[°o0]?\s*\(\s*T\s*\)\s*[-−–]|increment")
+FORMATION_RANGE_J = (-450e3, 100e3)   # J/mol-atom; the most stable oxides are about -410 kJ/mol-atom
+MIXING_RANGE_J = (-200e3, 100e3)
+CPM_MIN = 5.0                         # J/K/mol-atom above 100 K: a smaller value is a per-gram value
+
+
+def value_gate(output, v, rec, T):
+    """Reason a scalar value cannot be used in ESPEI (physically or by unit), or None. Values are never altered."""
+    prop = rec.get("property") or ""
+    if output.startswith("ACR"):
+        if not (0.0 < v <= 1.0):
+            return "activity_out_of_range"
+        return None
+    if INCREMENT_RE.search(str(rec.get("property_printed") or "")):
+        return "increment_not_absolute"
+    if output == "SM" and v < 0:
+        return "absolute_entropy_negative"
+    if output == "CPM" and v < CPM_MIN and isinstance(T, (int, float)) and T > 100:
+        return "heat_capacity_unit_implausible"
+    if prop.endswith("_FORM") and prop[:2] in ("HM", "GM") and not (FORMATION_RANGE_J[0] <= v <= FORMATION_RANGE_J[1]):
+        return "formation_magnitude_implausible"
+    if prop.endswith("_MIX") and prop[:2] in ("HM", "GM") and not (MIXING_RANGE_J[0] <= v <= MIXING_RANGE_J[1]):
+        return "mixing_magnitude_implausible"
+    return None
+
+
+# ------------------------------------------------------------------------------------------- phases --
+def assign_phases(d, src_rel, stem, keep, recs, zpf, rule, reg):
+    """Phase of every kept value from the published record (tools/phase_rule.py), never from the corpus dataset's
+    default. Returns (groups, drops): one group per phase set (equilibrium dataset) or per compound phase
+    (non-equilibrium endmember dataset); drops [(index, record, reason)]."""
+    drops = []
+    models = reg.models.get(stem, {})
+    if zpf:
+        k2, r2 = [], []
+        sysn = rec_system = None
+        for i, (oid, rec) in zip(keep, recs):
+            why = rule_reason(rec, rule)
+            region = d["values"][i]
+            T = d["conditions"]["T"][i] if isinstance(d["conditions"]["T"], list) else d["conditions"]["T"]
+            names = [vx[0] for vx in region if vx[0] != "__HYPERPLANE__"]
+            if not why and models and any(n not in models for n in names):
+                why = "phase_not_in_target_tdb"
+            if not why and "GAS" in names and rec.get("pressure_basis") != "printed":
+                why = "gas_without_printed_pressure"
+            if not why and len(set(names)) >= 3 and len(d["components"]) - ("VA" in d["components"]) == 2 and \
+                    src_rel.startswith("general/") and not rule.near_invariant(rec.get("system"), T):
+                why = "three_phase_region_off_invariant"
+            if not why and ec.zpf_inert(region, stem, reg):
+                why = "zpf_region_inert"
+            if why:
+                drops.append((i, rec, why))
+            else:
+                k2.append(i)
+                r2.append((oid, rec))
+        return ([{"kind": "zpf", "keep": k2, "recs": r2, "phases": None}] if k2 else []), drops
+    G = rule.grids.get(stem)
+    groups = {}
+    for i, (oid, rec) in zip(keep, recs):
+        why = rule_reason(rec, rule)
+        if why:
+            drops.append((i, rec, why))
+            continue
+        c = rule.classify(rec)
+        names, why = [], None
+        for ph in c["phases"]:
+            if ph["kind"] == "liquid":
+                n = "LIQUID" if "LIQUID" in models else None
+            else:
+                cand = sorted(set(reg.phase_tdb_names.get(ph["registry_id"], {}).get(stem, [])))
+                n = cand[0] if len(cand) == 1 else None
+                why = "phase_several_models_in_target_tdb" if len(cand) > 1 else None
+            if n is None:
+                why = why or "phase_not_in_target_tdb"
+                break
+            names.append(n)
+        if why or not names:
+            drops.append((i, rec, why or "phase_not_in_target_tdb"))
+            continue
+        if len(names) == 1 and (models[names[0]] or {}).get("stoichiometric"):
+            if rec.get("property") not in PR.FORMATION_FITTABLE:
+                drops.append((i, rec, "phase_rule:compound_property_not_fittable"))
+                continue
+            m = models[names[0]]
+            comp = {k.upper(): v for k, v in (m.get("composition") or {}).items()}
+            xr = {k.upper(): v for k, v in (rec.get("overall_composition") or {}).items()}
+            if len(xr) == 1 and len(comp) == 2:
+                (e1, v1), = xr.items()
+                xr[[e for e in comp if e != e1][0]] = 1.0 - v1
+            if xr and any(abs(xr.get(e, 0.0) - comp.get(e, 0.0)) > COMPOUND_X_TOL for e in set(comp) | set(xr)):
+                drops.append((i, rec, "composition_not_at_compound"))
+                continue
+            ems = endmembers(m, comp)
+            if len(ems) != 1:
+                drops.append((i, rec, "no_unique_endmember_in_target_tdb"))
+                continue
+            ser = rule.ser_phases(m.get("path") or "")
+            refs = rec.get("reference_state") or {}
+            if any(isinstance(v, dict) and v.get("phase") and v["phase"].upper() != ser.get(el.upper())
+                   for el, v in refs.items()):
+                drops.append((i, rec, "reference_state_not_ser"))
+                continue
+            g = groups.setdefault(("compound_endmember", names[0]), {
+                "kind": "compound_endmember", "keep": [], "recs": [], "phases": [names[0]], "model": m,
+                "configs": [], "basis": Counter(), "flags": []})
+            g["configs"].append(ems[0])
+        else:
+            ph = sorted(set(names))
+            refp = [v.get("phase") for v in (d.get("reference_states") or {}).values()] + \
+                list((d.get("reference_state") or {}).get("phases") or [])
+            if models and any(p_ not in models for p_ in refp):
+                drops.append((i, rec, "reference_phase_not_in_target_tdb"))
+                continue
+            g = groups.setdefault(("equilibrium", tuple(ph)), {"kind": "equilibrium", "keep": [], "recs": [],
+                                                                "phases": ph, "basis": Counter(), "flags": []})
+            if G and len(d["components"]) - ("VA" in d["components"]) == 2:
+                x = PR.x_of(rec, G["x_component"])
+                for n in ph:
+                    if rule.in_field(stem, n, x, rec.get("temperature_K")) is False:
+                        g["flags"].append({"id": rec["id"], "phase": n, "x": x, "T_K": rec.get("temperature_K")})
+        g["keep"].append(i)
+        g["recs"].append((oid, rec))
+        g["basis"][c.get("basis") or "printed_labels"] += 1
+    out = []
+    for key in sorted(groups):
+        g = groups[key]
+        g["assignment"] = {"phases": g["phases"], "basis": dict(sorted(g.pop("basis").items())),
+                           "rule": "tools/phase_rule.py; README.md, 'Phase assignment'"}
+        if g["flags"]:
+            g["assignment"]["outside_calculated_field"] = g["flags"]
+        out.append(g)
+    return out, drops
+
+
+def rule_reason(rec, rule):
+    """Drop reason from the published record: a blocking flag, or the physical phase rule (the record's own result;
+    computed here for values that were never espei_ready, e.g. model-calculated values)."""
+    fl = rec.get("flags") or {}
+    bl = [f for f in PR.BLOCKING_FLAGS if fl.get(f)]
+    if bl:
+        return "blocked_by_flag:" + bl[0]
+    pr = fl.get("espei_phase_rule") or rule.classify(rec)
+    return None if pr.get("result") == "pass" else "phase_rule:" + pr["reason"]
+
+
+def to_solver(out, g, recs):
+    """A compound's formation enthalpies / entropies as an ESPEI non-equilibrium endmember dataset."""
+    m = g["model"]
+    out["output"] = recs[0][1]["property"]
+    out["components"] = sorted({c for cfg in g["configs"] for c in cfg})
+    out["phases"] = list(g["phases"])
+    out["solver"] = {"mode": "manual", "sublattice_site_ratios": [s["site_ratio"] for s in m["sublattices"]],
+                     "sublattice_configurations": g["configs"]}
+    out["conditions"] = {"P": 101325, "T": out["conditions"]["T"]}
+    out.pop("reference_states", None)
+    out.pop("reference_state", None)
+    out["orchid_phase_assignment"]["endmember"] = {
+        "tdb": m["tdb"], "path": m.get("path"), "sha256": m.get("sha256"), "phase": g["phases"][0],
+        "reference": "SER phases of the TDB's ELEMENT lines (ESPEI _FORM convention); the value's printed "
+                     "reference state names the same phases (or none)"}
+    if "compound_formation_endmember" not in out["tags"]:
+        out["tags"].append("compound_formation_endmember")
+
+
+def certification_block(out, recs):
+    vals = [{"id": r["id"], "espei_certified": bool((r.get("flags") or {}).get("espei_certified")),
+             "calphad_check": (r.get("flags") or {}).get("calphad_check") or "not_available"} for _, r in recs]
+    allc = bool(vals) and all(v["espei_certified"] for v in vals)
+    out["orchid_certification"] = {"basis": "pycalphad_invariant_agreement", "all_values_certified": allc,
+                                   "n_certified": sum(v["espei_certified"] for v in vals), "values": vals}
+    if allc and "calphad_certified" not in out["tags"]:
+        out["tags"].append("calphad_certified")
+
+
 def build_corpus(corpus, pdfs, data, pub, alias, papers):
+    RULE, REG = PR.PhaseRule(data), ec.Registry(data)
     smap, db = store_records(corpus, pdfs)
     release_has_ra = any("reader_agreement" in r for r in pub.values())
     by_base = defaultdict(list)
@@ -571,7 +808,8 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
 
     res = {"datasets": {}, "rows": {}, "drops": [], "dropped_datasets": [], "papers": {}, "src_counts": Counter(),
            "match_kind": Counter(), "sigma_stats": [], "_ustat": {}, "release_has_ra": release_has_ra, "_recs": {},
-           "upstream": {"duplicate_reads": [], "reference_state": []}, "e5": [], "e6": Counter()}
+           "upstream": {"duplicate_reads": [], "reference_state": []}, "e5": [], "e6": Counter(),
+           "phase_drops": Counter(), "phase_groups": Counter()}
     for sub, default_folder in SOURCES:
         for f in sorted(glob.glob(os.path.join(db, sub, "*", "*.json"))):
             if os.path.basename(f) == "provenance.json":
@@ -618,6 +856,8 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                         why = "value_differs_from_release"
                     elif abs(fv[i]) > PLAUSIBLE_MAX.get(prop_of(d["output"]), float("inf")):
                         why = "magnitude_implausible"
+                    elif value_gate(d["output"], fv[i], rec, d["conditions"]["T"]):
+                        why = value_gate(d["output"], fv[i], rec, d["conditions"]["T"])
                     elif not check_temperature(d["conditions"]["T"], rec, None):
                         why = "temperature_differs_from_release"
                 if why:
@@ -631,13 +871,21 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 res["dropped_datasets"].append({"source": src_rel, "reason": sorted(set(reasons)), "values": npts})
                 continue
             # E4: the same printed row read twice (same pid, conditions and value) counts once
-            seen_k, keep2, recs2, also_read = {}, [], [], defaultdict(list)
+            seen_k, seen_v, keep2, recs2, also_read = {}, {}, [], [], defaultdict(list)
             for i, (oid, rec) in zip(keep, recs):
                 if zpf:
                     key = (rec.get("pid"), T[i], json.dumps(d["values"][i], sort_keys=True))
                 else:
                     key = (rec.get("pid"), json.dumps({k: (v[i] if isinstance(v, list) else v)
                                                        for k, v in d["conditions"].items()}, sort_keys=True), fv[i])
+                vkey = key[1:]
+                if not rec.get("pid") or key not in seen_k:
+                    if vkey in seen_v:          # identical conditions and value under another id (another row)
+                        res["drops"].append({"source": src_rel, "index": i, "reason": "duplicate_value_same_dataset",
+                                             "orchid_id": rec["id"], "same_as": seen_v[vkey]})
+                        also_read[seen_v[vkey]].append(rec["id"])
+                        continue
+                    seen_v[vkey] = rec["id"]
                 if rec.get("pid") and key in seen_k:
                     first = seen_k[key]
                     also_read[first].append(rec["id"])
@@ -650,111 +898,133 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 keep2.append(i)
                 recs2.append((oid, rec))
             keep, recs = keep2, recs2
-            out = json.loads(json.dumps(d))
-            if len(keep) < npts:
-                if zpf:
-                    out["conditions"]["T"] = [T[i] for i in keep]
-                    out["values"] = [d["values"][i] for i in keep]
-                    out["phases"] = sorted({v[0] for reg in out["values"] for v in reg if v[0] != "__HYPERPLANE__"})
-                else:
-                    for k, v in d["conditions"].items():
-                        if k.startswith("X_"):
-                            out["conditions"][k] = [v[i] for i in keep]
-                    out["values"] = [[[fv[i] for i in keep]]]
-            ids = [r["id"] for _, r in recs]
-            pids, measured = [], []
-            for _, r in recs:
-                for pk in [(r.get("origin") or {}).get("measured_in"), r.get("paper")] + \
-                          [c.get("paper") for c in r.get("cited_sources") or []]:
-                    if pk and pk not in pids:
-                        pids.append(pk)
-                pk = (r.get("origin") or {}).get("measured_in") or r.get("paper")
-                if pk and pk not in measured:
-                    measured.append(pk)
-            for pk in pids:
-                res["papers"][pk] = papers.get(pk) or {"id": pk, "citation": pk}
-            dois = sorted({(papers.get(pk) or {}).get("doi") for pk in pids} - {None})
-            keys = [bib_key(pk, papers.get(pk)) for pk in measured]
-            ra = [r.get("reader_agreement") if release_has_ra else (smap.get(oid) or {}).get("reader_agreement")
-                  for oid, r in recs]
-            ra_counts = dict(sorted(Counter(x or "not_classified" for x in ra).items()))
-            caveats, per_value = [], []
-            for (oid, r), a in zip(recs, ra):
-                fl = r.get("flags") or {}
-                cv = [c for c in CAVEAT_FLAGS if fl.get(c)]
-                if (fl.get("plausibility") or {}).get("result") == "fail":
-                    cv.append("plausibility_fail")
-                if "basis unstated" in (r.get("unit") or ""):
-                    cv.append("energy_basis_unstated")
-                caveats.extend(cv)
-                per_value.append({k: v for k, v in (("id", r["id"]), ("reader_agreement", a),
-                                                    ("paper", r.get("paper")),
-                                                    ("measured_in", (r.get("origin") or {}).get("measured_in")),
-                                                    ("caveats", cv or None),
-                                                    ("also_read_as", also_read.get(r["id"]) or None)) if v is not None})
-            caveats = sorted(set(caveats))
-            weight, ublock, utags, ustat = uncertainty_block(out, recs, cls, zpf, T)
-            tags = list(out.get("tags") or [])
-            extra = [cls] + utags
-            for code in ("single_reader", "single_reader_text_layer"):
-                if ra_counts.get(code):
-                    extra.append(code)
-            if caveats:
-                extra.append("orchid_caveat")
-            extra.append("orchid")
-            for t in extra:
-                if t not in tags:
-                    tags.append(t)
-            out["tags"] = tags
-            if weight is not None:
-                out["weight"] = weight
-            out["reference"] = "; ".join(short_ref(pk, papers.get(pk)) for pk in measured)
-            out["bibtex"] = keys[0] if len(keys) == 1 else " ".join(keys)
-            out["comment"] = ("ORCHID literature values, %s. Evidence class: %s. ORCHID observation ids "
-                              "(orchid-literature `id`, one per value, in value order): %s"
-                              % (STATUS_LINE, cls, " ".join(ids)))
-            if "orchid_value_bases" in out:
-                idof = {oid: r["id"] for oid, r in recs}
-                out["orchid_value_bases"] = [dict(b, observation=idof[b["observation"]])
-                                             for b in out["orchid_value_bases"] if b["observation"] in idof]
-            me = out.get("orchid_model_evidence") or {}
-            ev = None
-            if (tdb_dir, fname) in evals:
-                eobs, edf = evals[(tdb_dir, fname)]
-                if eobs == obs and len(keep) == npts and edf:
-                    a = sorted(abs(x) for x in edf if isinstance(x, (int, float)))
-                    if a:
-                        ev = {"tdb": tdb_dir, "vertices": len(a), "median_abs_driving_force_J": round(a[len(a) // 2], 2),
-                              "max_abs_driving_force_J": round(a[-1], 2)}
-            out["orchid"] = {k: v for k, v in (
-                ("status", STATUS_LINE), ("evidence_class", cls), ("observations", per_value),
-                ("papers", pids), ("dois", dois), ("source_dataset", "db-v2.1/" + src_rel),
-                ("values_dropped", (npts - len(keep)) or None), ("espei_evaluation", ev)) if v is not None}
-            out["orchid_uncertainty"] = ublock
-            if d["output"].startswith("ACR"):                                                         # E5
-                acr_reference_state(out, recs, src_rel, res)
-            if not zpf and cls != "model" and ESPEI_DEFAULT_SIGMA.get(prop_of(d["output"])):         # E6
-                w = weight if weight is not None else 1.0
-                out["orchid_weight_floor"] = {
-                    "suggested_weight": round(min(w, 1.0), 6), "weight_written": w, "changes_weight": w > 1.0,
-                    "sigma_floor": ESPEI_DEFAULT_SIGMA[prop_of(d["output"])],
-                    "sigma_floor_unit": "J/mol" if prop_of(d["output"]) in ("HM", "ACR") else "J/mol/K",
-                    "rule": WEIGHT_FLOOR_RULE}
-                res["e6"][w > 1.0] += 1
-            syst = lit.system_name([c for c in d["components"] if c.upper() != "VA"])
-            rel = "%s/%s/%s.%s" % (folder, syst, tdb_dir, fname)
-            if rel in res["datasets"]:
-                raise SystemExit("path collision: " + rel)
-            res["datasets"][rel] = out
-            Ts = out["conditions"]["T"] if isinstance(out["conditions"]["T"], list) else [out["conditions"]["T"]]
-            nvals = len(out["values"]) if zpf else len(flat_values(out))
-            res["rows"][rel] = row(rel, folder, syst, out, nvals, npts - len(keep), min(Ts), max(Ts), cls, dois, pids,
-                                   ids, ra_counts, "release" if release_has_ra else "record_store", caveats,
-                                   tdb=(me.get("tdb") or {}).get("name"), sha=(me.get("tdb") or {}).get("sha256"),
-                                   link=me.get("link_basis"), ev=ev, src="db-v2.1/" + src_rel, weight=weight,
-                                   ustat=ustat, unit=ublock.get("unit"))
-            res["_ustat"][rel] = ustat
-            res["_recs"][rel] = [r for _, r in recs]
+            # physical phase rule (tools/phase_rule.py): phases from the paper, never a default; formation
+            # quantities of compounds -> the compound endmember (non-equilibrium `solver` dataset)
+            groups, pdrops = assign_phases(d, src_rel, tdb_dir, keep, recs, zpf, RULE, REG)
+            for i, rec, why in pdrops:
+                res["drops"].append({"source": src_rel, "index": i, "reason": why, "orchid_id": rec["id"]})
+                reasons.append(why)
+                res["phase_drops"][why] += 1
+            if not groups:
+                res["dropped_datasets"].append({"source": src_rel, "reason": sorted(set(reasons)), "values": npts})
+                continue
+            nkept = sum(len(g["keep"]) for g in groups)
+            for g in groups:
+                keep, recs = g["keep"], g["recs"]
+                res["phase_groups"][g["kind"]] += len(keep)
+                out = json.loads(json.dumps(d))
+                if len(keep) < npts:
+                    if zpf:
+                        out["conditions"]["T"] = [T[i] for i in keep]
+                        out["values"] = [d["values"][i] for i in keep]
+                        out["phases"] = sorted({v[0] for reg in out["values"] for v in reg if v[0] != "__HYPERPLANE__"})
+                    else:
+                        for k, v in d["conditions"].items():
+                            if k.startswith("X_"):
+                                out["conditions"][k] = [v[i] for i in keep]
+                        out["values"] = [[[fv[i] for i in keep]]]
+                if not zpf:
+                    out["phases"] = list(g["phases"])
+                ids = [r["id"] for _, r in recs]
+                pids, measured = [], []
+                for _, r in recs:
+                    for pk in [(r.get("origin") or {}).get("measured_in"), r.get("paper")] + \
+                              [c.get("paper") for c in r.get("cited_sources") or []]:
+                        if pk and pk not in pids:
+                            pids.append(pk)
+                    pk = (r.get("origin") or {}).get("measured_in") or r.get("paper")
+                    if pk and pk not in measured:
+                        measured.append(pk)
+                for pk in pids:
+                    res["papers"][pk] = papers.get(pk) or {"id": pk, "citation": pk}
+                dois = sorted({(papers.get(pk) or {}).get("doi") for pk in pids} - {None})
+                keys = [bib_key(pk, papers.get(pk)) for pk in measured]
+                ra = [r.get("reader_agreement") if release_has_ra else (smap.get(oid) or {}).get("reader_agreement")
+                      for oid, r in recs]
+                ra_counts = dict(sorted(Counter(x or "not_classified" for x in ra).items()))
+                caveats, per_value = [], []
+                for (oid, r), a in zip(recs, ra):
+                    fl = r.get("flags") or {}
+                    cv = [c for c in CAVEAT_FLAGS if fl.get(c)]
+                    if (fl.get("plausibility") or {}).get("result") == "fail":
+                        cv.append("plausibility_fail")
+                    if "basis unstated" in (r.get("unit") or ""):
+                        cv.append("energy_basis_unstated")
+                    caveats.extend(cv)
+                    per_value.append({k: v for k, v in (("id", r["id"]), ("reader_agreement", a),
+                                                        ("paper", r.get("paper")),
+                                                        ("measured_in", (r.get("origin") or {}).get("measured_in")),
+                                                        ("caveats", cv or None),
+                                                        ("also_read_as", also_read.get(r["id"]) or None)) if v is not None})
+                caveats = sorted(set(caveats))
+                weight, ublock, utags, ustat = uncertainty_block(out, recs, cls, zpf, T)
+                tags = list(out.get("tags") or [])
+                extra = [cls] + utags
+                for code in ("single_reader", "single_reader_text_layer"):
+                    if ra_counts.get(code):
+                        extra.append(code)
+                if caveats:
+                    extra.append("orchid_caveat")
+                extra.append("orchid")
+                for t in extra:
+                    if t not in tags:
+                        tags.append(t)
+                out["tags"] = tags
+                if weight is not None:
+                    out["weight"] = weight
+                out["reference"] = "; ".join(short_ref(pk, papers.get(pk)) for pk in measured)
+                out["bibtex"] = keys[0] if len(keys) == 1 else " ".join(keys)
+                out["comment"] = ("ORCHID literature values, %s. Evidence class: %s. ORCHID observation ids "
+                                  "(orchid-literature `id`, one per value, in value order): %s"
+                                  % (STATUS_LINE, cls, " ".join(ids)))
+                if "orchid_value_bases" in out:
+                    idof = {oid: r["id"] for oid, r in recs}
+                    out["orchid_value_bases"] = [dict(b, observation=idof[b["observation"]])
+                                                 for b in out["orchid_value_bases"] if b["observation"] in idof]
+                me = out.get("orchid_model_evidence") or {}
+                ev = None
+                if (tdb_dir, fname) in evals:
+                    eobs, edf = evals[(tdb_dir, fname)]
+                    if eobs == obs and len(keep) == npts and edf:
+                        a = sorted(abs(x) for x in edf if isinstance(x, (int, float)))
+                        if a:
+                            ev = {"tdb": tdb_dir, "vertices": len(a), "median_abs_driving_force_J": round(a[len(a) // 2], 2),
+                                  "max_abs_driving_force_J": round(a[-1], 2)}
+                out["orchid"] = {k: v for k, v in (
+                    ("status", STATUS_LINE), ("evidence_class", cls), ("observations", per_value),
+                    ("papers", pids), ("dois", dois), ("source_dataset", "db-v2.1/" + src_rel),
+                    ("values_dropped", (npts - nkept) or None), ("espei_evaluation", ev)) if v is not None}
+                out["orchid_uncertainty"] = ublock
+                if d["output"].startswith("ACR"):                                                         # E5
+                    acr_reference_state(out, recs, src_rel, res)
+                if not zpf and cls != "model" and ESPEI_DEFAULT_SIGMA.get(prop_of(d["output"])):         # E6
+                    w = weight if weight is not None else 1.0
+                    out["orchid_weight_floor"] = {
+                        "suggested_weight": round(min(w, 1.0), 6), "weight_written": w, "changes_weight": w > 1.0,
+                        "sigma_floor": ESPEI_DEFAULT_SIGMA[prop_of(d["output"])],
+                        "sigma_floor_unit": "J/mol" if prop_of(d["output"]) in ("HM", "ACR") else "J/mol/K",
+                        "rule": WEIGHT_FLOOR_RULE}
+                    res["e6"][w > 1.0] += 1
+                if not zpf:
+                    out["orchid_phase_assignment"] = g["assignment"]
+                if g["kind"] == "compound_endmember":
+                    to_solver(out, g, recs)
+                syst = lit.system_name([c for c in d["components"] if c.upper() != "VA"])
+                rel = "%s/%s/%s.%s" % (folder, syst, tdb_dir, fname)
+                if len(groups) > 1 or g["kind"] == "compound_endmember":
+                    rel = rel[:-5] + "-" + re.sub(r"[^A-Za-z0-9_]+", "_", "_".join(g["phases"])) + ".json"
+                if rel in res["datasets"]:
+                    raise SystemExit("path collision: " + rel)
+                res["datasets"][rel] = out
+                Ts = out["conditions"]["T"] if isinstance(out["conditions"]["T"], list) else [out["conditions"]["T"]]
+                nvals = len(out["values"]) if zpf else len(flat_values(out))
+                res["rows"][rel] = row(rel, folder, syst, out, nvals, npts - nkept, min(Ts), max(Ts), cls, dois, pids,
+                                       ids, ra_counts, "release" if release_has_ra else "record_store", caveats,
+                                       tdb=(me.get("tdb") or {}).get("name"), sha=(me.get("tdb") or {}).get("sha256"),
+                                       link=me.get("link_basis"), ev=ev, src="db-v2.1/" + src_rel, weight=weight,
+                                       ustat=ustat, unit=ublock.get("unit"))
+                res["_ustat"][rel] = ustat
+                res["_recs"][rel] = [r for _, r in recs]
     return res
 
 
@@ -1292,6 +1562,25 @@ def validation_md(S, val, C, D, release):
                        [("reason", 0), ("path (not written)", 0), ("source", 0)]))
     else:
         L.append("None.")
+    le = val.get("likelihood_evaluation") or {}
+    L += ["", "### Likelihood evaluation against each target TDB (ESPEI 0.9.1)", "", EVAL_RULE, "",
+          "Datasets evaluated in the final bundle: **%d**; all finite: **%s**." % (
+              le.get("datasets_evaluated", 0), "yes" if le.get("all_finite") else "NO"), ""]
+    if le.get("by_folder_kind"):
+        L.append(table([[k.split("|")[0], k.split("|")[1], v["datasets"], v["values"], v["median_of_dataset_median_abs"],
+                         v["p90_of_dataset_median_abs"]] for k, v in le["by_folder_kind"].items()],
+                       [("folder", 0), ("quantity", 0), ("datasets", 1), ("values", 1),
+                        ("median of dataset median abs", 1), ("p90 of dataset median abs", 1)]))
+        L += ["", "(Residuals: J/mol-atom, J/K/mol-atom or activity; driving forces J/mol; non-equilibrium: log "
+                  "likelihood. Against the TDB's own parameters, i.e. how far the published values lie from the "
+                  "assessment the folder is named after.)", ""]
+    ex2 = val.get("evaluation_excluded") or []
+    L.append("Not written after the evaluation: %d datasets (%s); ZPF regions cut: %d in %d datasets." % (
+        len(ex2), ", ".join("%s %d" % kv for kv in sorted(Counter(e["reason"] for e in ex2).items())) or "none",
+        sum(c["regions"] for c in val.get("evaluation_regions_cut") or []), len(val.get("evaluation_regions_cut") or [])))
+    if ex2:
+        L += ["", table([[e["reason"], e["path"], (e.get("error") or "")[:120]] for e in ex2],
+                        [("reason", 0), ("path (not written)", 0), ("error", 0)])]
     fx = S["fixes"]
     L += ["", "## Encoding fixes (E1-E6)", "",
           table([["E1", "VA added to `components` (target TDB has a vacancy sublattice; else system TDBs; else "
@@ -1488,6 +1777,29 @@ def readme(S, C, cite):
         "Tags: evidence class (`experimental`, `model`, `dft_literature`, `dft_mp`, `dft_oqmd`), quality "
         "(`single_reader`, `single_reader_text_layer`, `no_printed_uncertainty`, `polymorph_ambiguous`, `above_hull`, "
         "`orchid_caveat`), plus the corpus tags (`thermochemical_table`, `invariant_table`, `via_assessment`, ...).", "",
+        "To restrict a fit to evidence certified against a CALPHAD prediction (`calphad_certified`: every value of "
+        "the dataset is `espei_certified` in the literature release, i.e. espei_ready and its pycalphad calculation "
+        "from the linked TDB agrees within 25 K / 0.05; per-value detail in `orchid_certification`):", "",
+        "```yaml", "system:", "  phase_models: my-phases.json", "  datasets: orchid-espei/experimental",
+        "  tags:", "    orchid: {disabled: true}             # every ORCHID dataset (literature and DFT) off ...",
+        "    calphad_certified: {disabled: false}  # ... except the certified ones (tags apply in this order)",
+        "```", "", "(ESPEI applies `tags` before it removes disabled datasets, so the second tag re-enables.)", "",
+        "## Phase assignment", "",
+        PR.RULE_TEXT, "",
+        "Every value's phase comes from its published literature record (printed label -> phase registry -> the "
+        "target TDB's phase name), never from a default. Values with different phases in one source table are written "
+        "as separate datasets (`<TDB>.<file>-<PHASES>.json`). Formation enthalpies / entropies of a phase that is "
+        "stoichiometric in the target TDB are written as ESPEI non-equilibrium datasets (`solver`, the compound's "
+        "endmember, output `HM_FORM` / `SM_FORM`, tag `compound_formation_endmember`) when the printed composition "
+        "matches the formula and the printed reference state is the TDB's SER; other properties of compounds are not "
+        "written. `orchid_phase_assignment` gives the phases, the basis (printed labels or caption) and, flag only, "
+        "values outside the phase's field in the calculated diagram of the target TDB (`outside_calculated_field`). "
+        "Also excluded (VALIDATION.md, `drop_reasons`): activities outside (0, 1], negative absolute entropies, "
+        "increments printed as absolute values, per-gram heat capacities, formation / mixing values outside "
+        "physical ranges, values flagged unsigned_in_print / magnitude_suspect / system_mismatch / source_disputed, "
+        "reference phases that the TDB does not have, binary three-phase ZPF regions away from every calculated "
+        "invariant, ZPF regions with a gas and no printed pressure, and ZPF regions that carry no composition and no "
+        "hyperplane (zero driving force in ESPEI 0.9.1).", "",
         "## Uncertainties", "",
         "ESPEI 0.9.1 has no per-value uncertainty field: the sigma it uses is a reference sigma divided by the "
         "dataset's `weight` (500 J/mol for HM, 0.2 J/K/mol for SM and CPM, 500 J/mol on the chemical potential for "
@@ -1534,7 +1846,8 @@ def readme(S, C, cite):
         "ratios and configurations as in the TDB). Excluded compounds are listed in validation.json with reasons. ESPEI "
         "0.9.1 evaluates HM_FORM against each element's SER phase named on the TDB's ELEMENT line, which must exist as a "
         "phase in the TDB; in some binary TDB files it does not (e.g. GRAPHITE, ORTHORHOMBIC_GA, 1/2_MOLE_O2(G)), and "
-        "ESPEI then stops with a KeyError: add the element phase to your working TDB or fit those datasets with another.",
+        "ESPEI then stops with a KeyError. Such datasets are not written (likelihood evaluation gate, VALIDATION.md); "
+        "to use those values, add the element phase to your working TDB and rebuild from the literature release.",
         "- **Energy basis.** ESPEI reads energies per mole of atoms. Literature values whose per-atom basis was not "
         "printed carry the caveat `energy_basis_unstated`.",
         "- **ZPF encoding.** Phase labels are mapped to the model phases of the assessment the source folder is named "
@@ -1630,6 +1943,8 @@ from `values` and the matching `conditions` entries.
 | `orchid_value_bases` | ZPF from ranges / central values: how a temperature was derived, keyed by ORCHID id |
 | `orchid_model_evidence` | model datasets: `tdb` (name, path, SHA-256, catalog entry), `link_basis`, `model_citation`, `model_reproduction` |
 | `orchid_uncertainty` | see below |
+| `orchid_phase_assignment` | literature property datasets: `phases`, `basis` (counts: `printed_labels`, `caption_names_liquid`), `rule`, `outside_calculated_field[]` {id, phase, x, T_K} (flag only), `endmember` {tdb, path, sha256, phase, reference} for compound formation datasets |
+| `orchid_certification` | literature datasets: `basis` (`pycalphad_invariant_agreement`), `all_values_certified`, `n_certified`, `values[]` {id, espei_certified, calphad_check}; tag `calphad_certified` when all values are certified |
 | `orchid_reference_state` | activities (E5): `element`, `phase` written, `basis` (`printed` / `not_printed_implied`), `quote`, `where`, `record_reference_state_agrees`, `written_before_audit` |
 | `orchid_weight_floor` | experimental thermochemical data (E6, optional): `suggested_weight` = min(weight, 1), `weight_written`, `changes_weight`, `sigma_floor` (+ unit), `rule` |
 | `orchid_zpf_encoding` | ZPF (E2): number of line-compound vertices written with composition null, hyperplanes added, rule |
@@ -1730,6 +2045,25 @@ def upstream_md(C):
     du = C["upstream"]["duplicate_reads"]
     L.append(table([[x["kept_id"], x["duplicate_id"], x["pid"]] for x in du],
                    [("kept id", 0), ("duplicate id", 0), ("row (pid)", 0)]) if du else "None.")
+    L += ["", "## Corpus ESPEI export: phase of thermochemical datasets (root cause of LIQUID mislabels)", "",
+          "The corpus record builder (`db-v2.1/bin-general/general_tables.py`, `espei_datasets`) writes "
+          "`phases = sorted(mapped model phases | {\"LIQUID\"})`, or `[\"LIQUID\"]` when no printed label maps to a "
+          "model phase, for every non-ZPF dataset: compound formation enthalpies at compound compositions and "
+          "temperatures where no liquid exists were therefore labelled LIQUID, and LIQUID was added beside every "
+          "mapped phase. The published literature records were correct (`property` HM_FORM / HM_MIX, printed phase "
+          "labels). The bundle no longer takes the phase from the corpus dataset: each value's phase is derived from "
+          "its published record (README.md, 'Phase assignment'). To fix upstream: drop the LIQUID default and the "
+          "LIQUID union in `espei_datasets`.", "",
+          "## Reference-state phase names", "",
+          "The record builder writes the SER reference phase of O, N, H and F as `1` (truncated `1/2_MOLE_O2(G)`) "
+          "and some metal reference phases as Strukturbericht symbols (`A1`, `A3`); the literature release completes "
+          "the names (QUALITY_FIXES.md, section 5b) and the bundle drops values whose reference phase the target TDB "
+          "does not define (`reference_phase_not_in_target_tdb`).", "",
+          "## Compound values whose printed composition differs from the formula", "",
+          "Composition copied from another table row, or a per-formula label on a solution composition; excluded "
+          "from the bundle (`composition_not_at_compound`), to correct in the literature release:", ""]
+    cc = sorted({(x["orchid_id"], x["source"]) for x in C["drops"] if x["reason"] == "composition_not_at_compound"})
+    L.append(table([[a, b] for a, b in cc], [("ORCHID id", 0), ("corpus dataset", 0)]) if cc else "None.")
     return "\n".join(L) + "\n"
 
 
@@ -1778,6 +2112,9 @@ def build_files(C, D, val, data, release, dp_release, P):
                                 + "\n\n".join(bib) + "\n").encode("utf-8")
     files["validation.json"] = dumps({"espei_version": val["espei_version"], "folders": val["folders"],
                                       "invalid_final": val["invalid_final"], "excluded": val["excluded"],
+                                      "evaluation_excluded": val.get("evaluation_excluded"),
+                                      "evaluation_regions_cut": val.get("evaluation_regions_cut"),
+                                      "likelihood_evaluation": val.get("likelihood_evaluation"),
                                       "exclusion_reasons": ESPEI_EXCLUSION_TEXT,
                                       "dropped_datasets": C["dropped_datasets"], "dropped_values": C["drops"],
                                       "drop_reasons": DROP_REASONS,
@@ -1832,11 +2169,38 @@ def refresh_row(C, rel):
                   "median_abs_driving_force_J")})
 
 
+def dedup_properties(C):
+    """E3 for property datasets: a dataset identical to another of the same folder and system (same output, phases,
+    conditions, values, solver and reference states; e.g. two assessment folders quoting the same table) is written
+    once, the other's ids in `orchid.also_reported_as`. Returns the number dropped."""
+    seen, removed = {}, []
+    for rel in sorted(C["datasets"]):
+        d = C["datasets"][rel]
+        if d["output"] == "ZPF":
+            continue
+        sig = json.dumps([rel.split("/")[0], rel.split("/")[1], d["output"], d["phases"], d["conditions"],
+                          d["values"], d.get("solver"), d.get("reference_states"), d.get("reference_state")],
+                         sort_keys=True)
+        if sig in seen:
+            removed.append((rel, seen[sig]))
+        else:
+            seen[sig] = rel
+    for rel, kept in removed:
+        d = C["datasets"].pop(rel)
+        r = C["rows"].pop(rel)
+        C["datasets"][kept]["orchid"].setdefault("also_reported_as", []).append(
+            {"dataset": rel, "ids": [o["id"] for o in d["orchid"]["observations"]]})
+        C["dropped_datasets"].append({"source": r["source_dataset"].replace("db-v2.1/", "", 1),
+                                      "reason": ["duplicate_identical_property_dataset"], "values": r["n_values"]})
+    return len(removed)
+
+
 def phase_constraints(C, D, data, pub):
     """E3 (dedup), the derived/assessed phase-constraint datasets, then E1/E2 on every dataset."""
     R = ec.Registry(data)
     counts = Counter()
     merged, changed = ec.dedup_zpf(C)
+    counts["E3_property_datasets_dropped"] = dedup_properties(C)
     counts["E3_regions_removed"] = len(merged)
     counts["E3_datasets_dropped"] = sum(1 for x in C["dropped_datasets"] if x["reason"] == ["duplicate_identical_zpf"])
     brackets, b_skipped, b_made = ec.build_brackets(C, R)        # before E2: printed compositions
@@ -1870,6 +2234,172 @@ def phase_constraints(C, D, data, pub):
             P["datasets"][rel] = d
             P["rows"][rel] = prow(rel, d, cls)
     return P
+
+
+# ------------------------------------------------------------------------------------------- likelihood gate --
+EVAL_CACHE = os.path.join(SITE, "build-cache", "espei-eval")
+EVAL_RULE = ("Every dataset is evaluated against its target TDB with the ESPEI 0.9.1 likelihood functions and the "
+             "TDB's own parameters (tools/espei_evaluate.py: ZPF driving forces, equilibrium-property residuals, "
+             "activity residuals and likelihood, non-equilibrium likelihood). A ZPF region with a non-finite driving "
+             "force is cut (`espei_evaluation_nonfinite_region`); a dataset that raises an error (e.g. a KeyError for "
+             "an SER phase such as GRAPHITE or 1/2_MOLE_O2(G) that the TDB does not define), gives a non-finite "
+             "value, times out, or whose TDB pycalphad cannot load is not written (`espei_evaluation_<status>`).")
+
+
+def _tdb_paths(data):
+    reg = ec.Registry(data)
+    idx = {}
+    for stem, ms in reg.models.items():
+        for m in ms.values():
+            if m.get("path"):
+                idx[stem] = os.path.join(lit.DEFAULT_OPEN_TDB, m["path"])
+    for p in sorted(glob.glob(os.path.join(lit.DEFAULT_OPEN_TDB, "databases", "**", "*.[tT][dD][bB]"), recursive=True)):
+        idx.setdefault(os.path.basename(p)[:-4], p)
+    return idx
+
+
+def _target_stem(rel, d):
+    o = d.get("orchid") or {}
+    if rel.startswith("dft/"):
+        t = (o.get("tdb") or {}).get("name") or ""
+    elif rel.startswith(("assessed/", "derived/")) and o.get("target_tdb"):
+        t = o["target_tdb"]
+    else:
+        return ec.stem_of(rel)
+    return t[:-4] if t.lower().endswith(".tdb") else t
+
+
+def run_evaluation(datasets, data, espei_py):
+    """{rel: result} for the given datasets; results cached by sha256(dataset bytes, TDB bytes)."""
+    paths = _tdb_paths(data)
+    os.makedirs(EVAL_CACHE, exist_ok=True)
+    res, todo, keys = {}, [], {}
+    tdb_sha = {}
+    tmp = tempfile.mkdtemp(prefix="orchid-espei-eval-")
+    try:
+        for rel in sorted(datasets):
+            b = dumps(datasets[rel])
+            p = paths.get(_target_stem(rel, datasets[rel]))
+            if not p or not os.path.exists(p):
+                res[rel] = {"status": "tdb_not_found"}
+                continue
+            if p not in tdb_sha:
+                tdb_sha[p] = hashlib.sha256(open(p, "rb").read()).hexdigest()
+            k = hashlib.sha256(b + b"\0" + tdb_sha[p].encode() + b"\0espei-eval-v3").hexdigest()
+            cp = os.path.join(EVAL_CACHE, k + ".json")
+            if os.path.exists(cp):
+                res[rel] = json.load(open(cp, encoding="utf-8"))
+                continue
+            f = os.path.join(tmp, "%06d.json" % len(todo))
+            with open(f, "wb") as fh:
+                fh.write(b)
+            todo.append({"rel": rel, "file": f, "tdb": p})
+            keys[rel] = cp
+        if todo:
+            man = os.path.join(tmp, "manifest.json")
+            json.dump(todo, open(man, "w"))
+            outp = os.path.join(tmp, "out.json")
+            subprocess.run([espei_py, os.path.join(os.path.dirname(os.path.abspath(__file__)), "espei_evaluate.py"),
+                            man, outp, str(EVAL_WORKERS)], check=True)
+            new = json.load(open(outp, encoding="utf-8"))
+            for rel, r in new.items():
+                res[rel] = r
+                with open(keys[rel] + ".tmp", "w", encoding="utf-8") as fh:
+                    json.dump(r, fh, sort_keys=True)
+                os.replace(keys[rel] + ".tmp", keys[rel])
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return res
+
+
+def cut_regions(C, rel, idx, reason):
+    """Remove ZPF regions `idx` of a literature dataset (values, T, observations, uncertainty, value bases, recs)."""
+    d = C["datasets"][rel]
+    keep = [i for i in range(len(d["values"])) if i not in idx]
+    Ts = d["conditions"]["T"] if isinstance(d["conditions"]["T"], list) else [d["conditions"]["T"]] * len(d["values"])
+    for i in sorted(idx):
+        C["drops"].append({"source": C["rows"][rel]["source_dataset"].replace("db-v2.1/", ""), "index": i,
+                           "reason": reason, "orchid_id": d["orchid"]["observations"][i].get("id")})
+    d["values"] = [d["values"][i] for i in keep]
+    d["conditions"]["T"] = [Ts[i] for i in keep]
+    d["orchid"]["observations"] = [d["orchid"]["observations"][i] for i in keep]
+    d["orchid_uncertainty"]["values"] = [d["orchid_uncertainty"]["values"][i] for i in keep]
+    if "orchid_value_bases" in d:
+        ids = {o["id"] for o in d["orchid"]["observations"]}
+        d["orchid_value_bases"] = [b for b in d["orchid_value_bases"] if b.get("observation") in ids]
+    d["phases"] = sorted({vx[0] for reg in d["values"] for vx in reg if vx[0] != "__HYPERPLANE__"})
+    d["orchid"]["values_dropped"] = (d["orchid"].get("values_dropped") or 0) + len(idx)
+    d["orchid"].pop("espei_evaluation", None)
+    ids = [o["id"] for o in d["orchid"]["observations"]]
+    d["comment"] = re.sub(r"(in value order\): ).*$", lambda mm: mm.group(1) + " ".join(ids), d["comment"])
+    C["_recs"][rel] = [C["_recs"][rel][i] for i in keep]
+    refresh_row(C, rel)
+
+
+def evaluation_gate(C, D, P, data, espei_py):
+    excluded, cut = [], []
+    for it in range(8):
+        alld = dict(C["datasets"])
+        alld.update(D["datasets"])
+        alld.update(P["datasets"])
+        ev = run_evaluation(alld, data, espei_py)
+        print("evaluation pass %d: %s" % (it + 1, dict(Counter(r["status"] for r in ev.values()))), file=sys.stderr)
+        changed = False
+        for rel in sorted(ev):
+            r = ev[rel]
+            if r["status"] == "ok":
+                continue
+            d = alld[rel]
+            bad = r.get("bad_regions") or []
+            if r["status"] == "nonfinite" and rel in C["datasets"] and d["output"] == "ZPF" and bad and \
+                    len(bad) < len(d["values"]):
+                cut_regions(C, rel, set(bad), "espei_evaluation_nonfinite_region")
+                cut.append({"path": rel, "regions": len(bad)})
+                changed = True
+                continue
+            reason = "espei_evaluation_" + r["status"]
+            src = None
+            for G in (C, D, P):
+                if rel in G["datasets"]:
+                    G["datasets"].pop(rel)
+                    row_ = G["rows"].pop(rel, None) or {}
+                    src = row_.get("source_dataset")
+                    if G is C:
+                        C["dropped_datasets"].append({"source": (src or rel).replace("db-v2.1/", "", 1),
+                                                      "reason": [reason], "values": row_.get("n_values")})
+            for prel in [x for x, pd_ in P["datasets"].items() if (pd_.get("orchid") or {}).get("derived_from") == rel]:
+                P["datasets"].pop(prel)
+                P["rows"].pop(prel)
+                excluded.append({"path": prel, "source": rel, "reason": "derived_from_excluded_dataset",
+                                 "error": None})
+            excluded.append({"path": rel, "source": src, "reason": reason, "error": (r.get("error") or "")[:300] or None})
+            changed = True
+        if not changed:
+            return excluded, cut, ev
+    raise SystemExit("evaluation gate did not converge")
+
+
+def evaluation_summary(ev, alld):
+    out = defaultdict(lambda: {"datasets": 0, "values": 0, "median_abs": []})
+    for rel in alld:
+        r = ev.get(rel) or {}
+        if r.get("status") != "ok":
+            continue
+        g = "/".join(rel.split("/")[:2]) if rel.startswith(("dft/", "derived/")) else rel.split("/")[0]
+        k = "%s|%s" % (g, r["kind"])
+        out[k]["datasets"] += 1
+        out[k]["values"] += r["n"]
+        if r.get("median_abs") is not None:
+            out[k]["median_abs"].append(r["median_abs"])
+    res = {}
+    for k in sorted(out):
+        v = out[k]
+        m = sorted(v["median_abs"])
+        res[k] = {"datasets": v["datasets"], "values": v["values"],
+                  "median_of_dataset_median_abs": rnd(m[len(m) // 2], 4) if m else None,
+                  "p90_of_dataset_median_abs": rnd(m[int(0.9 * (len(m) - 1))], 4) if m else None}
+    return {"rule": EVAL_RULE, "datasets_evaluated": len(alld),
+            "all_finite": all((ev.get(r) or {}).get("status") == "ok" for r in alld), "by_folder_kind": res}
 
 
 def main(argv=None):
@@ -1908,12 +2438,16 @@ def main(argv=None):
         for rel in [r for r, d in P["datasets"].items() if (d.get("orchid") or {}).get("derived_from") == e["path"]]:
             P["datasets"].pop(rel)
             P["rows"].pop(rel)
+    ev_excluded, ev_cut, ev = evaluation_gate(C, D, P, a.data, a.espei_python)
+    for rel, d in C["datasets"].items():                     # certification over the values finally written
+        certification_block(d, [(None, r) for r in C["_recs"][rel]])
     alld = dict(C["datasets"])
     alld.update(D["datasets"])
     alld.update(P["datasets"])
     v2 = run_espei(a.espei_python, {rel: dumps(d) for rel, d in alld.items()}, "load")
     val = {"espei_version": v2["espei_version"], "folders": v2["folders"], "invalid_final": v2["invalid"],
-           "excluded": excluded}
+           "excluded": excluded, "evaluation_excluded": ev_excluded, "evaluation_regions_cut": ev_cut,
+           "likelihood_evaluation": evaluation_summary(ev, alld)}
     if v2["invalid"] or any("error" in x or x.get("loaded") != x.get("files") for x in v2["folders"].values()):
         raise SystemExit("build failed: final bundle does not validate: %s" % json.dumps(v2)[:2000])
     # sigma statistics only over datasets actually written

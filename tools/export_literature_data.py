@@ -45,6 +45,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import doi_corrections  # noqa: E402
 import literature_quality as quality  # noqa: E402
+import phase_rule  # noqa: E402
 import orchid_cite  # noqa: E402
 
 CORR = doi_corrections.load()   # shared DOI correction table (tools/doi_corrections.json)
@@ -531,6 +532,56 @@ def cited_list(cited, store):
     return out
 
 
+# tolerance of the record builder's CALPHAD cross-check (master_store.PLAUSIBLE_DT_K / PLAUSIBLE_DX), written when the
+# record does not carry its own
+PLAUSIBILITY_TOLERANCE = {"dT_K": 25.0, "dx": 0.05}
+CALPHAD_CHECK = {"pass": "agrees", "fail": "disagrees"}
+
+
+def espei_fields(records, data):
+    """espei_ready (record builder's readiness AND the physical phase rule, tools/phase_rule.py), espei_certified
+    (espei_ready AND agreement with the CALPHAD prediction) and calphad_check on every record. Values never change."""
+    rule = phase_rule.PhaseRule(data)
+    counts = Counter()
+    log = []
+    for r in records:
+        fl = r["flags"]
+        blocked = [f for f in phase_rule.BLOCKING_FLAGS if fl.get(f)]
+        if fl.get("espei_ready") and blocked:
+            fl["espei_ready"] = False
+            fl["espei_ready_upstream"] = True
+            fl["espei_blocked_by"] = blocked
+            counts["blocked_by_flag"] += 1
+            for f in blocked:
+                counts["blocked_by_flag_" + f] += 1
+            log.append({"id": r["id"], "system": r["system"], "property": r.get("property"),
+                        "T_K": r.get("temperature_K"), "labels": [p.get("label") for p in r.get("phases") or []],
+                        "reason": "blocked_by_flag", "detail": ", ".join(blocked)})
+        elif fl.get("espei_ready"):
+            c = rule.classify(r)
+            if c["result"] == "fail":
+                fl["espei_ready"] = False
+                fl["espei_ready_upstream"] = True
+                fl["espei_phase_rule"] = clean({"result": "fail", "reason": c["reason"], "detail": c.get("detail")})
+                counts["phase_rule_fail_" + c["reason"]] += 1
+                log.append({"id": r["id"], "system": r["system"], "property": r.get("property"),
+                            "T_K": r.get("temperature_K"), "labels": [p.get("label") for p in r.get("phases") or []],
+                            "reason": c["reason"], "detail": c.get("detail")})
+            else:
+                fl["espei_phase_rule"] = clean({"result": "pass", "basis": c.get("basis")})
+                counts["phase_rule_pass"] += 1
+        pl = (fl.get("plausibility") or {}).get("result")
+        fl["calphad_check"] = CALPHAD_CHECK.get(pl, "not_available")
+        fl["espei_certified"] = bool(fl.get("espei_ready")) and pl == "pass"
+        if fl["espei_certified"]:
+            fl["espei_certified_basis"] = "pycalphad_invariant_agreement"
+        counts["espei_ready"] += bool(fl.get("espei_ready"))
+        counts["espei_certified"] += fl["espei_certified"]
+        counts["espei_ready_calphad_disagrees"] += bool(fl.get("espei_ready")) and pl == "fail"
+        counts["espei_ready_no_prediction"] += bool(fl.get("espei_ready")) and pl not in ("pass", "fail")
+    return dict(sorted(counts.items())), log
+
+
 def quality_flags(obs):
     q = obs.get("quality") or {}
     st = q.get("status") or {}
@@ -543,7 +594,9 @@ def quality_flags(obs):
         "state_fully_specified": st.get("state_fully_specified"),
         "specification_gaps": st.get("specification_gaps"),
         "plausibility": clean({"result": pl.get("result"), "model": pl.get("model"),
-                               "dT_K": num(pl.get("dT_K"))}) if pl.get("result") not in (None, "not_evaluated") else None,
+                               "dT_K": num(pl.get("dT_K")),
+                               "tolerance": pl.get("tolerance") or PLAUSIBILITY_TOLERANCE})
+        if pl.get("result") not in (None, "not_evaluated") else None,
         "source_disputed": bool(obs.get("source_disputed")) or None,
         "judge_adjudicated": bool(st.get("adjudicated_by")) or None,
         "magnitude_suspect": bool(st.get("magnitude_suspect")) or None,
@@ -909,7 +962,7 @@ CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_grou
                "transition_kind_printed", "evidence_class",
                "origin", "model", "model_unlinked_reason", "method", "method_basis", "conditions",
                "conditions_summary", "cited_sources", "citations_printed", "paper", "paper_citation", "paper_doi", "quote", "quote_page",
-               "locator", "link_rule", "flags", "extraction_accepted", "readers", "reader_tier", "reader_agreement",
+               "locator", "link_rule", "flags", "extraction_accepted", "espei_ready", "espei_certified", "calphad_check", "readers", "reader_tier", "reader_agreement",
                "reader_agreement_label", "tool_release", "pid",
                "merged_ids", "merged_pids"]
 
@@ -1017,7 +1070,7 @@ papers, page images, crops and full text are **not** redistributed.
 | `paper` | id of the containing paper (`doi:<doi>` or `sha256:<pdf prefix>`) -> `papers.json`; CSV adds `paper_citation`, `paper_doi` |
 | `quote`, `quote_page` | (running text) the one verbatim sentence backing the value and its page (`null` with `flags.page_unreadable` when the page read was not a page number); for tables `locator` gives table label, caption, page and row instead |
 | `locator` | `{{artifact: table|text_passage, label, caption, page, row, asset}}` |
-| `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready`, `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check result, model, dT), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts; data-hardening flags (QUALITY_FIXES.md): `page_unreadable`, `reference_state_dropped_not_in_quote`, `basis_inferred_from_magnitude`, `basis_corrected_from_formula`, `sign_from_heading`, `dft_outlier_unexplained` |
+| `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready` (the value CAN be used in ESPEI: complete state, phases mapped to a model, phase-rule / unit checks, proper format, and the physical phase rule of QUALITY_FIXES.md section 6; `espei_ready_upstream` true and `espei_phase_rule` {{result, reason, detail}} when only the phase rule turned it false), `espei_certified` (`espei_ready` AND agreement with a CALPHAD prediction: `plausibility.result` = pass), `espei_certified_basis` (`pycalphad_invariant_agreement`; later bases may be added, e.g. `espei_driving_force`), `calphad_check` (`agrees`, `disagrees`, `not_available`), `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check: result, model, dT, tolerance {{dT_K, dx}}), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts; data-hardening flags (QUALITY_FIXES.md): `page_unreadable`, `reference_state_dropped_not_in_quote`, `basis_inferred_from_magnitude`, `basis_corrected_from_formula`, `sign_from_heading`, `dft_outlier_unexplained` |
 | `link_rule` | (text) the rule that linked the value to its quote: the quote is verbatim on one page/passage and the printed value is inside it |
 | `reader_agreement`, `reader_agreement_label` | (tables) how many independent visual readers carry the value: `multi_reader` ("confirmed (two or more readers)"), `single_reader` ("unconfirmed (single reader)": one visual reader read the row and no second reader has confirmed it; the explorer shows a "single reader" badge), `single_reader_text_layer` ("single reader + PDF text layer": one visual reader, every value also printed in the PDF text layer). Two blind, independent Claude reads (`claude-opus-5.5` and `claude-opus-5.5#2` in `readers`) count as two readers. Absent where the record builder did not classify the value (invariant tables, running text) |
 | `readers`, `reader_tier`, `tool_release` | extraction provenance: the readers whose readings agreed (`text_layer` = the PDF text layer), the reader tier (`preliminary_flash+claude`: two independent model readers agree; `confirmed_pro`: confirmed by a third reader; `+fable_judge`: a judge chose between disagreeing readers; `preliminary_flash` for text: first reader, with the second reader's agreement in `flags.second_reader`), the record-builder release |
@@ -1066,7 +1119,7 @@ whose origin is the paper's own experimental work.
 """
 
 
-def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB):
+def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     store = Store(corpus, pdfs)
     # pass 1: all sources (cited works resolve across stores)
     for sub in ("invariants/master", "general/records", "text"):
@@ -1093,6 +1146,8 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB):
     records, qreport = quality.apply(records, open_tdb)
     for r in records:
         r["flags"]["extraction_accepted"] = bool(r["flags"].get("extraction_accepted"))
+    qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
+    qreport["espei_phase_rule"] = phase_rule.RULE_TEXT
     records.sort(key=lambda r: (r["system"], r["record_kind"], r.get("pid") or "", r["id"]))
 
     for r in records:
@@ -1191,6 +1246,7 @@ def outputs(store, records, papers, contexts):
         "contexts": len(contexts),
         "context_items": sum(len(c["items"]) for c in contexts.values()),
         "excluded": dict(sorted(store.excluded.items())),
+        "espei": store.quality["espei"],
         "quality": dict(store.quality["counts"], duplicates_merged=store.quality["duplicates"].get("records_removed", 0),
                         duplicate_groups=store.quality["duplicates"].get("groups", 0),
                         formation_basis_inferred_from_magnitude=sum(
@@ -1224,6 +1280,8 @@ def outputs(store, records, papers, contexts):
         row["paper_citation"] = p.get("citation")
         row["paper_doi"] = p.get("doi")
         row["extraction_accepted"] = r["flags"]["extraction_accepted"]
+        for k in ("espei_ready", "espei_certified", "calphad_check"):
+            row[k] = r["flags"].get(k)
         row["conditions_summary"] = summarize_context(contexts.get(r["paper"])) if (r.get("conditions") or {}).get("kind") == "paper_context" else (
             "conditions in the cited source" if (r.get("conditions") or {}).get("kind") == "cited_source" else None)
         w.writerow([csv_value(row.get(c)) for c in CSV_COLUMNS])
@@ -1296,9 +1354,11 @@ def main(argv=None):
     ap.add_argument("--pdfs", default=DEFAULT_PDFS, help="PDF corpus root (read only; hashed for no-DOI citations)")
     ap.add_argument("--out", default=os.path.join(SITE, OUT_REL))
     ap.add_argument("--open-tdb", default=DEFAULT_OPEN_TDB, help="open-tdb checkout holding hulls/snapshot*/ (read only)")
+    ap.add_argument("--data", default=orchid_cite.DEFAULT_DATA,
+                    help="orchid-data checkout (read only: phases/ registry and phase-diagrams/ for the ESPEI phase rule)")
     ap.add_argument("--check", action="store_true", help="verify the files on disk match a fresh export")
     a = ap.parse_args(argv)
-    store, records, papers, contexts = build(a.corpus, a.pdfs, a.open_tdb)
+    store, records, papers, contexts = build(a.corpus, a.pdfs, a.open_tdb, a.data)
     files, tot = outputs(store, records, papers, contexts)
     cpath = os.path.join(SITE, "data", "croissant.json")
     croissant = croissant_update(cpath, files) if os.path.exists(cpath) else None

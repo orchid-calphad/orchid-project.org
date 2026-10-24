@@ -470,6 +470,28 @@ def classify_dft_outliers(records, open_tdb, log, counts):
 
 # ------------------------------------------------------------------------------------------ driver
 
+# Reference-state phase names truncated or abbreviated by the record builder (never printed; derived from the TDB
+# ELEMENT line or a Strukturbericht symbol): '1' is the first character of the SGTE SER name 1/2_MOLE_X2(G).
+REF_PHASE_FIX = {("O", "1"): "1/2_MOLE_O2(G)", ("N", "1"): "1/2_MOLE_N2(G)", ("H", "1"): "1/2_MOLE_H2(G)",
+                 ("F", "1"): "1/2_MOLE_F2(G)", ("CL", "1"): "1/2_MOLE_CL2(G)"}
+REF_PHASE_STRUKTUR = {"A1": "FCC_A1", "A2": "BCC_A2", "A3": "HCP_A3"}
+
+
+def fix_reference_phases(r, counts):
+    rs = r.get("reference_state")
+    if not isinstance(rs, dict):
+        return
+    for el, v in rs.items():
+        if not isinstance(v, dict) or not isinstance(v.get("phase"), str):
+            continue
+        new = REF_PHASE_FIX.get((el.upper(), v["phase"])) or REF_PHASE_STRUKTUR.get(v["phase"])
+        if new:
+            v["phase_before_quality_fix"] = v["phase"]
+            v["phase"] = new
+            counts["reference_phase_name_fixed"] += 1
+            counts["reference_phase_name_fixed_%s" % ("ser_gas" if new.startswith("1/2_MOLE") else "strukturbericht")] += 1
+
+
 def apply(records, open_tdb):
     """Mutates and returns (records, report)."""
     log, counts = [], Counter()
@@ -489,6 +511,7 @@ def apply(records, open_tdb):
             r["property_code_raw"], r["property"] = code, new
             prop_map[(code, new)] += 1
         normalize_energy_unit(r, counts)
+        fix_reference_phases(r, counts)
     n0 = len(records)
     dcounts = Counter()
     records = dedupe(records, dcounts)
@@ -587,4 +610,38 @@ def quality_md(report, release):
           "* of these, per-atom labels from a heuristic or assumption demoted to basis unstated: %d" % c.get("mixing_basis_not_explicit_demoted", 0),
           "* formation values whose per-atom basis comes only from the record builder's magnitude heuristic "
           "(kept, flagged `flags.basis_inferred_from_magnitude`): see `index.json` totals", ""]
+    L += ["## 5b. Reference-state phase names", "",
+          "The record builder wrote the reference phase of O, N, H and F as `1` (the first character of the SGTE SER "
+          "name `1/2_MOLE_O2(G)` etc. on the TDB ELEMENT line) and of some metals as the Strukturbericht symbol "
+          "(`A1`, `A2`, `A3`). These names are derived, not printed; they are completed to `1/2_MOLE_X2(G)` and "
+          "`FCC_A1` / `BCC_A2` / `HCP_A3`, with the written name kept in `reference_state.<EL>.phase_before_quality_fix`: "
+          "%d reference phases (%d SER gas names, %d Strukturbericht symbols)." % (
+              c.get("reference_phase_name_fixed", 0), c.get("reference_phase_name_fixed_ser_gas", 0),
+              c.get("reference_phase_name_fixed_strukturbericht", 0)), ""]
+    if report.get("espei"):
+        e = report["espei"]
+        L += ["## 6. ESPEI readiness: physical phase rule; certification", "",
+              report["espei_phase_rule"], "",
+              "Before this rule, the corpus ESPEI export assigned every thermochemical value without a mapped model "
+              "phase to LIQUID (and added LIQUID to every mapped phase set), so compound formation enthalpies at "
+              "compound compositions and at temperatures where no liquid can exist were written as liquid mixing "
+              "data. The printed values and labels were always correct in these records (`property`, `phases`); "
+              "only `flags.espei_ready` changes: a value that fails the rule has `espei_ready` false, "
+              "`espei_ready_upstream` true and `espei_phase_rule` {result, reason, detail}. No value, label or "
+              "phase is altered.", "",
+              "`espei_certified` = `espei_ready` AND `plausibility.result` = pass (pycalphad calculation from the "
+              "linked TDB agrees within the recorded tolerance, 25 K / 0.05 mole fraction); "
+              "`espei_certified_basis` = `pycalphad_invariant_agreement`. `calphad_check`: agrees / disagrees / "
+              "not_available.", "",
+              "| count | n |", "|---|---:|"]
+        for k, v in e.items():
+            L.append("| %s | %d |" % (k, v))
+        L += ["", "Values whose `espei_ready` the phase rule turned false:", "",
+              "| id | system | property | T (K) | printed labels | reason | detail |", "|---|---|---|---:|---|---|---|"]
+        for x in sorted(report.get("espei_phase_rule_failures") or [], key=lambda x: (x["reason"], x["system"], x["id"])):
+            L.append("| %s | %s | %s | %s | %s | %s | %s |" % (
+                x["id"], x["system"], x["property"], x["T_K"],
+                ", ".join(str(l) for l in x["labels"]).replace("|", "\\|"), x["reason"],
+                str(x.get("detail") or "").replace("|", "\\|")))
+        L.append("")
     return "\n".join(L) + "\n"

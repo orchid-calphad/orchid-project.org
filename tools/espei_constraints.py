@@ -194,6 +194,24 @@ def apply_e2(d, stem, R, counts):
     return n
 
 
+def zpf_inert(region, stem, R, e2=True):
+    """True when a region has (after E2) no composition and no hyperplane: ESPEI 0.9.1 driving force 0. With e2,
+    stoichiometric vertices count as null and the E2 hyperplane (two distinct binary line-compound formulas) counts."""
+    formula, known = [], False
+    for vx in region:
+        if vx[0] == "__HYPERPLANE__":
+            return False
+        if any(x is not None for x in vx[2]):
+            if e2 and R.stoichiometric(stem, vx[0]):
+                formula.append(tuple(vx[2]))
+            else:
+                known = True
+    if known:
+        return False
+    distinct = sorted(set(formula))
+    return not (e2 and len(distinct) >= 2 and len(distinct[0]) == 1)
+
+
 # ------------------------------------------------------------------------------------------- E3 --
 def _region_sig(reg):
     out = {}
@@ -527,6 +545,9 @@ def assessed_per_tdb(data, R, stems_by_sys):
                     if R.stoichiometric(stem, names[0]):
                         x = [None] * len(x)
                     new.append([names[0], list(vx[1]), list(x)])
+                if ok and zpf_inert(new, stem, R, e2=False):
+                    ok = False
+                    skipped["region_inert_no_composition"] += 1
                 if ok:
                     vals.append(new)
                     T2.append(T)
