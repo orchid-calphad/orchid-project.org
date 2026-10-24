@@ -23,6 +23,13 @@ page does not print. Rules (a rejected mapping is removed; the model phase, its 
   R4 a printed mole-fraction composition of the phase must lie inside the model phase's calculated stability range in
      the system (data/phases stability rows, any assessment) +- 0.1; otherwise the mapping is rejected.
 
+Per-system aliases (tools/phase_aliases.py, tools/phase_aliases.json; 2026-10-24) are applied BEFORE these rules: a
+  printed label that is a conventional name of a phase of the record's binary system (beta brass -> BCC_A2 in Cu-Zn,
+  eps -> Cu3Sn in Cu-Sn, kappa -> HCP_A3 in Cu-Si ...) is mapped to that system's TDB phase when the printed composition
+  / temperature agree with the alias; the phase gets `model_phase_basis: system_alias:<id>` (a changed mapping also a
+  `corrections` entry, rule `system_alias:<id>`) and is not re-checked by the Greek rule. Two printed phases of one
+  row are never put on one model phase by an alias.
+
 Structure fields: every literature `pearson_symbol` / `prototype` comes from the mapped model phase (none is printed in
 the table row), so each phase that keeps one gets `structure_basis: "mapped_model_phase"`.
 Standard library only; deterministic.
@@ -31,6 +38,8 @@ from __future__ import annotations
 
 import re
 from collections import Counter
+
+import phase_aliases as PA
 
 RELEASE = "phase-label-check 2026-10-24 (audit round 2, A2 class 1)"
 X_TOL = 0.10
@@ -295,18 +304,97 @@ def check(label, model, system, elements, entry, comps, T=None, rule=None):
 
 
 PRINTED_SOURCES = {"printed", "printed_range"}
+_ALIASES = []
+
+
+def _alias_checks():
+    if len(_ALIASES) < 2:
+        alias_table()
+        _ALIASES.append({c["key"]: c for c in PA.page_checks()})
+    return _ALIASES[1]
+
+
+def alias_table():
+    if not _ALIASES:
+        _ALIASES.append(PA.Aliases())
+    return _ALIASES[0]
+
+
+def apply_aliases(r, table, counts, items):
+    """Map the record's printed conventional phase names through the per-system alias table. Returns the indices of
+    the phases the alias decided (mapped or confirmed); those are not re-checked by the Greek rule."""
+    system = r.get("system") or ""
+    phases = r.get("phases") or []
+    model = r.get("model") if isinstance(r.get("model"), dict) else {}
+    tdb = model.get("tdb")
+    plan = {}
+    for i, p in enumerate(phases):
+        hit = table.lookup(system, p.get("label"), PA.record_compositions(r, p.get("label")), r.get("temperature_K"), tdb)
+        if hit is None:
+            continue
+        if "miss" in hit:
+            counts["alias_not_applied:" + hit["miss"]] += 1
+            continue
+        plan[i] = hit
+    done = set()
+    if not plan:
+        return done
+    final = {i: (plan[i]["target"] if i in plan else p.get("model_phase")) for i, p in enumerate(phases)}
+    for i, hit in sorted(plan.items()):
+        p, a, tgt = phases[i], hit["alias"], hit["target"]
+        if any(j != i and final[j] and str(final[j]).upper().split("#")[0] == tgt and phases[j].get("label") != p.get("label")
+               for j in final):
+            counts["alias_not_applied:same_model_as_another_phase_of_the_row"] += 1
+            continue
+        cur = p.get("model_phase")
+        p["model_phase_basis"] = "system_alias:" + a["id"]
+        p["model_phase_alias_check"] = hit["check"]
+        done.add(i)
+        if cur and str(cur).upper().split("#")[0] in PA.Aliases.names(a):
+            counts["alias_confirms_corpus_mapping"] += 1
+            if p.get("pearson_symbol") or p.get("prototype"):
+                p["structure_basis"] = "mapped_model_phase"
+            continue
+        for k in ("pearson_symbol", "prototype", "mapping_confidence", "structure_basis"):
+            p.pop(k, None)
+        p["model_phase"] = tgt
+        st = a.get("structure") or {}
+        if st.get("pearson"):
+            p["pearson_symbol"] = st["pearson"]
+        if st.get("prototype"):
+            p["prototype"] = st["prototype"]
+        if st.get("pearson") or st.get("prototype"):
+            p["structure_basis"] = "system_alias"
+        corr = {"gate": "PL", "field": "phases.model_phase", "before": cur, "after": tgt, "rule": "system_alias:" + a["id"],
+                "evidence": {"label": p.get("label"), "alias": a["id"], "check": hit["check"], "release": PA.RELEASE}}
+        vc = _alias_checks().get("phase_alias:%s:%s" % (a["id"], r.get("id")))
+        if vc:
+            corr["visual_check"] = {k: vc[k] for k in ("page", "pdf_sha256_prefix", "image_sha256", "verdict", "seen",
+                                                       "checked") if vc.get(k) is not None}
+        r.setdefault("corrections", []).append(corr)
+        counts["alias_applied"] += 1
+        counts["alias_applied:" + ("replaced_corpus_mapping" if cur else "no_corpus_mapping")] += 1
+        if len(items) < 20000:
+            items.append({"id": r["id"], "system": system, "label": p.get("label"), "model_phase": tgt,
+                          "before": cur, "alias": a["id"], "check": hit["check"]})
+    return done
 
 
 def apply(records, rule):
     """rule: phase_rule.PhaseRule (registry by system / TDB name). Mutates the records; returns a report dict."""
-    counts, items = Counter(), []
+    counts, items, alias_items = Counter(), [], []
+    table = alias_table()
     for r in records:
         system = r.get("system") or ""
         elements = [e.upper() for e in r.get("elements") or system.split("-")]
         names = rule.by_tdbname.get(system, {}) if rule is not None else {}
-        for p in r.get("phases") or []:
+        aliased = apply_aliases(r, table, counts, alias_items)
+        for ip, p in enumerate(r.get("phases") or []):
             mp = p.get("model_phase")
             if not mp:
+                continue
+            if ip in aliased:
+                counts["kept_by_system_alias"] += 1
                 continue
             lab = p.get("label")
             comps = [pc.get("composition") or {} for pc in r.get("phase_compositions") or []
@@ -340,6 +428,8 @@ def apply(records, rule):
             if len(items) < 20000:
                 items.append({"id": r["id"], "system": system, "label": lab, "model_phase": mp, "reason": code})
     return {"release": RELEASE, "rules": __doc__.split("Rules")[1].split("Structure fields")[0].strip(),
+            "aliases": {"release": PA.RELEASE, "file": "tools/phase_aliases.json", "n_aliases": len(table.aliases),
+                        "systems": len({a["system"] for a in table.aliases}), "items": alias_items},
             "counts": dict(sorted(counts.items())), "items": items}
 
 
@@ -356,6 +446,16 @@ def report_md(rep):
          "| result | phase mentions |", "|---|---:|"]
     for k, n in c.items():
         L.append("| %s | %d |" % (k, n))
+    al = rep.get("aliases") or {}
+    if al:
+        L += ["", "Per-system aliases (`%s`, %s aliases in %s systems) applied before the rules: a conventional phase name "
+              "of the record's binary system is mapped to that system's TDB phase when the printed composition / "
+              "temperature agree (`model_phase_basis: system_alias:<id>`)." % (al.get("file"), al.get("n_aliases"),
+                                                                                  al.get("systems")), "",
+              "| alias | label | model phase | phase mentions mapped |", "|---|---|---|---:|"]
+        ba = Counter((i["alias"], i["label"], i["model_phase"]) for i in al.get("items") or [])
+        for (a_, l_, m_), n in sorted(ba.items(), key=lambda x: (-x[1], x[0])):
+            L.append("| %s | %s | %s | %d |" % (a_, str(l_).replace("|", "\\|"), m_, n))
     by = Counter((i["system"], i["label"], i["model_phase"], i["reason"]) for i in rep.get("items") or [])
     L += ["", "Most frequent rejected mappings:", "", "| system | label | model phase | reason | n |", "|---|---|---|---|---:|"]
     for (s_, l_, m_, r_), n in by.most_common(40):

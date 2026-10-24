@@ -153,6 +153,7 @@ for p in reg.values():
     bad += [(p["id"], t) for t, k in rows.items() if k > max(1, ind.get(t, 0))]
 check("class 6: one stability row per independent model of an assessment (no DIS_PART rows)", not bad, bad[:5])
 bad = [(p["id"], n["label"]) for p in reg.values() for n in p["names"] if n.get("namespace") == "paper"
+       and not str(n.get("basis") or "").startswith("system_alias:")     # tools/phase_aliases.json (per-system name)
        and PLC.ELEMENT_MODEL.match(p["preferred_name"]) and PLC.check(n["label"], p["preferred_name"], p["system"],
                                                                          p["elements"], p, []) not in (None,)]
 check("class 1/8: no paper alias a label check would reject on an element-structure phase", not bad, bad[:8])
@@ -213,10 +214,13 @@ if os.path.exists(pl):
         els = [e.upper() for e in r.get("elements") or []]
         for p in r.get("phases") or []:
             mp = str(p.get("model_phase") or "").upper().split("#")[0]
-            if (p.get("pearson_symbol") or p.get("prototype")) and p.get("structure_basis") != "mapped_model_phase":
+            if (p.get("pearson_symbol") or p.get("prototype")) and p.get("structure_basis") not in ("mapped_model_phase",
+                                                                                                  "system_alias"):
                 unattributed += 1
             if not mp or not PLC.ELEMENT_MODEL.match(mp):
                 continue
+            if str(p.get("model_phase_basis") or "").startswith("system_alias:"):
+                continue      # per-system conventional name (tools/phase_aliases.json), checked by test_phase_aliases.py
             k = PLC.label_kind(p.get("label"), els)
             if k in ("greek_variant", "compound"):
                 bad.append((r["id"], p.get("label"), mp))
@@ -227,7 +231,7 @@ if os.path.exists(pl):
                     bad.append((r["id"], p.get("label"), mp))
     check("class 1: no Greek / compound label on an element-structure model phase (except element polymorph names)",
           not bad, "%d e.g. %s" % (len(bad), bad[:5]))
-    check("class 1: every literature Pearson symbol / prototype says it comes from the mapped model phase",
+    check("class 1: every literature Pearson symbol / prototype says it comes from the mapped model phase (or the alias)",
           unattributed == 0, unattributed)
 
 print("%d failed" % len(fails) if fails else "all passed")

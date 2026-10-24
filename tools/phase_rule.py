@@ -101,6 +101,7 @@ class PhaseRule:
         self.data = data
         self.open_tdb = open_tdb or os.path.expanduser("~/projects/open-tdb")
         self.by_paper = defaultdict(list)   # "paper:<id>:<label>" -> [phase entries]
+        self.alias_paper_names = set()     # (paper name, phase id) linked through a per-system alias
         self.by_tdbname = defaultdict(dict)  # system -> TDB phase name -> phase entry
         self.by_formula = defaultdict(lambda: defaultdict(list))   # system -> reduced composition -> compounds
         self.phases = {}
@@ -111,6 +112,8 @@ class PhaseRule:
                 for n in p.get("names") or []:
                     if n.get("namespace") == "paper":
                         self.by_paper[n["name"]].append(p)
+                        if str(n.get("basis") or "").startswith("system_alias:"):
+                            self.alias_paper_names.add((n["name"], p["id"]))
                 for m in p.get("models") or []:
                     self.by_tdbname[d["system"]].setdefault(m["phase_name"].upper(), p)
                 if self.compound(p):
@@ -164,7 +167,11 @@ class PhaseRule:
         pk = rec.get("paper") or ""
         ns = ("paper:" + pk[4:]) if pk.startswith("doi:") else ("paper:sha256-" + pk[7:] if pk.startswith("sha256:")
                                                                   else None)
-        cands = {p["id"]: p for p in (self.by_paper.get("%s:%s" % (ns, label), []) if ns else [])}
+        key = "%s:%s" % (ns, label)
+        # a paper label linked through a per-system alias (tools/phase_aliases.json) names a phase of that system
+        # only: it never maps the same printed label in another system of the paper
+        cands = {p["id"]: p for p in (self.by_paper.get(key, []) if ns else [])
+                 if p.get("system") == rec.get("system") or (key, p["id"]) not in self.alias_paper_names}
         if not cands and model_phase:
             p = self.by_tdbname.get(rec.get("system"), {}).get(str(model_phase).upper().split("#")[0])
             if p:

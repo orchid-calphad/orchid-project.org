@@ -87,6 +87,10 @@ COMPOUND_X_TOL = 0.01      # printed composition vs the compound's formula compo
 DROP_REASONS = {
     "model_phase_rejected_by_label_check": "the record's model phase was rejected by the printed-label check "
                                            "(tools/phase_label_check.py; audit round 2, A2 class 1)",
+    "system_alias_phase_not_in_target_tdb": "the record's phase was re-mapped by the per-system alias table "
+                                            "(tools/phase_aliases.json) and the target TDB does not model that phase",
+    "system_alias_vertex_ambiguous": "a ZPF vertex name of the corpus dataset is the old mapping of an aliased phase and "
+                                     "also the model phase of another printed phase of the row",
     "not_in_release": "observation not published in the literature release (added or re-read after the release)",
     "not_accepted": "published with extraction_accepted = false",
     "evidence_class_mismatch": "published evidence class differs from the folder's class (classes are never mixed)",
@@ -777,6 +781,53 @@ def value_gate(output, v, rec, T):
 
 
 # ------------------------------------------------------------------------------------------- phases --
+def alias_relabel(region, rec, stem):
+    """ZPF vertex names of the phases that the per-system alias table (tools/phase_aliases.json, applied in the
+    literature release: `model_phase_basis: system_alias:<id>`) decided: the corpus name (the corrected mapping, the
+    alias's name in another assessment) -> the alias's phase in the target TDB. Returns (region, drop reason or None);
+    the region object is unchanged when nothing is relabelled."""
+    import phase_aliases as PA_
+    table = alias_relabel.table = getattr(alias_relabel, "table", None) or PA_.Aliases()
+    olds, others = {}, set()
+    phases = rec.get("phases") or []
+    for p in phases:
+        b = str(p.get("model_phase_basis") or "")
+        mp = str(p.get("model_phase") or "").upper().split("#")[0]
+        if not b.startswith("system_alias:"):
+            for m_ in (mp, str((p.get("model_phase_rejected") or {}).get("model_phase") or "").upper().split("#")[0]):
+                if m_:
+                    others.add(m_)
+            continue
+        a = table.by_id.get(b.split(":", 1)[1])
+        if a is None:
+            continue
+        tgt = (a.get("tdb_phases") or {}).get(stem + ".tdb")
+        keys = {mp} | {n.upper() for n in PA_.Aliases.names(a)}
+        keys |= {str(c.get("before") or "").upper().split("#")[0] for c in rec.get("corrections") or []
+                 if c.get("rule") == b and (c.get("evidence") or {}).get("label") == p.get("label") and c.get("before")}
+        for k in keys - {""}:
+            if k in olds and olds[k] != tgt:
+                return region, "system_alias_vertex_ambiguous"
+            olds[k] = tgt
+    if not olds:
+        return region, None
+    out, changed = [], False
+    for vx in region:
+        n = str(vx[0]).upper().split("#")[0]
+        if vx[0] == "__HYPERPLANE__" or n not in olds:
+            out.append(vx)
+            continue
+        if n in others:
+            return region, "system_alias_vertex_ambiguous"
+        if olds[n] is None:
+            return region, "system_alias_phase_not_in_target_tdb"
+        if olds[n] != vx[0]:
+            vx = [olds[n]] + list(vx[1:])
+            changed = True
+        out.append(vx)
+    return (out if changed else region), None
+
+
 def assign_phases(d, src_rel, stem, keep, recs, zpf, rule, reg):
     """Phase of every kept value from the published record (tools/phase_rule.py), never from the corpus dataset's
     default. Returns (groups, drops): one group per phase set (equilibrium dataset) or per compound phase
@@ -784,12 +835,20 @@ def assign_phases(d, src_rel, stem, keep, recs, zpf, rule, reg):
     drops = []
     models = reg.models.get(stem, {})
     if zpf:
+        alias_relabelled = [0]
         k2, r2 = [], []
         sysn = rec_system = None
         for i, (oid, rec) in zip(keep, recs):
             why = rule_reason(rec, rule)
             region = d["values"][i]
             T = d["conditions"]["T"][i] if isinstance(d["conditions"]["T"], list) else d["conditions"]["T"]
+            if not why:     # per-system alias table (tools/phase_aliases.json): relabel the corpus vertex names
+                region, why = alias_relabel(region, rec, stem)
+                relab = region is not d["values"][i]
+                if relab:
+                    d["values"][i] = region
+            else:
+                relab = False
             names = [vx[0] for vx in region if vx[0] != "__HYPERPLANE__"]
             rejected = {str(p["model_phase_rejected"].get("model_phase")).upper().split("#")[0]
                         for p in rec.get("phases") or [] if p.get("model_phase_rejected")}
@@ -809,7 +868,9 @@ def assign_phases(d, src_rel, stem, keep, recs, zpf, rule, reg):
             else:
                 k2.append(i)
                 r2.append((oid, rec))
-        return ([{"kind": "zpf", "keep": k2, "recs": r2, "phases": None}] if k2 else []), drops
+                alias_relabelled[0] += relab
+        return ([{"kind": "zpf", "keep": k2, "recs": r2, "phases": None, "alias_relabelled": alias_relabelled[0]}]
+                if k2 else []), drops
     G = rule.grids.get(stem)
     groups = {}
     for i, (oid, rec) in zip(keep, recs):
@@ -1096,6 +1157,12 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 keep, recs = g["keep"], g["recs"]
                 res["phase_groups"][g["kind"]] += len(keep)
                 out = json.loads(json.dumps(d))
+                if zpf and g.get("alias_relabelled"):
+                    out["phases"] = sorted({v[0] for reg in out["values"] for v in reg if v[0] != "__HYPERPLANE__"})
+                    out["orchid_phase_alias_note"] = (
+                        "%d ZPF region(s): vertex phase names from the per-system alias table (tools/phase_aliases.json;"
+                        " record phases with model_phase_basis system_alias:<id>), not the corpus mapping"
+                        % g["alias_relabelled"])
                 if len(keep) < npts:
                     if zpf:
                         out["conditions"]["T"] = [T[i] for i in keep]

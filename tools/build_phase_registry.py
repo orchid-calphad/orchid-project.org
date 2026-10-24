@@ -142,6 +142,8 @@ GREEK_WORDS = ("ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON", "ZETA", "ETA", "THE
 
 
 # ----------------------------------------------------------------------------------------------- helpers --
+SYSTEM_ALIASES = {}   # registry id -> per-system aliases (tools/phase_aliases.json)
+
 def sha256_file(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -1094,7 +1096,7 @@ def build(a):
                     pid = canonical_phase_id(els, mp, names, mmc2_sb_by_name)
                     pid = cal["aliases"].get(pid, pid)
                     pid = redirect.get(pid, pid)
-                    basis = "corpus_mapping:" + (ph.get("mapping_confidence") or "unstated")
+                    basis = ph.get("model_phase_basis") or ("corpus_mapping:" + (ph.get("mapping_confidence") or "unstated"))
                 elif lab and str(lab).strip().upper() in names:
                     pid = canonical_phase_id(els, str(lab).strip().upper(), names, mmc2_sb_by_name)
                     basis = "exact_tdb_name"
@@ -1133,6 +1135,12 @@ def build(a):
                         rr["roles"].add("cited as the source of values for this phase")
                         rr["values"] += 1
     inputs.hashes["orchid-data/literature/systems/*.json (sha256 of 'sha256  name' lines)"] = lit_digest.hexdigest()
+    ap_ = os.path.join(os.path.dirname(os.path.abspath(__file__)), "phase_aliases.json")
+    if os.path.exists(ap_):
+        inputs.hashes["orchid-project.org/tools/phase_aliases.json (sha256)"] = sha256_file(ap_)
+        for sa in json.load(open(ap_, encoding="utf-8"))["aliases"]:
+            for rid in sa["registry_ids"]:
+                SYSTEM_ALIASES.setdefault(rid, []).append(sa)
 
     # ---- DFT
     hulls = load_hull_vertices(open_tdb, inputs)
@@ -1682,6 +1690,12 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
                       "in_sgte_corpus": en["corpus"]["in_corpus"]})
         for al in sorted(en["corpus"]["aliases"]):
             names.append({"name": "corpus:" + al, "namespace": "corpus", "label": al, "alias_of": pid})
+        for sa in SYSTEM_ALIASES.get(pid, []):   # tools/phase_aliases.json: conventional name of the phase in its system
+            names.append({"name": "system_alias:%s" % sa["id"], "namespace": "system_alias", "label": sa["label"],
+                          "label_variants": sa.get("label_variants"), "x_element": sa["x_element"],
+                          "x_range": sa["x_range"], "basis": sa["basis"]})
+            if not names[-1]["label_variants"]:
+                names[-1].pop("label_variants")
         if en["structure"]:
             for mid in en["dft_names"]:
                 ns = "mp" if mid.startswith("mp-") else "oqmd"
@@ -1793,7 +1807,7 @@ def finalize(entries, stypes, inputs, conflicts, lit_stats, corpus_only, n_map, 
     spell = {t["id"]: t["prototype_spellings"] for t in st_public}
     for e in reg:
         s = e["structure"] or {}
-        search = sorted({n["label"] for n in e["names"] if n["namespace"] in ("tdb", "paper") and n.get("label")}, key=str)
+        search = sorted({n["label"] for n in e["names"] if n["namespace"] in ("tdb", "paper", "system_alias") and n.get("label")}, key=str)
         alt = []
         for pr in [s.get("prototype")] + spell.get(s.get("structure_type"), []):
             parts = re.findall(r"([A-Z][a-z]?)(\d*)", re.sub(r"^\(|\)$", "", pr or ""))
@@ -2067,7 +2081,7 @@ literature_accepted_values, literature_papers, references_listed, total_papers}`
 | `structure` | `{structure_type, basis, tier, confidence, label, prototype, strukturbericht, pearson, space_group, caveats[], dft?}` or `null`. `basis`: `standard_name` (tier A: the TDB name encodes one structure and the model stoichiometry / sublattices and DFT do not contradict it), `dft_unique_match` (tier B, label "DFT-supported": a stoichiometric compound matching exactly one on-hull entry in both Materials Project and OQMD with the same space group, one structure type for that space group and stoichiometry, and no other phase of the system at that composition), `assessment_declared` (tier C, confidence `assessor-stated`: tiers A and B do not assign it, the Hallstedt 2025 crystallographic table (mmc2) rows for this TDB phase name whose listed compound has exactly this system's elements all give one structure type with Pearson symbol and space group, nothing in tiers A/B contradicts it (name structure token, DFT ground state, model stoichiometry/sublattices, order/disorder), and every model's fixed composition or two-sublattice site ratio equals the listed compound; `source` cites mmc2 with its rows), `liquid`, `gas`. Phases whose mmc2 rows disagree stay `needs_review` (`sgte_mmc2_rows_disagree`) |
 | `candidates` | for unassigned phases: `{source, structure_type, prototype, strukturbericht, pearson, space_group, detail, material_id?, count?}`; `source` is `name_token`, `sgte_mmc2` (Hallstedt 2025 crystallographic table row for that name), `tdb_comment` (the compiler's comment above the PHASE line), `dft_mp` / `dft_oqmd` (on-hull entries at the composition or within the calculated homogeneity range), `dft_space_group_and_stoichiometry`, `literature_printed` (Pearson / prototype printed beside a label mapped to the phase) |
 | `review_reasons` | why no structure was assigned (`off_stoichiometric_model`, `polymorph_family`, `no_on_hull_entry_in_*`, `mp_oqmd_space_groups_differ`, `dft_space_group_*_matches_n_structure_types`, `order_disorder_ambiguity`, `stoichiometry_contradicts_*`, `name_suggests_*_but_dft_space_group_*`, `unrecognised_name_tokens`, `no_structure_token`, ...) |
-| `names` | every name: `{name, namespace, label, ...}`; namespaces `tdb` (`tdb:<file>:<NAME>`), `corpus` (`corpus:<canonical id>` and its older aliases), `paper` (`paper:<doi>:<label>`, or `paper:sha256-<prefix>:<label>` for papers without DOI; `basis` says how the label was linked), `mp` / `oqmd` (only for assigned phases whose DFT entry was matched) |
+| `names` | every name: `{name, namespace, label, ...}`; namespaces `tdb` (`tdb:<file>:<NAME>`), `corpus` (`corpus:<canonical id>` and its older aliases), `system_alias` (`system_alias:<id>`: the conventional name of the phase in its system from tools/phase_aliases.json, with the handbook composition range and basis), `paper` (`paper:<doi>:<label>`, or `paper:sha256-<prefix>:<label>` for papers without DOI; `basis` says how the label was linked), `mp` / `oqmd` (only for assigned phases whose DFT entry was matched) |
 | `models` | `{tdb, path, sha256, phase_name, type_code, sublattices[{site_ratio, constituents}], stoichiometric, composition, disordered_part?, disordered_part_of?, tdb_comment_structure?, tdb_definition}` |
 | `models[].tdb_definition` | the model as written in the TDB (bundled, licence-confirmed files only). `verbatim`: `{phase, constituent, type_definitions[]}`, each `{line_start, line_end, text}` with the exact statement from its first character to the terminating `!` (only line breaks normalised to LF; bytes decoded as UTF-8, Latin-1 fallback, see `provenance.decoded_as`); `type_definitions` are every TYPE_DEFINITION whose code is in the phase's type code (`%%` SEQ, magnetic `GES AMEND_PHASE_DESCRIPTION ... MAGNETIC`, `DIS_PART`, ...), each with `type_code` and `amends` (`@` = every phase with that code). `parsed`: `{phase_name, type_code, type_codes[], n_sublattices, site_ratios[], constituents[[...]] (spelling and `%%` major-constituent markers as printed), major_constituents[[...]], magnetic {type_code, afm_factor, structure_fraction, line} or null, disordered_part, ordered_partner}`. `parameters`: counts only, never expressions: `{total, by_kind {G, L, TC, BM, BMAG, BMAGN, THETA, ...as spelled}, L_by_order, interaction_orders[] (orders of parameters with an interacting sublattice, any kind; a missing order counts as 0), endmember_G}`. `provenance`: `{path, sha256, decoded_as, website_url (https://orchid-project.org/data/<path>, when the site copy has the same SHA-256), github_url (orchid-calphad/orchid-pipeline blob, when that repository holds the same git blob)}`. Statement boundaries follow open-tdb `scripts/validate_tdb.py` (each span is checked to reduce to its statement); parameter keys follow `check_subsystem_compat.py` / `audit_tdb_models.py`. TDB text is never executed |
 | `stoichiometry` | mole fractions when every model of the phase is stoichiometric and they agree |
