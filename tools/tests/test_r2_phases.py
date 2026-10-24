@@ -111,8 +111,8 @@ bad = [(p["id"], mo["tdb"]) for p in reg.values() for mo in p.get("models") or [
        if ((mo.get("tdb_definition") or {}).get("parsed") or {}).get("n_sublattices") is not None
        and len(mo.get("sublattices") or []) != mo["tdb_definition"]["parsed"]["n_sublattices"]]
 check("class 4: every model has as many sublattices as its PHASE statement", not bad, bad[:5])
-bad = [p["id"] for p in reg.values() if any(mo.get("disordered_part_of") and mo["phase_name"] == p["preferred_name"]
-                                            for mo in p.get("models") or [])
+bad = [p["id"] for p in reg.values() if not any(not mo.get("disordered_part_of") and mo["phase_name"] == p["preferred_name"]
+                                                for mo in p.get("models") or [])
        and any(not mo.get("disordered_part_of") for mo in p.get("models") or [])]
 check("class 7: preferred_name is never a DIS_PART phase when an independent model exists", not bad, bad[:5])
 bad = [p["id"] for p in reg.values() if not p.get("models") and not any(n.get("namespace") == "paper" for n in p["names"])]
@@ -146,8 +146,12 @@ bad = [p["id"] for p in reg.values() if (p.get("structure") or {}).get("struktur
                and not r.get("ordered_structure_range_not_resolved") for r in p.get("stability") or [])
        and any(mo.get("disordered_part") for mo in p["models"])]
 check("class 6: an ordered order/disorder phase reaching a pure end carries the unresolved-order caveat", not bad, bad[:5])
-bad = [p["id"] for p in reg.values() if len({r["tdb"] for r in p.get("stability") or []}) != len(p.get("stability") or [])]
-check("class 6: one stability row per assessment", not bad, bad[:5])
+bad = []
+for p in reg.values():
+    rows = collections.Counter(r["tdb"] for r in p.get("stability") or [])
+    ind = collections.Counter(mo["tdb"] for mo in p.get("models") or [] if not mo.get("disordered_part_of"))
+    bad += [(p["id"], t) for t, k in rows.items() if k > max(1, ind.get(t, 0))]
+check("class 6: one stability row per independent model of an assessment (no DIS_PART rows)", not bad, bad[:5])
 bad = [(p["id"], n["label"]) for p in reg.values() for n in p["names"] if n.get("namespace") == "paper"
        and PLC.ELEMENT_MODEL.match(p["preferred_name"]) and PLC.check(n["label"], p["preferred_name"], p["system"],
                                                                          p["elements"], p, []) not in (None,)]

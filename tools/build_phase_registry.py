@@ -1547,11 +1547,13 @@ def interstitial_structure(en, st_by_id):
     st = en.get("structure") or {}
     if st.get("strukturbericht") != "A1":
         return None
-    xs = set()
+    xs, tetra = set(), False
     for m in en["models"]:
         subs = [sl.get("constituents") or [] for sl in m.get("sublattices") or []]
-        if len(subs) == 2 and "VA" in subs[1]:
-            xs |= {c for c in subs[1] if c in INTERSTITIAL_X}
+        if len(subs) >= 2 and all("VA" in sl for sl in subs[1:]):
+            for sl in subs[1:]:
+                xs |= {c for c in sl if c in INTERSTITIAL_X}
+            tetra |= any(abs((sl.get("site_ratio") or 0) - 2.0) < 1e-9 for sl in (m.get("sublattices") or [])[1:])
     xs &= set(en["elements"])
     if len(xs) != 1:
         return None
@@ -1563,7 +1565,9 @@ def interstitial_structure(en, st_by_id):
     hi = max(r["x_max"] if r["x_element"] == X else 1 - r["x_min"] for r in rows)
     if lo <= 0.25:
         return None
-    tid = "st:c1-caf2-cf12" if X == "H" and lo > 0.55 else "st:b1-nacl-cf8"
+    # hydrides: fluorite (C1, tetrahedral sites filled; MH2) when the model has the 2:1 tetrahedral sublattice or reaches
+    # x_H > 0.6; rock salt (B1, octahedral sites) otherwise
+    tid = "st:c1-caf2-cf12" if X == "H" and (tetra or hi > 0.6) else "st:b1-nacl-cf8"
     t = st_by_id.get(tid)
     if not t:
         return None

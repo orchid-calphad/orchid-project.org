@@ -304,7 +304,9 @@ class Registry:
                         doi, _, lab = rest.rpartition(":")
                         by_paper[(doi.lower(), lab)].add(e["id"])
                 va = any("VA" in s.get("constituents", []) for m in e.get("models", []) for s in m.get("sublattices", []))
-                info[e["id"]] = {"preferred_name": e["preferred_name"], "tdb_names": sorted(set(tdbn)), "va": va}
+                indep = {str(mo.get("phase_name")).upper() for mo in e.get("models", []) if not mo.get("disordered_part_of")}
+                info[e["id"]] = {"preferred_name": e["preferred_name"], "tdb_names": sorted(set(tdbn)), "va": va,
+                                 "independent_names": sorted(indep)}
             self.sys_cache[key] = (by_tdb, by_paper, info)
             self.od[key] = od
             # order/disorder partners: the ordered model and its DIS_PART disordered part are one Gibbs-energy model
@@ -686,7 +688,10 @@ def build(a, log=print):
             tnames, miss = [], []
             for e in asm:
                 ri = rinfo.get(e["phase_id"]) if e["phase_id"] else None
-                if ri and ri["preferred_name"].upper() in ri["tdb_names"]:
+                # an ESPEI ZPF phase must be an independent PHASE (never only a DIS_PART disordered part; audit
+                # round 2, A2 class 7)
+                if ri and ri["preferred_name"].upper() in ri["tdb_names"] and \
+                        ri["preferred_name"].upper() in ri.get("independent_names", []):
                     tnames.append(ri["preferred_name"].upper())
                 else:
                     miss.append(e["label"])
