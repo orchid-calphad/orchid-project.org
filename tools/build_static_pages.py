@@ -1361,6 +1361,8 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
             [[("a", "papers/", DATA_URL + "papers/index.html")], ["Index of reporting papers."]],
             [["parquet/"], ["Columnar copies of the tables, where present."]],
             [["zenodo/"], ["Zenodo release metadata: one deposition record per citable dataset plus the umbrella record, with file manifests (sizes, SHA-256)."]],
+            [["contributions/"], ["Corrections, new values, paper suggestions and TDB files contributed by pull request, with templates, checks and tests (CONTRIBUTING.md, contributions/SCHEMA.md); not part of the Zenodo records. ",
+              ("a", "How to contribute", SITE_URL + "contribute/"), "."]],
             [[("a", "llms.txt", DATA_URL + "llms.txt"), ", ", ("a", "llms-full.txt", DATA_URL + "llms-full.txt")], ["Guides for language models and agents."]],
         ], set()),
         ("h2", "licence", "Licence and citation"),
@@ -1424,7 +1426,10 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- Quotes: one short verbatim excerpt per value, kept for verification; publishers' copyright, not relicensed (LICENSES.md). Source papers, page images and full text are not redistributed.",
         "- Use values with extraction_accepted = true unless you handle disputes; for weighting use sigma_effective (uncertainty_budget), not uncertainty.value: a stated_default or reading_resolution uncertainty.basis is not a measured uncertainty.",
         "- Every value carries uncertainty_budget (components printed / reading / method floor / composition / scatter / conversion kept separate; sigma_effective = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter) is the recommended sigma; floors: %sliterature/UNCERTAINTY_CALIBRATION.md)." % DATA_URL,
-        "- Project site: %s (interactive explorer %sdata-explorer/#<SYS>)" % (SITE_URL, SITE_URL), ""])
+        "- Project site: %s (interactive explorer %sdata-explorer/#<SYS>)" % (SITE_URL, SITE_URL), "",
+        "## Reporting errors and contributing",
+        "- A wrong value: %s?template=%s&record_id=<ORC id> opens a pre-filled GitHub issue (record id, system, DOI, page, value only; the person submits it). orchid-mcp returns this link as report_issue_url with every value." % (ISSUE_URL, REPORT_TEMPLATE),
+        "- Papers to read, corrections and new data (types A-E): https://github.com/orchid-calphad/orchid-data/blob/main/CONTRIBUTING.md and contributions/SCHEMA.md; plain-English guide %scontribute/" % SITE_URL, ""])
     lines = ["# ORCHID data: all systems", "", "> One line per chemical system: accepted literature values by evidence class, "
              "invariants, formation enthalpies, calculated phase diagrams. Append .md to read a system.", "",
              "Release: %s. Licence: CC BY 4.0 (cite ORCHID and each source paper)." % release, "", "## Systems", ""]
