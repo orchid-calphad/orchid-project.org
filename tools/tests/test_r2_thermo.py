@@ -173,6 +173,11 @@ else:
            and not (r.get("flags") or {}).get("non_crystalline_state")]
     check("A4 E7: liquid / amorphous states printed at room temperature are flagged non_crystalline_state", not bad, bad[:5])
 
+    RELPH = re.compile(r"(?:relative to|referred to|with respect to)\s+(?:the\s+)?(?:B2|B19|L1_?0|L1_?2|D0_?3|martensit\w*|austenit\w*)\b", re.I)
+    bad = [r["id"] for r in R if str(r.get("property")).endswith("_FORM") and RELPH.search(
+        " ".join(str(x or "") for x in (r.get("property_printed"), (r.get("locator") or {}).get("caption"))))]
+    check("A3 follow-up: energies referred to another phase (e.g. B2) are not formation quantities", not bad, bad[:5])
+
     calp = os.path.join(os.path.dirname(path), "UNCERTAINTY_CALIBRATION.json")
     if os.path.exists(calp):
         cal = json.load(open(calp))

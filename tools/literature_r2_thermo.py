@@ -547,7 +547,11 @@ def r2_table_property(records, visual, rep):
                   {"printed": r.get("property_printed"), "caption": str((r.get("locator") or {}).get("caption") or "")[:160]},
                   chk)
         r["property"] = new
-        r["property_group"] = "formation" if new.endswith("_FORM") else r.get("property_group")
+        r["property_group"] = chk.get("property_group") or ("formation" if new.endswith("_FORM") else r.get("property_group"))
+        if chk.get("reference_phase"):
+            r["energy_reference_phase"] = chk["reference_phase"]
+        if chk.get("flag"):
+            G.fail(r, GATE, chk["flag"], chk.get("effect") or "not_espei_ready", chk.get("detail"), chk)
         rep.add(GATE, "column_property_read_from_page", r, "corrected", before=old, after=new)
 
 
