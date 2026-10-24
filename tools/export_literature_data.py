@@ -34,6 +34,7 @@ import csv
 import glob
 import gzip
 import hashlib
+import importlib.util
 import io
 import json
 import os
@@ -1142,6 +1143,26 @@ whose origin is the paper's own experimental work.
 """
 
 
+def apply_contributions(records, data):
+    """Accepted contributed corrections (orchid-data contributions/corrections/*.jsonl; contributions/SCHEMA.md).
+
+    A correction is applied only when the maintainers' page check `contributed_correction:<record id>:<field>` in
+    tools/literature_visual_checks.json has verdict `confirmed` and its `old` value still matches; the value before
+    is kept in the record's `corrections[]` with the contributor, who is added to the record's `contributors`.
+    Returns the applied check keys (empty: the release is unchanged).
+    """
+    tool = os.path.join(data, "contributions", "tools", "orchid_contrib.py")
+    files = sorted(glob.glob(os.path.join(data, "contributions", "corrections", "*.jsonl")))
+    if not os.path.exists(tool) or not files:
+        return []
+    spec = importlib.util.spec_from_file_location("orchid_contrib", tool)
+    oc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(oc)
+    corrections = [json.loads(line) for f in files for line in open(f, encoding="utf-8") if line.strip()]
+    by_id = {r["id"]: r for r in records}
+    return oc.apply_corrections(by_id, corrections, gates.load_visual())
+
+
 def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     store = Store(corpus, pdfs)
     # pass 1: all sources (cited works resolve across stores)
@@ -1182,6 +1203,9 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     # letter or a compound mapped to an element structure, a liquid label on a solid model, a printed composition
     # outside the model phase's field -> mapping removed (kept in model_phase_rejected)
     qreport["phase_labels"] = phase_label_check.apply(records, _pr.PhaseRule(data or orchid_cite.DEFAULT_DATA))
+    applied = apply_contributions(records, data or orchid_cite.DEFAULT_DATA)
+    if applied:   # accepted contributed corrections (page-checked); none: the release is byte-identical
+        qreport["contributed_corrections"] = applied
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     qreport["espei_phase_rule"] = phase_rule.RULE_TEXT
     records.sort(key=lambda r: (r["system"], r["record_kind"], r.get("pid") or "", r["id"]))
