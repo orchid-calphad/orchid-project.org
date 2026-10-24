@@ -111,7 +111,7 @@ def derive_class(L, R, arrow):
 
 
 def compatible(stored, derived):
-    if not stored or not derived:
+    if not stored or not derived or stored in ("other", "invariant", "unknown"):
         return True
     if "|" in derived:
         return stored in derived.split("|") or stored in ("monotectoid", "quasi-peritectic") or \
@@ -170,7 +170,11 @@ def r3i_reactions(records, visual, rep):
             rep.add(GATE, "phases_from_printed_reaction", r, "corrected", n=len(missing))
         # (b)/(d) class
         derived = derive_class(L, R, arrow)
-        if not stored_type and derived and "|" not in derived:
+        if (not stored_type or stored_type in ("other", "invariant", "unknown")) and derived and "|" not in derived:
+            if stored_type:
+                rx["type_stored"] = stored_type
+                G.correct(r, GATE, "reaction.type", stored_type, derived, "reaction_class_from_printed_reaction",
+                          {"printed": printed}, cls("reaction_class_conflicts_printed_reaction"))
             rx["type"] = derived
             rx["type_basis"] = "derived_from_printed_reaction"
             r["reaction"] = rx
@@ -187,7 +191,7 @@ def r3i_reactions(records, visual, rep):
                           {"printed": printed}, cls("reaction_class_conflicts_printed_reaction"))
                 rep.add(GATE, "reaction_class_corrected", r, "corrected", before=stored_type, after=derived)
             else:
-                G.fail(r, GATE, "reaction_class_conflicts_printed_reaction", "not_espei_ready",
+                G.fail(r, GATE, "reaction_class_conflicts_printed_reaction", "flag_only",
                        "class %r but the printed reaction %r reads %r" % (stored_type, printed, derived))
                 rep.add(GATE, "reaction_class_conflicts_printed_reaction", r, "flagged")
         # (c) phase count
