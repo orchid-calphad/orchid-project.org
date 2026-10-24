@@ -42,6 +42,7 @@ CANDIDATES = [  # relative to $HOME; recorded in the output so the search is rep
     "projects/open-tdb/examples/thermo-extraction-benchmark/real-paper/formation_enthalpy_expt.csv",
     "data/kim2017/formation_enthalpy_expt.csv",
     "data/PD-extraction/datasets/kim2017/formation_enthalpy_expt.csv",
+    "data/kim2017-expt-formation-enthalpy/formation_enthalpy_expt.csv",
 ]
 SEARCH_NOTE = ("Searched on 2026-10-22 without a match: the CANDIDATES paths; every file named *formation_enthalpy* "
                "or *expt_formation* under $HOME (excluding ~/Library; only an unrelated HEACalculator pair-enthalpy "
