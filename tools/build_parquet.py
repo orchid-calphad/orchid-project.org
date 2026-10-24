@@ -18,7 +18,8 @@ Writes <orchid-data>/parquet/:
   experimental_context.parquet       one row per context item
   dft_parity.parquet                 one row per literature record x DFT source
   phase_diagram_index.parquet        one row per calculated diagram (incl. failed calculations)
-  phase_diagram_invariants.parquet   one row per calculated invariant
+  phase_diagram_invariants.parquet   one row per distinct calculated invariant (the mapper's repeated hits merged,
+                                     tools/calc_invariants.py; n_mapper_hits counts them)
   hull_vertices.parquet              one row per MP / OQMD hull vertex
   MANIFEST.json                      rows, schema, content SHA-256 and input hashes per table
 
@@ -51,6 +52,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import orchid_cite  # noqa: E402
 import ml_folds  # noqa: E402
+import calc_invariants  # noqa: E402
 
 # table -> citable Zenodo dataset it belongs to (tools/orchid_cite.py)
 TABLE_DATASET = {"literature_values": "literature", "papers": "literature", "experimental_context": "literature",
@@ -356,7 +358,8 @@ def pd_inv_schema(pa):
     return pa.schema([("system", s), ("file", s), ("tdb", s), ("tdb_sha256", s), ("x_component", s),
                       ("invariant_index", pa.int32()), ("T_K", f), ("n_phases", pa.int32()),
                       ("phases", L(s)), ("compositions", L(pa.struct([("phase", s), ("x", f)]))),
-                      ("x_min", f), ("x_max", f), ("engine", s), ("citation", s), ("doi", s)])
+                      ("x_min", f), ("x_max", f), ("engine", s), ("citation", s), ("doi", s),
+                      ("n_mapper_hits", pa.int32())])
 
 
 def hull_schema(pa):
@@ -465,12 +468,14 @@ def build_tables(data, pa):
         cit, doi = ent.get("citation", osrc.get("citation")), ent.get("doi", osrc.get("doi"))
         tr = j.get("T_range") or [None, None]
         invs = j.get("invariants") or []
+        reps = calc_invariants.distinct(invs)
         irow.append({"system": sysn, "elements": els, "file": fn, "tdb": j.get("tdb"),
                      "tdb_sha256": j.get("sha256"), "status": j.get("status"), "listed_in_index": fn in listed,
                      "has_grid": bool(j.get("grid")), "x_component": j.get("x_component"),
                      "T_min_K": fnum(tr[0]), "T_max_K": fnum(tr[1]), "phases": j.get("phases") or [],
-                     "n_invariants": len(invs), "engine": j.get("engine"), "citation": cit, "doi": doi})
-        for k, inv in enumerate(invs):
+                     "n_invariants": len(reps), "engine": j.get("engine"), "citation": cit, "doi": doi})
+        for k, hits in reps:
+            inv = invs[k]
             pts = inv.get("points") or []
             xs = [fnum(p.get("x")) for p in pts if p.get("x") is not None]
             invrow.append({"system": sysn, "file": fn, "tdb": j.get("tdb"), "tdb_sha256": j.get("sha256"),
@@ -478,7 +483,7 @@ def build_tables(data, pa):
                            "n_phases": len(pts), "phases": [p.get("phase") for p in pts],
                            "compositions": [{"phase": p.get("phase"), "x": fnum(p.get("x"))} for p in pts],
                            "x_min": min(xs) if xs else None, "x_max": max(xs) if xs else None,
-                           "engine": j.get("engine"), "citation": cit, "doi": doi})
+                           "engine": j.get("engine"), "citation": cit, "doi": doi, "n_mapper_hits": hits})
     inputs["phase-diagrams/sgte/*.json (sha256 of 'sha256  name' lines)"] = sgte_digest.hexdigest()
     irow.sort(key=lambda x: (x["system"], x["file"]))
     invrow.sort(key=lambda x: (x["system"], x["file"], x["invariant_index"]))

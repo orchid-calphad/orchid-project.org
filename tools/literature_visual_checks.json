@@ -20373,8 +20373,38 @@
    "verdict": "misread",
    "system": "DY-O",
    "review": "James Saal review 2026-10-24: element from a unit, a cover/flow gas, a phase prefix or a phase/prototype designation"
+  },
+  {
+   "checked": "2026-10-24",
+   "key": "page_fix:ORC-O4DJJCAHLH",
+   "kind": "page_fix",
+   "verdict": "corrected",
+   "page": 4,
+   "pdf_sha256_prefix": "26302e6ae6042e4e",
+   "image_sha256": "719be72e4a7e208e4019b40a7ac6a61152fe5ec56fd166b8aeba927ef7ae1d63",
+   "fields": {
+    "quote_page": 4
+   },
+   "rule": "quote_page_read_from_page",
+   "seen": "PDF page 4 (printed 29), left column, last paragraph: 'The nonstoichiometric Cr5Ge3 phase undergoes an allotropic transformation at 1002 °C [10].' The stored quote_page was a garbled string; the passage locator (p4/text-13) and the page agree.",
+   "review": "audit A6 H15 (2026-10-24): quote_page null after the cleanup"
+  },
+  {
+   "checked": "2026-10-24",
+   "key": "page_fix:ORC-A7W44LTTFR",
+   "kind": "page_fix",
+   "verdict": "corrected",
+   "page": 4,
+   "pdf_sha256_prefix": "3b3201aaa1d26982",
+   "image_sha256": "5a3358bbd1aad7725e5f23b0c8b3b15888ca64250b912f411eb2538f6b5443d8",
+   "fields": {
+    "quote_page": 4
+   },
+   "rule": "quote_page_read_from_page",
+   "seen": "PDF page 4 (printed 1056), right column, section 5: 'The calculated congruent-melting point of GaLi phase is 730 °C at 0.50 mol fraction of Li, which is in good agreement with the work of [13,14].' The stored quote_page was a garbled string; the passage locator (p4/text-17) and the page agree.",
+   "review": "audit A6 H15 (2026-10-24): quote_page null after the cleanup"
   }
  ],
- "description": "Visual source checks (2026-10-23): each entry is one rendered PDF page inspected by eye (page image hash, PDF hash prefix, verdict, a short factual note of what is printed). No image or page text is stored. Used by tools/literature_gates.py; verdicts curated where a reader's verdict needed a decision ('curation', original in 'verdict_reader').",
- "n": 1249
+ "description": "Visual source checks (2026-10-23/24): each entry is one rendered PDF page inspected visually by an ORCHID AI agent (Claude), not by a person (page image hash, PDF hash prefix, verdict, a short factual note of what is printed). No image or page text is stored. Used by tools/literature_gates.py; verdicts curated where a reader's verdict needed a decision ('curation', original in 'verdict_reader').",
+ "n": 1251
 }

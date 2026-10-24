@@ -253,7 +253,7 @@ and should be.</p>
 <p class="muted" style="font-size:.85rem">Sample <code id="sha"></code> · seed <span id="seed"></span> · strata: evidence class × source kind.
 Results are scored by <code>tools/score_precision_sample.py</code>.</p>
 </main>
-<footer><div class="wrap">Internal review page; not linked from the site. Quotes are single sentences reproduced under fair use so that values can be checked; source papers are not redistributed.</div></footer>
+<footer><div class="wrap">Internal review page; not linked from the site. Quotes are short excerpts kept so that values can be checked; they remain under the publishers' copyright and are not relicensed; source papers are not redistributed.</div></footer>
 <script type="application/json" id="sample-data">__SAMPLE__</script>
 <script>
 "use strict";

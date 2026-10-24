@@ -25,8 +25,8 @@ and writes, into the data repository (served at https://data.orchid-project.org/
 
 and, into this site repository: sitemap.xml (sitemap index), sitemap-pages.xml, robots.txt.
 
-Published content: derived data, citations / DOIs, and the one verbatim sentence per value already in the
-literature release (fair use). No page images, crops or full text. All text is HTML-escaped. Pages carry
+Published content: derived data, citations / DOIs, and the short verbatim excerpt per value already in the
+literature release (publishers' copyright, kept for verification, not relicensed). No page images, crops or full text. All text is HTML-escaped. Pages carry
 schema.org Dataset JSON-LD and a Markdown twin. Deterministic: same inputs and --date give identical bytes.
 Standard library only; no network.
 
@@ -411,9 +411,9 @@ def cite_md(names):
 
 def footer_parts():
     return ["Derived data CC BY 4.0 (", ("a", "licence", LICENSE_URL), "): cite ORCHID (",
-            ("a", "CITATION.cff", DATA_URL + "CITATION.cff"), ") and the original sources. Each quoted sentence is "
-            "reproduced under fair use so the value can be checked; source papers, page images and full text are "
-            "not redistributed. Field reference: ", ("a", "SCHEMA.md", DATA_URL + "literature/SCHEMA.md"),
+            ("a", "CITATION.cff", DATA_URL + "CITATION.cff"), ") and the original sources. Quotes are short excerpts kept so that "
+            "each value can be checked; they remain under the publishers' copyright and are not relicensed. Source "
+            "papers, page images and full text are not redistributed. Field reference: ", ("a", "SCHEMA.md", DATA_URL + "literature/SCHEMA.md"),
             ". Machine-readable guide: ", ("a", "llms.txt", DATA_URL + "llms.txt"), "."]
 
 
@@ -1309,8 +1309,8 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
     blocks = [
         ("p", ["This is the data site of ORCHID (Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery, ",
                ("a", "orchid-project.org", SITE_URL), "). Every value carries its evidence class (experimental, model, "
-               "DFT, unspecified; never mixed or averaged), its source paper and DOI, and the table row or one verbatim "
-               "sentence and page it was read from. Release: ", ("code", release), "."]),
+               "DFT, unspecified; never mixed or averaged), its source paper and DOI, and the table row or short verbatim "
+               "passage and page it was read from. Release: ", ("code", release), "."]),
         ("p", ["Status: " + orchid_cite.STATUS]),
         ("h2", "browse", "Browse without JavaScript"),
         ("ul", [[("a", "Chemical systems", DATA_URL + "systems/index.html"), " — %d pages (also " % len(sys_summary),
@@ -1349,9 +1349,9 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
               sum([[("a", orchid_cite.entry(n, CITE_DATA)["title"], orchid_cite.entry(n, CITE_DATA)["url"]),
                     "; " if i < len(orchid_cite.NAMES) - 1 else "."] for i, n in enumerate(orchid_cite.NAMES)], [])),
         ("p", ["Derived data: CC BY 4.0. Cite the ORCHID release (", ("a", "CITATION.cff", DATA_URL + "CITATION.cff"),
-               ") and the original source of every value you use (its paper and DOI). Quoted sentences are single sentences "
-               "reproduced under fair use so values can be checked; source papers, page images and full text are not "
-               "redistributed. Licences of the DFT and CALPHAD sources: ", ("a", "LICENSES.md", DATA_URL + "LICENSES.md"),
+               ") and the original source of every value you use (its paper and DOI). Quotes are short excerpts kept so that "
+               "each value can be checked; they remain under the publishers' copyright and are not relicensed. Source "
+               "papers, page images and full text are not redistributed. Licences of the DFT and CALPHAD sources: ", ("a", "LICENSES.md", DATA_URL + "LICENSES.md"),
                ", ", ("a", "NOTICE.md", DATA_URL + "NOTICE.md"), "."]),
     ]
     jl = {"@context": "https://schema.org", "@type": "Dataset", "name": DATASET_NAME, "description": desc, "url": url,
@@ -1401,8 +1401,8 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         for n in orchid_cite.NAMES] + [
         "- Every JSON file carries a top-level cite_as object (text, BibTeX, DOI); Parquet files carry orchid.cite_as metadata; literature/CITATION.txt sits beside the CSV.",
         "- Derived data CC BY 4.0. Cite the ORCHID release (%sCITATION.cff) and each value's source paper (DOI given per value)." % DATA_URL,
-        "- Quotes: one verbatim sentence per value, fair use. Source papers, page images and full text are not redistributed.",
-        "- Use values with extraction_accepted = true unless you handle disputes; uncertainty with basis stated_default is a placeholder, not a measurement.",
+        "- Quotes: one short verbatim excerpt per value, kept for verification; publishers' copyright, not relicensed (LICENSES.md). Source papers, page images and full text are not redistributed.",
+        "- Use values with extraction_accepted = true unless you handle disputes; for weighting use sigma_effective (uncertainty_budget), not uncertainty.value: a stated_default or reading_resolution uncertainty.basis is not a measured uncertainty.",
         "- Every value carries uncertainty_budget (components printed / reading / method floor / composition / scatter / conversion kept separate; sigma_effective = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter) is the recommended sigma; floors: %sliterature/UNCERTAINTY_CALIBRATION.md)." % DATA_URL,
         "- Project site: %s (interactive explorer %sdata-explorer/#<SYS>)" % (SITE_URL, SITE_URL), ""])
     lines = ["# ORCHID data: all systems", "", "> One line per chemical system: accepted literature values by evidence class, "

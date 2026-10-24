@@ -1095,6 +1095,7 @@ def g3_signs(records, visual, rep):
                     new = chk["value"]
                     correct(r, "G3", "value", v, new, "sign_read_from_page", {"printed": chk.get("value_printed_page")}, chk)
                     r["value_stored"], r["value"] = v, new
+                    r["flags"]["sign_pdf_page_verified"] = True   # the sign was read on the rendered page
                     rep.add("G3", "sign_corrected_from_page", r, "corrected", before=v, after=new)
                 elif chk and chk.get("verdict") == "as_stored":
                     rep.counts[("G3", "positive_formation_confirmed_on_page", "checked")] += 1
@@ -1577,7 +1578,7 @@ def g_page_verdicts(records, visual, rep):
 
 STD_T_PRINTED = re.compile(r"^\s*~?\s*298(?:\.[012]0?)?\s*(?:K)?\s*(?:\((?:caption|subscript[^)]*)\)?.*)?$")
 PAGE_FIX_FIELDS = ("value", "unit", "temperature_K", "evidence_class", "property", "uncertainty", "reference_state",
-                   "temperature_basis", "cited_sources")
+                   "temperature_basis", "cited_sources", "quote_page")
 
 
 def g0_page_fixes(records, visual, rep):
@@ -1599,7 +1600,8 @@ def g0_page_fixes(records, visual, rep):
             store = {"value": "value_stored", "unit": "unit_stored", "temperature_K": "temperature_K_stored",
                      "evidence_class": "evidence_class_before_gates", "property": "property_code_before_gates",
                      "uncertainty": "uncertainty_stored", "reference_state": "reference_state_stored",
-                     "temperature_basis": "temperature_basis_stored", "cited_sources": None}[f]
+                     "temperature_basis": "temperature_basis_stored", "cited_sources": None,
+                     "quote_page": None}[f]   # quote_page: the unreadable stored page is in quality_fixes.json changes
             if store:   # cited sources: the unresolved entries stay in the correction's `before`
                 r.setdefault(store, before)
             r[f] = new
@@ -1614,6 +1616,8 @@ def g0_page_fixes(records, visual, rep):
                     r["flags"]["espei_certified"] = False
             if f == "evidence_class":
                 r.setdefault("origin", {})["class_gate"] = chk.get("origin_class") or new
+            if f == "quote_page" and new is not None:
+                r["flags"]["page_unreadable"] = False   # the page was read on the rendered PDF
             if f in ("value", "unit") and r["flags"].get("magnitude_suspect"):
                 # the magnitude was the suspicion; the page settles the value
                 r["flags"]["magnitude_suspect_before_page_fix"] = True
@@ -1632,6 +1636,12 @@ def g0_page_fixes(records, visual, rep):
         for fl in chk.get("flags") or ([{"code": chk["code"], "effect": chk.get("effect"), "detail": chk.get("detail")}] if chk.get("code") else []):
             fail(r, "page", fl["code"], fl.get("effect") or "not_espei_ready", (fl.get("detail") or chk.get("seen") or "")[:240], chk)
             rep.add("page", fl["code"], r, "flagged")
+            if fl["code"] == "pressure_not_1_atm_on_page" and r.get("pressure_Pa") == 101325:
+                # the page prints a pressure other than 1 atm: the assumed 1 atm is withdrawn (audit A6 H10)
+                r["pressure_Pa_stored"], r["pressure_Pa"] = r["pressure_Pa"], None
+                r.setdefault("pressure_basis_stored", r.get("pressure_basis"))
+                r["pressure_basis"] = "printed_not_1_atm_see_gate_failures"
+                rep.counts[("page", "pressure_1_atm_withdrawn", "corrected")] += 1
         if chk.get("related_records"):
             r["related_records"] = chk["related_records"]
 
@@ -1681,6 +1691,7 @@ def expand_visual(visual):
 
 def apply(records, rule, visual=None, store_units=None, plaus_store=None, describe=None):
     """Mutates the records; returns (records, report dict)."""
+    _visual_given = visual is not None
     visual = expand_visual(load_visual() if visual is None else visual)
     rep = Report()
     acc0 = sum(1 for r in records if r["flags"].get("extraction_accepted"))
@@ -1715,9 +1726,17 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
         "records_in": n0, "records_out": len(records),
         "accepted_before": acc0, "accepted_after": sum(1 for r in records if r["flags"].get("extraction_accepted")),
         "espei_ready_before": ready0, "espei_ready_after": sum(1 for r in records if r["flags"].get("espei_ready")),
+        "espei_ready_after_note": ("espei_ready after the gates and before the ESPEI phase rule and blocking flags "
+                                   "(export_literature_data.espei_fields); the released count is quality_fixes.json "
+                                   "espei.espei_ready"),
         "records_corrected": sum(1 for r in records if r.get("corrections")),
         "records_with_gate_failures": sum(1 for r in records if r.get("gate_failures")),
         "visual_checks": len(visual),
+        "visual_check_entries": (len(json.load(open(VISUAL_FILE, encoding="utf-8")).get("checks", []))
+                                 if not _visual_given and os.path.exists(VISUAL_FILE) else None),
+        "visual_checks_note": ("visual_checks counts the keys the gates look up (a table-level ledger entry that names "
+                               "single rows of a higher-order system expands to one key per row); visual_check_entries "
+                               "counts the entries of tools/literature_visual_checks.json (one rendered page each)"),
         "visual_check_summary": [{"kind": k, "verdict": v, "n": n} for (k, v), n in sorted(Counter(
             (c.get("kind") or k.split(":")[0], c.get("verdict")) for k, c in visual.items()).items())],
         "counts": [{"gate": g, "code": c, "action": a, "n": n} for (g, c, a), n in sorted(rep.counts.items())],
@@ -1743,10 +1762,11 @@ def gates_md(report):
          "| | before | after |", "|---|---:|---:|",
          "| records | %d | %d |" % (report["records_in"], report["records_out"]),
          "| extraction_accepted | %d | %d |" % (report["accepted_before"], report["accepted_after"]),
-         "| espei_ready (before the ESPEI phase rule) | %d | %d |" % (report["espei_ready_before"], report["espei_ready_after"]),
+         "| espei_ready (after the gates, before the ESPEI phase rule and blocking flags; released count in `espei.espei_ready`) | %d | %d |" % (report["espei_ready_before"], report["espei_ready_after"]),
          "| records with corrections | | %d |" % report["records_corrected"],
          "| records with gate failures | | %d |" % report["records_with_gate_failures"],
-         "| visual checks on file | | %d |" % report["visual_checks"], "",
+         "| page-check ledger entries (tools/literature_visual_checks.json) | | %s |" % (report.get("visual_check_entries") if report.get("visual_check_entries") is not None else "-"),
+         "| page-check keys looked up by the gates (table entries expanded to rows) | | %d |" % report["visual_checks"], "",
          "| gate | code | action | n |", "|---|---|---|---:|"]
     for c in report["counts"]:
         L.append("| %s %s | `%s` | %s | %d |" % (c["gate"], GATES.get(c["gate"], ""), c["code"], c["action"], c["n"]))

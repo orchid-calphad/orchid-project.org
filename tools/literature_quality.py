@@ -215,6 +215,124 @@ def normalize_energy_unit(r, fixes):
         r.setdefault("flags", {})["basis_inferred_from_magnitude"] = True
 
 
+# ------------------------------------------------------------------------------------------ lattice lengths
+
+# Lattice lengths are stored in angstrom (audit A6, 2026-10-24; PI: normalise, keep the original). The stored value
+# and unit are kept in value_stored / unit_stored. A 'per mol-atom' suffix on a length is a unit-pipeline artefact
+# and is dropped. Values whose unit is not printed (`not_printed`, `unknown`) are not converted: no magnitude guess.
+LENGTH_PROPS = {"LATTICE_A", "LATTICE_B", "LATTICE_C", "LATTICE_A0", "LATTICE_C0", "LATTICE_UNSPECIFIED_AXIS",
+                "LATTICE_A_R"}
+_LEN = [(re.compile(r"^(?:nm|nanomet(?:er|re)s?)$", re.I), 10.0, "nm"),
+        (re.compile(r"^pm$"), 0.01, "pm"),
+        (re.compile(r"^(?:\u00c5|\u212b|A|Angstr(?:\u00f6|o)ms?|angstr(?:\u00f6|o)ms?)$"), 1.0, "angstrom")]
+LATTICE_TYPICAL_A = (1.0, 100.0)   # flag-only plausibility window after conversion
+
+
+def normalize_length_unit(r, fixes):
+    prop = r.get("property")
+    v = r.get("value")
+    if prop not in LENGTH_PROPS or isinstance(v, bool) or not isinstance(v, (int, float)):
+        return
+    u = (r.get("unit") or "").strip()
+    u0 = re.sub(r"\s*per mol-atom$", "", u).strip()
+    hit = next(((f, name) for pat, f, name in _LEN if pat.match(u0)), None)
+    if hit is None:
+        return
+    fac, name = hit
+    if r.get("unit_stored") is None:
+        r["value_stored"], r["unit_stored"] = v, u
+    r["value"], r["unit"] = _sig(v * fac), "\u00c5"
+    unc = r.get("uncertainty")
+    if isinstance(unc, dict) and isinstance(unc.get("value"), (int, float)) and not isinstance(unc.get("value"), bool):
+        unc["value"] = _sig(unc["value"] * fac)
+    rng = r.get("value_range")
+    if isinstance(rng, dict):
+        r["value_range"] = {k: (_sig(x * fac) if isinstance(x, (int, float)) and not isinstance(x, bool) else x)
+                            for k, x in rng.items()}
+    fixes["lattice_length_to_angstrom_from_" + name] += 1
+    if u0 != u:
+        fixes["lattice_length_per_mol_atom_suffix_dropped"] += 1
+    lo, hi = LATTICE_TYPICAL_A
+    if not lo <= abs(r["value"]) <= hi:
+        r.setdefault("flags", {})["lattice_length_outside_typical_range"] = True
+        fixes["lattice_length_outside_typical_range"] += 1
+
+
+# ------------------------------------------------------------------------------------------ cited years
+
+# Year of a cited source (audit A5 F2, 2026-10-24): the readers sometimes took the last page number of the printed
+# reference as its year (Metall. Trans. A 24 (1993) 1827-1834 -> 1834). The year is re-derived from the printed
+# reference string; the reader's year is kept in `year_read` when it changes, the rule in `year_basis`.
+_YEAR = r"(1[6-9]\d\d|20[0-3]\d)"
+_RUNNING_HEADER = re.compile(r"\s+[A-Z][^/]{0,80}\bet al\.?\s*/\s*[^/]{3,120}$")
+
+
+def _page_starts(t):
+    """Offsets of numbers that are page numbers: both ends of a page range a-b (not a volume-year range such as
+    1949-1950 or 1960-61) and a number after p / pp / S."""
+    out = set()
+    for m in re.finditer(r"(?<!\d)(\d{1,6})\s*[-\u2013\u2014\u2212]\s*(\d{1,6})(?!\d)", t):
+        a, b = int(m.group(1)), m.group(2)
+        if 1600 <= a <= 2039 and ((len(b) == 4 and 0 <= int(b) - a <= 3) or (len(b) <= 2 and int(b) == (a + 1) % 100)):
+            continue
+        out.add(m.start(1))
+        out.add(m.start(2))
+    for m in re.finditer(r"(?<![A-Za-z])(?:pp?\.?|S\.)\s*(\d{1,6})", t):
+        out.add(m.start(1))
+    return out
+
+
+def cited_year(reference, year, paper_year=None):
+    """(year, basis) of a cited source from its printed reference string and the reader's year.
+
+    basis: as_read (the reader's year is a year of the string, not a page), printed_parenthesised_year,
+    printed_year_not_page (the one non-page year of the string), page_number_not_year (the reader's year is a page
+    number and the string has no other year), ambiguous_several_years (the reader's year is not supported and the
+    string names several years), after_citing_paper (later than the paper that cites it)."""
+    t = _RUNNING_HEADER.sub("", reference or "")
+    y = int(year) if str(year if year is not None else "").strip().isdigit() else None
+    ps = _page_starts(t)
+    par = [int(m.group(1)) for m in re.finditer(r"\(\s*" + _YEAR + r"[a-z]?\s*[),;\u2013-]", t)]
+    par += [int(m.group(1)) for m in re.finditer(r"\(\s*\d{4}\s*[\u2013-]\s*" + _YEAR + r"\s*\)", t)]  # (1949-1950)
+    allm = [(int(m.group(1)), m.start(1)) for m in re.finditer(r"(?<!\d)" + _YEAR + r"(?!\d)", t)]
+    cands = [v for v, s0 in allm if s0 not in ps]
+    pages = [v for v, s0 in allm if s0 in ps]
+    if paper_year:
+        par = [x for x in par if x <= paper_year]
+        cands = [x for x in cands if x <= paper_year]
+    if y is not None and (y in par or (y in cands and not par)):
+        out, b = y, "as_read"
+    elif par:
+        out, b = par[0], "printed_parenthesised_year"
+    elif len(set(cands)) == 1:
+        out, b = cands[0], "printed_year_not_page"
+    elif cands:
+        out, b = None, "ambiguous_several_years"
+    elif y is not None and y in pages:
+        out, b = None, "page_number_not_year"
+    else:
+        out, b = y, "as_read"
+    if out is not None and paper_year and out > paper_year:
+        out, b = None, "after_citing_paper"
+    return out, b
+
+
+def fix_cited_years(records, paper_year_of, counts):
+    """Apply cited_year to every cited source (mutates); paper_year_of(paper key) -> int or None."""
+    for r in records:
+        py = paper_year_of(r.get("paper"))
+        for c in r.get("cited_sources") or []:
+            if c.get("year") is None and not c.get("reference"):
+                continue
+            new, basis = cited_year(c.get("reference"), c.get("year"), py)
+            old = c.get("year")
+            if str(new) != str(old) and not (new is None and old is None):
+                c["year_read"] = old
+                c["year_basis"] = basis
+                c["year"] = new
+                counts["cited_year_" + basis] += 1
+
+
 # ------------------------------------------------------------------------------------------ form
 
 MAX_PAGE = 2000
@@ -511,6 +629,7 @@ def apply(records, open_tdb):
             r["property_code_raw"], r["property"] = code, new
             prop_map[(code, new)] += 1
         normalize_energy_unit(r, counts)
+        normalize_length_unit(r, counts)
         fix_reference_phases(r, counts)
     n0 = len(records)
     dcounts = Counter()

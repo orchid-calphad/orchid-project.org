@@ -214,6 +214,6 @@ def citation_txt(name: str, data_root: str | None = None, intro: str = "") -> st
         o += [intro, ""]
     o += ["Please cite:", "", c["text"], "", "Part of: " + c["part_of"]["text"] if "part_of" in c else "", "",
           "Also cite " + "; ".join(c["also_cite"]) + ".", "", "Status: " + c["status"], "", "Licence: CC BY 4.0 "
-          "(derived data; quoted sentences under fair use; source papers not redistributed).", "", "BibTeX:", "",
+          "(derived data; quotes are short excerpts under the publishers' copyright, not relicensed; source papers not redistributed).", "", "BibTeX:", "",
           bibtex_block([name], data_root), ""]
     return "\n".join(o)
