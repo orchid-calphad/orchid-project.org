@@ -760,7 +760,7 @@ def load_hull_vertices(open_tdb, inputs):
             for iso in h["isotherms"]:
                 vs += iso["vertices"]
             out[(h["system_id"], src)] = {"x_element": h["x_element"], "vertices": vs,
-                                          "release": (h.get("provenance") or {}).get("mp_release")}
+                                          "release": (h.get("provenance") or {}).get("source_release", (h.get("provenance") or {}).get("mp_release"))}
     return out
 
 

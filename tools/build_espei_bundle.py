@@ -1278,6 +1278,26 @@ def boot_ci(res, label):
     return {k: [round(quantile(v, 0.025), 3), round(quantile(v, 0.975), 3)] for k, v in sorted(acc.items())}
 
 
+def boot_ci_cluster(ps, label):
+    """System-cluster bootstrap (audit A4 E8): resample chemical systems with replacement and pool their residuals,
+    so that several records of one compound or system (CuZr: 12) are not counted as independent evidence."""
+    by = defaultdict(list)
+    for p in ps:
+        by[p["system"]].append(p["res"])
+    systems = sorted(by)
+    rng = random.Random(int(hashlib.sha256(("cluster|" + label).encode()).hexdigest()[:8], 16))
+    acc = defaultdict(list)
+    k = len(systems)
+    for _ in range(N_BOOT):
+        res = []
+        for _ in range(k):
+            res.extend(by[systems[rng.randrange(k)]])
+        st = stats_of(res)
+        for key in ("bias_median", "sigma_robust", "q68_abs", "q95_abs", "rmse"):
+            acc[key].append(st[key])
+    return {key: [round(quantile(v, 0.025), 3), round(quantile(v, 0.975), 3)] for key, v in sorted(acc.items())}
+
+
 def calibration_pairs(data, pub):
     """{source: [pair]}; pair = {res kJ/mol-atom, elements, system, match, chem, sigma_exp}."""
     dp = json.load(open(os.path.join(data, "literature", "dft_parity.json"), encoding="utf-8"))
@@ -1287,6 +1307,10 @@ def calibration_pairs(data, pub):
         return (r["ev"] == "experimental" and r["acc"] and not r["unsigned"] and not r["sign_lost"]
                 and "magnitude_suspect" not in r["suspect"])
 
+    def point_default(p, r):
+        # per-point default of the parity builder (structure match, composition offset, 0 K experimental; A4 E1/E5/E6)
+        return p["default"] if "default" in p else default(r)
+
     def sig_exp(rid):
         u = (pub.get(rid) or {}).get("uncertainty") or {}
         return abs(u["value"]) if u.get("basis") == "printed" and isinstance(u.get("value"), (int, float)) else None
@@ -1294,16 +1318,18 @@ def calibration_pairs(data, pub):
     pairs = defaultdict(list)
     for p in sorted(dp["points"], key=lambda p: (p["src"], p["rid"], p["mid"])):
         r = R.get(p["rid"])
-        if not r or not default(r):
+        if not r or not point_default(p, r):
             continue
         els = sorted(e.upper() for e in r["comp"])
-        match = "above_hull" if p["ehull"] > HULL_TOL_KJ else ("polymorph_ambiguous" if p["npoly"] > 1 else "on_hull_single")
+        eh = p["ehull"] if p.get("ehull") is not None else p.get("ehull_upstream")
+        match = "above_hull" if eh > HULL_TOL_KJ else ("polymorph_ambiguous" if p["npoly"] > 1 else "on_hull_single")
         pairs[p["src"]].append({"res": p["res"], "system": "-".join(els), "match": match, "chem": chem_class(els),
                                 "sigma_exp": sig_exp(p["rid"]), "rid": p["rid"]})
     # literature DFT vs experiment: same binary compound (reduced composition) in the default experimental subset
     exp = defaultdict(list)
+    ok_rid = {p["rid"] for p in dp["points"] if point_default(p, R[p["rid"]])}
     for rid, r in sorted(R.items()):
-        if default(r) and len(r["comp"]) == 2:
+        if default(r) and rid in ok_rid and len(r["comp"]) == 2:
             exp[tuple(sorted((k, round(v, 4)) for k, v in r["comp"].items()))].append((r["lit"], sig_exp(rid)))
     for r in sorted(pub.values(), key=lambda x: x["id"]):
         if not lit_dft_candidate(r):
@@ -1363,6 +1389,8 @@ def calibrate(pairs, needed):
                 return None
             s = {k: (round(v, 3) if isinstance(v, float) else v) for k, v in s.items()}
             s["ci95"] = boot_ci(res, label)
+            s["ci95_cluster_system"] = boot_ci_cluster(ps, label)
+            s["n_systems"] = len({p["system"] for p in ps})
             se = [p["sigma_exp"] for p in ps if p["sigma_exp"] is not None]
             s["sigma_exp_median"] = round(median(se), 3) if se else None
             s["n_with_printed_exp_sigma"] = len(se)
@@ -1495,7 +1523,8 @@ def build_dft(data, pub, papers, pairs):
                                   "id": v["phase"], "compound": v["formula"], "sg": v.get("spacegroup_symbol"),
                                   "match": "on_hull_single" if v.get("entries_at_x", 1) <= 1 else "polymorph_ambiguous",
                                   "snapshot": d["provenance"].get("snapshot_sha256"),
-                                  "release": d["provenance"].get("mp_release"), "theoretical": v.get("theoretical")})
+                                  "release": d["provenance"].get("source_release", d["provenance"].get("mp_release")),
+                                  "theoretical": v.get("theoretical")})
     for r in sorted(pub.values(), key=lambda x: x["id"]):
         if not lit_dft_candidate(r):
             continue
@@ -1931,7 +1960,9 @@ def calibration_md(cal, dp_release):
          "- bias: mean and median residual (**recorded, not applied** to any value);",
          "- robust sigma = 1.4826 x MAD (median absolute deviation about the median); 68 / 95 % quantiles of "
          "|residual|; RMSE;",
-         "- 95%% confidence intervals: %d bootstrap resamples of the pairs (fixed seeds), percentile intervals;" % N_BOOT,
+         "- 95%% confidence intervals: %d bootstrap resamples (fixed seeds), percentile intervals, two ways: "
+         "resampling pairs (`ci95`) and resampling chemical systems with all their pairs (`ci95_cluster_system`, "
+         "audit A4 E8; pairs cluster by compound and system, so the system-cluster interval is the one to quote);" % N_BOOT,
          "- strata: match quality (%s) x chemistry (%s); chemistry precedence: p-block / anion, then magnetic 3d, "
          "then all-metal; single-factor strata are listed too;" % (
              "; ".join("`%s` %s" % kv for kv in MATCH_TEXT.items()),
@@ -1950,8 +1981,8 @@ def calibration_md(cal, dp_release):
          "several robust sigmas; a Gaussian likelihood with the robust sigma treats the tail compounds as far less "
          "likely than they are, so a few outliers can pull a fit hard. Consider a Student-t or a wider sigma if your "
          "fit is sensitive to a few compounds.",
-         "- Pairs are treated as independent; several experimental records of one compound and correlated errors "
-         "within a chemistry are not modelled.",
+         "- The point estimates treat pairs as independent; several experimental records of one compound and "
+         "correlated errors within a chemistry are reflected only in the system-cluster confidence interval.",
          "- The calibration is against literature experiments (machine-extracted, Version 1) and inherits their "
          "errors; sigma_deconvolved shows how much of the spread the printed experimental uncertainty explains.",
          "- 0 K DFT energies are used as 298.15 K enthalpies.", ""]
@@ -1961,13 +1992,14 @@ def calibration_md(cal, dp_release):
         for name, s in [("all", e["all"])] + sorted(e["strata"].items()):
             if not s:
                 continue
-            rows.append([name, s["n"], s["bias_mean"], s["bias_median"], "%s [%s, %s]" % (
-                s["sigma_robust"], *s["ci95"]["sigma_robust"]), "%s [%s, %s]" % (s["q68_abs"], *s["ci95"]["q68_abs"]),
+            rows.append([name, s["n"], s.get("n_systems"), s["bias_mean"], s["bias_median"], "%s [%s, %s]" % (
+                s["sigma_robust"], *s["ci95"]["sigma_robust"]),
+                "[%s, %s]" % tuple(s["ci95_cluster_system"]["sigma_robust"]), "%s [%s, %s]" % (s["q68_abs"], *s["ci95"]["q68_abs"]),
                 "%s [%s, %s]" % (s["q95_abs"], *s["ci95"]["q95_abs"]), "%s [%s, %s]" % (s["rmse"], *s["ci95"]["rmse"]),
                 s["rmse_over_sigma_robust"], s["sigma_exp_median"], s["sigma_deconvolved"],
                 "" if s["n"] >= MIN_STRATUM else "< %d: falls back" % MIN_STRATUM])
-        L.append(table(rows, [("stratum", 0), ("n", 1), ("bias mean", 1), ("bias median", 1),
-                              ("robust sigma [95% CI]", 0), ("q68 |res|", 0), ("q95 |res|", 0), ("RMSE", 0),
+        L.append(table(rows, [("stratum", 0), ("n", 1), ("systems", 1), ("bias mean", 1), ("bias median", 1),
+                              ("robust sigma [95% CI pairs]", 0), ("95% CI systems", 0), ("q68 |res|", 0), ("q95 |res|", 0), ("RMSE", 0),
                               ("RMSE/sigma", 1), ("sigma_exp", 1), ("sigma deconv.", 1), ("note", 0)]))
         L.append("")
     L.append("Values in kJ/mol-atom. Leave-system-out sigmas used for the weights: `CALIBRATION.json`, `lso` "
@@ -2427,7 +2459,8 @@ def build_files(C, D, val, data, release, dp_release, P):
     files["dft/CALIBRATION.json"] = dumps({"method": {
         "pairs": "literature/dft_parity.json default subset; literature DFT vs median experiment of the same compound",
         "residual": "DFT - experiment, kJ/mol-atom", "sigma_robust": "1.4826 * MAD", "bootstrap": N_BOOT,
-        "ci": "percentile 95 %", "min_stratum": MIN_STRATUM, "hull_tolerance_meV_per_atom": HULL_TOL_MEV, "hull_tolerance_kJ_per_mol_atom": round(HULL_TOL_KJ, 4), "leave_system_out": True, "bias_applied": False,
+        "ci": "percentile 95 %", "ci_cluster": "ci95_cluster_system: bootstrap over chemical systems (all pairs of a "
+        "resampled system kept together); quote this interval (audit A4 E8)", "min_stratum": MIN_STRATUM, "hull_tolerance_meV_per_atom": HULL_TOL_MEV, "hull_tolerance_kJ_per_mol_atom": round(HULL_TOL_KJ, 4), "leave_system_out": True, "bias_applied": False,
         "weight": "500 J/mol / (sigma_robust_kJ * 1000)", "eV_to_J_per_mol": EV_TO_J_PER_MOL,
         "chemistry_classes": CHEM_TEXT, "match_quality": MATCH_TEXT}, "pairs_release": dp_release, **D["calibration"]})
     files["dft/CALIBRATION.md"] = calibration_md(D["calibration"], dp_release).encode("utf-8")
