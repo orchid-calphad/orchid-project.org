@@ -145,6 +145,7 @@ gat = rec(system="AG-PB", property="CPM", unit="J/mol-atom/K", value=26.0, value
 oor = rec(property="HM_FORM", unit="kJ/mol-atom", value=496.7, value_printed=496.7, unit_printed="kJ/mol", phases=[{"label": "Ho (fcc)"}],
           system="AU-HO", record_kind="general_table", evidence_class="model",
           locator={"artifact": "table", "asset": "doi:x/p2/tab-9", "page": 2, "row": 1})
+oor_pristine = copy.deepcopy(oor)   # the first run files the unary 'Ho (fcc)' row under HO (A1 C4)
 oor2 = rec(property="HM_FORM", unit="kJ/mol-atom", value=-40.0, value_printed=-40.0, unit_printed="kJ/mol", phases=[{"label": "AuHo"}],
            system="AU-HO", locator={"artifact": "table", "asset": "doi:x/p2/tab-9", "page": 2, "row": 2})
 oor3 = rec(property="HM_FORM", unit="kJ/mol-atom", value=-35.0, value_printed=-35.0, unit_printed="kJ/mol", phases=[{"label": "AuHo2"}],
@@ -159,7 +160,7 @@ check("G2 per gram-atom is per mole of atoms: untouched", out[gat["id"]]["unit"]
 check("G2 unexplained out-of-range value not accepted, magnitude_suspect set", "value_out_of_physical_range" in codes(out[oor["id"]])
       and not out[oor["id"]]["flags"]["extraction_accepted"] and out[oor["id"]]["flags"]["magnitude_suspect"])
 check("G2/G9 activity stored as 0 not ESPEI-ready", "activity_rounded_to_zero" in codes(out[z["id"]]))
-out, rep = run([copy.deepcopy(oor)], {"record:" + oor["id"]: vc(verdict="corrected", value=-49.67, value_printed_page="-49.67")})
+out, rep = run([copy.deepcopy(oor_pristine)], {"record:" + oor["id"]: vc(verdict="corrected", value=-49.67, value_printed_page="-49.67")})
 check("G2 value read from the page when unambiguous", out[oor["id"]]["value"] == -49.67 and out[oor["id"]]["value_stored"] == 496.7)
 
 # ------------------------------------------------------------------ G3 signs
@@ -299,8 +300,8 @@ inv = dict(property="INVARIANT_TEMPERATURE", observation_type="invariant_reactio
 loc = {"artifact": "table", "asset": "doi:10.1/t/p5/tab-2", "page": 5}
 hdr = rec(value=739.0, temperature_K=739.0, transition_kind="eutectic", locator=dict(loc, row=1),
           phases=[{"label": "L"}, {"label": "Mg2Pb"}, {"label": "Phase 2"}, {"label": "Phase 3"}, {"label": "HCP_A3 (Mg)"}],
-          phase_compositions=[{"phase": "Phase 2", "composition": {"PB": 0.0975}, "composition_source": "printed",
-                               "basis": "mole_fraction"}], **inv)
+          phase_compositions=[{"phase": "Phase 2", "composition": {"NI": 0.0975}, "composition_source": "printed",
+                               "basis": "mole_fraction"}], **inv)   # (element of the fixture's system: A1 C6 gate)
 mono = rec(value=1100.0, temperature_K=1100.0, transition_kind="monotectic", locator=dict(loc, row=2),
            phases=[{"label": "Liquid#1"}, {"label": "Liquid#2"}, {"label": "Ni3Al"}], **inv)
 miss = rec(value=1000.0, temperature_K=1000.0, transition_kind="eutectic", locator=dict(loc, row=3),

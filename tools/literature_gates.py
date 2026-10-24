@@ -32,6 +32,7 @@ from collections import Counter, defaultdict
 
 import build_dft_parity as parity  # formula parser shared with the DFT benchmark
 import phase_rule  # liquid labels, SGTE liquid bounds, element melting points
+import literature_r2_compositions as r2c  # audit round 2 (A1): compositions and state systems
 from espei_constraints import ELEMENT_TM_TB
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -51,6 +52,7 @@ GATES = {
     "R2": "audit round 2 (2026-10-24): per-column basis and sign read on the page, printed sigma rescaled with its value, "
           "absolute entropies, heat-content and expression temperatures, 298-subscript and calorimeter temperatures, "
           "first-principles rows, formation from compounds, reference-state text (tools/literature_r2_thermo.py)",
+    "A1": "elements, chemical systems, compositions (audit round 2)",
 }
 
 
@@ -1708,6 +1710,7 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     literature_r2_thermo.apply(records, visual, rep)
     g4_system(records, visual, rep)
     g4_unit_gas_elements(records, rep)
+    r2c.before_compositions(records, visual, rep, getattr(rule, "data", None))   # A1 C1-C3, C6, C7
     for r in records:
         g0_standard_temperature(r, rep)
         g12_pressure(r, rep)
@@ -1723,6 +1726,7 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     g4_flags(records, rep)
     g_page_verdicts(records, visual, rep)
     records = g7_dedupe(records, rep)
+    r2c.after_system(records, rep)          # A1 C4: file each record under the system of its own state
     for r in records:
         r.pop("_g6_page_fixed", None)
         if r.get("gate_failures"):
