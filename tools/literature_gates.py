@@ -1547,7 +1547,7 @@ def g_page_verdicts(records, visual, rep):
 
 STD_T_PRINTED = re.compile(r"^\s*~?\s*298(?:\.[012]0?)?\s*(?:K)?\s*(?:\((?:caption|subscript[^)]*)\)?.*)?$")
 PAGE_FIX_FIELDS = ("value", "unit", "temperature_K", "evidence_class", "property", "uncertainty", "reference_state",
-                   "temperature_basis")
+                   "temperature_basis", "cited_sources")
 
 
 def g0_page_fixes(records, visual, rep):
@@ -1569,8 +1569,9 @@ def g0_page_fixes(records, visual, rep):
             store = {"value": "value_stored", "unit": "unit_stored", "temperature_K": "temperature_K_stored",
                      "evidence_class": "evidence_class_before_gates", "property": "property_code_before_gates",
                      "uncertainty": "uncertainty_stored", "reference_state": "reference_state_stored",
-                     "temperature_basis": "temperature_basis_stored"}[f]
-            r.setdefault(store, before)
+                     "temperature_basis": "temperature_basis_stored", "cited_sources": None}[f]
+            if store:   # cited sources: the unresolved entries stay in the correction's `before`
+                r.setdefault(store, before)
             r[f] = new
             if f == "temperature_K":
                 if r.get("property") in TEMPERATURE_PROPS and r.get("value") == before:
@@ -1587,7 +1588,12 @@ def g0_page_fixes(records, visual, rep):
                 # the magnitude was the suspicion; the page settles the value
                 r["flags"]["magnitude_suspect_before_page_fix"] = True
                 r["flags"]["magnitude_suspect"] = False
-            correct(r, "page", f, before, new, chk.get("rule") or "read_from_page", {"printed": chk.get("printed")}, chk)
+            ev = {"printed": chk.get("printed")}
+            if f in (chk.get("conversions") or {}):
+                # a value converted on the page's own evidence (e.g. to the standard reference state): the
+                # conversion (source of the auxiliary data, numbers) is part of the correction
+                ev["conversion"] = chk["conversions"][f]
+            correct(r, "page", f, before, new, (chk.get("rules") or {}).get(f) or chk.get("rule") or "read_from_page", ev, chk)
             rep.add("page", "page_fix_" + f, r, "corrected", before=before, after=new)
     for r in records:
         chk = visual.get("flag:" + r["id"])

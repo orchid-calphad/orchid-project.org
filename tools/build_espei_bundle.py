@@ -491,6 +491,20 @@ def check_scalar(v, rec):
     return abs(v - exp) <= VALUE_RTOL * max(1.0, abs(exp))
 
 
+def page_converted_value(rec, v_dataset):
+    """The published value (in the ESPEI dataset's units) when a page-checked conversion replaced the stored one and
+    the corpus dataset still holds the value before the conversion (e.g. [46] of Turchanin 2008: fcc-Cu / bcc-Zr at
+    1123 K converted to fcc-Cu / hcp-Zr with the SGTE unary lattice stability); else None."""
+    for c in rec.get("corrections") or []:
+        if c.get("field") == "value" and c.get("visual_check") and (c.get("evidence") or {}).get("conversion") \
+                and isinstance(c.get("before"), (int, float)):
+            fac = unit_factor(rec.get("unit"))
+            exp = c["before"] * fac
+            if abs(v_dataset - exp) <= VALUE_RTOL * max(1.0, abs(exp)):
+                return rec["value"] * fac
+    return None
+
+
 def page_corrected_T(rec):
     """The published temperature when a page-checked correction replaced the stored one (else None)."""
     for c in rec.get("corrections") or []:
@@ -541,7 +555,8 @@ def check_zpf_point(region, rec):
 def printed_sigma(rec, v_espei):
     """(sigma in the ESPEI value's units, printed-info dict) from a published record, or (None, None)."""
     u = rec.get("uncertainty") or {}
-    if u.get("basis") not in ("printed", "printed_range", "scatter_between_sources") or not isinstance(u.get("value"), (int, float)):
+    if u.get("basis") not in ("printed", "printed_range", "scatter_between_sources", "printed_with_composition_offset") \
+            or not isinstance(u.get("value"), (int, float)):
         return None, None
     fac = unit_factor(rec.get("unit"))
     s = abs(u["value"]) * fac
@@ -550,6 +565,14 @@ def printed_sigma(rec, v_espei):
         info["interval"] = ("sample standard deviation of the independent measurements of this compound (page-checked; "
                             "the printed sigma, kept in the record's uncertainty_stored, is smaller than their scatter)")
         info["coverage"] = "scatter_between_sources"
+        return s, info
+    if u.get("basis") == "printed_with_composition_offset":
+        info["interval"] = ("printed sigma combined in quadrature with |dx| x local hull slope: the source measured the "
+                            "historical formula of this phase (page-checked; printed sigma in the record's "
+                            "uncertainty_stored)")
+        info["coverage"] = "printed_with_composition_offset"
+        if u.get("note"):
+            info["note"] = u["note"]
         return s, info
     if u.get("basis") == "printed":
         info["interval"] = "±x printed; coverage not stated, taken as 1 sigma"
@@ -919,7 +942,7 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 raise SystemExit("unexpected: %s has %d observations for %d values" % (src_rel, len(obs), npts))
             bases = {b["observation"]: b for b in d.get("orchid_value_bases") or []}
             keep, recs, reasons = [], [], []
-            T_from_release = {}
+            T_from_release, V_from_release = {}, {}
             fv = None if zpf else flat_values(d)
             for i, oid in enumerate(obs):
                 rec, how = lookup(oid)
@@ -939,12 +962,14 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                     elif not check_zpf_point(d["values"][i], rec):
                         why = "composition_differs_from_release"
                 else:
-                    if not check_scalar(fv[i], rec):
+                    if not check_scalar(fv[i], rec) and page_converted_value(rec, fv[i]) is not None:
+                        V_from_release[i] = page_converted_value(rec, fv[i])
+                    if not check_scalar(fv[i], rec) and i not in V_from_release:
                         why = "value_differs_from_release"
                     elif abs(fv[i]) > PLAUSIBLE_MAX.get(prop_of(d["output"]), float("inf")):
                         why = "magnitude_implausible"
-                    elif value_gate(d["output"], fv[i], rec, d["conditions"]["T"]):
-                        why = value_gate(d["output"], fv[i], rec, d["conditions"]["T"])
+                    elif value_gate(d["output"], V_from_release.get(i, fv[i]), rec, d["conditions"]["T"]):
+                        why = value_gate(d["output"], V_from_release.get(i, fv[i]), rec, d["conditions"]["T"])
                     elif not check_temperature(d["conditions"]["T"], rec, None):
                         if page_corrected_T(rec) is not None and not isinstance(d["conditions"]["T"], list):
                             T_from_release[i] = page_corrected_T(rec)
@@ -1015,6 +1040,12 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                         out["values"] = [[[fv[i] for i in keep]]]
                 if not zpf:
                     out["phases"] = list(g["phases"])
+                    if any(i in V_from_release for i in keep):
+                        out["values"] = [[[V_from_release.get(i, fv[i]) for i in keep]]]
+                        out["orchid_value_note"] = (
+                            "value from the published records: page-checked conversion of the printed value to the "
+                            "TDB's SER reference phases at the same temperature (record `corrections`, field value, "
+                            "evidence.conversion; the printed value is kept in the record)")
                     Tk = {T_from_release.get(i) for i in keep}
                     if Tk != {None}:
                         if len(Tk) != 1:
@@ -1912,7 +1943,14 @@ def readme(S, C, cite):
         "their pycalphad driving-force evaluation is not reproducible (`pycalphad_evaluation_unstable`).",
         "- A compound whose independent measured formation enthalpies disagree by more than their printed sigmas "
         "carries a scatter-aware sigma (`uncertainty.basis = scatter_between_sources`, sample standard deviation of the "
-        "independent values; page-checked); the dataset weight uses it.", "",
+        "independent values; page-checked); the dataset weight uses it.",
+        "- A formation enthalpy that the source measured at the historical formula of a phase (e.g. Cu4Zr or Cu9Zr2 "
+        "for Cu5Zr, Cu3Zr for Cu51Zr14, Cu3Zr2 for Cu10Zr7, as the source table itself attributes them) is used for "
+        "the modern phase with sigma = sqrt(sigma_printed^2 + (|dx| x local hull slope)^2) "
+        "(`uncertainty.basis = printed_with_composition_offset`; the flag `stoichiometry_mismatch` stays, flag-only).",
+        "- A value printed relative to a non-SER reference phase that the page states (e.g. bcc-Zr at 1123 K) is "
+        "written converted to the TDB's SER phases at the same temperature with the SGTE unary lattice stability "
+        "(`orchid_value_note`; the record's `corrections` entry gives the conversion and keeps the printed value).", "",
         "## Phase assignment", "",
         PR.RULE_TEXT, "",
         "Every value's phase comes from its published literature record (printed label -> phase registry -> the "

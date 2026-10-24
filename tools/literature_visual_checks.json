@@ -1243,14 +1243,27 @@
    "flags": [
     {
      "code": "stoichiometry_mismatch",
-     "effect": "not_espei_ready",
-     "detail": "page check: the source measured Cu3Zr, listed here under Cu51Zr14 (Table 3 note)"
+     "effect": "flag_only",
+     "detail": "page check: the source attributes this value to Cu3Zr, the historical formula of Cu51Zr14 (Table 3 note); used for Cu51Zr14 with sigma inflated for the composition offset"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
    "related_records": [
     "ORC-IB2ZSUZN3N"
-   ]
+   ],
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "stoichiometry_mismatch",
+      "effect": "not_espei_ready",
+      "detail": "page check: the source measured Cu3Zr, listed here under Cu51Zr14 (Table 3 note)"
+     }
+    ],
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 4,
@@ -1367,11 +1380,24 @@
    "flags": [
     {
      "code": "stoichiometry_mismatch",
-     "effect": "not_espei_ready",
-     "detail": "page check: the source measured Cu4Zr, listed here under Cu5Zr (Table 3 note)"
+     "effect": "flag_only",
+     "detail": "page check: the source attributes this value to Cu4Zr, the historical formula of Cu5Zr (Table 3 note); used for Cu5Zr with sigma inflated for the composition offset"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "stoichiometry_mismatch",
+      "effect": "not_espei_ready",
+      "detail": "page check: the source measured Cu4Zr, listed here under Cu5Zr (Table 3 note)"
+     }
+    ],
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 10,
@@ -1496,12 +1522,33 @@
    "verdict": "confirmed",
    "flags": [
     {
-     "code": "derived_at_high_temperature_from_bcc_zr",
-     "effect": "not_espei_ready",
-     "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     "code": "reference_state_converted_to_ser",
+     "effect": "flag_only",
+     "detail": "page check: printed relative to fcc-Cu and bcc-Zr at 1123 K [46]; converted to fcc-Cu / hcp-Zr at 1123 K with the SGTE unary Zr lattice stability (+4206.8 J/mol x x_Zr 0.4118); printed value kept"
+    },
+    {
+     "code": "mutually_inconsistent",
+     "effect": "not_certified",
+     "detail": "page check: the Cu10Zr7 formation enthalpies of [33] (Cu3Zr2, 298 K) and [46] (1123 K, converted to hcp-Zr) differ by 8.0 kJ/mol-atom (14 combined sigma); used only with the scatter-aware sigma, never certified"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "derived_at_high_temperature_from_bcc_zr",
+      "effect": "not_espei_ready",
+      "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     }
+    ],
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "related_records": [
+    "ORC-HY37OYY4XL"
+   ]
   },
   {
    "page": 8,
@@ -1547,22 +1594,40 @@
    "verdict": "confirmed",
    "flags": [
     {
-     "code": "derived_at_high_temperature_from_bcc_zr",
-     "effect": "not_espei_ready",
-     "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
-    },
-    {
      "code": "mutually_inconsistent",
      "effect": "not_certified",
      "detail": "page check: the CuZr formation enthalpies of [33], [44], [45], [27], [46] span 15.3 kJ/mol-atom against printed sigmas of 0.3-2 kJ; used only with the scatter-aware sigma, never certified"
+    },
+    {
+     "code": "reference_state_converted_to_ser",
+     "effect": "flag_only",
+     "detail": "page check: printed relative to fcc-Cu and bcc-Zr at 1123 K [46]; converted to fcc-Cu / hcp-Zr at 1123 K with the SGTE unary Zr lattice stability (+4206.8 J/mol x x_Zr 0.5000); printed value kept"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
    "related_records": [
     "ORC-CARTMZD2NZ",
     "ORC-DQ35XUMV5X",
     "ORC-KHVTE32LGI"
-   ]
+   ],
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "derived_at_high_temperature_from_bcc_zr",
+      "effect": "not_espei_ready",
+      "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     },
+     {
+      "code": "mutually_inconsistent",
+      "effect": "not_certified",
+      "detail": "page check: the CuZr formation enthalpies of [33], [44], [45], [27], [46] span 15.3 kJ/mol-atom against printed sigmas of 0.3-2 kJ; used only with the scatter-aware sigma, never certified"
+     }
+    ],
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 10,
@@ -1713,14 +1778,33 @@
    "flags": [
     {
      "code": "stoichiometry_mismatch",
-     "effect": "not_espei_ready",
-     "detail": "page check: the source measured Cu3Zr2, listed here under Cu10Zr7 (Table 3 note)"
+     "effect": "flag_only",
+     "detail": "page check: the source attributes this value to Cu3Zr2, the historical formula of Cu10Zr7 (Table 3 note); used for Cu10Zr7 with sigma inflated for the composition offset"
+    },
+    {
+     "code": "mutually_inconsistent",
+     "effect": "not_certified",
+     "detail": "page check: the Cu10Zr7 formation enthalpies of [33] (Cu3Zr2, 298 K) and [46] (1123 K, converted to hcp-Zr) differ by 8.0 kJ/mol-atom (14 combined sigma); used only with the scatter-aware sigma, never certified"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
    "related_records": [
+    "ORC-BGGPICFMTF.a7b5c8",
     "ORC-RS5VZK3PGA"
-   ]
+   ],
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "stoichiometry_mismatch",
+      "effect": "not_espei_ready",
+      "detail": "page check: the source measured Cu3Zr2, listed here under Cu10Zr7 (Table 3 note)"
+     }
+    ],
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 1,
@@ -1738,14 +1822,32 @@
     },
     {
      "code": "stoichiometry_mismatch",
-     "effect": "not_espei_ready",
-     "detail": "page check: Table 1 note: stoichiometries in the cited references differ; Kleppa and Watanabe measured Cu3Zr (Turchanin 2008 Table 3 note)"
+     "effect": "flag_only",
+     "detail": "page check: Table 1 note: stoichiometries in the cited references differ; Kleppa and Watanabe measured Cu3Zr (Turchanin 2008 Table 3 note); historical formula of the same phase (information only)"
     }
    ],
-   "seen": "Table 1 (p1): measured enthalpies J/mol, Ref. 11 (Kleppa and Watanabe) and Ref. 12 (Ansara et al.); 'Note: Mol is mole of atoms. Some stoichiometries used in the cited references are different from those listed here.'",
+   "seen": "Zeng 1994 Table 1 (p1): measured enthalpies J/mol, Ref. 11 (Kleppa and Watanabe) and Ref. 12 (Ansara et al.); 'Note: Mol is mole of atoms. Some stoichiometries used in the cited references are different from those listed here.'",
    "related_records": [
     "ORC-24JPYAVIYR"
-   ]
+   ],
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "same_measurement_listed_in_other_paper",
+      "effect": "not_espei_ready",
+      "detail": "page check: the Ref. 11 / 12 value of Zeng 1994 Table 1 is the same measurement that Turchanin 2008 Table 3 lists with its printed uncertainty (ORC-24JPYAVIYR); used once, from there"
+     },
+     {
+      "code": "stoichiometry_mismatch",
+      "effect": "not_espei_ready",
+      "detail": "page check: Table 1 note: stoichiometries in the cited references differ; Kleppa and Watanabe measured Cu3Zr (Turchanin 2008 Table 3 note)"
+     }
+    ],
+    "image_sha256": "2a1302336a1af94629cb2b6e94707f1979222ba91ff9f0c1503630f32770b49a",
+    "page": 1
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 4,
@@ -1841,12 +1943,25 @@
    "verdict": "confirmed",
    "flags": [
     {
-     "code": "derived_at_high_temperature_from_bcc_zr",
-     "effect": "not_espei_ready",
-     "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     "code": "reference_state_converted_to_ser",
+     "effect": "flag_only",
+     "detail": "page check: printed relative to fcc-Cu and bcc-Zr at 1123 K [46]; converted to fcc-Cu / hcp-Zr at 1123 K with the SGTE unary Zr lattice stability (+4206.8 J/mol x x_Zr 0.2154); printed value kept"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "derived_at_high_temperature_from_bcc_zr",
+      "effect": "not_espei_ready",
+      "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     }
+    ],
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 8,
@@ -1988,11 +2103,24 @@
    "flags": [
     {
      "code": "stoichiometry_mismatch",
-     "effect": "not_espei_ready",
-     "detail": "page check: the source measured Cu9Zr2, listed here under Cu5Zr (Table 3 note)"
+     "effect": "flag_only",
+     "detail": "page check: the source attributes this value to Cu9Zr2, the historical formula of Cu5Zr (Table 3 note); used for Cu5Zr with sigma inflated for the composition offset"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "stoichiometry_mismatch",
+      "effect": "not_espei_ready",
+      "detail": "page check: the source measured Cu9Zr2, listed here under Cu5Zr (Table 3 note)"
+     }
+    ],
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 5,
@@ -2018,17 +2146,35 @@
    "verdict": "confirmed",
    "flags": [
     {
-     "code": "derived_at_high_temperature_from_bcc_zr",
-     "effect": "not_espei_ready",
-     "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     "code": "reference_state_converted_to_ser",
+     "effect": "flag_only",
+     "detail": "page check: printed relative to fcc-Cu and bcc-Zr at 1123 K [46]; converted to fcc-Cu / hcp-Zr at 1123 K with the SGTE unary Zr lattice stability (+4206.8 J/mol x x_Zr 0.1818); printed value kept"
     },
     {
      "code": "stoichiometry_mismatch",
-     "effect": "not_espei_ready",
-     "detail": "page check: the source measured Cu9Zr2, listed here under Cu5Zr (Table 3 note)"
+     "effect": "flag_only",
+     "detail": "page check: the source attributes this value to Cu9Zr2, the historical formula of Cu5Zr (Table 3 note); used for Cu5Zr with sigma inflated for the composition offset"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "derived_at_high_temperature_from_bcc_zr",
+      "effect": "not_espei_ready",
+      "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     },
+     {
+      "code": "stoichiometry_mismatch",
+      "effect": "not_espei_ready",
+      "detail": "page check: the source measured Cu9Zr2, listed here under Cu5Zr (Table 3 note)"
+     }
+    ],
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 8,
@@ -2119,22 +2265,40 @@
    "verdict": "confirmed",
    "flags": [
     {
-     "code": "derived_at_high_temperature_from_bcc_zr",
-     "effect": "not_espei_ready",
-     "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
-    },
-    {
      "code": "mutually_inconsistent",
      "effect": "not_certified",
      "detail": "page check: the CuZr2 formation enthalpies of [33], [44], [45], [27], [46] span 8.8 kJ/mol-atom against printed sigmas of 0.3-2 kJ; used only with the scatter-aware sigma, never certified"
+    },
+    {
+     "code": "reference_state_converted_to_ser",
+     "effect": "flag_only",
+     "detail": "page check: printed relative to fcc-Cu and bcc-Zr at 1123 K [46]; converted to fcc-Cu / hcp-Zr at 1123 K with the SGTE unary Zr lattice stability (+4206.8 J/mol x x_Zr 0.6667); printed value kept"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
    "related_records": [
     "ORC-5G57U47LYS",
     "ORC-CTPZLFUS73",
     "ORC-VHAJF2JPU7"
-   ]
+   ],
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "derived_at_high_temperature_from_bcc_zr",
+      "effect": "not_espei_ready",
+      "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     },
+     {
+      "code": "mutually_inconsistent",
+      "effect": "not_certified",
+      "detail": "page check: the CuZr2 formation enthalpies of [33], [44], [45], [27], [46] span 8.8 kJ/mol-atom against printed sigmas of 0.3-2 kJ; used only with the scatter-aware sigma, never certified"
+     }
+    ],
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 8,
@@ -2431,14 +2595,32 @@
     },
     {
      "code": "stoichiometry_mismatch",
-     "effect": "not_espei_ready",
-     "detail": "page check: Table 1 note: stoichiometries in the cited references differ; Kleppa and Watanabe measured Cu3Zr2 (Turchanin 2008 Table 3 note)"
+     "effect": "flag_only",
+     "detail": "page check: Table 1 note: stoichiometries in the cited references differ; Kleppa and Watanabe measured Cu3Zr2 (Turchanin 2008 Table 3 note); historical formula of the same phase (information only)"
     }
    ],
-   "seen": "Table 1 (p1): measured enthalpies J/mol, Ref. 11 (Kleppa and Watanabe) and Ref. 12 (Ansara et al.); 'Note: Mol is mole of atoms. Some stoichiometries used in the cited references are different from those listed here.'",
+   "seen": "Zeng 1994 Table 1 (p1): measured enthalpies J/mol, Ref. 11 (Kleppa and Watanabe) and Ref. 12 (Ansara et al.); 'Note: Mol is mole of atoms. Some stoichiometries used in the cited references are different from those listed here.'",
    "related_records": [
     "ORC-HY37OYY4XL"
-   ]
+   ],
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "same_measurement_listed_in_other_paper",
+      "effect": "not_espei_ready",
+      "detail": "page check: the Ref. 11 / 12 value of Zeng 1994 Table 1 is the same measurement that Turchanin 2008 Table 3 lists with its printed uncertainty (ORC-HY37OYY4XL); used once, from there"
+     },
+     {
+      "code": "stoichiometry_mismatch",
+      "effect": "not_espei_ready",
+      "detail": "page check: Table 1 note: stoichiometries in the cited references differ; Kleppa and Watanabe measured Cu3Zr2 (Turchanin 2008 Table 3 note)"
+     }
+    ],
+    "image_sha256": "2a1302336a1af94629cb2b6e94707f1979222ba91ff9f0c1503630f32770b49a",
+    "page": 1
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 4,
@@ -2551,12 +2733,25 @@
    "verdict": "confirmed",
    "flags": [
     {
-     "code": "derived_at_high_temperature_from_bcc_zr",
-     "effect": "not_espei_ready",
-     "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     "code": "reference_state_converted_to_ser",
+     "effect": "flag_only",
+     "detail": "page check: printed relative to fcc-Cu and bcc-Zr at 1123 K [46]; converted to fcc-Cu / hcp-Zr at 1123 K with the SGTE unary Zr lattice stability (+4206.8 J/mol x x_Zr 0.2727); printed value kept"
     }
    ],
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "previous_check": {
+    "verdict": "confirmed",
+    "flags": [
+     {
+      "code": "derived_at_high_temperature_from_bcc_zr",
+      "effect": "not_espei_ready",
+      "detail": "page check: enthalpy derived from mass-spectrometric Gibbs energies at 1123 K, from fcc-Cu and bcc-Zr (not the SER at 298.15 K) [46]"
+     }
+    ],
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed"
   },
   {
    "page": 4,
@@ -7990,10 +8185,50 @@
    "kind": "page_fix",
    "verdict": "corrected",
    "fields": {
-    "temperature_K": 298.15
+    "temperature_K": 298.15,
+    "uncertainty": {
+     "value": 1.86,
+     "basis": "printed_with_composition_offset",
+     "note": "sqrt(1.240^2 + (|dx| 0.0346 x slope 40.05 kJ/mol per unit x)^2): printed sigma and the offset between Cu3Zr (measured, x_Zr 0.2500) and Cu51Zr14 (x_Zr 0.2154); slope = median |slope| of the 298.15 K lower hull segment in nine Cu-Zr assessments (open-tdb sgte-binary CuZr-*.tdb)",
+     "printed": 1.24,
+     "sigma_composition_offset": 1.386
+    },
+    "cited_sources": [
+     {
+      "label": "33",
+      "reference": "O. J. Kleppa and S. Watanabe, \"Thermochemistry of alloys of transition metals: Part III. Copper-silver, -titanium, -zirconium, and -hafnium at 1373 K,\" Met. Trans., 13B, No. 3, 391-401 (1982).",
+      "first_author": "Kleppa",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1007/bf02667755",
+      "paper": "doi:10.1007/bf02667755"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "uncertainty": "composition_offset_sigma",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 24,
@@ -8422,10 +8657,50 @@
    "kind": "page_fix",
    "verdict": "corrected",
    "fields": {
-    "temperature_K": 298.15
+    "temperature_K": 298.15,
+    "uncertainty": {
+     "value": 2.522,
+     "basis": "printed_with_composition_offset",
+     "note": "sqrt(1.900^2 + (|dx| 0.0333 x slope 49.74 kJ/mol per unit x)^2): printed sigma and the offset between Cu4Zr (measured, x_Zr 0.2000) and Cu5Zr (x_Zr 0.1667); slope = median |slope| of the 298.15 K lower hull segment in nine Cu-Zr assessments (open-tdb sgte-binary CuZr-*.tdb)",
+     "printed": 1.9,
+     "sigma_composition_offset": 1.658
+    },
+    "cited_sources": [
+     {
+      "label": "34",
+      "reference": "F. Sommer and D. K. Choi, \"Thermodynamic investigation of liquid and glassy copper-zirconium alloys,\" Z. Metallkd., 80, No. 4, 263-269 (1989).",
+      "first_author": "Sommer",
+      "year": "1989",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1515/ijmr-1989-800410",
+      "paper": "doi:10.1515/ijmr-1989-800410"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "uncertainty": "composition_offset_sigma",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 10,
@@ -8442,10 +8717,48 @@
      "basis": "scatter_between_sources",
      "n_sources": 3,
      "note": "sample standard deviation of the independent calorimetric values of CuZr2 (ORC-VHAJF2JPU7, ORC-5G57U47LYS, ORC-CTPZLFUS73); printed sigma in uncertainty_stored"
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "33",
+      "reference": "O. J. Kleppa and S. Watanabe, \"Thermochemistry of alloys of transition metals: Part III. Copper-silver, -titanium, -zirconium, and -hafnium at 1373 K,\" Met. Trans., 13B, No. 3, 391-401 (1982).",
+      "first_author": "Kleppa",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1007/bf02667755",
+      "paper": "doi:10.1007/bf02667755"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "uncertainty": {
+      "value": 3.482,
+      "basis": "scatter_between_sources",
+      "n_sources": 3,
+      "note": "sample standard deviation of the independent calorimetric values of CuZr2 (ORC-VHAJF2JPU7, ORC-5G57U47LYS, ORC-CTPZLFUS73); printed sigma in uncertainty_stored"
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 5,
@@ -8809,10 +9122,43 @@
    "verdict": "corrected",
    "fields": {
     "temperature_K": 298.15,
-    "evidence_class": "experimental"
+    "evidence_class": "experimental",
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "evidence_class": "experimental"
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 9,
@@ -8846,9 +9192,9 @@
    "printed": "-331401"
   },
   {
-   "page": 10,
+   "page": 9,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+   "image_sha256": "3b93f688aec770a1157e113945e6c9d0325ebdac7f28948c7a2d3a8c71268a9b",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-BGGPICFMTF.a7b5c8",
    "kind": "page_fix",
@@ -8862,20 +9208,103 @@
       }
      },
      "ZR": {
-      "phase": "BCC_A2",
+      "phase": "HCP_A3",
       "fixed_state_variables": {
        "T": 1123.0
       }
      }
+    },
+    "value": -20.272,
+    "uncertainty": {
+     "value": 5.63,
+     "basis": "scatter_between_sources",
+     "n_sources": 2,
+     "note": "sample standard deviation of the two independent Cu10Zr7 values (ORC-HY37OYY4XL, ORC-BGGPICFMTF.a7b5c8; [46] converted to fcc-Cu / hcp-Zr) which disagree by 13.5 sigma; own sigma 0.259 (printed); printed sigma in uncertainty_stored"
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
+   },
+   "seen": "p8 (printed 435): '[46] ... enthalpies and entropies of their formation from fcc-Cu and bcc-Zr at 1123 K (Table 3)'; p9 Fig. 4 (436) 'data are for standard states of fcc-Cu and hcp-Zr': [46] squares at -9.7 (x 0.18), -10.4, -12.0, -15.2 (x 0.5), ~-17 (x 0.67) = Table 3 + x_Zr*~4 kJ.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "value": "converted_to_ser_reference_state",
+    "reference_state": "converted_to_ser_reference_state",
+    "uncertainty": "scatter_between_sources",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "conversions": {
+    "value": {
+     "printed_value": -22004.0,
+     "printed_unit": "J/mol of atoms",
+     "printed_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "BCC_A2",
+      "T_K": 1123.0
+     },
+     "target_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "HCP_A3",
+      "T_K": 1123.0
+     },
+     "formula": "dH(fcc-Cu, hcp-Zr) = dH(fcc-Cu, bcc-Zr) + x_Zr * [H(BCC_A2,Zr) - H(HCP_A3,Zr)](1123 K)",
+     "x_Zr": 0.411765,
+     "x_Zr_basis": "formula of the phase",
+     "lattice_stability": {
+      "database": "SGTE unary database (PURE5; open-tdb databases/fetched/opencalphad/SGTE-unary1991-2010.TDB)",
+      "sha256": "d574a432d278e2215ae99121b026d6a7c19d02c7bf1cd39848657879c9e345c4",
+      "functions": "GBCCZR (298.15-2128 K) and GHSERZR (130-2128 K)",
+      "quantity": "H(BCC_A2,Zr) - H(HCP_A3,Zr) at 1123 K = G - T dG/dT",
+      "value_J_per_mol": 4206.77
+     },
+     "converted_J_per_mol_atoms": -20271.8,
+     "page_consistency": "Fig. 4 (p9, standard states fcc-Cu / hcp-Zr) plots the [46] values at the converted positions within reading accuracy (0.1-0.2 kJ)",
+     "temperature_note": "the value stays a formation enthalpy at 1123 K; ESPEI 0.9.1 evaluates _FORM against the TDB's SER phases at the dataset temperature (no per-dataset reference phase or temperature in its format)"
     }
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
-   "page": 8,
+   "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-BGGPICFMTF.cba5c2",
    "kind": "page_fix",
@@ -8894,15 +9323,59 @@
        "T": 1123.0
       }
      }
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (text p. 435, [46])"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (text p. 435, [46])",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
-   "page": 8,
+   "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-BOQ5VV67YX.662a8a",
    "kind": "page_fix",
@@ -8921,15 +9394,59 @@
        "T": 1123.0
       }
      }
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (text p. 435, [46])"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (text p. 435, [46])",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
-   "page": 10,
+   "page": 9,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+   "image_sha256": "3b93f688aec770a1157e113945e6c9d0325ebdac7f28948c7a2d3a8c71268a9b",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-BOQ5VV67YX.8db5c2",
    "kind": "page_fix",
@@ -8943,15 +9460,98 @@
       }
      },
      "ZR": {
-      "phase": "BCC_A2",
+      "phase": "HCP_A3",
       "fixed_state_variables": {
        "T": 1123.0
       }
      }
+    },
+    "value": -15.179,
+    "uncertainty": {
+     "value": 8.749,
+     "basis": "scatter_between_sources",
+     "n_sources": 3,
+     "note": "group sigma of CuZr (sample standard deviation of the independent 298 K calorimetric values; the [46] value disagrees with them as well); printed sigma in uncertainty_stored"
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
+   },
+   "seen": "p8 (printed 435): '[46] ... enthalpies and entropies of their formation from fcc-Cu and bcc-Zr at 1123 K (Table 3)'; p9 Fig. 4 (436) 'data are for standard states of fcc-Cu and hcp-Zr': [46] squares at -9.7 (x 0.18), -10.4, -12.0, -15.2 (x 0.5), ~-17 (x 0.67) = Table 3 + x_Zr*~4 kJ.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "value": "converted_to_ser_reference_state",
+    "reference_state": "converted_to_ser_reference_state",
+    "uncertainty": "scatter_between_sources",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "conversions": {
+    "value": {
+     "printed_value": -17282.0,
+     "printed_unit": "J/mol of atoms",
+     "printed_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "BCC_A2",
+      "T_K": 1123.0
+     },
+     "target_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "HCP_A3",
+      "T_K": 1123.0
+     },
+     "formula": "dH(fcc-Cu, hcp-Zr) = dH(fcc-Cu, bcc-Zr) + x_Zr * [H(BCC_A2,Zr) - H(HCP_A3,Zr)](1123 K)",
+     "x_Zr": 0.5,
+     "x_Zr_basis": "formula of the phase",
+     "lattice_stability": {
+      "database": "SGTE unary database (PURE5; open-tdb databases/fetched/opencalphad/SGTE-unary1991-2010.TDB)",
+      "sha256": "d574a432d278e2215ae99121b026d6a7c19d02c7bf1cd39848657879c9e345c4",
+      "functions": "GBCCZR (298.15-2128 K) and GHSERZR (130-2128 K)",
+      "quantity": "H(BCC_A2,Zr) - H(HCP_A3,Zr) at 1123 K = G - T dG/dT",
+      "value_J_per_mol": 4206.77
+     },
+     "converted_J_per_mol_atoms": -15178.6,
+     "page_consistency": "Fig. 4 (p9, standard states fcc-Cu / hcp-Zr) plots the [46] values at the converted positions within reading accuracy (0.1-0.2 kJ)",
+     "temperature_note": "the value stays a formation enthalpy at 1123 K; ESPEI 0.9.1 evaluates _FORM against the TDB's SER phases at the dataset temperature (no per-dataset reference phase or temperature in its format)"
     }
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 10,
@@ -8968,10 +9568,47 @@
      "basis": "scatter_between_sources",
      "n_sources": 3,
      "note": "sample standard deviation of the independent calorimetric values of CuZr (ORC-CARTMZD2NZ, ORC-KHVTE32LGI, ORC-DQ35XUMV5X); printed sigma in uncertainty_stored"
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "44",
+      "reference": "I. Ansara, A. Pasturel, and K. H. J. Buschow, \"Enthalpy effects in amorphous alloys and intermetallic compounds in the system Zr-Cu,\" Phys. Stat. Sol. A, 69, No. 2, 447-453 (1982).",
+      "first_author": "Ansara",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1002/pssa.2210690203"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "uncertainty": {
+      "value": 8.749,
+      "basis": "scatter_between_sources",
+      "n_sources": 3,
+      "note": "sample standard deviation of the independent calorimetric values of CuZr (ORC-CARTMZD2NZ, ORC-KHVTE32LGI, ORC-DQ35XUMV5X); printed sigma in uncertainty_stored"
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 6,
@@ -9053,10 +9690,49 @@
      "basis": "scatter_between_sources",
      "n_sources": 3,
      "note": "sample standard deviation of the independent calorimetric values of CuZr2 (ORC-VHAJF2JPU7, ORC-5G57U47LYS, ORC-CTPZLFUS73); printed sigma in uncertainty_stored"
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "evidence_class": "experimental",
+     "uncertainty": {
+      "value": 3.482,
+      "basis": "scatter_between_sources",
+      "n_sources": 3,
+      "note": "sample standard deviation of the independent calorimetric values of CuZr2 (ORC-VHAJF2JPU7, ORC-5G57U47LYS, ORC-CTPZLFUS73); printed sigma in uncertainty_stored"
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 5,
@@ -9152,10 +9828,48 @@
      "basis": "scatter_between_sources",
      "n_sources": 3,
      "note": "sample standard deviation of the independent calorimetric values of CuZr (ORC-CARTMZD2NZ, ORC-KHVTE32LGI, ORC-DQ35XUMV5X); printed sigma in uncertainty_stored"
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "33",
+      "reference": "O. J. Kleppa and S. Watanabe, \"Thermochemistry of alloys of transition metals: Part III. Copper-silver, -titanium, -zirconium, and -hafnium at 1373 K,\" Met. Trans., 13B, No. 3, 391-401 (1982).",
+      "first_author": "Kleppa",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1007/bf02667755",
+      "paper": "doi:10.1007/bf02667755"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "uncertainty": {
+      "value": 8.749,
+      "basis": "scatter_between_sources",
+      "n_sources": 3,
+      "note": "sample standard deviation of the independent calorimetric values of CuZr (ORC-CARTMZD2NZ, ORC-KHVTE32LGI, ORC-DQ35XUMV5X); printed sigma in uncertainty_stored"
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 5,
@@ -9245,10 +9959,43 @@
    "verdict": "corrected",
    "fields": {
     "temperature_K": 298.15,
-    "evidence_class": "experimental"
+    "evidence_class": "experimental",
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "evidence_class": "experimental"
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 5,
@@ -9321,10 +10068,49 @@
    "kind": "page_fix",
    "verdict": "corrected",
    "fields": {
-    "temperature_K": 298.15
+    "temperature_K": 298.15,
+    "uncertainty": {
+     "value": 5.63,
+     "basis": "scatter_between_sources",
+     "n_sources": 2,
+     "note": "sample standard deviation of the two independent Cu10Zr7 values (ORC-HY37OYY4XL, ORC-BGGPICFMTF.a7b5c8; [46] converted to fcc-Cu / hcp-Zr) which disagree by 13.5 sigma; own sigma 0.529 (printed_with_composition_offset); printed sigma in uncertainty_stored"
+    },
+    "cited_sources": [
+     {
+      "label": "33",
+      "reference": "O. J. Kleppa and S. Watanabe, \"Thermochemistry of alloys of transition metals: Part III. Copper-silver, -titanium, -zirconium, and -hafnium at 1373 K,\" Met. Trans., 13B, No. 3, 391-401 (1982).",
+      "first_author": "Kleppa",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1007/bf02667755",
+      "paper": "doi:10.1007/bf02667755"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "uncertainty": "scatter_between_sources",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 2,
@@ -9400,10 +10186,44 @@
    "fields": {
     "property": "SM_FUSION",
     "temperature_K": 1279.0,
-    "evidence_class": "experimental"
+    "evidence_class": "experimental",
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Table 3, melting rows)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Table 3, melting rows)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "property": "SM_FUSION",
+     "temperature_K": 1279.0,
+     "evidence_class": "experimental"
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 1,
@@ -9468,9 +10288,9 @@
    "printed": "25.57"
   },
   {
-   "page": 10,
+   "page": 9,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+   "image_sha256": "3b93f688aec770a1157e113945e6c9d0325ebdac7f28948c7a2d3a8c71268a9b",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-JTZAQ5DB2I.28d5ac",
    "kind": "page_fix",
@@ -9484,20 +10304,96 @@
       }
      },
      "ZR": {
-      "phase": "BCC_A2",
+      "phase": "HCP_A3",
       "fixed_state_variables": {
        "T": 1123.0
       }
      }
+    },
+    "value": -10.335,
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
+   },
+   "seen": "p8 (printed 435): '[46] ... enthalpies and entropies of their formation from fcc-Cu and bcc-Zr at 1123 K (Table 3)'; p9 Fig. 4 (436) 'data are for standard states of fcc-Cu and hcp-Zr': [46] squares at -9.7 (x 0.18), -10.4, -12.0, -15.2 (x 0.5), ~-17 (x 0.67) = Table 3 + x_Zr*~4 kJ.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "value": "converted_to_ser_reference_state",
+    "reference_state": "converted_to_ser_reference_state",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "conversions": {
+    "value": {
+     "printed_value": -11241.0,
+     "printed_unit": "J/mol of atoms",
+     "printed_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "BCC_A2",
+      "T_K": 1123.0
+     },
+     "target_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "HCP_A3",
+      "T_K": 1123.0
+     },
+     "formula": "dH(fcc-Cu, hcp-Zr) = dH(fcc-Cu, bcc-Zr) + x_Zr * [H(BCC_A2,Zr) - H(HCP_A3,Zr)](1123 K)",
+     "x_Zr": 0.215385,
+     "x_Zr_basis": "formula of the phase",
+     "lattice_stability": {
+      "database": "SGTE unary database (PURE5; open-tdb databases/fetched/opencalphad/SGTE-unary1991-2010.TDB)",
+      "sha256": "d574a432d278e2215ae99121b026d6a7c19d02c7bf1cd39848657879c9e345c4",
+      "functions": "GBCCZR (298.15-2128 K) and GHSERZR (130-2128 K)",
+      "quantity": "H(BCC_A2,Zr) - H(HCP_A3,Zr) at 1123 K = G - T dG/dT",
+      "value_J_per_mol": 4206.77
+     },
+     "converted_J_per_mol_atoms": -10334.9,
+     "page_consistency": "Fig. 4 (p9, standard states fcc-Cu / hcp-Zr) plots the [46] values at the converted positions within reading accuracy (0.1-0.2 kJ)",
+     "temperature_note": "the value stays a formation enthalpy at 1123 K; ESPEI 0.9.1 evaluates _FORM against the TDB's SER phases at the dataset temperature (no per-dataset reference phase or temperature in its format)"
     }
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
-   "page": 8,
+   "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-JTZAQ5DB2I.b6337f",
    "kind": "page_fix",
@@ -9516,10 +10412,54 @@
        "T": 1123.0
       }
      }
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (text p. 435, [46])"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (text p. 435, [46])",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 3,
@@ -9585,10 +10525,47 @@
      "basis": "scatter_between_sources",
      "n_sources": 3,
      "note": "sample standard deviation of the independent calorimetric values of CuZr (ORC-CARTMZD2NZ, ORC-KHVTE32LGI, ORC-DQ35XUMV5X); printed sigma in uncertainty_stored"
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "45",
+      "reference": "O. Yu. Sidorov, Yu. O. Esin, and P. V. Gel'd, \"Formation enthalpies of alloys of zirconium with iron, cobalt, nickel, and copper,\" Rasplavy, No. 3, 28-33 (1989).",
+      "first_author": "Sidorov",
+      "year": "1989",
+      "kind": "unknown",
+      "status": "unresolved_no_doi",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "evidence_class": "experimental",
+     "uncertainty": {
+      "value": 8.749,
+      "basis": "scatter_between_sources",
+      "n_sources": 3,
+      "note": "sample standard deviation of the independent calorimetric values of CuZr (ORC-CARTMZD2NZ, ORC-KHVTE32LGI, ORC-DQ35XUMV5X); printed sigma in uncertainty_stored"
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 10,
@@ -9755,10 +10732,43 @@
    "verdict": "corrected",
    "fields": {
     "temperature_K": 298.15,
-    "evidence_class": "experimental"
+    "evidence_class": "experimental",
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "evidence_class": "experimental"
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 5,
@@ -9776,9 +10786,9 @@
    "printed": "-67,417 J/mol f; -2.247 kJ/mol a"
   },
   {
-   "page": 10,
+   "page": 9,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+   "image_sha256": "3b93f688aec770a1157e113945e6c9d0325ebdac7f28948c7a2d3a8c71268a9b",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-NZAYQW3LOM.274579",
    "kind": "page_fix",
@@ -9792,20 +10802,104 @@
       }
      },
      "ZR": {
-      "phase": "BCC_A2",
+      "phase": "HCP_A3",
       "fixed_state_variables": {
        "T": 1123.0
       }
      }
+    },
+    "value": -9.624,
+    "uncertainty": {
+     "value": 0.788,
+     "basis": "printed_with_composition_offset",
+     "note": "sqrt(0.077^2 + (|dx| 0.0152 x slope 51.76 kJ/mol per unit x)^2): printed sigma and the offset between Cu9Zr2 (measured, x_Zr 0.1818) and Cu5Zr (x_Zr 0.1667); slope = median |slope| of the 298.15 K lower hull segment in nine Cu-Zr assessments (open-tdb sgte-binary CuZr-*.tdb)",
+     "printed": 0.077,
+     "sigma_composition_offset": 0.784
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
+   },
+   "seen": "p8 (printed 435): '[46] ... enthalpies and entropies of their formation from fcc-Cu and bcc-Zr at 1123 K (Table 3)'; p9 Fig. 4 (436) 'data are for standard states of fcc-Cu and hcp-Zr': [46] squares at -9.7 (x 0.18), -10.4, -12.0, -15.2 (x 0.5), ~-17 (x 0.67) = Table 3 + x_Zr*~4 kJ.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "value": "converted_to_ser_reference_state",
+    "reference_state": "converted_to_ser_reference_state",
+    "uncertainty": "composition_offset_sigma",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "conversions": {
+    "value": {
+     "printed_value": -10389.0,
+     "printed_unit": "J/mol of atoms",
+     "printed_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "BCC_A2",
+      "T_K": 1123.0
+     },
+     "target_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "HCP_A3",
+      "T_K": 1123.0
+     },
+     "formula": "dH(fcc-Cu, hcp-Zr) = dH(fcc-Cu, bcc-Zr) + x_Zr * [H(BCC_A2,Zr) - H(HCP_A3,Zr)](1123 K)",
+     "x_Zr": 0.181818,
+     "x_Zr_basis": "composition the source measured (Cu9Zr2, Table 3 note)",
+     "lattice_stability": {
+      "database": "SGTE unary database (PURE5; open-tdb databases/fetched/opencalphad/SGTE-unary1991-2010.TDB)",
+      "sha256": "d574a432d278e2215ae99121b026d6a7c19d02c7bf1cd39848657879c9e345c4",
+      "functions": "GBCCZR (298.15-2128 K) and GHSERZR (130-2128 K)",
+      "quantity": "H(BCC_A2,Zr) - H(HCP_A3,Zr) at 1123 K = G - T dG/dT",
+      "value_J_per_mol": 4206.77
+     },
+     "converted_J_per_mol_atoms": -9624.1,
+     "page_consistency": "Fig. 4 (p9, standard states fcc-Cu / hcp-Zr) plots the [46] values at the converted positions within reading accuracy (0.1-0.2 kJ)",
+     "temperature_note": "the value stays a formation enthalpy at 1123 K; ESPEI 0.9.1 evaluates _FORM against the TDB's SER phases at the dataset temperature (no per-dataset reference phase or temperature in its format)"
     }
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
-   "page": 8,
+   "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-NZAYQW3LOM.2b8fd0",
    "kind": "page_fix",
@@ -9824,10 +10918,54 @@
        "T": 1123.0
       }
      }
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (text p. 435, [46])"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (text p. 435, [46])",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 10,
@@ -9856,9 +10994,9 @@
    "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z"
   },
   {
-   "page": 10,
+   "page": 9,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+   "image_sha256": "3b93f688aec770a1157e113945e6c9d0325ebdac7f28948c7a2d3a8c71268a9b",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-OEHV7BOUW4.30a770",
    "kind": "page_fix",
@@ -9872,20 +11010,103 @@
       }
      },
      "ZR": {
-      "phase": "BCC_A2",
+      "phase": "HCP_A3",
       "fixed_state_variables": {
        "T": 1123.0
       }
      }
+    },
+    "value": -16.992,
+    "uncertainty": {
+     "value": 3.482,
+     "basis": "scatter_between_sources",
+     "n_sources": 3,
+     "note": "group sigma of CuZr2 (sample standard deviation of the independent 298 K calorimetric values; the [46] value disagrees with them as well); printed sigma in uncertainty_stored"
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
+   },
+   "seen": "p8 (printed 435): '[46] ... enthalpies and entropies of their formation from fcc-Cu and bcc-Zr at 1123 K (Table 3)'; p9 Fig. 4 (436) 'data are for standard states of fcc-Cu and hcp-Zr': [46] squares at -9.7 (x 0.18), -10.4, -12.0, -15.2 (x 0.5), ~-17 (x 0.67) = Table 3 + x_Zr*~4 kJ.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "value": "converted_to_ser_reference_state",
+    "reference_state": "converted_to_ser_reference_state",
+    "uncertainty": "scatter_between_sources",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "conversions": {
+    "value": {
+     "printed_value": -19797.0,
+     "printed_unit": "J/mol of atoms",
+     "printed_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "BCC_A2",
+      "T_K": 1123.0
+     },
+     "target_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "HCP_A3",
+      "T_K": 1123.0
+     },
+     "formula": "dH(fcc-Cu, hcp-Zr) = dH(fcc-Cu, bcc-Zr) + x_Zr * [H(BCC_A2,Zr) - H(HCP_A3,Zr)](1123 K)",
+     "x_Zr": 0.666667,
+     "x_Zr_basis": "formula of the phase",
+     "lattice_stability": {
+      "database": "SGTE unary database (PURE5; open-tdb databases/fetched/opencalphad/SGTE-unary1991-2010.TDB)",
+      "sha256": "d574a432d278e2215ae99121b026d6a7c19d02c7bf1cd39848657879c9e345c4",
+      "functions": "GBCCZR (298.15-2128 K) and GHSERZR (130-2128 K)",
+      "quantity": "H(BCC_A2,Zr) - H(HCP_A3,Zr) at 1123 K = G - T dG/dT",
+      "value_J_per_mol": 4206.77
+     },
+     "converted_J_per_mol_atoms": -16992.5,
+     "page_consistency": "Fig. 4 (p9, standard states fcc-Cu / hcp-Zr) plots the [46] values at the converted positions within reading accuracy (0.1-0.2 kJ)",
+     "temperature_note": "the value stays a formation enthalpy at 1123 K; ESPEI 0.9.1 evaluates _FORM against the TDB's SER phases at the dataset temperature (no per-dataset reference phase or temperature in its format)"
     }
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
-   "page": 8,
+   "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-OEHV7BOUW4.59f320",
    "kind": "page_fix",
@@ -9904,10 +11125,54 @@
        "T": 1123.0
       }
      }
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (text p. 435, [46])"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (text p. 435, [46])",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 10,
@@ -10090,10 +11355,44 @@
    "fields": {
     "property": "SM_FUSION",
     "temperature_K": 1185.0,
-    "evidence_class": "experimental"
+    "evidence_class": "experimental",
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Table 3, melting rows)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Table 3, melting rows)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "property": "SM_FUSION",
+     "temperature_K": 1185.0,
+     "evidence_class": "experimental"
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 2,
@@ -10238,10 +11537,44 @@
    "fields": {
     "property": "SM_FUSION",
     "temperature_K": 1393.0,
-    "evidence_class": "experimental"
+    "evidence_class": "experimental",
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Table 3, melting rows)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Table 3, melting rows)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "property": "SM_FUSION",
+     "temperature_K": 1393.0,
+     "evidence_class": "experimental"
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 5,
@@ -10333,10 +11666,43 @@
    "verdict": "corrected",
    "fields": {
     "temperature_K": 298.15,
-    "evidence_class": "experimental"
+    "evidence_class": "experimental",
+    "cited_sources": [
+     {
+      "label": "27",
+      "reference": "K. Yamaguchi, Y.-C. Song, T. Yoshida, and K. Itagaki, \"Thermodynamic investigation of the Cu-Zr system,\" J. All. Compd., 452, 73-79 (2008).",
+      "first_author": "Yamaguchi",
+      "year": "2008",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1016/j.jallcom.2007.01.173",
+      "paper": "doi:10.1016/j.jallcom.2007.01.173"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "evidence_class": "experimental"
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 9,
@@ -10480,9 +11846,9 @@
    "printed": "-1,811,000"
   },
   {
-   "page": 8,
+   "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-UGI6UJCAPF.169818",
    "kind": "page_fix",
@@ -10501,15 +11867,59 @@
        "T": 1123.0
       }
      }
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (text p. 435, [46])"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (text p. 435, [46])",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "a2f12e566c099fe377463807c285d98e95e090fecb6ff11173371807702569bf",
+    "page": 8
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
-   "page": 10,
+   "page": 9,
    "pdf_sha256_prefix": "166ab57f131024cc",
-   "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+   "image_sha256": "3b93f688aec770a1157e113945e6c9d0325ebdac7f28948c7a2d3a8c71268a9b",
    "checked": "2026-10-24",
    "key": "page_fix:ORC-UGI6UJCAPF.4d8255",
    "kind": "page_fix",
@@ -10523,15 +11933,91 @@
       }
      },
      "ZR": {
-      "phase": "BCC_A2",
+      "phase": "HCP_A3",
       "fixed_state_variables": {
        "T": 1123.0
       }
      }
+    },
+    "value": -11.982,
+    "cited_sources": [
+     {
+      "label": "46",
+      "reference": "A. I. Zaitsev and N. E. Zaitseva, \"The thermodynamic properties of intermetallic compounds and solid solutions of Cu-Zr system,\" High Temp (USSR) (Engl. Transl.), 41, No. 1, 42-48 (2003).",
+      "first_author": "Zaitsev",
+      "year": "2003",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1023/a:1022372503921"
+     }
+    ]
+   },
+   "seen": "p8 (printed 435): '[46] ... enthalpies and entropies of their formation from fcc-Cu and bcc-Zr at 1123 K (Table 3)'; p9 Fig. 4 (436) 'data are for standard states of fcc-Cu and hcp-Zr': [46] squares at -9.7 (x 0.18), -10.4, -12.0, -15.2 (x 0.5), ~-17 (x 0.67) = Table 3 + x_Zr*~4 kJ.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "reference_state": {
+      "CU": {
+       "phase": "FCC_A1",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      },
+      "ZR": {
+       "phase": "BCC_A2",
+       "fixed_state_variables": {
+        "T": 1123.0
+       }
+      }
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "value": "converted_to_ser_reference_state",
+    "reference_state": "converted_to_ser_reference_state",
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "conversions": {
+    "value": {
+     "printed_value": -13129.0,
+     "printed_unit": "J/mol of atoms",
+     "printed_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "BCC_A2",
+      "T_K": 1123.0
+     },
+     "target_reference_state": {
+      "CU": "FCC_A1",
+      "ZR": "HCP_A3",
+      "T_K": 1123.0
+     },
+     "formula": "dH(fcc-Cu, hcp-Zr) = dH(fcc-Cu, bcc-Zr) + x_Zr * [H(BCC_A2,Zr) - H(HCP_A3,Zr)](1123 K)",
+     "x_Zr": 0.272727,
+     "x_Zr_basis": "formula of the phase",
+     "lattice_stability": {
+      "database": "SGTE unary database (PURE5; open-tdb databases/fetched/opencalphad/SGTE-unary1991-2010.TDB)",
+      "sha256": "d574a432d278e2215ae99121b026d6a7c19d02c7bf1cd39848657879c9e345c4",
+      "functions": "GBCCZR (298.15-2128 K) and GHSERZR (130-2128 K)",
+      "quantity": "H(BCC_A2,Zr) - H(HCP_A3,Zr) at 1123 K = G - T dG/dT",
+      "value_J_per_mol": 4206.77
+     },
+     "converted_J_per_mol_atoms": -11981.7,
+     "page_consistency": "Fig. 4 (p9, standard states fcc-Cu / hcp-Zr) plots the [46] values at the converted positions within reading accuracy (0.1-0.2 kJ)",
+     "temperature_note": "the value stays a formation enthalpy at 1123 K; ESPEI 0.9.1 evaluates _FORM against the TDB's SER phases at the dataset temperature (no per-dataset reference phase or temperature in its format)"
     }
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 9,
@@ -10705,10 +12191,47 @@
      "basis": "scatter_between_sources",
      "n_sources": 3,
      "note": "sample standard deviation of the independent calorimetric values of CuZr2 (ORC-VHAJF2JPU7, ORC-5G57U47LYS, ORC-CTPZLFUS73); printed sigma in uncertainty_stored"
-    }
+    },
+    "cited_sources": [
+     {
+      "label": "44",
+      "reference": "I. Ansara, A. Pasturel, and K. H. J. Buschow, \"Enthalpy effects in amorphous alloys and intermetallic compounds in the system Zr-Cu,\" Phys. Stat. Sol. A, 69, No. 2, 447-453 (1982).",
+      "first_author": "Ansara",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1002/pssa.2210690203"
+     }
+    ]
    },
-   "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
-   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)"
+   "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
+   "rule": "read_from_page (Turchanin 2008 Table 3 and text p. 435)",
+   "previous_check": {
+    "verdict": "corrected",
+    "fields": {
+     "temperature_K": 298.15,
+     "uncertainty": {
+      "value": 3.482,
+      "basis": "scatter_between_sources",
+      "n_sources": 3,
+      "note": "sample standard deviation of the independent calorimetric values of CuZr2 (ORC-VHAJF2JPU7, ORC-5G57U47LYS, ORC-CTPZLFUS73); printed sigma in uncertainty_stored"
+     }
+    },
+    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
+    "page": 10
+   },
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "pages_viewed": [
+    8,
+    9,
+    10,
+    17,
+    18
+   ]
   },
   {
    "page": 9,
@@ -10817,6 +12340,38 @@
     "unit": "kJ/mol-atom"
    },
    "printed": "-3000 J/mol at 1443 K"
+  },
+  {
+   "key": "page_fix:ORC-WTCXIG4YL5",
+   "kind": "page_fix",
+   "verdict": "corrected",
+   "page": 1,
+   "pdf_sha256_prefix": "43c18888dd174a3c",
+   "image_sha256": "2a1302336a1af94629cb2b6e94707f1979222ba91ff9f0c1503630f32770b49a",
+   "checked": "2026-10-24",
+   "seen": "Zeng 1994 Table 1 (p1): measured enthalpies J/mol, Ref. 11 (Kleppa and Watanabe) and Ref. 12 (Ansara et al.); 'Note: Mol is mole of atoms. Some stoichiometries used in the cited references are different from those listed here.'",
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "fields": {
+    "cited_sources": [
+     {
+      "label": "12",
+      "reference": "1.Ansara,A. Pasturel, and K.H.Buschow,Phys.Status Sohdi (a), 69, 447-453 (1982).",
+      "first_author": "Ansara",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1002/pssa.2210690203"
+     }
+    ]
+   },
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "rule": "read_from_page",
+   "pages_viewed": [
+    1
+   ]
   },
   {
    "page": 15,
@@ -11023,6 +12578,38 @@
     "unit": "kJ/mol-atom"
    },
    "printed": "-1,932,800"
+  },
+  {
+   "key": "page_fix:ORC-ZY5COVKYWI",
+   "kind": "page_fix",
+   "verdict": "corrected",
+   "page": 1,
+   "pdf_sha256_prefix": "43c18888dd174a3c",
+   "image_sha256": "2a1302336a1af94629cb2b6e94707f1979222ba91ff9f0c1503630f32770b49a",
+   "checked": "2026-10-24",
+   "seen": "Zeng 1994 Table 1 (p1): measured enthalpies J/mol, Ref. 11 (Kleppa and Watanabe) and Ref. 12 (Ansara et al.); 'Note: Mol is mole of atoms. Some stoichiometries used in the cited references are different from those listed here.'",
+   "revision": "revised 2026-10-24 (PI over-exclusion fix): pages 8-10, 17-18 re-rendered and viewed",
+   "fields": {
+    "cited_sources": [
+     {
+      "label": "12",
+      "reference": "1.Ansara,A. Pasturel, and K.H.Buschow,Phys.Status Sohdi (a), 69, 447-453 (1982).",
+      "first_author": "Ansara",
+      "year": "1982",
+      "kind": "unknown",
+      "status": "resolved",
+      "resolved_by": "page check of the printed reference list + Crossref bibliographic match (2026-10-24)",
+      "doi": "10.1002/pssa.2210690203"
+     }
+    ]
+   },
+   "rules": {
+    "cited_sources": "cited_source_resolved_from_reference_list"
+   },
+   "rule": "read_from_page",
+   "pages_viewed": [
+    1
+   ]
   },
   {
    "checked": "2026-10-23",
@@ -18364,5 +19951,5 @@
   }
  ],
  "description": "Visual source checks (2026-10-23): each entry is one rendered PDF page inspected by eye (page image hash, PDF hash prefix, verdict, a short factual note of what is printed). No image or page text is stored. Used by tools/literature_gates.py; verdicts curated where a reader's verdict needed a decision ('curation', original in 'verdict_reader').",
- "n": 1212
+ "n": 1214
 }

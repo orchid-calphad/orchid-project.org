@@ -384,5 +384,33 @@ check("page_fix: temperature and scatter-aware sigma replace the stored ones (ke
       and o["uncertainty_stored"]["value"] == 0.96 and {"measured_at_other_stoichiometry", "same_measurement_listed_in_other_paper"} <= codes(o)
       and o["related_records"] == ["ORC-X"] and not o["flags"]["espei_ready"])
 
+# PI fix 2026-10-24: a value printed against a non-SER reference phase is converted on the page's evidence (printed value
+# kept, conversion in the correction); a historical formula of the same phase is flag-only with an inflated sigma;
+# primary works resolved from the reference list
+z6 = rec(property="HM_FORM", unit="kJ/mol-atom", value=-10.389, value_printed=-10389, value_stored=-10389.0,
+         temperature_K=1123.0, system="CU-ZR", phases=[{"label": "Cu5Zr"}], uncertainty={"value": 0.077, "basis": "printed"},
+         reference_state={"CU": {"phase": "FCC_A1"}, "ZR": {"phase": "HCP_A3"}}, cited_sources=[{"label": "46", "status": "unresolved"}])
+conv = {"printed_value": -10389.0, "x_Zr": 0.181818, "lattice_stability": {"value_J_per_mol": 4206.77}}
+out, rep = run([z6], {"page_fix:" + z6["id"]: vc(kind="page_fix", verdict="corrected", fields={
+    "value": -9.624, "reference_state": {"CU": {"phase": "FCC_A1", "fixed_state_variables": {"T": 1123.0}},
+                                         "ZR": {"phase": "HCP_A3", "fixed_state_variables": {"T": 1123.0}}},
+    "uncertainty": {"value": 0.788, "basis": "printed_with_composition_offset"},
+    "cited_sources": [{"label": "46", "doi": "10.1023/a:1022372503921", "status": "resolved"}]},
+    rules={"value": "converted_to_ser_reference_state"}, conversions={"value": conv}),
+    "flag:" + z6["id"]: vc(kind="page_flag", verdict="confirmed", flags=[
+        {"code": "stoichiometry_mismatch", "effect": "flag_only", "detail": "historical formula"},
+        {"code": "reference_state_converted_to_ser", "effect": "flag_only", "detail": "converted"}])})
+o = out[z6["id"]]
+cv = [c for c in o.get("corrections") or [] if c["field"] == "value"]
+check("page_fix: converted value with its conversion in the correction; printed value kept; flag-only flags keep "
+      "espei_ready; cited source resolved (unresolved entry kept in the correction)",
+      o["value"] == -9.624 and o["value_printed"] == -10389 and o["value_stored"] == -10389.0
+      and cv and cv[0]["before"] == -10.389 and cv[0]["rule"] == "converted_to_ser_reference_state"
+      and cv[0]["evidence"]["conversion"] == conv and o["flags"]["espei_ready"]
+      and o["uncertainty"]["basis"] == "printed_with_composition_offset" and o["uncertainty_stored"]["value"] == 0.077
+      and o["cited_sources"][0]["doi"] == "10.1023/a:1022372503921" and "cited_sources_stored" not in o
+      and [c for c in o["corrections"] if c["field"] == "cited_sources"][0]["before"][0]["status"] == "unresolved"
+      and {"stoichiometry_mismatch", "reference_state_converted_to_ser"} <= codes(o))
+
 print("%d failures" % len(fails))
 sys.exit(1 if fails else 0)
