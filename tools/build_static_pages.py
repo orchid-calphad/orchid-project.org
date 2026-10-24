@@ -52,6 +52,7 @@ from fractions import Fraction
 sys.dont_write_bytecode = True  # importing build_dft_parity must not leave __pycache__ behind
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import orchid_cite  # noqa: E402
+from orchid_report import ISSUE_URL, TEMPLATE as REPORT_TEMPLATE, report_issue_url  # noqa: E402
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_DATA = os.path.join(os.path.dirname(SITE), "orchid-data")
@@ -68,9 +69,10 @@ AI_BOTS = ("GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-Web",
            "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended", "CCBot", "Applebot-Extended",
            "Bytespider", "Amazonbot", "meta-externalagent", "cohere-ai", "DuckAssistBot")
 NUMBER_WORDS = {3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+REPORT_PAPERS = {}  # paper id -> papers.json entry (DOI of the report links; set in build)
 SITE_PAGES = ("", "phase-diagrams/", "phases/", "data-explorer/", "dft-parity/", "dataset/", "about/", "workflow/", "catalog/",
               "catalog/binary-thermo.html", "catalog/mixing-energy.html", "catalog/model-audit/",
-              "catalog/compatibility/unary-compatibility-network.html", "best-practices.html")
+              "catalog/compatibility/unary-compatibility-network.html", "best-practices.html", "contribute/")
 
 EVL = {"experimental": "experimental", "model": "model", "dft": "DFT", "unspecified": "unspecified"}
 EV_ORDER = ("experimental", "model", "dft", "unspecified")
@@ -228,7 +230,8 @@ def jsonld_dump(obj):
 
 # ------------------------------------------------------------------ document model -> HTML / Markdown --
 # A cell or paragraph is a list of parts: str | ("a", text, url) | ("b", evidence_class) | ("q", quote)
-# | ("code", text) | ("small", text) | ("br",). Blocks: ("p", parts) | ("h2", id, text) | ("h3", text)
+# | ("code", text) | ("small", text) | ("br",) | ("report", url, record_id) (HTML: a "report" link to the pre-filled
+# issue; Markdown: the record id, the footer gives the issue URL pattern). Blocks: ("p", parts) | ("h2", id, text) | ("h3", text)
 # | ("ul", [parts]) | ("ol", [parts]) | ("table", caption, headers, rows, numeric_cols).
 def rel(url, page_dir):
     if url.startswith(DATA_URL):
@@ -257,6 +260,8 @@ def h_parts(parts, page_dir):
             out.append("<small>%s</small>" % html.escape(p[1]))
         elif p[0] == "br":
             out.append("<br>")
+        elif p[0] == "report":
+            out.append('<a href="%s" rel="nofollow">report</a>' % html.escape(p[1]))
     return "".join(out)
 
 
@@ -285,6 +290,8 @@ def m_parts(parts, in_table=False):
             out.append("_%s_" % md_esc(p[1]))
         elif p[0] == "br":
             out.append("; " if in_table else "  \n")
+        elif p[0] == "report":
+            out.append("`%s`" % p[2])
     return "".join(out)
 
 
@@ -414,7 +421,10 @@ def footer_parts():
             ("a", "CITATION.cff", DATA_URL + "CITATION.cff"), ") and the original sources. Quotes are short excerpts kept so that "
             "each value can be checked; they remain under the publishers' copyright and are not relicensed. Source "
             "papers, page images and full text are not redistributed. Field reference: ", ("a", "SCHEMA.md", DATA_URL + "literature/SCHEMA.md"),
-            ". Machine-readable guide: ", ("a", "llms.txt", DATA_URL + "llms.txt"), "."]
+            ". Machine-readable guide: ", ("a", "llms.txt", DATA_URL + "llms.txt"), ". Found an error? The report link "
+            "of a value (Markdown: its id, ORC-..., in the Location column) opens a pre-filled GitHub issue, %s?template=%s"
+            "&record_id=<id>, carrying only the record id, source and value; " % (ISSUE_URL, REPORT_TEMPLATE),
+            ("a", "how to contribute", SITE_URL + "contribute/"), "."]
 
 
 def creator():
@@ -480,6 +490,14 @@ def source_cell(r, src):
     return parts
 
 
+def report_part(r, arts):
+    """("report", url, id): the pre-filled "Report an error in a value" issue of the record (tools/orchid_report.py)."""
+    val = value_text(r) or (t_text(r) + " K" if t_text(r) else "")
+    url = report_issue_url(r.get("id"), r.get("system"), (REPORT_PAPERS.get(r.get("paper")) or {}).get("doi"),
+                           page_of(r, arts), val)
+    return [("br",), ("report", url, r["id"])] if url else []
+
+
 def locator_cell(r, arts):
     art = arts.get((r.get("locator") or {}).get("ref")) or {}
     row = (r.get("locator") or {}).get("row")
@@ -489,9 +507,9 @@ def locator_cell(r, arts):
             s += ", p. %s" % art["page"]
         if row:
             s += ", row %s" % row
-        return [s]
+        return [s] + report_part(r, arts)
     page = r.get("quote_page") or art.get("page")
-    return ["p. %s" % page] if page is not None else []
+    return (["p. %s" % page] if page is not None else []) + report_part(r, arts)
 
 
 def page_of(r, arts):
@@ -512,6 +530,8 @@ def build(data, date):
     lit = os.path.join(data, "literature")
     lindex = jload(os.path.join(lit, "index.json"))
     papers_all = jload(os.path.join(lit, "papers.json"))
+    REPORT_PAPERS.clear()
+    REPORT_PAPERS.update(papers_all)
     parity = jload(os.path.join(lit, "dft_parity.json"))
     pindex = jload(os.path.join(data, "phase-diagrams", "index.json"))
     release = lindex.get("release", "")

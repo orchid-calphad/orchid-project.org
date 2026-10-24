@@ -27,6 +27,9 @@ zenodo/<name>.files.json (the files of the record with sizes and SHA-256, writte
   python3 tools/zenodo_release.py plan                 # records, files, sizes; every file present and unchanged, < 50 GB
   python3 tools/zenodo_release.py bundle [--record N]  # dist/orchid-<name>-v2026.10.zip (deterministic, MANIFEST.sha256)
   python3 tools/zenodo_release.py writeback --doi literature=10.5281/zenodo.123 [--doi ...] [--no-rebuild]
+  python3 tools/zenodo_release.py credit [--check]     # accepted, opted-in contributors -> CONTRIBUTORS.md, Zenodo
+                                                       # metadata (and CITATION.cff if contributors.json says so),
+                                                       # then refresh the manifests (run before `bundle`)
 
 `writeback` records the reserved DOIs in zenodo/dois.json, replaces the placeholders in every text file of both
 repositories (data repository, website pages, CITATION.cff files, llms.txt, croissant.json, DATASET_CARD.md,
@@ -175,6 +178,19 @@ def cmd_manifest(a):
             return 1
         print("zenodo manifests current (%d records)" % len(RECORDS))
     return 0
+
+
+def cmd_credit(a):
+    """Release hook: credit accepted contributors (contributions/tools/orchid_contrib.py credit in the data repository)."""
+    tool = os.path.join(a.data, "contributions", "tools", "orchid_contrib.py")
+    if not os.path.exists(tool):
+        print("no contributions/tools/orchid_contrib.py in %s: nothing to credit" % a.data)
+        return 0
+    rc = subprocess.run([sys.executable, tool, "credit", "--data", a.data] + (["--check"] if a.check else [])).returncode
+    if rc or a.check:
+        return rc
+    a.check = False
+    return cmd_manifest(a)
 
 
 def load_manifest(data, name):
@@ -510,8 +526,11 @@ def main(argv=None):
     default_ppy = os.path.expanduser("~/orchid-py313/bin/python")
     s.add_argument("--parquet-python", default=default_ppy if os.path.exists(default_ppy) else sys.executable,
                    help="interpreter with pyarrow for tools/build_parquet.py (default: %(default)s)")
+    s = sub.add_parser("credit", help="credit accepted contributors (CONTRIBUTORS.md, Zenodo metadata), then refresh manifests")
+    s.add_argument("--check", action="store_true", help="exit 1 if the credit files are stale")
     a = ap.parse_args(argv)
-    return {"manifest": cmd_manifest, "card": cmd_card, "plan": cmd_plan, "bundle": cmd_bundle, "writeback": cmd_writeback}[a.cmd](a)
+    return {"manifest": cmd_manifest, "card": cmd_card, "plan": cmd_plan, "bundle": cmd_bundle, "writeback": cmd_writeback,
+            "credit": cmd_credit}[a.cmd](a)
 
 
 if __name__ == "__main__":

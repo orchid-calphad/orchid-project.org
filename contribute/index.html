@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contribute to ORCHID</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo/orchid-icon.svg">
+<link rel="canonical" href="https://orchid-project.org/contribute/">
+<meta name="description" content="How to help ORCHID: report a wrong value, suggest a paper or CALPHAD assessment, contribute measurements, calculations or TDB files. Every contribution is checked against its source and credited.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Contribute to ORCHID",
+  "url": "https://orchid-project.org/contribute/",
+  "isPartOf": {"@type": "WebSite", "name": "ORCHID", "url": "https://orchid-project.org/"},
+  "about": {"@type": "Dataset", "name": "ORCHID data", "url": "https://data.orchid-project.org/", "license": "https://creativecommons.org/licenses/by/4.0/"}
+}
+</script>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;text-decoration:none;color:var(--fg)}
+nav a{text-decoration:none;font-size:.95rem}
+nav a[aria-current]{font-weight:600}
+h1{font-size:clamp(1.5rem,4vw,2.1rem);margin:28px 0 6px;line-height:1.2}
+h2{font-size:1.25rem;margin:34px 0 10px}
+.lead{color:var(--muted);max-width:780px;margin:0}
+.acr{font-size:1.05rem;margin:14px 0 0}
+.acr b{color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:12px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--fg)}
+a.card{text-decoration:none}
+a.card:hover{border-color:var(--accent)}
+.card h3{margin:0 0 6px;font-size:1rem;color:var(--accent)}
+.card p{margin:0;font-size:.93rem;color:var(--muted)}
+.person b{display:block;font-size:1.02rem}
+.person span{color:var(--muted);font-size:.93rem}
+li{margin:5px 0}
+code{font-size:.88em;background:var(--accent2);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.cite{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-wrap:anywhere}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+.ocite{background:var(--card,#fff);border:1px solid var(--line,#e2dfe6);border-left:4px solid var(--accent,#7b3fa0);border-radius:10px;padding:4px 16px 12px;margin:28px 0 0;overflow-wrap:anywhere}.ocite h2{margin:12px 0 6px;font-size:1.2rem}.ocite ul{padding-left:20px;margin:6px 0}.ocite li{margin:4px 0}.ocite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem;line-height:1.4;background:var(--accent2,#f2eaf7);color:var(--fg,#1d1b20);border-radius:6px;padding:8px 10px;margin:8px 0 0}.ocite .muted{color:var(--muted,#5e5a66);font-size:.9rem}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
+  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../phases/">Phases</a><a href="https://data.orchid-project.org/bibliography/pages/index.html">Bibliography</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="../data-explorer/">Data</a><a href="../dataset/">About the data</a><a href="../workflow/">Workflow</a><a href="../about/">About</a><a href="./" aria-current="page">Contribute</a>
+</nav></div></header>
+<main class="wrap">
+<h1>Contribute to ORCHID</h1>
+<p class="lead">ORCHID's values were read from papers by machines and checked automatically, so some are wrong, and many
+papers are still missing. If you know the literature of a system, you can help fix both. Everything you send is checked
+against its source by a maintainer before it reaches a release, and you are credited for it.</p>
+
+<h2 id="report">Report a wrong value</h2>
+<p>Every value on the <a href="https://data.orchid-project.org/systems/index.html">data pages</a> has a <b>report</b> link
+next to its page number. It opens a GitHub issue that already names the value (its ORCHID id, the paper's DOI, the page and
+the value as shown). Add what the paper actually prints, the page, and the one sentence or table row that shows it, and
+submit. You need a free GitHub account. AI assistants that use the <a href="https://github.com/orchid-calphad/orchid-mcp">ORCHID
+MCP server</a> get the same link with every value (<code>report_issue_url</code>); the assistant never posts it for you.</p>
+<p>The link carries only facts about the value, never anything about you.</p>
+
+<h2 id="suggest">Suggest a paper or an assessment</h2>
+<p>Know a paper with phase-diagram or thermochemical data that ORCHID has not read, or a CALPHAD assessment we should
+include? <a href="https://github.com/orchid-calphad/orchid-data/issues/new?template=suggest-paper.yml">Suggest it</a> with its
+DOI, the chemical system and the kind of data. Please send DOIs, never PDFs: we obtain papers through our library.</p>
+
+<h2 id="data">Contribute data</h2>
+<p>Data are added by pull request to the <a href="https://github.com/orchid-calphad/orchid-data">orchid-data</a> repository,
+where an automatic check runs on every file before a person looks at it. There are four kinds:</p>
+<div class="grid">
+  <div class="card"><h3>Values from a paper</h3><p>Numbers you read from a published paper, each with the DOI, the printed page and the sentence or table row it comes from.</p></div>
+  <div class="card"><h3>Your measurements</h3><p>New experimental data with a DOI. Unpublished data are deposited first, for example on <a href="https://zenodo.org">Zenodo</a>, so they can be cited.</p></div>
+  <div class="card"><h3>Calculations</h3><p>DFT or CALPHAD-model values with the method (code and functional, or software and database). They keep their own evidence class and are never mixed with experiment.</p></div>
+  <div class="card"><h3>Assessments</h3><p>A TDB file with the DOI of the paper that publishes it and an open licence that lets ORCHID redistribute it.</p></div>
+</div>
+<p>Whatever the kind, a value is a state of a material, not a bare number: give the phases, the temperature, the pressure,
+the composition and, for formation and mixing quantities, the reference state, along with its uncertainty as you know it.
+Templates (JSON and CSV), the field reference and the checks are in
+<a href="https://github.com/orchid-calphad/orchid-data/tree/main/contributions">contributions/</a>
+(<a href="https://github.com/orchid-calphad/orchid-data/blob/main/contributions/SCHEMA.md">SCHEMA.md</a>). Not sure where to
+start? <a href="https://github.com/orchid-calphad/orchid-data/issues/new?template=contribute-data.yml">Ask first</a>.</p>
+
+<h2 id="next">What happens to your contribution</h2>
+<ol>
+  <li>An automatic check looks at units, ranges, the elements of the system, phase names, the temperatures at which a phase can
+  exist, duplicates, and the page and quote.</li>
+  <li>A maintainer opens the paper at the page you gave (or the dataset) and compares.</li>
+  <li>The change goes into the <b>next release</b>. A corrected value keeps its old value in its history, with your name
+  next to the change; new values start as <i>contributed, unverified</i> and become <i>verified</i> after an independent check.</li>
+</ol>
+
+<h2 id="credit">Credit and licences</h2>
+<ul>
+  <li>Accepted contributors are listed in <a href="https://github.com/orchid-calphad/orchid-data/blob/main/CONTRIBUTORS.md">CONTRIBUTORS.md</a>
+  and, if they choose, in the Zenodo record of the release. Each corrected or verified value names its contributors.</li>
+  <li>Data you contribute are released under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, with credit to you.</li>
+  <li>Code contributions are under the MIT licence of the repository, with a
+  <a href="https://developercertificate.org/">Developer Certificate of Origin</a> sign-off (<code>git commit -s</code>).</li>
+  <li>We ask only for a name to credit (a GitHub name is fine) and, if you like, an ORCID iD. Please do not put e-mail
+  addresses or other personal details in issues or files.</li>
+</ul>
+
+<h2 id="classroom">In the classroom</h2>
+<p>We plan a classroom pilot in which students check ORCHID values against the original papers as a course exercise, using
+the same report forms. It is being planned; no student data will be collected.</p>
+
+<h2 id="code">Code, tools and conduct</h2>
+<p>Bugs in the MCP server, the data pages or the tools: use the
+<a href="https://github.com/orchid-calphad/orchid-data/issues/new?template=tools-bug.yml">bug form</a>, or the issues of
+<a href="https://github.com/orchid-calphad/orchid-mcp/issues">orchid-mcp</a> and
+<a href="https://github.com/orchid-calphad/orchid-pipeline/issues">orchid-pipeline</a>. Each repository has a CONTRIBUTING
+guide. Everyone follows the <a href="https://github.com/orchid-calphad/orchid-data/blob/main/CODE_OF_CONDUCT.md">Code of
+Conduct</a> (Contributor Covenant 2.1); the maintainers and how decisions are made are in
+<a href="https://github.com/orchid-calphad/orchid-data/blob/main/GOVERNANCE.md">GOVERNANCE.md</a>.</p>
+</main>
+<footer><div class="wrap">ORCHID is developed at Texas A&amp;M University with Citrine Informatics and Oak Ridge National Laboratory.
+Site content: MIT; literature data: CC BY 4.0. Database files remain the property of their authors; see <a href="../data/NOTICE.md">NOTICE</a>.</div></footer>
+</body>
+</html>
