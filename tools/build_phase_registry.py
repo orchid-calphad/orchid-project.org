@@ -1607,11 +1607,16 @@ def order_disorder_caveat(en):
     capable = any(m.get("disordered_part") or partitioned({"constituents": [sl.get("constituents") or []
                                                                            for sl in m.get("sublattices") or []]})
                   for m in en["models"])
+    reaches = any(r.get("stable") and r.get("x_min") is not None and (r["x_min"] < 0.03 or r["x_max"] > 0.97)
+                  for r in en["stability"])
+    if not reaches:
+        return None
     if not capable:
-        return None
-    if not any(r.get("stable") and r.get("x_min") is not None and (r["x_min"] < 0.03 or r["x_max"] > 0.97)
-               for r in en["stability"]):
-        return None
+        # audit round 3 (POSTFIX A2 class 6 residual: gali-b32, inni-b2): an ordered structure whose model cannot
+        # disorder but whose calculated field still reaches a pure end
+        return ("ordered %s structure whose calculated stability range reaches a pure end (x < 0.03 or > 0.97) "
+                "although the model has no disordered partner: the ordered structure does not hold over that range "
+                "(model extrapolation or structure assignment to be checked)" % st.get("strukturbericht"))
     return ("order/disorder model: the ordered %s structure holds only where the sublattices are ordered; the calculated "
             "stability range (rows flagged ordered_structure_range_not_resolved) includes disordered states; order "
             "parameters were not evaluated" % st.get("strukturbericht"))

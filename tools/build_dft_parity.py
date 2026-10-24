@@ -168,6 +168,9 @@ def parse_phase(phase, system):
     # subscript markers between an element (or a closing group bracket) and its count: NiSi_2, NiSi_{2}, Al^3
     # (audit A4 E4: "αNiSi_2" was read as NiSi because "_" separates formula tokens)
     s = re.sub(r"(?<=[A-Za-z)\]])[_^]\{?(\d+(?:\.\d+)?)\}?", r"\1", s)
+    # comma decimal subscripts: PuO1,52 = PuO1.52 (audit round 3, POSTFIX A3-N6; it was read as PuO, so a value per
+    # formula was divided by 2 instead of 2.52). Only a digit-comma-digits run that directly follows an element symbol.
+    s = re.sub(r"(?<=[A-Za-z])(\d+),(\d+)(?![\d,])", r"\1.\2", s)
     notes = []
     if re.search(r"\((g|gas|l|liq)\)", s, re.I):
         return None, "gas or liquid state marker in phase label"
@@ -598,6 +601,56 @@ def sigma_composition(dx, meas, slopes):
     return None if sl is None else round(abs(dx * sl), 3)
 
 
+_LIQ_GAS_REF = re.compile(r"LIQ|GAS|\(G\)|\(L\)|^L$|VAPO|MELT", re.I)
+
+
+def reference_state_mismatch(r, compound_elements):
+    """Why a record's printed reference state is not the solid standard element reference that 0 K DFT formation
+    energies use (audit round 3, POSTFIX A4-N2), or None: a liquid / gas element reference (Pt3Sn referred to liquid
+    Pt and Sn; 'Na(l) + Sb(s)'), or a reference element that is not in the compound (a garbled 'IN' in Ca-Sb; the
+    stored key, kept in reference_state_stored, counts)."""
+    from espei_constraints import ELEMENT_TM_TB
+    els = {e.upper() for e in compound_elements}
+    why = []
+    src_els = set(str(r.get("source_system") or "").upper().split("-")) | \
+        set(str(r.get("system") or "").upper().split("-"))
+    keys = [k.upper() for rs in (r.get("reference_state"), r.get("reference_state_stored")) if isinstance(rs, dict)
+            for k in rs if re.fullmatch(r"[A-Z][a-z]?", k.capitalize()) and k.lower() != "printed"]
+    if any(k not in els | src_els for k in keys):
+        # keys of the paper's other elements (a state narrowed to its subsystem) are not a mismatch; an element of
+        # neither the compound nor the paper's system is a garbled reference (Ca-Sb 'IN')
+        why.append("reference element not in the compound")
+    rs = r.get("reference_state") or {}
+    T = r.get("temperature_K")
+    for el, st in rs.items() if isinstance(rs, dict) else []:
+        ph = str((st or {}).get("phase") if isinstance(st, dict) else st)
+        if el.upper() in els and _LIQ_GAS_REF.search(ph) and not el.upper() in ("H", "N", "O", "F", "CL"):
+            tm = (ELEMENT_TM_TB.get(el.upper()) or (None,))[0]
+            why.append("liquid reference of %s%s" % (el.upper(), " below its melting point" if tm and isinstance(T, (int, float)) and T < tm else ""))
+    return "; ".join(why) or None
+
+
+OUTLIER_ABS = 50.0      # kJ/mol-atom: |DFT - lit| beyond it from every matched source
+OUTLIER_SIGN = 10.0     # kJ/mol-atom: sign opposite to DFT with |DFT - lit| beyond it
+BASIS_RULES = ("table_basis", "per_formula", "basis_correct")
+SIGN_RULES = ("sign", "unsigned")
+
+
+def as_extracted_value(r):
+    """The record's value before the page-read basis / sign corrections (the first `before` of a value correction)."""
+    for c in r.get("corrections") or []:
+        if c.get("field") == "value" and isinstance(c.get("before"), (int, float)):
+            return c["before"], c.get("rule") or ""
+    return r.get("value"), None
+
+
+def is_outlier(v, dfts):
+    if not dfts or not isinstance(v, (int, float)):
+        return False
+    big = all(abs(d - v) > OUTLIER_ABS for d in dfts)
+    sign = v != 0 and any((d < 0) != (v < 0) and abs(d - v) > OUTLIER_SIGN for d in dfts)
+    return big or sign
+
 def build(open_tdb, sign_check_path, hulls_root=None):
     with open(os.path.join(LIT, "papers.json"), encoding="utf-8") as fh:
         papers = json.load(fh)
@@ -689,6 +742,14 @@ def build(open_tdb, sign_check_path, hulls_root=None):
         sv = sign.get((r.get("paper"), record_page(r), round(abs(float(r.get("value_printed", v))), 6))) \
             if isinstance(r.get("value_printed", v), (int, float)) else None
         flags = r.get("flags") or {}
+        ref_mismatch = reference_state_mismatch(r, counts)
+        gate_codes = sorted({g.get("code") for g in (r.get("gate_failures") or []) if g.get("code")})
+        v0, v0_rule = as_extracted_value(r)
+        sign_fixed = any(c.get("field") == "value" and any(k in (c.get("rule") or "") for k in SIGN_RULES)
+                         for c in r.get("corrections") or []) or bool(flags.get("sign_pdf_page_verified")) \
+            or bool(flags.get("sign_from_heading"))
+        basis_fixed = any(c.get("field") == "value" and any(k in (c.get("rule") or "") for k in BASIS_RULES)
+                          for c in r.get("corrections") or [])
         unsigned = bool(flags.get("unsigned_in_print")) or sv == "no_minus_printed"
         sign_lost = sv == "minus_printed" and v > 0 and not flags.get("sign_pdf_page_verified")
         cited = [{"ref": c.get("reference") or "", "doi": c.get("doi") or ""} for c in (r.get("cited_sources") or [])][:3]
@@ -717,6 +778,9 @@ def build(open_tdb, sign_check_path, hulls_root=None):
             "qfix": next((k for k in ("basis_corrected_from_formula", "sign_from_heading", "dft_outlier_unexplained")
                           if flags.get(k)), None),
             "basis": r.get("unit_basis"), "basis_inferred": bool(flags.get("basis_inferred_from_magnitude")),
+            "ref_mismatch": ref_mismatch, "gate_failures": gate_codes or None,
+            "lit_as_extracted": round(float(v0), 4) if isinstance(v0, (int, float)) and v0 != v else None,
+            "basis_fixed": basis_fixed, "sign_fixed": sign_fixed,
         }
         matched = {}
         for s, src in dft.items():
@@ -733,7 +797,7 @@ def build(open_tdb, sign_check_path, hulls_root=None):
 
     points, used_papers, records_out = [], set(), {}
     DFT_KEYS = ("src", "dft", "dft_eV", "mid", "sg", "ehull", "ehull_upstream", "npoly", "theoretical", "res",
-                "smatch", "ground_id", "sigma_comp", "default", "excluded_by")
+                "smatch", "ground_id", "sigma_comp", "default", "excluded_by", "outlier_class")
 
     def record_default(p, classes=("experimental",)):
         return (p["ev"] in classes and p["acc"] and not p["unsigned"] and not p["sign_lost"]
@@ -748,6 +812,10 @@ def build(open_tdb, sign_check_path, hulls_root=None):
             why.append("off_stoichiometry" if p["dx_measured"] <= 0.1 else "composition_conflicts_label")
         if p["ev"] == "experimental" and p["T"] == 0:
             why.append("experimental_value_at_0K")
+        if p.get("ref_mismatch"):
+            why.append("reference_state")
+        if p.get("gate_failures"):
+            why.append("gate_flagged")
         return why
 
     for base, matched in rows:
@@ -771,6 +839,53 @@ def build(open_tdb, sign_check_path, hulls_root=None):
     def default(p, classes=("experimental",)):
         return record_default(p, classes) and not p["excluded_by"]
 
+    # ---- one outlier classification (audit round 3): population = accepted experimental records not flagged
+    # magnitude_suspect (the default subset before its point exclusions and before the unsigned / sign-lost exclusion,
+    # so that the classes partition one set); a record is examined when its value as extracted (before the page-read
+    # basis / sign corrections) differs from every matched DFT source by more than OUTLIER_ABS, or has the opposite
+    # sign with |DFT - lit| > OUTLIER_SIGN for a source. Classes, in this order: per_formula (a basis correction read on
+    # the page), unsigned (printed without a sign, a lost sign, or a sign read on the page), unexplained (the rest).
+    by_rec = defaultdict(list)
+    for p in points:
+        by_rec[p["rid"]].append(p)
+    outl = {}
+    for rid, ps in by_rec.items():
+        p0 = ps[0]
+        if not (p0["ev"] == "experimental" and p0["acc"] and "magnitude_suspect" not in p0["suspect"]):
+            continue
+        v0 = p0["lit_as_extracted"] if p0["lit_as_extracted"] is not None else p0["lit"]
+        dfts = [q["dft"] for q in ps]
+        if not is_outlier(v0, dfts):
+            continue
+        if p0["basis_fixed"]:
+            c = "per_formula"
+        elif p0["unsigned"] or p0["sign_lost"] or p0["sign_fixed"]:
+            c = "unsigned"
+        else:
+            c = "unexplained"
+        outl[rid] = c
+        for q in ps:
+            q["outlier_class"] = c
+    for p in points:
+        p.setdefault("outlier_class", None)
+    oc = Counter(outl.values())
+    unexpl_default = {rid for rid, c in outl.items() if c == "unexplained" and any(default(q) for q in by_rec[rid])}
+    outlier_classification = {
+        "population": "accepted experimental HM_FORM records matched to MP and/or OQMD, not flagged magnitude_suspect "
+                      "(the default subset before its point exclusions and before the unsigned / sign-lost exclusion)",
+        "criterion": "value as extracted (before the page-read basis / sign corrections) differs from every matched DFT "
+                     "source by more than %g kJ/mol-atom, or has the opposite sign of a source with |DFT - lit| > %g"
+                     % (OUTLIER_ABS, OUTLIER_SIGN),
+        "classes": "per_formula: a basis correction read on the page; unsigned: printed without a sign, a lost sign or "
+                   "a sign read on the page; unexplained: no deterministic explanation (kept as printed)",
+        "examined": len(outl), "per_formula": oc.get("per_formula", 0), "unsigned": oc.get("unsigned", 0),
+        "unexplained": oc.get("unexplained", 0),
+        "unexplained_in_default_subset": len(unexpl_default),
+        "unexplained_excluded_by_point_rules": oc.get("unexplained", 0) - len(unexpl_default),
+    }
+    assert outlier_classification["per_formula"] + outlier_classification["unsigned"] + \
+        outlier_classification["unexplained"] == outlier_classification["examined"]
+
     subsets = {
         "experimental": ("Experimental, accepted, signed, not magnitude-suspect (default)", lambda p: default(p)),
         "experimental_model": ("+ model values", lambda p: default(p, ("experimental", "model"))),
@@ -787,8 +902,9 @@ def build(open_tdb, sign_check_path, hulls_root=None):
                                                 and not p["excluded_by"]),
         "experimental_explicit_basis": ("Default, per-atom basis printed (not inferred from magnitude)",
                                         lambda p: default(p) and not p["basis_inferred"]),
-        "experimental_excl_unexplained_outliers": ("Default without unexplained DFT outliers (diagnostic only)",
-                                                   lambda p: default(p) and p["qfix"] != "dft_outlier_unexplained"),
+        "experimental_excl_unexplained_outliers": ("Default without the unexplained outliers of the outlier "
+                                                   "classification (diagnostic only)",
+                                                   lambda p: default(p) and p["outlier_class"] != "unexplained"),
         "experimental_incl_not_accepted": ("Experimental incl. not-accepted extractions",
                                            lambda p: p["ev"] == "experimental" and not p["unsigned"]
                                            and not p["sign_lost"] and "magnitude_suspect" not in p["suspect"]
@@ -828,9 +944,11 @@ def build(open_tdb, sign_check_path, hulls_root=None):
     out = {
         "schema": "orchid-dft-parity-v1",
         "cite_as": orchid_cite.cite_as("dft-benchmark"),
-        "description": "Literature formation enthalpies (HM_FORM, kJ/mol-atom) against the lowest-energy DFT "
-                       "entry at the same composition. Materials Project and OQMD are separate sources with "
-                       "different energy references and are never averaged. Residual = DFT - literature.",
+        "description": "Literature formation enthalpies (HM_FORM, kJ/mol-atom) against DFT formation energies at "
+                       "the same composition: the lowest entry of the space group the record names (Strukturbericht "
+                       "designator or prototype), else the ground state (lowest-energy entry). Materials Project and "
+                       "OQMD are separate sources with different energy references and are never averaged. Residual "
+                       "= DFT - literature.",
         "unit": UNIT, "kJ_per_mol_per_eV": KJ_PER_EV, "band_kJ_per_mol_atom": BAND,
         "inputs": {"literature": {"path": "data/literature/orchid-literature.jsonl.gz", "sha256": lit_sha},
                    "sign_check": sign_meta},
@@ -843,7 +961,8 @@ def build(open_tdb, sign_check_path, hulls_root=None):
                        "dropped; several distinct formulas in one record are refused. Fallback: a phase "
                        "composition derived from stoichiometry.",
             "match": "Reduced composition (mole fractions rounded to 4 decimals) matched exactly to non-deprecated "
-                     "DFT entries; the lowest formation energy at that composition is used; npoly = number of "
+                     "DFT entries; the lowest entry of the named space group (see structure), else the lowest "
+                     "formation energy at that composition, is used; npoly = number of "
                      "entries at that composition. Binary compounds only (snapshots hold unary/binary entries).",
             "units": "DFT eV/atom x 96.485 = kJ/mol-atom; ehull = energy above ORCHID's released hull of the same "
                      "snapshot (hulls/dft-<src>/, kJ/mol-atom; one source of truth for MP and OQMD); ehull_upstream = "
@@ -863,14 +982,19 @@ def build(open_tdb, sign_check_path, hulls_root=None):
                               "uncorrected sign loss found by the page-image sign check, not flagged "
                               "magnitude_suspect by the extraction checks (a flag set before and independently "
                               "of this DFT comparison); per point (`default`): not structure_unmatched, measured "
-                              "composition within 0.02 of the compound, not an experimental value stored at 0 K "
-                              "(`excluded_by` lists the reason).",
+                              "composition within 0.02 of the compound, not an experimental value stored at 0 K, "
+                              "the record's reference state is the solid standard element reference that 0 K DFT "
+                              "uses (no liquid / gas element reference, no reference element outside the compound; "
+                              "reference_state), and the record carries no literature gate failure (gate_flagged) "
+                              "(`excluded_by` lists the reason; audit round 3).",
             "layout": "records{rid: literature fields} + points[] (one per record x DFT source, joined by rid) "
                       "+ papers{paper id: citation, DOI}.",
-            "quality_fixes": "data/literature/QUALITY_FIXES.md: per-formula values labelled per atom are converted "
-                             "(basis_corrected_from_formula), unsigned magnitudes are flagged unsigned_in_print (or "
-                             "signed from a printed negated heading, sign_from_heading); remaining large residuals are "
-                             "flagged dft_outlier_unexplained and kept in the default subset.",
+            "quality_fixes": "data/literature/QUALITY_FIXES.md: the per-formula / per-atom basis of a column is decided "
+                             "on the printed page only (gate R2 table_basis; the earlier rule that converted a value "
+                             "when the converted value agreed with DFT was withdrawn in audit round 2 because it used "
+                             "DFT to correct the values that calibrate DFT); unsigned magnitudes are flagged "
+                             "unsigned_in_print (or signed from a printed negated heading); see "
+                             "counts.outlier_classification for the classes of the large residuals.",
             "unsigned": "flags.unsigned_in_print, or a sign-check verdict no_minus_printed matched by paper "
                         "(PDF hash prefix), page and |printed value|: such values are magnitudes by the paper's "
                         "convention and are kept out of the default set.",
@@ -894,6 +1018,7 @@ def build(open_tdb, sign_check_path, hulls_root=None):
                                                                        for x in (p["excluded_by"] or [])).items()))
                                                 for s in SOURCES},
             "exclusions": dict(sorted(excl.items(), key=lambda kv: (-kv[1], kv[0]))),
+            "outlier_classification": outlier_classification,
         },
         "stats": st,
         "papers": paper_out,
@@ -910,8 +1035,9 @@ def croissant_update(path, data):
     # insert before the literature entries, which tools/export_literature_data.py always rewrites at the end
     at = next((i for i, x in enumerate(dist) if str(x.get("@id", "")).startswith("literature")), len(dist))
     dist.insert(at, {"@type": "cr:FileObject", "@id": "dft-parity", "name": "dft_parity.json",
-                 "description": "Literature formation enthalpies (kJ/mol-atom) paired with the lowest-energy "
-                                "Materials Project and OQMD entry at the same composition (never averaged), "
+                 "description": "Literature formation enthalpies (kJ/mol-atom) paired with the Materials Project "
+                                "and OQMD entry of the named structure, else the ground state, at the same "
+                                "composition (never averaged), "
                                 "with per-source statistics. Viewer: https://orchid-project.org/dft-parity/",
                  "contentUrl": "https://orchid-project.org/data/literature/dft_parity.json",
                  "encodingFormat": "application/json", "sha256": hashlib.sha256(data).hexdigest()})

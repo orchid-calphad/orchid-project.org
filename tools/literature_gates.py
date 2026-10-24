@@ -1708,6 +1708,8 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     g0_page_fixes(records, visual, rep)
     import literature_r2_thermo  # noqa: E402  (audit round 2: units, temperatures, reference states; A3 / A4)
     literature_r2_thermo.apply(records, visual, rep)
+    import literature_r3_thermo  # noqa: E402  (audit round 3: residual units / expression / contribution classes)
+    literature_r3_thermo.apply(records, visual, rep)
     g4_system(records, visual, rep)
     g4_unit_gas_elements(records, rep)
     r2c.before_compositions(records, visual, rep, getattr(rule, "data", None))   # A1 C1-C3, C6, C7
@@ -1720,6 +1722,7 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     g5_semantics(records, rep)
     g2_magnitudes(records, visual, rep)
     g3_signs(records, visual, rep)
+    literature_r3_thermo.apply_late(records, visual, rep)
     g6_invariants(records, rep, visual)
     g9_compositions(records, visual, rep)
     g8_evidence(records, visual, describe, rep)
@@ -1727,6 +1730,8 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     g_page_verdicts(records, visual, rep)
     records = g7_dedupe(records, rep)
     r2c.after_system(records, rep)          # A1 C4: file each record under the system of its own state
+    import literature_r3_invariants  # noqa: E402  (audit round 3: invariant-reaction QA family, on final records)
+    literature_r3_invariants.apply(records, visual, rep)
     for r in records:
         r.pop("_g6_page_fixed", None)
         if r.get("gate_failures"):

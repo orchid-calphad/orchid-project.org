@@ -348,7 +348,8 @@ def parity_schema(pa):
         ("chemical_system", s), ("fold_lso", pa.int32()), ("fold_lpo", pa.int32()),
         ("ehull_upstream_kJ_per_mol_atom", f), ("dft_structure_match", s), ("structure_designators", L(s)),
         ("dft_ground_state_id", s), ("x_offset_measured", f), ("sigma_composition_kJ_per_mol_atom", f),
-        ("excluded_from_default_by", L(s))])
+        ("excluded_from_default_by", L(s)), ("outlier_class", s), ("reference_state_mismatch", s),
+        ("gate_failures", L(s))])
 
 
 def pd_index_schema(pa):
@@ -465,7 +466,9 @@ def build_tables(data, pa):
             "dft_structure_match": pt.get("smatch"), "structure_designators": sorted(r.get("designators") or []),
             "dft_ground_state_id": pt.get("ground_id"), "x_offset_measured": fnum(r.get("dx_measured")),
             "sigma_composition_kJ_per_mol_atom": fnum(pt.get("sigma_comp")),
-            "excluded_from_default_by": [str(x) for x in pt.get("excluded_by") or []]})
+            "excluded_from_default_by": [str(x) for x in pt.get("excluded_by") or []],
+            "outlier_class": pt.get("outlier_class"), "reference_state_mismatch": r.get("ref_mismatch"),
+            "gate_failures": [str(x) for x in r.get("gate_failures") or []]})
     drow.sort(key=lambda x: (x["system"], x["record_id"], x["dft_source"]))
     tables["dft_parity"] = (drow, parity_schema(pa))
 

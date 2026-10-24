@@ -443,6 +443,21 @@ def label_comp(rec, nd=3):
     return found.pop() if len(found) == 1 else None
 
 
+def label_is_normalised(rec):
+    """True when the record's compound label is printed as a normalised formula (subscripts summing to 1, e.g.
+    Ru0.4Sn0.6, Fe0.143U0.857): a value per mole of that formula is per mole of atoms (audit round 3, POSTFIX A3-N2)."""
+    els = [e.capitalize() for e in rec.get("elements") or (rec.get("system") or "").split("-") if e]
+    tots = set()
+    for p in rec.get("phases") or []:
+        lab = p.get("label")
+        if not lab:
+            continue
+        c, _ = parity.parse_phase(re.sub(r"\s*\((?:cr|s|c|l|liq|liq-am|am|g)\)\s*$", "", str(lab), flags=re.I), els)
+        if c:
+            tots.add(round(float(sum(c.values())), 3))
+    return len(tots) == 1 and abs(tots.pop() - 1.0) <= 0.011
+
+
 def state_comp(rec, nd=3):
     """Composition of a compound state: the printed label's formula when it disagrees with overall_composition by more
     than 0.02 (split-row records carry the overall composition of another phase), else overall_composition."""
@@ -943,6 +958,13 @@ def reading_component(rec, quantity):
     """Half of the last printed digit, in the quantity's unit (sigma_reading)."""
     if quantity == "value":
         v, vp = rec.get("value"), rec.get("value_printed")
+        prop = str(rec.get("property") or "")
+        if prop.startswith("ACR_") and v == 1.0:
+            el = prop[4:].upper()
+            oc = rec.get("overall_composition") or {}
+            if isinstance(oc.get(el), (int, float)) and abs(oc[el] - 1.0) <= 1e-9:
+                # the pure component in its reference state: a = 1 by definition, not a reading (round 3, A3 sec. 10)
+                return {"value": 0.0, "basis": "defined_by_reference_state"}
         src = vp if vp is not None else v
         d = decimals(src)
         if d is None or not isinstance(v, (int, float)):
@@ -1059,7 +1081,9 @@ def method_component(rec, quantity, vt, cal):
             # formula unit (audit round 2; conservative when the value is in fact per atom)
             lc = label_comp(rec)
             n = atoms_in_formula(lc) if lc else None
-            if n and n > 1:
+            if n and n > 1 and label_is_normalised(rec):
+                e["not_scaled_normalised_formula"] = True   # per formula of Ru0.4Sn0.6 = per atom (round 3)
+            elif n and n > 1:
                 e["value"] = _r(e["value"] * n)
                 e["scaled_for_unstated_basis"] = n
     return e

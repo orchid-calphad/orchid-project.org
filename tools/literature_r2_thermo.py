@@ -425,7 +425,7 @@ def r2_standard_temperature(records, rep, check=None):
 
 # ------------------------------------------------------------------------------------------------- R2-t0exp
 
-def r2_experimental_zero_kelvin(records, rep, check=None):
+def r2_experimental_zero_kelvin(records, rep, check=None, visual=None):
     for r in records:
         if r.get("evidence_class") != "experimental" or r.get("temperature_K") != 0:
             continue
@@ -433,6 +433,18 @@ def r2_experimental_zero_kelvin(records, rep, check=None):
         if p in ("INVARIANT_TEMPERATURE", "TRANSITION_TEMPERATURE"):
             continue
         cap = str((r.get("locator") or {}).get("caption") or "")
+        basis = str((r.get("origin") or {}).get("basis") or "")
+        if basis.startswith("this_work_uncited") and FP_CAPTION.search(cap):
+            # audit round 3 (POSTFIX A3-N9): an uncited row of the paper's own first-principles table (Al3Zr ΔE in
+            # eV/f.u., equilibrium volumes V0) is a 0 K calculation of this paper, not a cited experimental value
+            chk = visual.get("r3_class:own_first_principles_row_labelled_experimental") if visual else None
+            r["evidence_class_before_gates"] = r.get("evidence_class_before_gates") or "experimental"
+            G.correct(r, GATE, "evidence_class", "experimental", "dft", "own_first_principles_row_labelled_experimental",
+                      {"caption": cap[:160], "origin_basis": basis, "T_K": 0.0}, chk)
+            r["evidence_class"] = "dft"
+            r.setdefault("origin", {})["class_gate"] = "dft"
+            rep.add(GATE, "own_first_principles_row_labelled_experimental", r, "corrected")
+            continue
         ambient = bool(re.search(r"ambient|room temperature", cap, re.I))
         new = 298.15 if p in ("HM_FORM", "SM_FORM", "GM_FORM") or ambient else None
         r["temperature_K_stored"] = 0.0
@@ -641,7 +653,7 @@ def apply(records, visual, rep):
     r2_t298(records, rep, cls("quantity_printed_at_298"))
     r2_temperature_in_label(records, rep, cls("temperature_printed_in_quantity_label"))
     r2_standard_temperature(records, rep, cls("standard_enthalpy_at_calorimeter_temperature"))
-    r2_experimental_zero_kelvin(records, rep, cls("experimental_value_from_0K_caption"))
+    r2_experimental_zero_kelvin(records, rep, cls("experimental_value_from_0K_caption"), visual)
     r2_dft_class(records, rep, visual)
     r2_reference_compounds(records, rep, cls("formation_from_compounds"))
     r2_noncrystalline(records, rep)

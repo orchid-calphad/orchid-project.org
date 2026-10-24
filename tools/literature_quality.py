@@ -279,6 +279,15 @@ def _page_starts(t):
         out.add(m.start(2))
     for m in re.finditer(r"(?<![A-Za-z])(?:pp?\.?|S\.)\s*(\d{1,6})", t):
         out.add(m.start(1))
+    # audit round 3 (POSTFIX A5 F2 residual): a range printed after p / pp ("p 1801-1802") is a page range even when
+    # it looks like a year range; volume:page ("1953;36:1820"); a double-dash page in a running header ("1986--1823")
+    for m in re.finditer(r"(?<![A-Za-z])(?:pp?\.?|S\.)\s*(\d{1,6})\s*[-\u2013\u2014\u2212]{1,2}\s*(\d{1,6})(?!\d)", t):
+        out.add(m.start(1))
+        out.add(m.start(2))
+    for m in re.finditer(r"(?<=\d)\s*(?:\([^)]{1,6}\))?\s*:\s*(\d{1,6})", t):
+        out.add(m.start(1))
+    for m in re.finditer(r"(\d{4})\s*--\s*(\d{1,6})(?!\d)", t):
+        out.add(m.start(2))
     return out
 
 

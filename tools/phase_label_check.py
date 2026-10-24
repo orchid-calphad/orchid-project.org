@@ -161,6 +161,9 @@ def formula_counts(label, elements):
     return out
 
 
+VARIABLE_FORMULA = re.compile(r"(?<![A-Za-z])(?:[A-Z][a-z]?\d*)*?(?:[A-Z][a-z]?)[xy](?![a-z])(?:[A-Z][a-z]?\d*)*")
+
+
 def is_liquid_label(label):
     s = str(label or "").strip()
     return bool(re.match(r"(?i)^(?:l|liq|liquid|melt)\s*(?:$|[(\[+#\d'′,]|\s)", s)) and not re.match(r"^L\d{2}", s) \
@@ -177,6 +180,10 @@ def label_kind(label, elements):
     if struct_words(s) and not formula_counts(re.sub(r"\(.*?\)", "", s), elements):
         return "structure"
     s0 = re.sub(r"^[%s]['’′\d]*\s*[-–]?\s*(?=\()" % GREEK, "", s)       # beta(Fe,Zr): Greek name of a solution
+    m_int = re.fullmatch(r"\(([A-Z][a-z]?(?:\s*,\s*[A-Z][a-z]?)*)\)\s*\(([CNHOB])\)", _greek_free(s0).strip(" -–"))
+    if m_int and all(p.upper() in elements for p in re.split(r"\s*,\s*", m_int.group(1))) and \
+            m_int.group(2).upper() in elements:
+        return "solution"   # beta(Hf,Zr)(C): a named interstitial solution of the metals (audit round 3, A2-N3)
     inner = s0[1:-1] if s0.startswith("(") and s0.endswith(")") else None
     if inner is not None:
         parts = [p for p in re.split(r"[,\s]+", _greek_free(inner).strip(" -–")) if p]
@@ -286,9 +293,25 @@ def check(label, model, system, elements, entry, comps, T=None, rule=None):
         elif kind in ("greek_variant", "compound") or kind.startswith("interstitial:"):
             return "greek_or_compound_label_mapped_to_element_structure"
         elif sw:
-            pass
+            # a structure word beside a compound formula ("betaSiC(Cubic)") names the compound's structure, not an
+            # element structure (audit round 3, POSTFIX A2-N2)
+            core = formula_counts(re.sub(r"\(.*?\)|[-\s]", "", str(label)), elements)
+            if core and len([e for e in core if e != "M"]) >= 2:
+                return "greek_or_compound_label_mapped_to_element_structure"
         else:
             return "label_not_a_solution_or_structure_name"
+    if not fam and VARIABLE_FORMULA.search(_greek_free(label)) and not LIQUID_MODEL.match(mp):
+        # a variable-formula label (InxLa, LixSi, CePtx) names a phase of unknown stoichiometry; it is not the 1:1
+        # compound its formula letters spell unless a printed composition lies in the model phase's range (audit round
+        # 3, POSTFIX A2-N1)
+        rng = stable_range(entry, mp) if entry is not None else None
+        ok = False
+        if rng and comps:
+            xe, lo, hi = rng
+            xs = [c.get(xe) for c in comps if isinstance(c.get(xe), (int, float))]
+            ok = bool(xs) and all(lo - 0.02 <= x <= hi + 0.02 for x in xs)
+        if not ok:
+            return "variable_formula_label_not_a_fixed_compound"
     if entry is not None and comps and len(elements) == 2:
         rng = stable_range(entry, mp)
         if rng:

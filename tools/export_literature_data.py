@@ -160,9 +160,16 @@ def lit_doi(d):
     return (None, e) if e else (d, None)
 
 
+PDF_IDENTITY = {e["pdf_sha256_prefix"]: e for e in json.load(open(os.path.join(os.path.dirname(os.path.abspath(
+    __file__)), "pdf_identity.json"), encoding="utf-8"))["entries"]}   # PDFs filed under another work's DOI (round 3)
+
+
 def paper_key(src: dict | None):
     if not src:
         return None
+    sha16 = (src.get("file_sha256") or "")[:16]
+    if sha16 in PDF_IDENTITY:
+        return PDF_IDENTITY[sha16]["key"]
     d, corr = lit_doi(src.get("doi"))
     if d:
         return "doi:" + d
@@ -439,13 +446,20 @@ class Store:
             kind = "corpus_paper" if any(k in ("journal_article", "book_chapter") for k in kinds) else (
                 "cited_work" if "cited_work" in kinds else kinds[0])
             corr = KEY2CORR.get(key) if not doi else None
+            ident = PDF_IDENTITY.get(key[7:]) if key.startswith("sha256:") else None
+            if ident:   # the PDF's own title page (tools/pdf_identity.json), not the DOI its source record carried
+                meta = {"title": ident["title"], "authors": ident["authors"], "year": ident["year"],
+                        "container": ident["container"], "metadata_source": "pdf_title_page"}
+                fallback, year = ident["citation"], ident["year"]
             out[key] = clean({
                 "id": key,
                 "doi": doi,
                 "doi_status": doi_corrections.STATUS if corr else None,
                 "doi_correction": corr["id"] if corr else None,
                 "doi_url": f"https://doi.org/{doi}" if doi else None,
-                "citation": format_citation(meta, fallback) or (f"doi:{doi}" if doi else "(citation not resolved)"),
+                "citation": (ident["citation"] if ident else format_citation(meta, fallback)) or
+                            (f"doi:{doi}" if doi else "(citation not resolved)"),
+                "doi_not_used": ident["wrong_doi"] if ident else None,
                 "title": meta.get("title"),
                 "authors": meta.get("authors"),
                 "year": year,
@@ -1060,7 +1074,7 @@ papers, page images, crops and full text are **not** redistributed.
 | `property` | quantity kind: `INVARIANT_TEMPERATURE`, `TRANSITION_TEMPERATURE`, `PHASE_COMPOSITION`, `PHASE_ASSEMBLAGE`, or a thermodynamic / structural quantity (`HM_FORM`, `HM_MIX`, `CPM`, `SM`, `GIBBS_ENERGY`, `EMF`, `ACR_<EL>`, `LATTICE_A`, ...); a controlled code (see Controlled vocabularies). `property_code_raw`: the code as the record builder wrote it, when it was malformed and cleaned |
 | `property_group` | coarse filter group (invariant reaction, phase transition, phase equilibrium, formation, mixing / partial, heat capacity / entropy / enthalpy, activity / EMF / Gibbs energy, crystal structure, model expression, other property) |
 | `property_printed` | the quantity symbol or name as printed |
-| `value`, `unit` | value in the normalized unit (temperatures: K; formation enthalpies and Gibbs energies of formation, mixing enthalpies, Gibbs energies of mixing and partial molar enthalpies: kJ/mol-atom when the per-atom basis is explicit, otherwise kJ/mol (basis unstated); lattice lengths a, b, c (`LATTICE_A`, `LATTICE_B`, `LATTICE_C`, `LATTICE_A0`, `LATTICE_C0`, `LATTICE_UNSPECIFIED_AXIS`, `LATTICE_A_R`): angstrom (Å) when the stored unit is nm, pm or Å, unconverted when no unit was printed (`not_printed`, `unknown`), flag `lattice_length_outside_typical_range` outside 1-100 Å; other properties (e.g. Gibbs energies, which include the coefficients B of printed expressions A + BT in J/mol/K) keep the unit as read). `value_stored`, `unit_stored`: the value before that conversion. `value_printed`, `unit_printed`: as printed (tables) |
+| `value`, `unit` | value in the normalized unit (temperatures: K; formation enthalpies and Gibbs energies of formation, mixing enthalpies, Gibbs energies of mixing and partial molar enthalpies: kJ/mol-atom when the per-atom basis is explicit, otherwise kJ/mol (basis unstated); a formation value whose unit could not be normalized (no unit read, eV per formula unit, per-defect energies, a per-mole-of-atoms label without an energy unit) keeps its unit as read, is never ESPEI-ready, and is counted by unit in quality_fixes.json `counts.formation_values_unit_not_normalized` (audit round 3, H9); lattice lengths a, b, c (`LATTICE_A`, `LATTICE_B`, `LATTICE_C`, `LATTICE_A0`, `LATTICE_C0`, `LATTICE_UNSPECIFIED_AXIS`, `LATTICE_A_R`): angstrom (Å) when the stored unit is nm, pm or Å, unconverted when no unit was printed (`not_printed`, `unknown`), flag `lattice_length_outside_typical_range` outside 1-100 Å; other properties (e.g. Gibbs energies, which include the coefficients B of printed expressions A + BT in J/mol/K) keep the unit as read). `value_stored`, `unit_stored`: the value before that conversion. `value_printed`, `unit_printed`: as printed (tables) |
 | `unit_basis` | how the per-atom / per-formula basis of an energy was established: `printed_unit` (in the printed unit), `column_header`, `caption`, `reviewer`, `state_completion_<where>` (a quoted header / caption / footnote / sentence), `eV_per_atom_printed`, `magnitude_heuristic` (inferred by the record builder from the magnitude; formation values flagged `basis_inferred_from_magnitude`), `assumed_per_mole_of_atoms` (solution phase, not printed), `not_printed`, `unstated`. For mixing / partial quantities only an explicit basis gives kJ/mol-atom. `per_formula_unit_divisor`: the record builder divided a per-formula-unit value by this number of atoms |
 | `value_before_quality_fix`, `basis_correction`, `sign_heading_printed` | set when a DFT-parity outlier was corrected (QUALITY_FIXES.md): the value before the fix; `{{formula, atoms_per_formula_unit, operation}}` for a per-formula value that was labelled per atom; the printed heading that carries a minus sign |
 | `corrections` | literature-level gate corrections (QUALITY_FIXES.md section 7): `[{{gate, field, before, after, rule, evidence, visual_check}}]`; `visual_check` = `{{page, pdf_sha256_prefix, image_sha256, verdict, seen, checked}}` (the PDF page was rendered and inspected; no image or page text is published). The value before a correction is kept in `value_stored`, `temperature_K_stored`, `unit_stored`, `system_stored`, `property_code_before_gates`, `evidence_class_before_gates`, `phases_stored` (with `phases_dropped` [{{label, reason}}]), `pressure_basis_stored`, `overall_composition_stored`, and per phase composition `composition_stored` / `basis_stored` (A1 audit round 2: fractions under an at.% header, header naming the wrong element, compositions assigned to the wrong phase; gate `A1`) |
@@ -1207,6 +1221,13 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     if applied:   # accepted contributed corrections (page-checked); none: the release is byte-identical
         qreport["contributed_corrections"] = applied
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
+    # audit round 3 (H9): formation values left in a unit other than kJ/mol-atom / kJ/mol (basis unstated), by unit
+    fu = Counter(str(r.get("unit")) for r in records if r.get("property") in ("HM_FORM", "GM_FORM")
+                 and r.get("unit") not in ("kJ/mol-atom", "kJ/mol (basis unstated)"))
+    qreport.setdefault("counts", {})["formation_values_unit_not_normalized"] = dict(sorted(fu.items(), key=lambda kv: (-kv[1], kv[0])))
+    qreport["counts"]["formation_values_unit_not_normalized_espei_ready"] = sum(
+        1 for r in records if r.get("property") in ("HM_FORM", "GM_FORM") and r["flags"].get("espei_ready")
+        and r.get("unit") not in ("kJ/mol-atom", "kJ/mol (basis unstated)"))
     qreport["espei_phase_rule"] = phase_rule.RULE_TEXT
     records.sort(key=lambda r: (r["system"], r["record_kind"], r.get("pid") or "", r["id"]))
     # uncertainty budget of every value (tools/uncertainty_budget.py; PI decision 2026-10-24): components kept

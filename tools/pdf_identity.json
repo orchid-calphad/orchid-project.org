@@ -1,0 +1,34 @@
+{
+ "table": "ORCHID PDF identity corrections",
+ "version": "1.0.0",
+ "date": "2026-10-24",
+ "description": "Local PDFs whose upstream source record carries the DOI of a different work (audit round 3, POSTFIX A6-N5). The PDF (identified by the first 16 hex of its SHA-256) is registered under its own key with the citation printed on its title page; the DOI is not used for values read from it. Each entry was read on the rendered title page (page, image hash).",
+ "entries": [
+  {
+   "pdf_sha256_prefix": "85fd53a1a176b694",
+   "key": "sha256:85fd53a1a176b694",
+   "wrong_doi": "10.1016/s0364-5916(98)00037-6",
+   "wrong_doi_work": "M. Hämäläinen, K. Zeng, Thermodynamic evaluation of the Mg-Zr system, Calphad 22, 375-380 (1998): a 6-page article; the PDF is the 320-page COST 507 book that contains a Mg-Zr assessment",
+   "kind": "book",
+   "citation": "I. Ansara, A. T. Dinsdale, M. H. Rand (eds.), COST 507: Thermochemical database for light metal alloys, Volume 2, EUR 18499 EN, Office for Official Publications of the European Communities, Luxembourg (1998), ISBN 92-828-3902-8.",
+   "title": "COST 507: Thermochemical database for light metal alloys, Volume 2",
+   "authors": [
+    "I. Ansara (ed.)",
+    "A. T. Dinsdale (ed.)",
+    "M. H. Rand (ed.)"
+   ],
+   "year": 1998,
+   "container": "EUR 18499 EN",
+   "isbn": "92-828-3902-8",
+   "isbn_basis": "PDF metadata Keywords field",
+   "page_check": {
+    "page": 5,
+    "image_sha256": "0bea5f877cbdde773c00d00213e9f746682d789f56ac59922d8358db525cd641",
+    "checked": "2026-10-24",
+    "seen": "Title page: COST 507 ... Thermochemical database for light metal alloys, Volume 2, Edited by I. Ansara, A. T. Dinsdale, M. H. Rand, July 1998, EUR 18499 EN; p6 imprint Luxembourg 1998."
+   },
+   "values_class": "model",
+   "values_class_basis": "the book is the documentation of the COST 507 assessed light-alloy database; its invariant tables list the reactions calculated from the assessed descriptions (Cu-Zr Table I p210 page-checked: no measured / calculated column, values of the assessment); values whose class the readers left unspecified are model"
+  }
+ ]
+}

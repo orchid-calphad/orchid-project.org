@@ -564,9 +564,8 @@ def _phase_support(r, label, elements, allow_solution=False):
     return lab
 
 
-def state_support(r):
-    """(support, basis) of the record's own state when it is a strict subset of the record's elements, else (None,
-    reason)."""
+def _state_support_r2(r):
+    """Round-2 rule (kept as the first stage of state_support): (support, basis) or (None, reason)."""
     els = list(r.get("elements") or [])
     if len(els) < 2:
         return None, "unary"
@@ -634,6 +633,100 @@ def state_support(r):
     return None, "not a single-state property"
 
 
+
+# ------------------------------------------------------------------------------------------------- C4, round 3
+
+# audit round 3 (POSTFIX A1-N1 / A3-N1): the round-2 rule trusted an overall_composition that was already corrupt (one
+# element = 1.0, the others 0: Nd3Ru stored as {ND: 1, RU: 0}), so compound data were filed under a unary system. The
+# printed phase formula now bounds the support from below, a generic rare-earth label (Ln3Ru, Cu5R, RMg2, Mn23RE6) is
+# read with the element the row names, and a unary system needs a pure-element label.
+GENERIC = re.compile(r"(?<![A-Z])(Ln|RE|R|M|Me|X|T)(?=[A-Z0-9₀-₉(\s]|$)")
+_STRUCT_ONLY = re.compile(r"^\s*(?:(?:fcc|bcc|hcp|dhcp|bct|diamond|liquid|liq\.?|l|gas|vapou?r)(?:[_\-\s]?[A-Z]\d{1,2})?|"
+                          r"(?:FCC|BCC|HCP|BCT|DHCP)_A\d{1,2}|A\d{1,2})\s*$", re.I)
+FORMATION_LIKE = re.compile(r"^(?:HM_FORM|SM_FORM|GM_FORM|.*_MIX|.*_MIX_PARTIAL|.*_FROM_COMPOUNDS|TRANSITION_ENTHALPY)$")
+EXPRESSION_TERM = re.compile(r"_EXPRESSION_TERM$")
+GAS_ELEMENTS = {"H", "N", "O", "F", "CL", "BR", "I"}
+
+
+def generic_substituted(label, element, elements):
+    """Formula fractions of a generic label (Ln3Ru, Cu5R, RMg2) with the placeholder read as `element`, or None."""
+    if not label or not GENERIC.search(str(label)):
+        return None
+    s = GENERIC.sub(element.capitalize(), str(label), count=1)
+    if GENERIC.search(s):
+        return None
+    return formula_fractions(s, elements)
+
+
+def label_supports(r, els):
+    """(F, generic, other): F = union of the element sets of the phase labels that parse to a formula of the system's
+    elements; generic = labels with a placeholder element; other = labels that are neither a formula, a generic label,
+    a pure element nor a structure / liquid name."""
+    F, generic, other = set(), [], []
+    for p in r.get("phases") or []:
+        lab = p.get("label")
+        if not lab:
+            continue
+        f = formula_fractions(lab, els)
+        if f and len(f) >= 2:
+            F |= set(f)
+        elif GENERIC.search(str(lab)) and not pure_element(lab, els):
+            generic.append(lab)
+        elif not pure_element(lab, els) and not _STRUCT_ONLY.match(str(lab)) and not _LIQ_GAS.match(str(lab)):
+            other.append(lab)
+    return F, generic, other
+
+
+def state_support(r):
+    """(support, basis) of the record's own state when it is a strict subset of the record's elements, else (None,
+    reason). Round 2 decides first; round 3 checks the decision against the printed phase labels."""
+    sup, basis = _state_support_r2(r)
+    els = list(r.get("elements") or [])
+    if len(els) < 2:
+        return sup, basis
+    prop = r.get("property") or ""
+    F, generic, other = label_supports(r, els)
+    oc = {e: v for e, v in (r.get("overall_composition") or {}).items() if isinstance(v, (int, float))}
+    ocs = {e for e, v in oc.items() if v > 1e-9}
+    if generic:
+        # the row names the element of a generic label through the stored composition (one element non-zero)
+        if len(generic) == 1 and len(r.get("phases") or []) == 1 and (INTRINSIC.match(prop) or FORMATION_LIKE.match(prop)):
+            for e in sorted(ocs):
+                g = generic_substituted(generic[0], e, els)
+                if not (g and len(g) >= 2):
+                    continue
+                if len(ocs) == 1 or all(abs(g.get(k, 0.0) - oc.get(k, 0.0)) <= 0.02 for k in set(g) | ocs):
+                    G = set(g)
+                    return (G, "generic_label_with_row_element") if G < set(els) else (None, "generic label spans the system")
+        return None, "generic label: element not determined"
+    if sup is None:
+        if basis == "balance element not determined" and F and ocs <= F and len(r.get("phases") or []) == 1:
+            f = formula_fractions(r["phases"][0]["label"], els)
+            if f and all(abs(f.get(e, 0) - v) <= 0.02 for e, v in oc.items()) and F < set(els):
+                return F, "phase_formula_with_partial_overall_composition"
+        if EXPRESSION_TERM.search(prop) and len(r.get("phases") or []) == 1:
+            lab = r["phases"][0].get("label")
+            f = formula_fractions(lab, els)
+            pe = pure_element(lab, els)
+            S = set(f) if f and len(f) >= 2 else ({pe} if pe and not str(lab).strip().startswith("(") else None)
+            if S and S < set(els) and (not ocs or ocs <= S):
+                return S, "expression_term_of_one_phase"
+        return None, basis
+    if F and not F <= sup:
+        if ocs <= F:
+            sup2 = sup | F
+            return (sup2, basis + "+phase_formula") if sup2 < set(els) else (None, "phase formula spans the system")
+        return None, "formula and overall composition disagree"
+    if len(sup) == 1:
+        if F:
+            return None, "compound label: not a unary state"
+        (e,) = sup
+        if e in GAS_ELEMENTS and not all(pure_element(p.get("label"), els) for p in r.get("phases") or [] if p.get("label")):
+            # 'UNKNOWN' / '014x24' (Bi-2212) / oxide reactions stored with O = 1: never a state of pure oxygen
+            return None, "gas-element unary without a pure-element label"
+    return sup, basis
+
+
 def c4_state_system(records, rep):
     """File each record under the chemical system of its own state; `source_system` keeps the paper's system."""
     for r in records:
@@ -664,6 +757,59 @@ def c4_state_system(records, rep):
                 pc.setdefault("composition_stored", comp)
                 pc["composition"] = {e: v for e, v in comp.items() if e in sup}
         rep.add(GATE, "c4_system_of_the_state", r, "corrected", source_system=before, n_elements=len(new_els))
+    for r in records:
+        # reference-state keys of elements outside the record's (narrowed) system: kept in reference_state_stored
+        # (audit round 3, POSTFIX A3-N8)
+        rs = r.get("reference_state")
+        els = set(r.get("elements") or r["system"].split("-"))
+        if isinstance(rs, dict) and any(k not in els for k in rs):
+            r.setdefault("reference_state_stored", rs)
+            r["reference_state"] = {k: v for k, v in rs.items() if k in els}
+            rep.add(GATE, "r3_reference_state_outside_system_dropped", r, "corrected", n=len(rs) - len(r["reference_state"]))
+
+
+def r3_overall_composition(records, rep):
+    """Audit round 3 (POSTFIX A1-N2, A3 section 1(c)): an overall_composition whose basis is `from_formula` must be the
+    composition of the record's printed formula. In split table rows the composition of one column was copied to the
+    others (Ni5Si2 at Si = 0.25, the Ni3Si value; CuO at O = 1/3; Dy3Ru at Ru = 0); for a one-phase compound-intrinsic
+    record the composition is recomputed from the printed phase formula (a generic label Ln3Ru / Cu5R / RMg2 with the
+    element the row names), the stored one kept in overall_composition_stored. A printed (not from-formula) composition
+    more than 0.1 from the formula is flagged `overall_composition_conflicts_label` (not ESPEI-ready)."""
+    for r in records:
+        prop = r.get("property") or ""
+        if not (INTRINSIC.match(prop) or EXPRESSION_TERM.search(prop)):
+            continue
+        phases = [p.get("label") for p in r.get("phases") or [] if p.get("label")]
+        if len(phases) != 1:
+            continue
+        els = list(r.get("elements") or [])
+        oc = {e: v for e, v in (r.get("overall_composition") or {}).items() if isinstance(v, (int, float))}
+        if not oc:
+            continue
+        f = formula_fractions(phases[0], els)
+        basis = "printed_formula"
+        if not (f and len(f) >= 2):
+            ocs = [e for e, v in oc.items() if v > 1e-9]
+            f = generic_substituted(phases[0], ocs[0], els) if len(ocs) == 1 else None
+            basis = "generic_label_with_row_element"
+        if not (f and len(f) >= 2):
+            continue
+        # a partial composition lists some elements (the balance is the rest): compare the listed ones
+        keys = set(oc) | (set(f) if abs(sum(oc.values()) - 1) <= 0.01 else set())
+        dev = max(abs(oc.get(e, 0.0) - f.get(e, 0.0)) for e in keys)
+        if dev <= 0.02:
+            continue
+        if r.get("overall_composition_basis") == "from_formula":
+            new = {e: round(f.get(e, 0.0), 6) for e in sorted(set(oc) | set(f))}  # zeros of other elements kept
+            correct(r, "overall_composition", oc, new, "overall_composition_from_printed_formula",
+                    {"label": phases[0], "basis": basis, "max_deviation": round(dev, 4)})
+            r.setdefault("overall_composition_stored", r.get("overall_composition"))
+            r["overall_composition"] = new
+            rep.add(GATE, "r3_overall_composition_from_formula", r, "corrected", label=phases[0], dev=round(dev, 4))
+        elif dev > 0.1 and basis == "printed_formula":
+            fail(r, "overall_composition_conflicts_label", "not_espei_ready",
+                 "printed overall composition %s is %.3f from the formula of %s" % (oc, dev, phases[0]))
+            rep.add(GATE, "r3_overall_composition_conflicts_label", r, "flagged", label=phases[0], dev=round(dev, 4))
 
 
 # ------------------------------------------------------------------------------------------------- C6 / C7
@@ -783,4 +929,5 @@ def before_compositions(records, visual, rep, data=None):
 
 
 def after_system(records, rep):
+    r3_overall_composition(records, rep)
     c4_state_system(records, rep)
