@@ -103,7 +103,7 @@
    "name": "bibliography-papers.parquet",
    "contentUrl": "https://data.orchid-project.org/bibliography/papers.parquet",
    "encodingFormat": "application/x-parquet",
-   "sha256": "6d88e025872d2c392ad23b767b5734237ec850522335cce4e18605a51d21f994"
+   "sha256": "e9974523a834f7635be41a32ed6853bf8ac96f3a35f43fb7cf91c66640ef878f"
   },
   {
    "@type": "cr:FileObject",
@@ -111,7 +111,7 @@
    "name": "bibliography-edges.parquet",
    "contentUrl": "https://data.orchid-project.org/bibliography/edges.parquet",
    "encodingFormat": "application/x-parquet",
-   "sha256": "4849f11068bbebefdbef16611c8b0dc6ffe8ae815247ac62d45eb46a92e71c37"
+   "sha256": "37d9d5f9ebbc2a282103964d21c19bba7d4e3d7226c7922be9e5a3ebba825fcc"
   },
   {
    "@type": "cr:FileObject",
@@ -120,7 +120,7 @@
    "description": "Literature formation enthalpies (kJ/mol-atom) paired with the lowest-energy Materials Project and OQMD entry at the same composition (never averaged), with per-source statistics. Viewer: https://orchid-project.org/dft-parity/",
    "contentUrl": "https://orchid-project.org/data/literature/dft_parity.json",
    "encodingFormat": "application/json",
-   "sha256": "cbde5f56d3dd50f24ca414f37405f6cd4a703bc2ff30cbb7aff463d35678f0ee"
+   "sha256": "9f2af222580d0a6ef7518c142de107bcb0476cca783e009e0896e5e3de0120bb"
   },
   {
    "@type": "cr:FileObject",
@@ -128,7 +128,7 @@
    "name": "orchid-literature.csv.gz",
    "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.csv.gz",
    "encodingFormat": "application/gzip",
-   "sha256": "d8a1ddcd3405a9588fe60979c3c1c905bd16f281ea210a48f62cd2ce40fab208"
+   "sha256": "ba5f03acf5d9488b40058651837b92bfd5c2c477ad835783e49f6962811c1d08"
   },
   {
    "@type": "cr:FileObject",
@@ -145,7 +145,7 @@
    "name": "orchid-literature.jsonl.gz",
    "contentUrl": "https://orchid-project.org/data/literature/orchid-literature.jsonl.gz",
    "encodingFormat": "application/gzip",
-   "sha256": "25f304d75c818f3e728a656787873cad6ec9c9bf32dddd1f59ea6dbfb76cdfc7"
+   "sha256": "befef97c22dd57323e16f2c3f392d9ca737645c71b70ca8b26b0fb9a6570337f"
   },
   {
    "@type": "cr:FileObject",
@@ -153,7 +153,7 @@
    "name": "literature-index.json",
    "contentUrl": "https://orchid-project.org/data/literature/index.json",
    "encodingFormat": "application/json",
-   "sha256": "f43bc92338b4116f5fc391c3331298fdafdc504ad7bde09283afc6b93ef0237f"
+   "sha256": "5ec17b0fc96a8f4ba523a65f2a96508c0aa9b9084aab6b0470cf3a063b30bce0"
   },
   {
    "@type": "cr:FileObject",
@@ -161,7 +161,7 @@
    "name": "literature-papers.json",
    "contentUrl": "https://orchid-project.org/data/literature/papers.json",
    "encodingFormat": "application/json",
-   "sha256": "51eb1726bc87590f448b9bac408e8f786642e8ebbe7e135f31d6cf1fd78922ad"
+   "sha256": "29cd3cd104a8b5e1e14892fad9b5472e44a39c9d5f7f906e198749aa1a3c6c49"
   },
   {
    "@type": "cr:FileObject",
@@ -1322,7 +1322,7 @@
    "@type": "cr:RecordSet",
    "@id": "literature",
    "name": "literature",
-   "description": "Values extracted from published papers (CC BY 4.0 derived data; quotes under fair use). Nested fields are compact JSON strings; see data/literature/SCHEMA.md.",
+   "description": "Values extracted from published papers (CC BY 4.0 data; quotes are short excerpts kept for verification and remain the publishers' copyright). Nested fields are compact JSON strings; see data/literature/SCHEMA.md.",
    "field": [
     {
      "@type": "cr:Field",
@@ -1741,6 +1741,62 @@
       },
       "extract": {
        "column": "extraction_accepted"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/chemical_system",
+     "name": "chemical_system",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "chemical_system"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/paper_id",
+     "name": "paper_id",
+     "dataType": "sc:Text",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "paper_id"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/fold_lso",
+     "name": "fold_lso",
+     "dataType": "sc:Integer",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "fold_lso"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "literature/fold_lpo",
+     "name": "fold_lpo",
+     "dataType": "sc:Integer",
+     "source": {
+      "fileObject": {
+       "@id": "literature-csv"
+      },
+      "extract": {
+       "column": "fold_lpo"
       }
      }
     }

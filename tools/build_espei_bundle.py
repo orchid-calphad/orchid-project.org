@@ -322,9 +322,16 @@ MAGNETIC_3D = {"Cr", "Mn", "Fe", "Co", "Ni"}
 CHEM_TEXT = {"metal": "all-metal intermetallic (none of the elements below)",
              "pblock_anion": "contains a p-block / anion element (H, B, C, N, O, F, Si, P, S, Se, Te, As, Sb, halogens)",
              "magnetic_3d": "contains Cr, Mn, Fe, Co or Ni (and no p-block / anion element)"}
+# hull tolerance for the match strata (James Saal review 2026-10-24): an energy above hull of at most 1 meV/atom
+# (0.0965 kJ/mol-atom) counts as on the hull. 1 meV/atom is the numerical precision of high-throughput DFT total
+# energies (k-point and basis-set convergence of MP / OQMD calculations, about 1 meV/atom), so smaller hull distances
+# are numerically zero; OQMD lists many such entries (168 of its 477 above-hull pairs lay within 0.1 kJ/mol-atom).
+HULL_TOL_MEV = 1.0
+HULL_TOL_KJ = HULL_TOL_MEV * 96.485 / 1000.0
 MATCH_TEXT = {"on_hull_single": "DFT entry on the hull and the only entry at its composition",
               "polymorph_ambiguous": "on the hull, several entries (polymorphs) at the composition",
-              "above_hull": "lowest DFT entry at the composition lies above the hull"}
+              "above_hull": "lowest DFT entry at the composition lies more than %g meV/atom (%.4f kJ/mol-atom, the "
+                            "numerical precision of the DFT energies) above the hull" % (HULL_TOL_MEV, HULL_TOL_MEV * 0.096485)}
 MIN_STRATUM = 30
 N_BOOT = 1000
 DFT_COMMENT = "0 K DFT used as 298.15 K enthalpy"
@@ -1290,7 +1297,7 @@ def calibration_pairs(data, pub):
         if not r or not default(r):
             continue
         els = sorted(e.upper() for e in r["comp"])
-        match = "above_hull" if p["ehull"] > 0 else ("polymorph_ambiguous" if p["npoly"] > 1 else "on_hull_single")
+        match = "above_hull" if p["ehull"] > HULL_TOL_KJ else ("polymorph_ambiguous" if p["npoly"] > 1 else "on_hull_single")
         pairs[p["src"]].append({"res": p["res"], "system": "-".join(els), "match": match, "chem": chem_class(els),
                                 "sigma_exp": sig_exp(p["rid"]), "rid": p["rid"]})
     # literature DFT vs experiment: same binary compound (reduced composition) in the default experimental subset
@@ -2420,7 +2427,7 @@ def build_files(C, D, val, data, release, dp_release, P):
     files["dft/CALIBRATION.json"] = dumps({"method": {
         "pairs": "literature/dft_parity.json default subset; literature DFT vs median experiment of the same compound",
         "residual": "DFT - experiment, kJ/mol-atom", "sigma_robust": "1.4826 * MAD", "bootstrap": N_BOOT,
-        "ci": "percentile 95 %", "min_stratum": MIN_STRATUM, "leave_system_out": True, "bias_applied": False,
+        "ci": "percentile 95 %", "min_stratum": MIN_STRATUM, "hull_tolerance_meV_per_atom": HULL_TOL_MEV, "hull_tolerance_kJ_per_mol_atom": round(HULL_TOL_KJ, 4), "leave_system_out": True, "bias_applied": False,
         "weight": "500 J/mol / (sigma_robust_kJ * 1000)", "eV_to_J_per_mol": EV_TO_J_PER_MOL,
         "chemistry_classes": CHEM_TEXT, "match_quality": MATCH_TEXT}, "pairs_release": dp_release, **D["calibration"]})
     files["dft/CALIBRATION.md"] = calibration_md(D["calibration"], dp_release).encode("utf-8")

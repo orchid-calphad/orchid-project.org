@@ -46,7 +46,9 @@ from scipy import ndimage
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import dashed_boundaries  # noqa: E402  (solid vs dashed boundary lines; James Saal review 2026-10-24)
 import doi_corrections  # noqa: E402
+import ml_folds  # noqa: E402
 import orchid_cite  # noqa: E402
 
 DOI_CORR = doi_corrections.load()   # shared DOI correction table (tools/doi_corrections.json)
@@ -233,7 +235,9 @@ ELEMENT_ONLY_SOLID = {"Ni": "cF4", "Al": "cF4", "Cu": "cF4", "Ag": "cF4", "Au": 
                       "K": "cI2", "Rb": "cI2", "Cs": "cI2", "Ba": "cI2", "Eu": "cI2", "Zn": "hP2", "Cd": "hP2", "Re": "hP2",
                       "Os": "hP2", "Ru": "hP2", "Mg": "hP2", "Ge": "cF8", "Si": "cF8", "Ga": "oC8", "In": "tI2",
                       "Bi": "hR2", "Sb": "hR2", "As": "hR2"}
-STD_PEARSON = {"cF4": "A1", "cI2": "A2", "hP2": "A3", "cF8": "A4", "tI4": "A5"}
+# cF8 is not here (2026-10-24, James Saal review): it is shared by diamond (A4), rock salt (B1) and sphalerite (B3), so a
+# Pearson symbol alone never names DIAMOND_A4; and the Pearson fallback applies only when no Strukturbericht is printed
+STD_PEARSON = {"cF4": "A1", "cI2": "A2", "hP2": "A3", "tI4": "A5"}
 ORDER_CONF = {"high": 2, "medium": 1, "low": 0}
 
 
@@ -326,7 +330,7 @@ class Registry:
                 # a letter-named phase with a standard solution structure (e.g. Ag-Al delta, A3) is that TDB solution
                 # phase, as in the pipeline's compare_handbook_tdb.py: Strukturbericht first, else the A-type Pearson symbol
                 sb = re.sub(r"[_\s]", "", info.get("strukturbericht") or "").upper()
-                sb = sb if sb in self.PM.STD else STD_PEARSON.get((info.get("pearson_symbol") or "").rstrip("*"))
+                sb = sb if sb in self.PM.STD else (None if sb else STD_PEARSON.get((info.get("pearson_symbol") or "").rstrip("*")))
                 if sb and self.PM.STD[sb] in tdbp:
                     m, basis = self.PM.STD[sb], "letter_name_with_standard_solution_structure"
             if not m and not (base.startswith("(") and base.endswith(")")):
@@ -477,6 +481,13 @@ def build(a, log=print):
         g = np.load(need[3])
         lab, xs, Ts = g["lab"], g["x"], g["T"]
         nT, nx = lab.shape
+        fpath = os.path.join(sd, "fields.json")
+        fj = json.load(open(fpath, encoding="utf-8")) if os.path.exists(fpath) else {}
+        lines = dashed_boundaries.DiagramLines(cal, fj, (float(xs[0]), float(xs[-1])), (float(Ts[0]), float(Ts[-1])))
+        if fj and fj.get("dash_joins") is not None and fj["dash_joins"] != lines.n_dash_joins:
+            raise SystemExit("%s: re-derived dash joins (%d) differ from the tracer's count (%s)"
+                             % (diag, lines.n_dash_joins, fj["dash_joins"]))
+        cnt["diagrams_with_dashed_lines"] += bool(lines.n_dash_joins)
         x_span, T_span = float(xs[-1] - xs[0]), float(Ts[-1] - Ts[0])
         dx_cell, dT_cell = x_span / (nx - 1), T_span / (nT - 1)
         res_x = float(cal["calibration"]["x"].get("max_residual") or 0.0) / 100.0   # at.% -> mole fraction
@@ -578,6 +589,11 @@ def build(a, log=print):
                       "isopleth_K": r6(min(T_C - float(Ts[max(cu, 0)]), float(Ts[min(cd, nT - 1)]) - T_C)),
                       "margin_note": "distance from the point to the nearest drawn line or frame edge; drawing-based, "
                                      "low credence; describes placement, not an uncertainty of any phase composition"}
+            # boundary lines that bound the field along the point's isotherm and isopleth (the lines that set its
+            # positional margin): printed solid, dashed (estimated by the evaluator) or both
+            cross = [(float(xs[j_]), T_C) for j_ in (jl, jr) if 0 <= j_ < nx] + \
+                    [(x, float(Ts[i_])) for i_ in (cu, cd) if 0 <= i_ < nT]
+            bbasis, n_solid, n_dashed = lines.basis_at(cross)
             asm = [phase_entry(p) for p in phases]
             if any("reading suspect" in e["mapping_basis"] for e in asm):
                 flags.append("phase_table_structure_suspect")
@@ -597,6 +613,10 @@ def build(a, log=print):
                                               "vs fitted linear axis) + half a raster cell; applies to the point's coordinate"},
                    "point_method": pt["method"], "centroid": pt["centroid"] if pt["method"] != "centroid" else None,
                    "positional_margin": margin, "phase_compositions": None,
+                   "boundary_basis": bbasis,
+                   "boundary_lines": {"solid": n_solid, "dashed": n_dashed, "diagram_has_dashed_lines": bool(lines.n_dash_joins),
+                                      "note": (dashed_boundaries.BASIS_TEXT.get(bbasis) or "no traced boundary line along the "
+                                               "point's isotherm and isopleth (frame edges only)")},
                    "basis": basis, "basis_description": BASIS_LABEL[basis], "confidence": conf, "review_state": review,
                    "flags": flags, "citations": citations, "method": method}
             if F.get("name_history"):
@@ -614,6 +634,7 @@ def build(a, log=print):
             rec["sgte_crosscheck"] = [crosscheck(gd, x, T_K, comp, asm, by_tdb, reg.od.get(key, frozenset())) for gd in sgte]
             records.append(rec)
             cnt["points"] += 1
+            cnt["boundary_basis:%s" % bbasis] += 1
             cnt["method:" + pt["method"]] += 1
             # ---- ESPEI
             tnames, miss = [], []
@@ -736,11 +757,25 @@ HANDBOOK_PRIOR_BASIS = (
     "model / assessment values (tools/uncertainty_budget.py MODEL_PRIORS T_INVARIANT, X_PHASE)")
 
 
-def _bq(unit, vt, reading, prior, margin):
+# dashed (estimated) boundaries (James Saal review 2026-10-24): the evaluator marks such a line as estimated, i.e. not
+# fixed by measurements, so the reading component of a point bounded by one is enlarged to a multiple of the handbook
+# class prior (ORCHID assumption, not fitted): 2x for a field bounded only by dashed lines along the point's isotherm
+# and isopleth, 1.5x when solid and dashed lines both bound it; solid-only fields keep the digitisation bound.
+DASHED_READING_FACTOR = {"dashed_estimated": 2.0, "mixed": 1.5}
+
+
+def _bq(unit, vt, reading, prior, margin, boundary_basis=None):
+    f = DASHED_READING_FACTOR.get(boundary_basis)
+    rd = {"value": reading, "basis": "digitisation (max axis-calibration residual + half a raster cell)"} \
+        if reading is not None else None
+    if f:
+        rd = {"value": r6(max(reading or 0.0, f * prior)), "digitisation": reading,
+              "basis": "boundary_basis %s: %.1f x the handbook class prior (dashed lines are estimated by the evaluator; "
+                       "ORCHID assumption), or the digitisation bound if larger" % (boundary_basis, f)}
+    reading = rd["value"] if rd else None
     eff = max(x for x in (reading, prior) if x is not None)
     return {"unit": unit, "value_type": vt, "sigma_printed": None,
-            "sigma_reading": {"value": reading, "basis": "digitisation (max axis-calibration residual + half a raster "
-                                                         "cell)"} if reading is not None else None,
+            "sigma_reading": rd,
             "sigma_method": {"class": "assessed_phase_diagram", "value": prior, "floor": prior, "floor_unit": unit,
                              "basis": "prior", "n_pairs": 0, "ci95": None, "entry": "assessed handbook class prior",
                              "prior_source": "orchid_assumed"},
@@ -754,9 +789,11 @@ def _bq(unit, vt, reading, prior, margin):
 def assessed_budget(rec):
     cu, pm = rec["coordinate_uncertainty"], rec["positional_margin"]
     return {"calibration": BUDGET_CALIBRATION, "sigma_rule": BUDGET_RULE,
-            "quantities": {"temperature_K": _bq("K", "T_ASSESSED", cu["T_K"], HANDBOOK_PRIOR["T"], pm["isopleth_K"]),
+            "boundary_basis": rec.get("boundary_basis"),
+            "quantities": {"temperature_K": _bq("K", "T_ASSESSED", cu["T_K"], HANDBOOK_PRIOR["T"], pm["isopleth_K"],
+                                                rec.get("boundary_basis")),
                            "composition": _bq("mole fraction", "X_ASSESSED", cu["x"], HANDBOOK_PRIOR["x"],
-                                              pm["isotherm_mole_fraction"])}}
+                                              pm["isotherm_mole_fraction"], rec.get("boundary_basis"))}}
 
 
 def espei_dataset(diag, pts, comp, elements, citations, with_tl):
@@ -794,7 +831,8 @@ def espei_dataset(diag, pts, comp, elements, citations, with_tl):
     return {"components": comps, "phases": sorted(phases), "conditions": {"P": P_PA, "T": temps}, "output": "ZPF",
             "values": values, "reference": ref, "comment": comment,
             "tags": ["assessed_phase_diagram", "orchid"] + (["tie_line_variant"] if with_tl else []),
-            "orchid": {"evidence_class": EVIDENCE_CLASS, "diagram": diag, "record_ids": [r["id"] for r, _, _, _ in pts]},
+            "orchid": {"evidence_class": EVIDENCE_CLASS, "diagram": diag, "record_ids": [r["id"] for r, _, _, _ in pts],
+                       "boundary_basis": [r.get("boundary_basis") for r, _, _, _ in pts]},
             "orchid_uncertainty_budget": budget_points([r for r, _, _, _ in pts])}
 
 
@@ -804,7 +842,7 @@ def budget_points(recs):
         return {k: (q.get(k) or {}).get("value") if isinstance(q.get(k), dict) else q.get(k)
                 for k in ("sigma_printed", "sigma_reading", "sigma_method", "sigma_boundary_margin", "sigma_effective")}
     return {"sigma_rule": BUDGET_RULE, "calibration": BUDGET_CALIBRATION,
-            "points": [{"record_id": r["id"],
+            "points": [{"record_id": r["id"], "boundary_basis": r.get("boundary_basis"),
                         "temperature_K": comp(r["uncertainty_budget"]["quantities"]["temperature_K"]),
                         "composition_mole_fraction": comp(r["uncertainty_budget"]["quantities"]["composition"])}
                        for r in recs]}
@@ -815,11 +853,11 @@ CSV_COLS = ["id", "system", "diagram", "field", "assemblage_label", "n_phases", 
             "phase_ids", "T_K", "T_C", "x", "x_component", "P_Pa", "u_T_K", "u_x", "sigma_T_reading_K", "sigma_x_reading",
             "sigma_T_method_K", "sigma_x_method", "sigma_T_effective_K", "sigma_x_effective", "point_method",
             "margin_normalized",
-            "margin_isotherm_x", "margin_isopleth_K", "basis", "confidence", "review_state", "flags",
+            "margin_isotherm_x", "margin_isopleth_K", "boundary_basis", "basis", "chemical_system", "paper_id", "fold_lso", "fold_lpo", "confidence", "review_state", "flags",
             "tie_line_x_left", "tie_line_phase_left", "tie_line_x_right", "tie_line_phase_right", "tie_line_omitted",
             "sgte_n", "sgte_agrees", "sgte_disagrees", "sgte_not_comparable", "sgte_results",
             "original_citation", "original_doi", "handbook_page_pdf", "evidence_class"]
-INT_COLS = {"field", "n_phases", "sgte_n", "sgte_agrees", "sgte_disagrees", "sgte_not_comparable", "handbook_page_pdf"}
+INT_COLS = {"fold_lso", "fold_lpo", "field", "n_phases", "sgte_n", "sgte_agrees", "sgte_disagrees", "sgte_not_comparable", "handbook_page_pdf"}
 FLT_COLS = {"T_K", "T_C", "x", "P_Pa", "u_T_K", "u_x", "sigma_T_reading_K", "sigma_x_reading", "sigma_T_method_K",
             "sigma_x_method", "sigma_T_effective_K", "sigma_x_effective", "margin_normalized", "margin_isotherm_x", "margin_isopleth_K",
             "tie_line_x_left", "tie_line_x_right"}
@@ -846,7 +884,9 @@ def flat(rec):
             "sigma_T_effective_K": bT["sigma_effective"], "sigma_x_effective": bX["sigma_effective"],
             "point_method": rec["point_method"], "margin_normalized": rec["positional_margin"]["normalized"],
             "margin_isotherm_x": rec["positional_margin"]["isotherm_mole_fraction"],
-            "margin_isopleth_K": rec["positional_margin"]["isopleth_K"], "basis": rec["basis"],
+            "margin_isopleth_K": rec["positional_margin"]["isopleth_K"], "boundary_basis": rec.get("boundary_basis"),
+            "basis": rec["basis"], "chemical_system": rec["chemical_system"], "paper_id": rec["paper_id"],
+            "fold_lso": rec["fold_lso"], "fold_lpo": rec["fold_lpo"],
             "confidence": rec["confidence"], "review_state": rec["review_state"], "flags": ";".join(rec["flags"]),
             "tie_line_x_left": e[0].get("x"), "tie_line_phase_left": e[0].get("phase"),
             "tie_line_x_right": e[1].get("x"), "tie_line_phase_right": e[1].get("phase"),
@@ -939,6 +979,10 @@ def write_outputs(a, records, exclusions, espei_excl, espei_default, espei_tl, c
     cite = orchid_cite.cite_as(DATASET, a.data)
     out = {}
     for r in records:
+        # machine-learning folds (tools/ml_folds.py); the source is the diagram's original evaluation (its DOI), else
+        # the handbook diagram itself
+        oc = [c["doi"] for c in r["citations"] if c["role"] == "original_evaluation" and c.get("doi")]
+        r.update(ml_folds.fields(r["system"], ("doi:" + oc[0].lower()) if oc else "handbook:" + r["diagram"]))
         guard(r, "records[%s]" % r["id"])
     for e in exclusions + espei_excl:
         guard(e, "exclusions")
@@ -955,6 +999,12 @@ def write_outputs(a, records, exclusions, espei_excl, espei_default, espei_tl, c
     out["exclusions.csv"] = to_csv([dict(e, assemblage="+".join(e["assemblage"]) if e.get("assemblage") else None)
                                     for e in exclusions], ex_cols).encode()
     out["espei_exclusions.jsonl"] = "".join(dumps(e) + "\n" for e in espei_excl).encode()
+    out["sgte_not_comparable.csv"] = to_csv(
+        [{"id": r["id"], "system": r["system"], "diagram": r["diagram"], "field": r["field"],
+          "assemblage_label": r["assemblage_label"], "tdb": x["tdb"], "calculated": x.get("calculated"), "reason": x["reason"],
+          "unmapped_labels": ";".join(p["label"] for p in r["assemblage"] if not p["phase_id"])}
+         for r in records for x in r["sgte_crosscheck"] if x["result"] == "not_comparable"],
+        ["id", "system", "diagram", "field", "assemblage_label", "tdb", "calculated", "reason", "unmapped_labels"]).encode()
     for sub, dsets in (("espei-zpf", espei_default), ("espei-zpf-with-tie-lines", espei_tl)):
         for diag, ds in sorted(dsets.items()):
             guard(ds, "%s/%s" % (sub, diag))
@@ -971,6 +1021,19 @@ def write_outputs(a, records, exclusions, espei_excl, espei_default, espei_tl, c
         sg_any["no SGTE assessment" if not r["sgte_crosscheck"] else "agrees with >=1" if "agrees" in res
                else "disagrees with all comparable" if "disagrees" in res else "not comparable"] += 1
     comparable = sg["agrees"] + sg["disagrees"]
+    # metric definitions (James Saal review 2026-10-24): agreement is reported over COMPARABLE comparisons only, and
+    # per point as the share of points with >= 1 comparable assessment that agree with at least one of them;
+    # non-comparable comparisons are counted separately, with their reasons (sgte_not_comparable.csv)
+    pts_cmp = [r for r in records if any(x["result"] in ("agrees", "disagrees") for x in r["sgte_crosscheck"])]
+    pts_any = sum(1 for r in pts_cmp if any(x["result"] == "agrees" for x in r["sgte_crosscheck"]))
+    pts_all = sum(1 for r in pts_cmp if all(x["result"] != "disagrees" for x in r["sgte_crosscheck"]))
+    by_sys = collections.defaultdict(lambda: [0, 0])
+    for r in records:
+        for x in r["sgte_crosscheck"]:
+            if x["result"] in ("agrees", "disagrees"):
+                by_sys[r["system"]][x["result"] == "disagrees"] += 1
+    rates = sorted(a_ / (a_ + d_) for a_, d_ in by_sys.values() if a_ + d_ >= 5)
+    med = (rates[len(rates) // 2] if len(rates) % 2 else (rates[len(rates) // 2 - 1] + rates[len(rates) // 2]) / 2) if rates else None
     two = [r for r in records if r["n_phases"] == 2]
     summ = {
         "dataset": DATASET, "schema": SCHEMA_VERSION, "method": method,
@@ -995,7 +1058,32 @@ def write_outputs(a, records, exclusions, espei_excl, espei_default, espei_tl, c
                             "disagrees": sg["disagrees"], "not_comparable": sg["not_comparable"],
                             "agreement_rate_of_comparable": round(sg["agrees"] / comparable, 4) if comparable else None,
                             "not_comparable_by_reason": {k[3:]: v for k, v in sorted(sg.items()) if k.startswith("nc:")},
-                            "points": dict(sg_any.most_common())},
+                            "points": dict(sg_any.most_common()),
+                            "metric_definitions": {
+                                "comparison": "one point x one calculated SGTE diagram of its system (nearest grid cell)",
+                                "comparable": "both phase sets can be expressed as registry phases and the grid cell has an "
+                                              "equilibrium: result agrees or disagrees",
+                                "agreement_rate_of_comparable": "agrees / (agrees + disagrees), over all comparable "
+                                                                "comparisons (aggregate, not a per-system mean)",
+                                "points_agreeing_with_at_least_one_rate": "points that agree with >= 1 SGTE assessment / "
+                                                                          "points with >= 1 comparable comparison",
+                                "median_system_rate": "median over systems with >= 5 comparable comparisons of the "
+                                                      "system's agreement rate",
+                                "not_comparable": "counted separately, never in a rate; reasons in not_comparable_by_reason "
+                                                  "and, per comparison, in sgte_not_comparable.csv"},
+                            "comparable": comparable,
+                            "points_with_comparable_assessment": len(pts_cmp),
+                            "points_agreeing_with_at_least_one": pts_any,
+                            "points_agreeing_with_at_least_one_rate": round(pts_any / len(pts_cmp), 4) if pts_cmp else None,
+                            "points_agreeing_with_all_comparable": pts_all,
+                            "points_disagreeing_with_all_comparable": len(pts_cmp) - pts_any,
+                            "systems_with_5_comparable": len(rates),
+                            "median_system_rate": round(med, 4) if med is not None else None,
+                            "mean_system_rate": round(sum(rates) / len(rates), 4) if rates else None},
+        "points_by_boundary_basis": {str(k): v for k, v in collections.Counter(
+            r.get("boundary_basis") or "none" for r in records).most_common()},
+        "diagrams_with_dashed_lines": cnt["diagrams_with_dashed_lines"],
+        "ml_folds": dict(ml_folds.balance(records), method=ml_folds.DOC),
         "espei": {"datasets_default": len(espei_default), "datasets_with_tie_lines": len(espei_tl),
                   "points_in_espei": len(records) - len(espei_excl), "points_excluded_from_espei": len(espei_excl)},
         "doi_corrections": dict(DOI_CORR.provenance(), records_with_dropped_original_doi=sum(
@@ -1058,7 +1146,9 @@ neither raw measurements nor model values, and they are kept separable at fittin
 | points | %s (centroid %s, pole of inaccessibility %s) |
 | points by number of phases | %s |
 | two-phase points with / without a tie_line block | %s / %s |
-| SGTE cross-check (point x assessment) | %s comparisons: %s agree, %s disagree, %s not comparable (agreement %s of comparable) |
+| SGTE cross-check (point x assessment) | %s comparisons: %s comparable (%s agree, %s disagree; agreement %s of comparable), %s not comparable (counted separately, reasons in `sgte_not_comparable.csv`) |
+| SGTE cross-check (points) | %s points with a comparable assessment; %s (%s) agree with at least one SGTE assessment; median system agreement %s (%s systems with >= 5 comparable comparisons) |
+| boundary basis (lines bounding the point's field along its isotherm and isopleth) | %s |
 | ESPEI datasets (one per diagram) | %s default, %s with tie-lines; %s points exported, %s excluded (phase without TDB name) |
 
 Points by basis:
@@ -1088,8 +1178,32 @@ literature release (PI decision 2026-10-24): digitisation (`sigma_reading`, the 
 handbook-class prior (`sigma_method`: 10 K and 0.02 mole fraction for an expert-drawn assessed diagram; an ORCHID
 assumption, the same as the release's model / assessment priors, not fitted) and the distance to the nearest drawn
 boundary (`sigma_boundary_margin`, reported but not combined, since boundary positions carry low credence);
-`sigma_effective` = max(digitisation, handbook prior). The ESPEI datasets carry the per-point components in
-`orchid_uncertainty_budget` (ZPF data are not weighted by a sigma in ESPEI).
+`sigma_effective` = max(reading, handbook prior). The ESPEI datasets carry the per-point components and the
+`boundary_basis` in `orchid_uncertainty_budget` (ZPF data are not weighted by a sigma in ESPEI).
+
+## Solid and dashed (estimated) boundaries
+
+Handbook diagrams draw boundaries that the evaluator could not fix from measurements as dashed lines. The tracer joins
+the dashes of such a line into a chain and uses it as a field boundary like a solid line (dashed Curie-temperature
+lines, cooling curves and the dashed second assessment of an overlay are not boundaries and are dropped). Each point
+records `boundary_basis` for the lines that bound its field along its isotherm and isopleth, i.e. the lines that set
+its positional margin: `printed_solid`, `dashed_estimated` or `mixed` (null when only frame edges bound it), with the
+counts in `boundary_lines`. The dash chains are re-derived from the traced lines with the tracer's own rule
+(`tools/dashed_boundaries.py`; the build fails if the number of dash joins differs from the tracer's count in any
+diagram). For points bounded by dashed lines the reading component of the budget is enlarged (ORCHID assumption, not
+fitted): 2x the handbook-class prior (20 K, 0.04) for `dashed_estimated` and 1.5x (15 K, 0.03) for `mixed`.
+
+## SGTE cross-check: metric definitions
+
+A comparison is one point against one SGTE assessment of its system (the phase set at the nearest cell of the
+calculated 10 K x 0.01 grid). It is comparable when every phase of the point maps to a registry phase and the cell
+has an equilibrium; the result is then agrees or disagrees. Rates are computed over comparable comparisons only:
+`agreement_rate_of_comparable` = agrees / (agrees + disagrees) over all comparable comparisons (an aggregate, not a
+per-system mean); `points_agreeing_with_at_least_one_rate` = share of the points with at least one comparable
+comparison that agree with at least one SGTE assessment of their system (systems have up to 16 assessments, and an
+older assessment that differs still counts); `median_system_rate` over systems with at least 5 comparable
+comparisons. Non-comparable comparisons are never part of a rate; they are counted by reason in `summary.json` and
+listed one per row in `sgte_not_comparable.csv`.
 
 Two-phase points carry the two phases with **unknown compositions** (`phase_compositions: null`; ESPEI null vertices
 with a `__HYPERPLANE__` vertex at the point's overall composition). A separate `tie_line` block gives the isotherm
@@ -1101,6 +1215,7 @@ through the point intersected with the drawn boundaries, with the caveat that it
 `records.jsonl.gz` (full records, gzip JSON Lines), `records.csv` / `records.parquet` (flat), `exclusions.jsonl` / `.csv` (fields and
 diagrams without points, with reasons), `espei-zpf/<diagram>.json` (ESPEI ZPF datasets, null endpoints),
 `espei-zpf-with-tie-lines/<diagram>.json` (variant using tie_line endpoints where present), `espei_exclusions.jsonl`,
+`sgte_not_comparable.csv` (each non-comparable SGTE comparison with its reason),
 `summary.json`, `parquet.json`, `SCHEMA.md`, `CITATION.cff`. ESPEI datasets were validated with
 `espei.datasets.check_dataset` and `load_datasets` (ESPEI %s).
 
@@ -1121,8 +1236,11 @@ Part of: %s
 """ % (orchid_cite.RELEASE_TAG, fmt(s["diagrams_with_points"]), fmt(s["fields_seen"]), fmt(s["points"]),
        fmt(pm["centroid"]), fmt(pm["pole_of_inaccessibility"]),
        ", ".join("%s-phase %s" % (k, fmt(v)) for k, v in s["points_by_n_phases"].items()),
-       fmt(tl["with_tie_line"]), fmt(tl["without"]), fmt(sg["comparisons"]), fmt(sg["agrees"]), fmt(sg["disagrees"]),
-       fmt(sg["not_comparable"]), sg["agreement_rate_of_comparable"], fmt(es["datasets_default"]),
+       fmt(tl["with_tie_line"]), fmt(tl["without"]), fmt(sg["comparisons"]), fmt(sg["comparable"]), fmt(sg["agrees"]),
+       fmt(sg["disagrees"]), sg["agreement_rate_of_comparable"], fmt(sg["not_comparable"]),
+       fmt(sg["points_with_comparable_assessment"]), fmt(sg["points_agreeing_with_at_least_one"]),
+       sg["points_agreeing_with_at_least_one_rate"], sg["median_system_rate"], fmt(sg["systems_with_5_comparable"]),
+       ", ".join("%s %s" % (k, fmt(v)) for k, v in s["points_by_boundary_basis"].items()), fmt(es["datasets_default"]),
        fmt(es["datasets_with_tie_lines"]), fmt(es["points_in_espei"]), fmt(es["points_excluded_from_espei"]), bas, ex, MARGIN,
        next(iter(s["espei"]["validation"].values()))["espei"], cite["text"], cite["part_of"]["text"])
 
@@ -1147,9 +1265,12 @@ Builder: `tools/build_assessed_assemblages.py` (orchid-project.org; deterministi
 | `x`, `x_component`, `composition_axis`, `composition_basis` | mole fraction of `x_component`; every diagram here is drawn in at.%% (no wt.%% conversion) |
 | `P_Pa`, `pressure_basis` | 101325; 1 atm assumed |
 | `coordinate_uncertainty` | `{T_K, x}` bounds = max axis-calibration residual + half a raster cell; also the residuals and number of calibration pairs per axis |
-| `uncertainty_budget` | `{calibration, sigma_rule, quantities{temperature_K, composition}}`, the same separate-component structure as the literature release (PI decision 2026-10-24). Per quantity (`unit` K / mole fraction, `value_type` `T_ASSESSED` / `X_ASSESSED`): `sigma_printed` null (the handbook prints no uncertainty); `sigma_reading` = digitisation, i.e. the `coordinate_uncertainty` bound (max axis-calibration residual + half a raster cell); `sigma_method` = handbook-class prior `{class: assessed_phase_diagram, value, floor, basis: prior, n_pairs: 0, entry, prior_source: orchid_assumed}`, 10 K and 0.02 mole fraction: ORCHID assumption, not fitted: an expert-drawn assessed diagram reproduces its experimental evidence to about 10 K and 0.02 mole fraction, the priors the literature release uses for model / assessment values; `sigma_composition`, `sigma_scatter`, `sigma_conversion` null (do not apply); `sigma_boundary_margin` = `positional_margin` isopleth_K / isotherm_mole_fraction (drawing-based, reported, **not** combined); `sigma_effective` = max(sigma_reading, sigma_method). Rule: `max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter); boundary margin reported, not combined`. Flat columns: `sigma_T_reading_K`, `sigma_x_reading`, `sigma_T_method_K`, `sigma_x_method`, `sigma_T_effective_K`, `sigma_x_effective`. Tie-line endpoints keep their own `x_uncertainty` (drawing-based, not part of the budget) |
+| `uncertainty_budget` | `{calibration, sigma_rule, quantities{temperature_K, composition}}`, the same separate-component structure as the literature release (PI decision 2026-10-24). Per quantity (`unit` K / mole fraction, `value_type` `T_ASSESSED` / `X_ASSESSED`): `sigma_printed` null (the handbook prints no uncertainty); `sigma_reading` = digitisation, i.e. the `coordinate_uncertainty` bound (max axis-calibration residual + half a raster cell), enlarged for points bounded by dashed (estimated) lines to 2x the handbook prior (`dashed_estimated`: 20 K, 0.04) or 1.5x (`mixed`: 15 K, 0.03), ORCHID assumption, with the digitisation value kept as `digitisation`; `boundary_basis` repeated at budget level; `sigma_method` = handbook-class prior `{class: assessed_phase_diagram, value, floor, basis: prior, n_pairs: 0, entry, prior_source: orchid_assumed}`, 10 K and 0.02 mole fraction: ORCHID assumption, not fitted: an expert-drawn assessed diagram reproduces its experimental evidence to about 10 K and 0.02 mole fraction, the priors the literature release uses for model / assessment values; `sigma_composition`, `sigma_scatter`, `sigma_conversion` null (do not apply); `sigma_boundary_margin` = `positional_margin` isopleth_K / isotherm_mole_fraction (drawing-based, reported, **not** combined); `sigma_effective` = max(sigma_reading, sigma_method). Rule: `max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter); boundary margin reported, not combined`. Flat columns: `sigma_T_reading_K`, `sigma_x_reading`, `sigma_T_method_K`, `sigma_x_method`, `sigma_T_effective_K`, `sigma_x_effective`. Tie-line endpoints keep their own `x_uncertainty` (drawing-based, not part of the budget) |
 | `point_method` | `centroid` or `pole_of_inaccessibility`; for the fallback `centroid` gives the centroid, whether it was inside, and its clearance |
 | `positional_margin` | `{normalized, isotherm_mole_fraction, isopleth_K}`: distance to the nearest drawn line or frame edge (frame-normalised; along the isotherm; along the isopleth). Drawing-based, low credence: describes placement only, not an uncertainty of any phase composition |
+| `chemical_system`, `paper_id`, `fold_lso`, `fold_lpo` | machine-learning folds (`tools/ml_folds.py`): leave-chemical-system-out and leave-paper-out, int(sha256(key), 16) mod 5; here `paper_id` is the original evaluation (`doi:<doi>`), else `handbook:<diagram>`; subsystems are systems of their own |
+| `boundary_basis` | `printed_solid` / `dashed_estimated` / `mixed` / null: the traced boundary lines that bound the point's field along its isotherm and isopleth (the lines that set `positional_margin`) are all solid, all dashed (estimated by the evaluator) or both; null when only frame edges bound it. Dash chains re-derived with the tracer's rule (`tools/dashed_boundaries.py`) |
+| `boundary_lines` | `{solid, dashed, diagram_has_dashed_lines, note}`: how many of those crossings lie on solid and on dashed lines, and whether the diagram has any dashed boundary |
 | `phase_compositions` | always `null`: the record does not claim phase compositions |
 | `tie_line` | two-phase points only, or `null`: `{T_K, endpoints[{phase, x, x_uncertainty, side, kind, line_compound?, x_drawn?}], method, caveat}`. Isotherm through the point intersected with the field's drawn boundaries; each endpoint belongs to the phase whose single-phase field lies on that side, a line compound (composition from the printed phase table, `x_drawn` the drawn line), or a pure-element frame edge. Caveat: drawing-based, weak/soft constraint |
 | `tie_line_omitted` | reason when a two-phase point has no tie_line: `neighbour_field_unnamed`, `side_assignment_ambiguous`, `boundary_not_a_single_clean_line`, `isotherm_reaches_cut_off_frame_edge`, `frame_edge_phase_ambiguous`, `endpoints_do_not_cover_the_two_phases`, `point_outside_endpoints` |

@@ -496,6 +496,36 @@ def g4_system(records, visual, rep):
             rep.add("G4", "system_mismatch", r, "demoted", foreign=sorted(foreign), candidate="-".join(sorted(target)) if target else None)
 
 
+NOBLE_GASES = {"HE", "NE", "AR", "KR", "XE", "RN"}
+PRESSURE_UNIT = re.compile(r"\d\s*(?:[kMG]?Pa|hPa)\b")
+PROTACTINIUM = re.compile(r"\bPa(?:\d|[A-Z]|\s*[–\-—]\s*[A-Z])|protactinium", re.I)
+GAS_ATMOSPHERE = re.compile(r"\b(?:Ar|He|argon|helium|N2|nitrogen)\b[^.;]{0,30}\b(?:flow|atmosphere|gas|cover|purge|stream)|"
+                            r"\b(?:under|in|flowing|purified|high[- ]purity)\s+(?:an?\s+)?(?:Ar|He|argon|helium)\b", re.I)
+
+
+def g4_unit_gas_elements(records, rep):
+    """James Saal review 2026-10-24: a system element taken from a unit (Pa in kPa / MPa), a cover or flow gas (Ar,
+    He) or a garbled phase prefix (H-CuTe read as HeCuTe) is not a component. A noble gas is never a component of the
+    condensed systems ORCHID covers; Pa counts only when the text names protactinium (Pa followed by a formula digit or
+    element, or the word). Records whose system the page check already reassigned (G4 above) pass; the rest are not
+    accepted (`system_element_from_unit_or_gas`) until a page check reassigns them."""
+    for r in records:
+        if r["flags"].get("system_reassigned"):
+            continue
+        els = set(r.get("elements") or [])
+        txt = text_of(r) + " " + " ".join(l or "" for l in labels(r))
+        bad = []
+        for e in sorted(els & NOBLE_GASES):
+            why = "cover / flow gas" if GAS_ATMOSPHERE.search(txt) else "noble gas (not a condensed-system component)"
+            bad.append("%s: %s" % (e.capitalize(), why))
+        if "PA" in els and PRESSURE_UNIT.search(txt) and not PROTACTINIUM.search(PRESSURE_UNIT.sub(" ", txt)):
+            bad.append("Pa: pressure unit (Pa/kPa/MPa), not protactinium")
+        if bad:
+            r["flags"]["system_mismatch"] = True
+            fail(r, "G4", "system_element_from_unit_or_gas", "not_accepted", "; ".join(bad))
+            rep.add("G4", "system_element_from_unit_or_gas", r, "demoted", detail="; ".join(bad))
+
+
 # ----------------------------------------------------------------------------------------------- G1 temperatures
 
 def _anchors(rule, elements):
@@ -1658,6 +1688,7 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     n0 = len(records)
     g0_page_fixes(records, visual, rep)
     g4_system(records, visual, rep)
+    g4_unit_gas_elements(records, rep)
     for r in records:
         g0_standard_temperature(r, rep)
         g12_pressure(r, rep)
@@ -1753,7 +1784,10 @@ def gates_md(report):
           "+10 kJ/mol-atom of a compound is flagged `formation_positive_check_sign` unless the page confirms it.",
           "* G4 system. A phase formula naming an element outside the system (or cement notation C-S = CaO-SiO2) moves "
           "the value to the system named by its phase formulas and caption when the page confirms it; otherwise "
-          "`system_mismatch` (not accepted). system_mismatch, magnitude_suspect and source_disputed block ESPEI.",
+          "`system_mismatch` (not accepted). system_mismatch, magnitude_suspect and source_disputed block ESPEI. "
+          "A system element that is a pressure unit (Pa in kPa / MPa), a cover or flow gas (Ar, He) or a garbled phase "
+          "prefix is never a component: such records are reassigned from the rendered page (record checks of "
+          "2026-10-24) or, without a page check, not accepted (`system_element_from_unit_or_gas`).",
           "* G5 semantics. A mixing code whose printed quantity is a formation quantity becomes the formation code; "
           "formation / mixing codes in one-element systems become fusion or lattice-stability codes when printed as "
           "such, otherwise are not accepted; S(T)-S(298) becomes `SM_INCREMENT`; formation quantities of a liquid are "

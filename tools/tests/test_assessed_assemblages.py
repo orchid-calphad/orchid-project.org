@@ -92,7 +92,7 @@ rec = {"id": "aspa-test", "coordinate_uncertainty": {"T_K": 3.5, "x": 0.004, "ca
 before = copy.deepcopy(rec)
 b = B.assessed_budget(rec)
 qT, qX = b["quantities"]["temperature_K"], b["quantities"]["composition"]
-check("budget: same structure as the release", set(b) == {"calibration", "sigma_rule", "quantities"}
+check("budget: same structure as the release", set(b) == {"calibration", "sigma_rule", "quantities", "boundary_basis"}
       and all(k in qT for k in ("sigma_printed", "sigma_reading", "sigma_method", "sigma_composition", "sigma_scatter",
                                 "sigma_conversion", "sigma_effective")))
 check("budget: digitisation = coordinate uncertainty", qT["sigma_reading"]["value"] == 3.5 and qX["sigma_reading"]["value"] == 0.004)
@@ -104,6 +104,27 @@ b2 = B.assessed_budget(rec2)
 check("budget: effective = max(reading, prior)", b2["quantities"]["temperature_K"]["sigma_effective"] == 25.0
       and b2["quantities"]["composition"]["sigma_effective"] == 0.03)
 check("budget: coordinate fields unchanged", rec == before)
+# dashed (estimated) boundaries: reading enlarged to 2x (dashed) / 1.5x (mixed) the handbook prior; solid unchanged
+bd = B.assessed_budget(dict(rec, boundary_basis="dashed_estimated"))["quantities"]
+bm = B.assessed_budget(dict(rec, boundary_basis="mixed"))["quantities"]
+bs = B.assessed_budget(dict(rec, boundary_basis="printed_solid"))["quantities"]
+check("budget: dashed reading 2x prior (20 K, 0.04), digitisation kept",
+      bd["temperature_K"]["sigma_reading"]["value"] == 20.0 and bd["composition"]["sigma_reading"]["value"] == 0.04
+      and bd["temperature_K"]["sigma_reading"]["digitisation"] == 3.5 and bd["temperature_K"]["sigma_effective"] == 20.0)
+check("budget: mixed reading 1.5x prior", bm["temperature_K"]["sigma_reading"]["value"] == 15.0
+      and abs(bm["composition"]["sigma_reading"]["value"] - 0.03) < 1e-12)
+check("budget: solid keeps digitisation", bs["temperature_K"]["sigma_reading"]["value"] == 3.5)
+# dashed-line re-derivation (tools/dashed_boundaries.py): a run of short collinear strokes is one dashed chain
+import dashed_boundaries as DB  # noqa: E402
+cal = {"calibration": {"x": {"a": 0.5, "b": 0}, "y": {"a": 5.0, "b": 0}},
+       "boundaries": [{"id": "d%d" % k, "points": [[0.10 + 0.02 * k, 500.0], [0.10 + 0.02 * k + 0.012, 500.0]]} for k in range(5)]
+       + [{"id": "solid", "points": [[0.5, 100.0], [0.5, 900.0]]}]}
+L = DB.DiagramLines(cal, {}, (0.0, 1.0), (0.0, 1000.0))
+check("dashed: 5 dashes give 8 joins (both directions, as the tracer counts)", L.n_dash_joins == 8)
+check("dashed: crossing on the dashed line", L.basis_at([(0.15, 500.0)])[0] == "dashed_estimated")
+check("dashed: crossing on the solid line", L.basis_at([(0.5, 400.0)])[0] == "printed_solid")
+check("dashed: both", L.basis_at([(0.15, 500.0), (0.5, 400.0)])[0] == "mixed")
+check("dashed: frame only", L.basis_at([(0.9, 950.0)])[0] is None)
 # release part: every published record has a budget with sigma_effective >= reading and >= the handbook prior
 import gzip, json  # noqa: E402,E401
 rp = os.path.join(os.path.expanduser("~/projects/orchid-data"), "assessed-phase-assemblages", "records.jsonl.gz")
@@ -117,12 +138,16 @@ if os.path.exists(rp):
             e = q.get(qn)
             if not e or e["sigma_effective"] is None or e["sigma_effective"] < B.HANDBOOK_PRIOR[pk] - 1e-12 or \
                     (e["sigma_reading"] and e["sigma_effective"] < e["sigma_reading"]["value"] - 1e-12) or \
-                    (e["sigma_reading"] or {}).get("value") != r["coordinate_uncertainty"][key]:
+                    ((e["sigma_reading"] or {}).get("digitisation", (e["sigma_reading"] or {}).get("value"))
+                     != r["coordinate_uncertainty"][key]):
                 good = False
         if not good:
             bad.append(r["id"])
     check("release: every record has a budget, effective >= reading and >= prior (%d records)" % len(recs),
           bool(recs) and not bad)
+
+# ---- structure fallback (James Saal review 2026-10-24): cF8 alone never names DIAMOND_A4
+check("STD_PEARSON has no cF8 (diamond / rock salt / sphalerite share it)", "cF8" not in B.STD_PEARSON)
 
 print("%d failure(s)" % len(fails))
 sys.exit(1 if fails else 0)

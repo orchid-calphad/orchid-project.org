@@ -28,6 +28,9 @@ content hash is the SHA-256 of the canonical JSON of every row (independent of P
 
 Train/validation/test split (literature_values.split): sha256("orchid-split-v1:" + paper_id) -> first 8 bytes
 as an integer mod 100: < 80 train, < 90 validation, else test. No paper spans two splits.
+Machine-learning folds (literature_values, dft_parity; tools/ml_folds.py): chemical_system, fold_lso =
+int(sha256(chemical_system), 16) mod 5 (leave-chemical-system-out), fold_lpo = int(sha256(paper_id), 16) mod 5
+(leave-paper-out). Subsystems are systems of their own.
 
 Requires pyarrow. No network.
 
@@ -47,6 +50,7 @@ import sys
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import orchid_cite  # noqa: E402
+import ml_folds  # noqa: E402
 
 # table -> citable Zenodo dataset it belongs to (tools/orchid_cite.py)
 TABLE_DATASET = {"literature_values": "literature", "papers": "literature", "experimental_context": "literature",
@@ -158,6 +162,7 @@ def lit_schema(pa):
         ("model_reproduced_by_calculation", b), ("model_unlinked_reason", s),
         ("readers", ls), ("reader_tier", s), ("reader_agreement", s), ("reader_agreement_label", s),
         ("tool_release", s), ("release", s), ("split", s),
+        ("chemical_system", s), ("fold_lso", i), ("fold_lpo", i),
     ]
     return pa.schema(cols)
 
@@ -259,6 +264,8 @@ def lit_row(r, papers, release):
         "readers": list(r.get("readers") or []), "reader_tier": r.get("reader_tier"),
         "reader_agreement": r.get("reader_agreement"), "reader_agreement_label": r.get("reader_agreement_label"),
         "tool_release": r.get("tool_release"), "release": release, "split": split_of(pid),
+        # machine-learning folds (tools/ml_folds.py), as in the JSON release
+        "chemical_system": r["system"], "fold_lso": ml_folds.fold(r["system"]), "fold_lpo": ml_folds.fold(pid),
     }
     for k in BOOL_FLAGS:
         out["flag_" + k] = bool(fl.get(k))
@@ -331,7 +338,8 @@ def parity_schema(pa):
         ("sign_verified", b), ("sign_check", s), ("suspect", L(s)), ("chem_class", s),
         ("method_class", s), ("method", s), ("temperature_K", f), ("record_kind", s), ("paper_id", s),
         ("page", pa.int32()), ("table", s), ("quote", s), ("cited_dois", L(s)), ("default_subset", b),
-        ("dft_release", s), ("quality_fix", s), ("unit_basis", s), ("basis_inferred_from_magnitude", b)])
+        ("dft_release", s), ("quality_fix", s), ("unit_basis", s), ("basis_inferred_from_magnitude", b),
+        ("chemical_system", s), ("fold_lso", pa.int32()), ("fold_lpo", pa.int32())])
 
 
 def pd_index_schema(pa):
@@ -437,7 +445,9 @@ def build_tables(data, pa):
             "page": r["page"], "table": r["table"], "quote": r["quote"],
             "cited_dois": sorted({c["doi"] for c in r["cited"] if c.get("doi")}), "default_subset": default,
             "dft_release": rel.get(pt["src"]), "quality_fix": r.get("qfix"), "unit_basis": r.get("basis"),
-            "basis_inferred_from_magnitude": bool(r.get("basis_inferred"))})
+            "basis_inferred_from_magnitude": bool(r.get("basis_inferred")),
+            "chemical_system": ml_folds.chemical_system(r["elements"]),
+            "fold_lso": ml_folds.fold(ml_folds.chemical_system(r["elements"])), "fold_lpo": ml_folds.fold(r["paper"])})
     drow.sort(key=lambda x: (x["system"], x["record_id"], x["dft_source"]))
     tables["dft_parity"] = (drow, parity_schema(pa))
 
@@ -600,6 +610,7 @@ def main():
                           "rows (sorted keys), independent of the Parquet encoder.",
            "release": release, "split_rule": "sha256('%s' + paper_id)[:8] mod 100: <80 train, <90 validation, "
                                               "else test" % SPLIT_SALT,
+           "fold_rule": ml_folds.DOC,
            "kJ_per_mol_per_eV": KJ_PER_MOL_PER_EV, "compression": "zstd level %d" % ZSTD_LEVEL,
            "inputs": inputs, "cite_as": manifest_cite(a.data), "tables": {}}
     for name, (rows, schema) in tables.items():

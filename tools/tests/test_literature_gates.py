@@ -412,5 +412,27 @@ check("page_fix: converted value with its conversion in the correction; printed 
       and [c for c in o["corrections"] if c["field"] == "cited_sources"][0]["before"][0]["status"] == "unresolved"
       and {"stoichiometry_mismatch", "reference_state_converted_to_ser"} <= codes(o))
 
+# ------------------------------------------------------------------ G4 units / cover gases as elements (James Saal review 2026-10-24)
+lani = rec(system="LA-NI-PA", property="TRANSITION_TEMPERATURE", record_kind="text_passage",
+           quote="LaNi5H7 decomposed into LaNi5 and H2 at 347 and 379 K under 1 and 3 MPa, respectively.")
+argas = rec(system="AR-PU", property="TRANSITION_TEMPERATURE", record_kind="text_passage",
+            quote="Under argon (in green), a liquid temperature was observed in an Ar atmosphere at 3050 K.")
+paox = rec(system="O-PA", property="TRANSITION_TEMPERATURE", record_kind="text_passage",
+           quote="PaO2 melts at 2830 K at 101 325 Pa.")
+cute = rec(system="CU-HE-TE", property="INVARIANT_TEMPERATURE", record_kind="text_passage",
+           quote="the invariant reaction L + HeCu4Te3 <-> HeCuTe")
+fixed = rec(system="CU-HE-TE", property="INVARIANT_TEMPERATURE", record_kind="text_passage",
+            quote="the invariant reaction L + HeCu4Te3 <-> HeCuTe")
+out, rep = run([lani, argas, paox, cute, fixed],
+               visual={"record:" + fixed["id"]: vc(key="record:" + fixed["id"], verdict="misread", system="CU-TE")})
+check("G4u Pa from MPa: not accepted", "system_element_from_unit_or_gas" in codes(out[lani["id"]])
+      and not out[lani["id"]]["flags"]["extraction_accepted"])
+check("G4u Ar cover gas: not accepted", "system_element_from_unit_or_gas" in codes(out[argas["id"]]))
+check("G4u real protactinium (PaO2) with a Pa unit elsewhere: kept", "system_element_from_unit_or_gas" not in codes(out[paox["id"]]))
+check("G4u garbled He prefix without a page check: not accepted", "system_element_from_unit_or_gas" in codes(out[cute["id"]]))
+check("G4u page check reassigns He record to Cu-Te and the unit gate passes",
+      out[fixed["id"]]["system"] == "CU-TE" and out[fixed["id"]]["system_stored"] == "CU-HE-TE"
+      and "system_element_from_unit_or_gas" not in codes(out[fixed["id"]]))
+
 print("%d failures" % len(fails))
 sys.exit(1 if fails else 0)
