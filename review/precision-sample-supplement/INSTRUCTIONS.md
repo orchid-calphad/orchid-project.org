@@ -4,9 +4,10 @@
 we ask people to check a random sample by hand. Your answers are the measurement, so answer what you see, not what you
 expect. "No" and "can't tell" are as useful to us as "yes".
 
-**What you get.** One page (your packet) with about 56 items: phase-registry entries (R...), ESPEI-ready values (E...) and
-assessed phase diagrams (A...). About a dozen of them are also in another reviewer's packet, so that we can measure
-agreement: please do not discuss items with other reviewers until everyone has handed in.
+**What you get.** One page (your packet) with 34 items: 30 of your own (10 phase-registry entries R..., 10 ESPEI-ready
+values E..., 10 assessed phase diagrams A...) and 4 that another reviewer also checks, so that we can measure agreement
+(some of your own items are in another packet too). Please do not discuss items with other reviewers until everyone has
+handed in.
 
 **How to work.** Open the page in Chrome or Firefox (double-click the file, or the localhost link you were given).
 Type your name at the top. Answers save in this browser as you go. Use **Next unanswered** to move on. When you finish,
@@ -52,4 +53,6 @@ you decide, **not one field** if the tint covers more than one field, and **unde
 handbook itself leaves it open (a "?" or a line that stops). Spelling and order of phases do not matter. Set your
 confidence.
 
-**Time.** Most items take 2 to 5 minutes. Please hand in by **27 October 2026**. Questions: ask the coordinator.
+**Time.** A packet takes about 2 to 3 hours: an R item about 5 minutes, an E item 5 to 8 minutes (finding the row on
+the page), an A item 1 to 3 minutes. You can stop and come back: answers stay in the browser you used. Please hand in by
+**27 October 2026**. Questions: ask the coordinator.

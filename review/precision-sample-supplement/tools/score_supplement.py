@@ -18,10 +18,13 @@ Population weighting: strata are allocated with minimums, so the plain proportio
 weighted estimate uses stratum-cell population shares and its interval is a Wilson interval at the Kish effective n
 (approximate, stated as such).
 
-Which answer counts: every item has one owner packet (key.json). Precision uses the owner's answer (another
+Which answer counts: every item has one owner packet (the kit's partition: partition.json named in manifest.json,
+or the draw's packet plan in key.json when the kit was never re-partitioned; results from superseded packets are
+refused). Precision uses the owner's answer (another
 reviewer's answer only when the owner gave none); items answered by two reviewers (the ~10 % overlap) give the
-inter-reviewer agreement: raw agreement and Cohen's kappa per question on items both judged yes/no, and for S-ASM the
-agreement of the two names (phases_equiv) and of the decision class.
+inter-reviewer agreement: raw agreement and Cohen's kappa per question on items both judged yes/no, for S-ASM the
+agreement of the two names (phases_equiv) and of the decision class, and per overlap pair of the partition (packet p
+holds items owned by packet p+1) the share of matching judgements. Any number of packets.
 
 Scores are computed against the frozen sample: sample.json and key.json must match manifest.json.
 
@@ -141,20 +144,38 @@ def sha256(p):
 
 
 def load_kit(kit):
+    """-> (manifest, key, partition). The partition (owners, overlap pairs) comes from manifest.json /
+    partition.json when the kit was re-partitioned, else from the packet plan of the draw (key.json)."""
     man = json.loads((kit / "manifest.json").read_text(encoding="utf-8"))
     for name, field in (("sample.json", "sample_sha256"), ("key.json", "key_sha256")):
         if sha256(kit / name) != man[field]:
             raise SystemExit("%s does not match manifest.json (the sample is frozen)" % (kit / name))
     key = json.loads((kit / "key.json").read_text(encoding="utf-8"))
-    return man, key
+    if man.get("partition"):
+        pf = kit / man["partition"]["file"]
+        if sha256(pf) != man["files_sha256"].get(man["partition"]["file"]):
+            raise SystemExit("%s does not match manifest.json" % pf)
+        part = json.loads(pf.read_text(encoding="utf-8"))
+    else:
+        part = {"id": None, "k": len(key["packets"]), "owner": {it["item"]: it["owner_packet"] for it in key["items"]},
+                "packets": key["packets"]}
+    return man, key, part
 
 
-def load_results(paths, sample_sha, items):
+def load_results(paths, sample_sha, items, part=None):
     res = []
     for p in paths:
         r = json.loads(Path(p).read_text(encoding="utf-8"))
         if r.get("sample_sha256") != sample_sha:
             raise SystemExit("%s: sample_sha256 %s does not match the sample (%s)" % (p, r.get("sample_sha256"), sample_sha))
+        if part and r.get("packet") is not None and r.get("partition") != part.get("id"):
+            raise SystemExit("%s: packet %s of partition %s, but the kit's partition is %s (superseded packets are not "
+                             "scored)" % (p, r.get("packet"), r.get("partition"), part.get("id")))
+        if part and r.get("packet") is not None:
+            allowed = {i for pk in part["packets"] if pk["packet"] == r["packet"] for i in pk["own"] + pk["overlap"]}
+            stray = [a["item"] for a in r.get("answers") or [] if a.get("item") not in allowed]
+            if stray:
+                raise SystemExit("%s: items %s are not in packet %s" % (p, ", ".join(stray[:5]), r["packet"]))
         for a in r.get("answers") or []:
             it = items.get(a.get("item"))
             if it is None or it["kind"] != a.get("kind"):
@@ -164,7 +185,7 @@ def load_results(paths, sample_sha, items):
     return res
 
 
-def resolve(results, items):
+def resolve(results, items, owner):
     """{item: [(result, answer)]} and the scored answer per item (owner packet first, then file order)."""
     by = collections.defaultdict(list)
     for r in results:
@@ -172,7 +193,7 @@ def resolve(results, items):
             by[a["item"]].append((r, a))
     scored = {}
     for i, lst in by.items():
-        own = [ra for ra in lst if ra[0].get("packet") in (None, items[i]["owner_packet"])]
+        own = [ra for ra in lst if ra[0].get("packet") in (None, owner[i])]
         scored[i] = (own or lst)[0]
     return by, scored
 
@@ -291,16 +312,44 @@ def agreement(by, items):
     return out
 
 
+def pair_agreement(by, items, part):
+    """Per overlap pair of the partition (packet p holds items owned by packet p+1): items answered in both packets
+    and the share of matching judgements (yes/no questions; S-ASM names by phases_equiv)."""
+    out = []
+    for pk in part["packets"]:
+        a_, b_ = pk["packet"], pk.get("overlap_from_packet")
+        both, same, tot = 0, 0, 0
+        for i in pk["overlap"]:
+            x = next((ans for r, ans in by.get(i, []) if r.get("packet") == a_), None)
+            y = next((ans for r, ans in by.get(i, []) if r.get("packet") == b_), None)
+            if not (x and y):
+                continue
+            both += 1
+            if items[i]["kind"] == "S-ASM":
+                dx, dy = x.get("decision"), y.get("decision")
+                if dx and dy:
+                    tot += 1
+                    same += (phases_equiv(dx) == phases_equiv(dy)) if dx not in NON_NAMES and dy not in NON_NAMES else dx == dy
+            else:
+                for q in QUESTIONS[items[i]["kind"]]:
+                    if x.get(q) in ("yes", "no") and y.get(q) in ("yes", "no"):
+                        tot += 1
+                        same += x.get(q) == y.get(q)
+        out.append({"packet": a_, "overlap_from_packet": b_, "overlap_items": len(pk["overlap"]), "answered_by_both": both,
+                    "judgements": tot, "agreement": same / tot if tot else None})
+    return out
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("results", nargs="+", type=Path)
     ap.add_argument("--kit", type=Path, default=KIT, help="kit directory with manifest.json, sample.json, key.json")
     ap.add_argument("--json", type=Path, help="also write the scores as JSON")
     a = ap.parse_args(argv)
-    man, key = load_kit(a.kit)
+    man, key, part = load_kit(a.kit)
     items = {it["item"]: it for it in key["items"]}
-    results = load_results(a.results, man["sample_sha256"], items)
-    by, scored = resolve(results, items)
+    results = load_results(a.results, man["sample_sha256"], items, part)
+    by, scored = resolve(results, items, part["owner"])
     report = {"sample_sha256": man["sample_sha256"], "seed": key["design"]["seed"],
               "reviewers": [{"file": r["_file"], "reviewer": r.get("reviewer"), "packet": r.get("packet"),
                              "answers": len(r["answers"])} for r in results]}
@@ -348,7 +397,9 @@ def main(argv=None):
         if x["verdict"] in ("disagree", "agree_notation"):
             out.append("  %s %s machine: %s | reviewer: %s" % (x["verdict"].upper(), x["item"], x["machine"], x["reviewer"]))
     ag = agreement(by, items)
+    ag["pairs"] = pair_agreement(by, items, part)
     report["agreement"] = ag
+    report["partition"] = part.get("id")
     out += ["", "== Inter-reviewer agreement: %d items answered by two or more reviewers ==" % ag["n_items_answered_by_two_or_more"]]
     for kind in ("S-REG", "S-ESPEI"):
         for q, v in ag[kind].items():
@@ -360,6 +411,10 @@ def main(argv=None):
         s["n_named_by_both"], "—" if s["name_agreement"] is None else "%.1f%%" % (100 * s["name_agreement"]),
         s["decision_class"]["n"], "—" if s["decision_class"]["agreement"] is None else "%.1f%%" % (100 * s["decision_class"]["agreement"]),
         "—" if s["decision_class"]["kappa"] is None else "%.2f" % s["decision_class"]["kappa"], ", ".join(s["disagreements"]) or "none"))
+    for pr in ag["pairs"]:
+        out.append("  packets %d <- %d: %d overlap items, %d answered by both; agreement over yes/no questions and names %s" % (
+            pr["packet"], pr["overlap_from_packet"], pr["overlap_items"], pr["answered_by_both"],
+            "—" if pr["agreement"] is None else "%.1f%% (%d judgements)" % (100 * pr["agreement"], pr["judgements"])))
     print("\n".join(out))
     if a.json:
         a.json.write_text(json.dumps(report, sort_keys=True, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

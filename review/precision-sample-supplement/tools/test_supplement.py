@@ -6,7 +6,8 @@ assemblages with run geometry, an earlier blind key). Checks: allocation (minimu
 flattening (multi-composition, multi-temperature, solver, ZPF); dashed-boundary detection; the draw is deterministic,
 respects the strata, takes one S-ASM field per diagram, excludes the earlier blind and expert diagrams, and keeps
 S-ASM blind (no record id, machine name, basis or stratum in sample.json or the pages); draw refuses an existing
-sample; packets partition the items with ~10 % overlap; `check` passes on an intact kit, fails on a changed or extra
+sample; packets partition the items with ~10 % overlap; `repartition` re-cuts the same sample into 5 balanced packets
+(sample.json, key.json, index.html unchanged; old packets kept as *_3pk) and the scorer follows it; `check` passes on an intact kit, fails on a changed or extra
 file and only reports release drift; the scorer refuses a foreign result file, prefers the owner's answer, computes
 Wilson intervals and agreement, and scores S-ASM names with the blind sample's equivalences (identical to open-tdb's
 blind_score.py when that file is present); the kit's .gitignore keeps restricted files out of git.
@@ -363,6 +364,61 @@ r = quiet(S.main, ["--kit", str(kit), str(fbad)])
 check("score: refuses a result file for another sample", isinstance(r, tuple) and r[0] == "exit")
 k1 = S.kappa([("yes", "yes"), ("no", "no"), ("yes", "no"), ("yes", "yes")])
 check("kappa: 3/4 agreement, kappa 0.5", abs(k1[0] - 0.75) < 1e-9 and abs(k1[1] - 0.5) < 1e-9)
+
+# ---------------------------------------------------------------- repartition (same sample, new packets)
+
+kit5 = TMP / "kit5"
+shutil.copytree(kit, kit5)
+before = {f: (kit5 / f).read_bytes() for f in ("sample.json", "key.json", "index.html")}
+old_packets = {f.name: f.read_bytes() for f in (kit5 / "packets").iterdir()}
+rc = quiet(B.main, ["repartition", "--out", str(kit5), "--k", "5", "--overlap", "4"])
+check("repartition: runs", rc == 0)
+check("repartition: sample.json, key.json and index.html unchanged",
+      all((kit5 / f).read_bytes() == b for f, b in before.items()))
+check("repartition: old packets kept with the _3pk suffix, bytes unchanged",
+      all((kit5 / "packets" / ("%s_3pk%s" % (Path(n).stem, Path(n).suffix))).read_bytes() == b for n, b in old_packets.items()))
+part = json.loads((kit5 / "partition.json").read_text())
+man5 = json.loads((kit5 / "manifest.json").read_text())
+own5 = [i for p in part["packets"] for i in p["own"]]
+check("repartition: 5 packets whose own items partition the sample",
+      len(part["packets"]) == 5 and sorted(own5) == sorted(it["item"] for it in items) and len(own5) == len(set(own5)))
+cnt = [{k_: sum(1 for i in p["own"] if byitem[i]["kind"] == k_) for k_ in ("S-REG", "S-ESPEI", "S-ASM")} for p in part["packets"]]
+check("repartition: sub-samples balanced across packets (max - min <= 1)",
+      all(max(c[k_] for c in cnt) - min(c[k_] for c in cnt) <= 1 for k_ in cnt[0]))
+check("repartition: 4 overlap items per packet, owned by the next packet in the ring",
+      all(len(p["overlap"]) == 4 and set(p["overlap"]) <= set(part["packets"][p["packet"] % 5]["own"]) for p in part["packets"]))
+check("repartition: overlap spans the three sub-samples",
+      all({byitem[i]["kind"] for i in p["overlap"]} == {"S-REG", "S-ESPEI", "S-ASM"} for p in part["packets"]))
+check("repartition: manifest records the partition and the new packet hashes; check passes",
+      man5["partition"]["id"] == "k5" and "packets/ORCHID_supplement_packet_5.html" in man5["files_sha256"]
+      and quiet(B.main, ["check", "--out", str(kit5), "--data", str(data)]) == 0)
+check("repartition: refuses to repeat the same partition", quiet(B.main, ["repartition", "--out", str(kit5), "--k", "5"]) == 1)
+pg = (kit5 / "packets" / "ORCHID_supplement_packet_2.html").read_text()
+check("repartition: packet pages carry the partition id", '"partition": "k5"' in pg or '"partition":"k5"' in pg)
+res5 = []
+for p in part["packets"]:
+    ans = []
+    for i in p["own"] + p["overlap"]:
+        it = byitem[i]
+        a_ = {"item": i, "n": it["n"], "kind": it["kind"], "note": ""}
+        if it["kind"] == "S-ASM":
+            a_["decision"] = it["secret"]["machine_name"]
+        else:
+            for q in S.QUESTIONS[it["kind"]]:
+                a_[q] = "yes" if p["packet"] != 3 or i in p["overlap"] else "no"
+        ans.append(a_)
+    f = TMP / ("r5-%d.json" % p["packet"])
+    f.write_text(json.dumps({"sample_sha256": sha, "packet": p["packet"], "partition": "k5", "reviewer": "x", "answers": ans}))
+    res5.append(str(f))
+o5 = TMP / "s5.json"
+rc = quiet(S.main, ["--kit", str(kit5), "--json", str(o5)] + res5)
+s5 = json.loads(o5.read_text()) if o5.exists() else {}
+n_own3 = sum(1 for i in part["packets"][2]["own"] if byitem[i]["kind"] == "S-REG")
+check("score (k5): owners from the partition", rc == 0 and s5["S-REG"]["names"]["overall"]["correct"] == n_reg - n_own3)
+check("score (k5): one agreement entry per overlap pair from the partition",
+      len(s5["agreement"]["pairs"]) == 5 and all(pr["answered_by_both"] == 4 for pr in s5["agreement"]["pairs"]))
+r = quiet(S.main, ["--kit", str(kit5)] + [str(res[0])])
+check("score (k5): refuses results from superseded packets", isinstance(r, tuple) and r[0] == "exit")
 
 # ---------------------------------------------------------------- git hygiene of the real kit
 

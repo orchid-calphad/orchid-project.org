@@ -114,7 +114,7 @@ const S = JSON.parse($("sample-data").textContent);
 const IMG = JSON.parse($("image-data").textContent);
 const ITEMS = S.items;
 const PACKET = S.packet || null;
-const KEY = "orchid-precision-supplement:" + SAMPLE_SHA256.slice(0, 16) + ":" + (PACKET ? "p" + PACKET.index : "all");
+const KEY = "orchid-precision-supplement:" + SAMPLE_SHA256.slice(0, 16) + ":" + (PACKET ? (PACKET.partition ? PACKET.partition + "-" : "") + "p" + PACKET.index : "all");
 const YN = ["yes", "no", "cant_tell"], YNA = ["yes", "no", "cant_tell", "na"];
 const QUESTIONS = {
   "S-REG": [
@@ -353,7 +353,7 @@ function results() {
     answers.push(o);
   });
   return {schema: "orchid-precision-supplement-review/1", sample_sha256: SAMPLE_SHA256, sample_schema: S.schema, seed: S.design.seed,
-          packet: PACKET ? PACKET.index : null, reviewer: state.reviewer.trim(), timestamp: new Date().toISOString(), n_items: ITEMS.length,
+          packet: PACKET ? PACKET.index : null, partition: PACKET && PACKET.partition ? PACKET.partition : null, reviewer: state.reviewer.trim(), timestamp: new Date().toISOString(), n_items: ITEMS.length,
           n_answered_complete: ITEMS.filter(isAnswered).length, answers};
 }
 function download() {

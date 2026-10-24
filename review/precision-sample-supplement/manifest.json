@@ -36,7 +36,7 @@
     }
   },
   "files_sha256": {
-    "INSTRUCTIONS.md": "52ad41d9e04de1e54c1ee7a57307ddd744b64089f02fd1e8846ce653532c8cd0",
+    "INSTRUCTIONS.md": "1947a441a47fbc312edda9b9e708c9f4ea4e65ed8443d64d6614fe5ced65bfa8",
     "img/A001-whole.jpg": "04a2a3f3ef8357f3db288adf96e126f0a9b22d5b2e5ba3ef305e5ef6ee41d2d6",
     "img/A001-zoom.jpg": "ccb5616ca0b34d215d2c972ba52e4de0896272e113ed5b110f20c62b55ff8f04",
     "img/A002-whole.jpg": "0026d29993ac439e7aa30cb305d6cc6632b05a4a40188a92046f40d41024d8d3",
@@ -189,10 +189,17 @@
     "img/E050-page.jpg": "25685f5bc39a28ddd79b02fe942ee38d9fe51812cfb8ef271eace3d3f93ccbfe",
     "index.html": "8253587eabb2184c409e1f30561f733abd7e02e0db768525ce5fa687228c7526",
     "key.json": "47ebe0709151bf7c8f0f45f24e1da2c1aeb8168a1ccfef7535ee63c1fb0bd24e",
-    "packets/ORCHID_supplement_packet_1.html": "e3bec798db365591965aa292f0200931c0503d6b5ed976bcf068b35cbbcd5ab2",
-    "packets/ORCHID_supplement_packet_2.html": "0d8e578c8de5f5a9059f47cf6cd44b0fd755dd4cf5b7dce5922201e07c62ff8e",
-    "packets/ORCHID_supplement_packet_3.html": "83f3e74820b3561d19d05eb11ba91cda2ff30d0ec58d601711a2730f3eef6048",
-    "packets/packets.json": "e1b6b486417ef9990391b629801f7c4572d9bd3b85f7d2a66e2725e8af0a7ed2",
+    "packets/ORCHID_supplement_packet_1.html": "c7ee08b0bd9f221d77a6f4fc8fd6a383bb2861233b4c6983d4e5fa7d2d93298d",
+    "packets/ORCHID_supplement_packet_1_3pk.html": "e3bec798db365591965aa292f0200931c0503d6b5ed976bcf068b35cbbcd5ab2",
+    "packets/ORCHID_supplement_packet_2.html": "3c7dfdf35e5d428298d28cb435c2a545d17a7a824c2d80a3ffd8aa90e23e32e6",
+    "packets/ORCHID_supplement_packet_2_3pk.html": "0d8e578c8de5f5a9059f47cf6cd44b0fd755dd4cf5b7dce5922201e07c62ff8e",
+    "packets/ORCHID_supplement_packet_3.html": "8e2c18a81c9f7ef21806a8858011d6e4a1c8d62fc075e9c5bc25a65beaca76fd",
+    "packets/ORCHID_supplement_packet_3_3pk.html": "83f3e74820b3561d19d05eb11ba91cda2ff30d0ec58d601711a2730f3eef6048",
+    "packets/ORCHID_supplement_packet_4.html": "0cf343fa06ba33a0671e392a6d80c6ca4d8cbccdef37618eb794a74f528ab411",
+    "packets/ORCHID_supplement_packet_5.html": "d8375b109a4bb88fd42d61eae4e18f258992b01f1e56479216e3e002e736271e",
+    "packets/packets.json": "43b8f230f6eae2a13c8a01e43b785718e11da793298b53abad48c22c5b7fb286",
+    "packets/packets_3pk.json": "e1b6b486417ef9990391b629801f7c4572d9bd3b85f7d2a66e2725e8af0a7ed2",
+    "partition.json": "b18b7b9a11ca3721d18a2d22a0ee1f0a74c5f0eb5626c10f5823cc4981fcfa85",
     "sample.json": "5de96369d66446fe3e29a3ce21fdd5bef3af6dc4d37c200c772c528bc504493c"
   },
   "items_without_page_image": [],
@@ -204,6 +211,283 @@
     "S-REG": 50
   },
   "note": "Freeze record of the supplementary precision sample. Local-only files (index.html, packets/, img/, key.json) are restricted or blind and never committed; their sha256 is recorded here. tools/build_supplement.py check verifies them.",
+  "partition": {
+    "file": "partition.json",
+    "id": "k5",
+    "k": 5,
+    "method": "Re-partition the SAME items into k packets (sample.json and key.json unchanged). Per sub-sample, items are\nordered by stratum (stratum order of the design) then item id, and dealt to the packets in a snake order, so that\neach packet gets own_per_sub items of every sub-sample spread over the strata. Overlap: packet p also gets\n`overlap` items owned by packet p+1 (ring), taken round-robin over the sub-samples starting at sub-sample\n(p-1) mod 3 (so a 4-item overlap is 2 of one sub-sample and 1 of each other, rotating), evenly spaced within\neach sub-sample's own items of packet p+1. Deterministic (no randomness).",
+    "note": "sample.json and key.json are unchanged; key.json still lists the superseded 3pk plan, the scorer takes owners and overlap pairs from this partition",
+    "overlap_per_packet": 4,
+    "own_per_subsample": {
+      "S-ASM": [
+        10
+      ],
+      "S-ESPEI": [
+        10
+      ],
+      "S-REG": [
+        10
+      ]
+    },
+    "packets": [
+      {
+        "file": "ORCHID_supplement_packet_1.html",
+        "overlap": [
+          "R009",
+          "R030",
+          "E035",
+          "A024"
+        ],
+        "overlap_from_packet": 2,
+        "own": 30,
+        "packet": 1
+      },
+      {
+        "file": "ORCHID_supplement_packet_2.html",
+        "overlap": [
+          "R027",
+          "E015",
+          "E037",
+          "A016"
+        ],
+        "overlap_from_packet": 3,
+        "own": 30,
+        "packet": 2
+      },
+      {
+        "file": "ORCHID_supplement_packet_3.html",
+        "overlap": [
+          "R028",
+          "E024",
+          "A020",
+          "A047"
+        ],
+        "overlap_from_packet": 4,
+        "own": 30,
+        "packet": 3
+      },
+      {
+        "file": "ORCHID_supplement_packet_4.html",
+        "overlap": [
+          "R024",
+          "R044",
+          "E020",
+          "A029"
+        ],
+        "overlap_from_packet": 5,
+        "own": 30,
+        "packet": 4
+      },
+      {
+        "file": "ORCHID_supplement_packet_5.html",
+        "overlap": [
+          "R031",
+          "E006",
+          "E041",
+          "A032"
+        ],
+        "overlap_from_packet": 1,
+        "own": 30,
+        "packet": 5
+      }
+    ]
+  },
+  "partitions_superseded": [
+    {
+      "id": "3pk",
+      "packets": [
+        {
+          "overlap": [
+            "R014",
+            "R038",
+            "E015",
+            "E039",
+            "A013",
+            "A037"
+          ],
+          "own": [
+            "R001",
+            "R004",
+            "R007",
+            "R010",
+            "R013",
+            "R016",
+            "R019",
+            "R022",
+            "R025",
+            "R028",
+            "R031",
+            "R034",
+            "R037",
+            "R040",
+            "R043",
+            "R046",
+            "R049",
+            "E002",
+            "E005",
+            "E008",
+            "E011",
+            "E014",
+            "E017",
+            "E020",
+            "E023",
+            "E026",
+            "E029",
+            "E032",
+            "E035",
+            "E038",
+            "E041",
+            "E044",
+            "E047",
+            "E050",
+            "A003",
+            "A006",
+            "A009",
+            "A012",
+            "A015",
+            "A018",
+            "A021",
+            "A024",
+            "A027",
+            "A030",
+            "A033",
+            "A036",
+            "A039",
+            "A042",
+            "A045",
+            "A048"
+          ],
+          "packet": 1
+        },
+        {
+          "overlap": [
+            "R015",
+            "R039",
+            "E013",
+            "E037",
+            "A014",
+            "A038"
+          ],
+          "own": [
+            "R002",
+            "R005",
+            "R008",
+            "R011",
+            "R014",
+            "R017",
+            "R020",
+            "R023",
+            "R026",
+            "R029",
+            "R032",
+            "R035",
+            "R038",
+            "R041",
+            "R044",
+            "R047",
+            "R050",
+            "E003",
+            "E006",
+            "E009",
+            "E012",
+            "E015",
+            "E018",
+            "E021",
+            "E024",
+            "E027",
+            "E030",
+            "E033",
+            "E036",
+            "E039",
+            "E042",
+            "E045",
+            "E048",
+            "A001",
+            "A004",
+            "A007",
+            "A010",
+            "A013",
+            "A016",
+            "A019",
+            "A022",
+            "A025",
+            "A028",
+            "A031",
+            "A034",
+            "A037",
+            "A040",
+            "A043",
+            "A046",
+            "A049"
+          ],
+          "packet": 2
+        },
+        {
+          "overlap": [
+            "R013",
+            "R037",
+            "E014",
+            "E038",
+            "A015",
+            "A039"
+          ],
+          "own": [
+            "R003",
+            "R006",
+            "R009",
+            "R012",
+            "R015",
+            "R018",
+            "R021",
+            "R024",
+            "R027",
+            "R030",
+            "R033",
+            "R036",
+            "R039",
+            "R042",
+            "R045",
+            "R048",
+            "E001",
+            "E004",
+            "E007",
+            "E010",
+            "E013",
+            "E016",
+            "E019",
+            "E022",
+            "E025",
+            "E028",
+            "E031",
+            "E034",
+            "E037",
+            "E040",
+            "E043",
+            "E046",
+            "E049",
+            "A002",
+            "A005",
+            "A008",
+            "A011",
+            "A014",
+            "A017",
+            "A020",
+            "A023",
+            "A026",
+            "A029",
+            "A032",
+            "A035",
+            "A038",
+            "A041",
+            "A044",
+            "A047",
+            "A050"
+          ],
+          "packet": 3
+        }
+      ]
+    }
+  ],
   "population": {
     "blind_key_sha256": "71054786c030f33d491be1414a959fe202cb111bb4007d20e45bc37ed83a6c2d",
     "espei_literature_datasets_digest": "e1d3793a38434d0d672a40385e1fee02f6644b1079cda4f15420ef115abc5f39",

@@ -51,6 +51,10 @@ Commands (python with numpy and Pillow; poppler's pdftoppm on PATH):
   build_supplement.py draw [--out DIR] [--seed S] [--k 3] [--allow-dirty] [--no-images]
       draw, render and freeze in one step. Refuses a directory that already holds sample.json / key.json /
       manifest.json, and (without --allow-dirty) an orchid-data working tree with uncommitted changes.
+  build_supplement.py repartition --k K [--own-per-sub 10] [--overlap 4] [--out DIR]
+      re-cut the SAME items into K packets (no redraw; sample.json and key.json unchanged): balanced per sub-sample
+      and stratum, overlap from the next packet in a ring. The current packets are kept with a _<old id> suffix;
+      partition.json and manifest.json (partition, sha256s) are written. The scorer then uses this partition.
   build_supplement.py check [--out DIR] [--drift-json PATH]
       verify every file against manifest.json and report, per item, whether the current release still carries the
       reviewed content (unchanged / changed / missing). Default command.
@@ -839,6 +843,126 @@ def write_pages(out, sample_text, sample, key, imgs, instructions_md):
     (pk / "packets.json").write_text(canonical({"k": k, "packets": plan}), encoding="utf-8")
 
 
+def balanced_partition(sample, key, k, own_per_sub, overlap):
+    """Re-partition the SAME items into k packets (sample.json and key.json unchanged). Per sub-sample, items are
+    ordered by stratum (stratum order of the design) then item id, and dealt to the packets in a snake order, so that
+    each packet gets own_per_sub items of every sub-sample spread over the strata. Overlap: packet p also gets
+    `overlap` items owned by packet p+1 (ring), taken round-robin over the sub-samples starting at sub-sample
+    (p-1) mod 3 (so a 4-item overlap is 2 of one sub-sample and 1 of each other, rotating), evenly spaced within
+    each sub-sample's own items of packet p+1. Deterministic (no randomness)."""
+    subs = ("S-REG", "S-ESPEI", "S-ASM")
+    korder = {s: [x["stratum"] for x in key["strata"][s]] for s in subs}
+    strat = {it["item"]: it["stratum"] for it in key["items"]}
+    own = {p: {s: [] for s in subs} for p in range(1, k + 1)}
+    for s in subs:
+        lst = sorted((it["item"] for it in sample["items"] if it["kind"] == s),
+                     key=lambda i: (korder[s].index(strat[i]), i))
+        if own_per_sub and len(lst) != k * own_per_sub:
+            raise SystemExit("%s has %d items, not %d x %d" % (s, len(lst), k, own_per_sub))
+        for j, i in enumerate(lst):
+            rnd, pos = divmod(j, k)
+            own[(pos if rnd % 2 == 0 else k - 1 - pos) + 1][s].append(i)
+    packets = []
+    for p in range(1, k + 1):
+        nxt = p % k + 1
+        take = {s: 0 for s in subs}
+        for j in range(overlap):
+            take[subs[(p - 1 + j) % 3]] += 1
+        extra = []
+        for s in subs:
+            lst = sorted(own[nxt][s])
+            m = min(take[s], len(lst))
+            extra += [lst[int((j + 0.5) * len(lst) / m)] for j in range(m)]
+        packets.append({"packet": p, "file": "ORCHID_supplement_packet_%d.html" % p,
+                        "own": [i for s in subs for i in sorted(own[p][s])], "overlap_from_packet": nxt, "overlap": extra})
+    owner = {i: pk["packet"] for pk in packets for i in pk["own"]}
+    return {"schema": "orchid-precision-supplement-partition/1", "id": "k%d" % k, "k": k,
+            "own_per_subsample": {s: sorted({len(own[p][s]) for p in own}) for s in subs}, "overlap_per_packet": overlap,
+            "method": balanced_partition.__doc__.split("\n\n")[0].replace("\n    ", " "),
+            "owner": owner, "packets": packets}
+
+
+def image_map(out, items):
+    imgs = {}
+    for it in items:
+        for slot in ("page", "whole", "zoom"):
+            rel = "img/%s-%s.jpg" % (it["item"], slot)
+            if (out / rel).exists():
+                imgs.setdefault(it["item"], {})[slot] = rel
+    return imgs
+
+
+def write_partition_packets(out, sample_text, sample, part, instructions_md):
+    instr = instructions_html(instructions_md)
+    by = {it["item"]: it for it in sample["items"]}
+    imgs = image_map(out, sample["items"])
+    pk = out / "packets"
+    pk.mkdir(exist_ok=True)
+    plan = []
+    for p in part["packets"]:
+        its = [by[i] for i in p["own"] + p["overlap"]]
+        info = {"index": p["packet"], "of": part["k"], "own": len(p["own"]), "overlap": len(p["overlap"]),
+                "overlap_from_packet": p["overlap_from_packet"], "partition": part["id"]}
+        (pk / p["file"]).write_text(render_html(sample_text, sample, its, imgs, out,
+                                                "ORCHID supplement packet %d of %d" % (p["packet"], part["k"]), packet=info,
+                                                instructions=instr), encoding="utf-8")
+        plan.append(dict(info, file=p["file"], items=len(its)))
+    (pk / "packets.json").write_text(canonical({"k": part["k"], "partition": part["id"], "packets": plan}), encoding="utf-8")
+
+
+def cmd_repartition(a):
+    """Keep the sample; set aside the current packets with a _<id> suffix; write the new partition and packets;
+    update manifest.json (partition, file hashes, INSTRUCTIONS.md hash)."""
+    out = a.out
+    bad = [x for x in verify(out) if x != "frozen file changed: INSTRUCTIONS.md"]   # re-hashed below
+    if bad:
+        print("repartition: kit not intact: " + "; ".join(bad[:5]), file=sys.stderr)
+        return 1
+    man = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    sample_text = (out / "sample.json").read_text(encoding="utf-8")
+    sample = json.loads(sample_text)
+    key = json.loads((out / "key.json").read_text(encoding="utf-8"))
+    old = man.get("partition", {}).get("id") or "%dpk" % len(key["packets"])
+    if old == "k%d" % a.k:
+        print("repartition: the kit already has partition %s" % old, file=sys.stderr)
+        return 1
+    part = balanced_partition(sample, key, a.k, a.own_per_sub, a.overlap)
+    pk = out / "packets"
+    files = man["files_sha256"]
+    for f in sorted(pk.iterdir()):
+        if f.is_file():
+            new = f.with_name("%s_%s%s" % (f.stem, old, f.suffix))
+            f.rename(new)
+            files["packets/" + new.name] = files.pop("packets/" + f.name)
+    ip = out / "INSTRUCTIONS.md"
+    write_partition_packets(out, sample_text, sample, part, ip.read_text(encoding="utf-8") if ip.exists() else "")
+    (out / "partition.json").write_text(canonical(part), encoding="utf-8")
+    for f in sorted(pk.iterdir()):
+        if f.is_file() and not f.stem.endswith("_" + old):
+            files["packets/" + f.name] = sha256_file(f)
+    files["partition.json"] = sha256_file(out / "partition.json")
+    if ip.exists():
+        files["INSTRUCTIONS.md"] = sha256_file(ip)
+    man.setdefault("partitions_superseded", []).append(
+        {"id": old, "packets": [{"packet": p["packet"], "own": p["own"], "overlap": p["overlap"]} for p in key["packets"]]}
+        if "partition" not in man else man["partition"])
+    man["partition"] = {"id": part["id"], "k": part["k"], "file": "partition.json",
+                        "own_per_subsample": part["own_per_subsample"], "overlap_per_packet": part["overlap_per_packet"],
+                        "method": part["method"],
+                        "packets": [{"packet": p["packet"], "file": p["file"], "own": len(p["own"]),
+                                     "overlap": p["overlap"], "overlap_from_packet": p["overlap_from_packet"]}
+                                    for p in part["packets"]],
+                        "note": "sample.json and key.json are unchanged; key.json still lists the superseded %s "
+                                "plan, the scorer takes owners and overlap pairs from this partition" % old}
+    (out / "manifest.json").write_text(canonical(man), encoding="utf-8")
+    print("partition %s: %d packets, own per sub-sample %s, %d overlap each; old packets kept with suffix _%s" % (
+        part["id"], part["k"], part["own_per_subsample"], part["overlap_per_packet"], old))
+    for p in part["packets"]:
+        print("  packet %d: own %s; overlap from %d: %s" % (p["packet"], dict(Counter(i[0] for i in p["own"])),
+                                                             p["overlap_from_packet"], ", ".join(p["overlap"])))
+    return 0
+
+
 def manifest(out, sample_bytes, key_bytes, snap, data_commit, data_dirty, site_commit, missing):
     files = {"sample.json": sha256_bytes(sample_bytes), "key.json": sha256_bytes(key_bytes)}
     for rel in ("index.html", "INSTRUCTIONS.md"):
@@ -995,7 +1119,7 @@ def cmd_check(a):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("command", nargs="?", default="check", choices=["check", "draw"])
+    ap.add_argument("command", nargs="?", default="check", choices=["check", "draw", "repartition"])
     ap.add_argument("--out", type=Path, default=KIT, help="kit directory (default: %(default)s)")
     ap.add_argument("--data", type=Path, default=DATA, help="orchid-data release checkout (default: %(default)s)")
     ap.add_argument("--annot", type=Path, default=ANNOT, help="open-tdb okamoto-annotation build dir (S-ASM geometry)")
@@ -1004,9 +1128,11 @@ def main(argv=None):
     ap.add_argument("--k", type=int, default=K_DEFAULT, help="draw: number of reviewer packets")
     ap.add_argument("--allow-dirty", action="store_true", help="draw: allow uncommitted orchid-data changes (dry run)")
     ap.add_argument("--no-images", action="store_true", help="draw: skip page crops (tests)")
+    ap.add_argument("--own-per-sub", type=int, default=None, help="repartition: require exactly this many own items per sub-sample per packet")
+    ap.add_argument("--overlap", type=int, default=4, help="repartition: overlap items per packet (from the next packet)")
     ap.add_argument("--drift-json", type=Path, help="check: write the per-item release status here")
     a = ap.parse_args(argv)
-    return {"draw": cmd_draw, "check": cmd_check}[a.command](a)
+    return {"draw": cmd_draw, "check": cmd_check, "repartition": cmd_repartition}[a.command](a)
 
 
 if __name__ == "__main__":
