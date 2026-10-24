@@ -391,6 +391,12 @@ def build(open_tdb, sign_check_path):
                 found[reduced_key(c)] = (c, n, lab)
             else:
                 reasons.append(n)
+        if not found:
+            # spellings of the same printed label by other readers (literature_gates G7 `label_variants`)
+            for lab in [v for p in (r.get("phases") or []) for v in (p.get("label_variants") or [])]:
+                c, n = parse_phase(lab, system)
+                if c:
+                    found[reduced_key(c)] = (c, n, lab)
         if len(found) == 1:
             key = next(iter(found))
             counts, note, label = found[key]

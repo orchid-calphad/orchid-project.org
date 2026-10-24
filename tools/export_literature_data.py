@@ -573,7 +573,8 @@ def espei_fields(records, data):
                 counts["phase_rule_pass"] += 1
         pl = (fl.get("plausibility") or {}).get("result")
         fl["calphad_check"] = CALPHAD_CHECK.get(pl, "not_available")
-        fl["espei_certified"] = bool(fl.get("espei_ready")) and pl == "pass"
+        fl["espei_certified"] = bool(fl.get("espei_ready")) and pl == "pass" and not any(
+            g.get("effect") == "not_certified" for g in r.get("gate_failures") or [])
         if fl["espei_certified"]:
             fl["espei_certified_basis"] = "pycalphad_invariant_agreement"
         counts["espei_ready"] += bool(fl.get("espei_ready"))
@@ -967,7 +968,9 @@ CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_grou
                "reader_agreement_label", "tool_release", "pid",
                "merged_ids", "merged_pids", "corrections", "gate_failures", "reader_agreement_basis",
                "temperature_K_stored", "system_stored", "property_code_before_gates", "evidence_class_before_gates",
-               "phases_stored", "phases_dropped", "unit_stored", "pressure_basis_stored"]
+               "phases_stored", "phases_dropped", "unit_stored", "pressure_basis_stored", "phase_compositions_dropped",
+               "transition_kind_stored", "uncertainty_stored", "reference_state_stored", "related_records",
+               "temperature_basis_stored"]
 
 
 def summarize_context(ctx):
@@ -1053,12 +1056,16 @@ papers, page images, crops and full text are **not** redistributed.
 | `value_before_quality_fix`, `basis_correction`, `sign_heading_printed` | set when a DFT-parity outlier was corrected (QUALITY_FIXES.md): the value before the fix; `{{formula, atoms_per_formula_unit, operation}}` for a per-formula value that was labelled per atom; the printed heading that carries a minus sign |
 | `corrections` | literature-level gate corrections (QUALITY_FIXES.md section 7): `[{{gate, field, before, after, rule, evidence, visual_check}}]`; `visual_check` = `{{page, pdf_sha256_prefix, image_sha256, verdict, seen, checked}}` (the PDF page was rendered and inspected; no image or page text is published). The value before a correction is kept in `value_stored`, `temperature_K_stored`, `unit_stored`, `system_stored`, `property_code_before_gates`, `evidence_class_before_gates`, `phases_stored` (with `phases_dropped` [{{label, reason}}]), `pressure_basis_stored` |
 | `gate_failures` | `[{{gate, code, effect, detail, visual_check}}]`: a gate demoted (`effect` `not_accepted`: `flags.extraction_accepted` false) or flagged (`not_espei_ready`: `espei_ready` and `espei_certified` false; `flag_only`) the value; codes also in `flags.gate_failures`; see QUALITY_FIXES.md section 7 |
+| `phase_compositions_dropped` | compositions printed under a label that the page check found not to be a phase of the row (a column header); kept, not used |
+| `transition_kind_stored` | the reaction type before a page-checked correction to the printed type |
+| `uncertainty_stored`, `reference_state_stored`, `temperature_basis_stored` | the stored uncertainty / reference state before a page-checked correction (e.g. a scatter-aware sigma for compounds whose independent measurements disagree, `uncertainty.basis = scatter_between_sources`; the reference state the page states) |
+| `related_records` | ids of records of the same measurement listed in another paper (a compilation), or of the independent measurements behind a scatter-aware sigma |
 | `merged_ids`, `merged_pids` | ids (and persistent locators) of records that were exact duplicates of this one and were merged into it |
 | `value_range` | `{{min,max}}` when a range was printed; `value_expression`: a printed expression (model parameters) |
 | `uncertainty` | `{{value, basis, note}}`; `basis: printed` is the source's own; `stated_default` / `reading_resolution` are ORCHID placeholders (e.g. "5% default", "10% placeholder; none printed") and are **not** measured uncertainties |
 | `temperature_K` | equilibrium / measurement temperature in K; `temperature_printed` as printed (unit as printed, often °C); `temperature_basis` how it was obtained (`printed`, `quantity_label`, `caption`, `assumed_room_temperature`, `not_printed`, ...); `temperature_bound` `{{op, value_K, printed}}` for a printed bound (`op` `<` upper bound, `>` lower bound), `temperature_max_K` / `temperature_range_K` for ranges; `temperature_uncertainty` `{{value,basis}}` |
 | `pressure_Pa`, `pressure_basis` | pressure and how it was set: `printed`, or `assumed_default_1_atm_not_printed` (1 atm assumed, no pressure printed; the record builder's label kept in `pressure_basis_stored`) |
-| `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype}}]`: printed phase label and, where mapped, the CALPHAD model phase |
+| `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype, label_variants, label_source}}]`: printed phase label and, where mapped, the CALPHAD model phase; `label_variants`: other readers' spellings of the same printed label (kept when duplicate readings were merged, e.g. 'NiAl (B2)' beside 'B2'); `label_source: page_check` for a phase added from the printed reaction on a page check |
 | `phase_compositions` | `[{{phase, composition{{EL: x}}, basis, composition_source}}]`. `basis` is `mole_fraction` (possibly "converted from atomic/mass percent") or `unresolved` (printed basis disputed/mixed, or values outside 0..1: do not use as mole fractions). `composition_source`: `printed`, `stoichiometry`, `formula_nominal`, `congruent_same_composition`, `printed_range`, `printed_bound`, ... |
 | `overall_composition`, `overall_composition_basis` | alloy / sample composition (mole fraction) where given |
 | `reference_state` | reference state of a thermodynamic quantity, always an object: per element `{{EL: {{phase, fixed_state_variables}}}}`, or `{{printed: "..."}}` when only free text was read |

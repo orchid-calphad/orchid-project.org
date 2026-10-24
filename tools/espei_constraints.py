@@ -262,7 +262,7 @@ def dedup_zpf(C, folders=("experimental", "invariants")):
             reg = C["datasets"][rel]["values"][i]
             hit = None
             for (r2, i2, T2) in kept:
-                if abs(T - T2) <= T_TOL_DUP and _same_region(reg, C["datasets"][r2]["values"][i2]):
+                if abs(T - T2) <= T_TOL_DUP + 1e-9 and _same_region(reg, C["datasets"][r2]["values"][i2]):
                     hit = (r2, i2)
                     break
             if hit is None:

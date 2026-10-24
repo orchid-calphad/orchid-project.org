@@ -50,6 +50,10 @@ import doi_corrections  # noqa: E402
 import orchid_cite  # noqa: E402
 
 DOI_CORR = doi_corrections.load()   # shared DOI correction table (tools/doi_corrections.json)
+EXPERT_CORR = collections.defaultdict(list)   # tools/assessed_expert_corrections.json: expert decisions over machine names
+for _c in json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assessed_expert_corrections.json"),
+                         encoding="utf-8"))["corrections"]:
+    EXPERT_CORR[_c["diagram"]].append(_c)
 
 HOME = os.path.expanduser("~")
 OPEN_TDB = os.path.join(HOME, "projects", "open-tdb")
@@ -446,6 +450,17 @@ def build(a, log=print):
         other = other[0] if other else elements[0]
         axis_order = (other.upper(), comp.upper())
         fields = ev.get("fields", {})
+        for c in EXPERT_CORR.get(diag, []):
+            F = fields.get(str(c["field"]))
+            if F is None or F.get("name") != c["machine_name"]:
+                raise SystemExit("expert correction does not match the annotation: %s field %s" % (diag, c["field"]))
+            F = fields[str(c["field"])] = dict(F)
+            F["name_history"] = [{"name": c["machine_name"], "basis": F.get("basis"), "superseded_by": c["basis"],
+                                  "reviewed_at": c["reviewed_at"]}]
+            F["name"] = c["expert_name"]
+            F["tier5"] = {"decision": c["expert_name"], "confidence": c.get("confidence") or "high",
+                          "reviewer": c["reviewer"], "reviewed_at": c["reviewed_at"], "source": c["source"]}
+            cnt["expert_corrections_applied"] += 1
         cnt["diagrams_seen"] += 1
         if comp not in elements:   # the composition axis was read as an element outside the system
             for fid in sorted(fields, key=int):
@@ -584,6 +599,9 @@ def build(a, log=print):
                    "positional_margin": margin, "phase_compositions": None,
                    "basis": basis, "basis_description": BASIS_LABEL[basis], "confidence": conf, "review_state": review,
                    "flags": flags, "citations": citations, "method": method}
+            if F.get("name_history"):
+                rec["name_history"] = F["name_history"]
+                rec["expert_review"] = {k: F["tier5"][k] for k in ("reviewer", "reviewed_at", "source", "confidence")}
             # ---- tie line (two-phase points only; drawing-based, low credence)
             tl, why = None, None
             if len(phases) == 2:
@@ -1072,6 +1090,7 @@ Builder: `tools/build_assessed_assemblages.py` (orchid-project.org; deterministi
 | `basis`, `basis_description` | how the field was named: `deterministic_printed_label`, `deterministic_phase_rules`, `deterministic_adjacency`, `reader_consensus`, `adjudicator`, `dft_hull_corroborated` (adjudicator + Materials Project/OQMD hulls; not handbook evidence), `expert_reviewed` |
 | `confidence` | `high` / `medium` / `low` (blind-audit defaults per basis; hull rule: both hulls agree high, disagree low; `local_conflict` low; `carried_against_rules` capped at medium) |
 | `review_state` | `expert decision (tier 5)`, `expert-reviewed (tier 5)`, or `not reviewed by the expert` |
+| `name_history`, `expert_review` | only where the expert corrected the machine name (tools/assessed_expert_corrections.json): the superseded machine name with its basis, and the reviewer, review time and source of the decision |
 | `flags` | `local_conflict`, `carried_against_rules`, `phase_not_in_table`, `hull_support:<both|disagree|mp_only|oqmd_only|none>`, `partly_drawn_dft_corroborated` |
 | `sgte_crosscheck[]` | per calculated SGTE diagram of the system: `{tdb, tdb_sha256, cell{T_K, x}, calculated (TDB phase set at the nearest grid cell), result: agrees / disagrees / not_comparable, reason}`. Phase sets compared as registry ids. Never changes the assessed record |
 | `citations[]` | original evaluation(s) first (`citation`, `doi`, `doi_matched_by`, `kind`; `doi` null with `doi_status: dropped_mismatch` and `doi_correction` when the DOI matched to the printed source line describes a different work, `tools/doi_corrections.json`), then the handbook (`role: compilation`, `page_pdf`, `locator`) |

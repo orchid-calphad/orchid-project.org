@@ -809,11 +809,14 @@ def build(data, date):
                                  "energy references and are never averaged. 1 eV/atom = 96.485 kJ/mol-atom."]))
             rows = []
             for (k, mid), pt in sorted(dfts.items()):
+                eh = pt.get("ehull")   # build_dft_parity.py stores the energy above hull in kJ/mol-atom
                 rows.append([[parity["dft_sources"][k]["label"]], [mid], [fmt_num(pt["dft"])], [fmt_num(pt["dft_eV"])],
-                             [pt.get("sg") or ""], [fmt_num(pt.get("ehull"))], ["yes" if pt.get("theoretical") else "no"]])
+                             [pt.get("sg") or ""], [fmt_num(eh)],
+                             [fmt_num(None if eh is None else round(eh / 96.485, 4))], ["yes" if pt.get("theoretical") else "no"]])
             blocks.append(("table", "DFT formation energy of %s" % f,
-                           ["Source", "Entry", "kJ/mol-atom", "eV/atom", "Space group", "E above hull (eV/atom)", "Theoretical"],
-                           rows, {2, 3, 5}))
+                           ["Source", "Entry", "kJ/mol-atom", "eV/atom", "Space group", "E above hull (kJ/mol-atom)",
+                            "E above hull (eV/atom)", "Theoretical"],
+                           rows, {2, 3, 5, 6}))
             blocks.append(("p", ["DFT sources: "] + sum([[parity["dft_sources"][k]["citation"], " ",
                                                           ("a", "doi:" + parity["dft_sources"][k]["doi"], doi_url(parity["dft_sources"][k]["doi"])),
                                                           " (%s); " % parity["dft_sources"][k]["license"]] for k in ("mp", "oqmd")], [])))

@@ -164,6 +164,14 @@ ESPEI_EXCLUSION_TEXT = {
     "null_in_composition": "a composition with a null (not printed) entry next to printed ones (ternary vertex or "
                            "condition); ESPEI 0.9.1 clean_dataset cannot convert it; values are not invented",
 }
+DROP_REASONS["not_espei_ready:literature_gate"] = (
+    "a literature-level gate (tools/literature_gates.py) marks the published value not_espei_ready or not accepted "
+    "(e.g. G6 reaction phase / liquid count, a temperature range stored as a point); every such value is excluded")
+DROP_REASONS["below_espei_temperature_floor"] = (
+    "non-equilibrium (solver) value below 298.15 K: ESPEI's filter_temperatures would drop it silently, so it is "
+    "left out here and listed")
+DROP_REASONS["duplicate_of_other_dataset"] = (
+    "the same published observation (ORCHID id) already supplies this value in another dataset of the folder")
 DROP_REASONS["duplicate_read_same_row"] = ("E4: the same printed table row read twice (same ORCHID row id `pid`, "
                                            "conditions and value); counted once, the other id kept as `also_read_as`")
 DROP_REASONS["duplicate_identical_zpf"] = ("E3: identical ZPF region (same phases, temperature and compositions) "
@@ -225,6 +233,28 @@ ACR_REFERENCE_AUDIT = {
         "quote": "... activities aCo, aCu of components Co and Cu in the liquid Co-Cu system at 1537 C",
         "where": "table 4 caption; reference state not printed; Co and Cu are liquid at 1810 K"},
 }
+SIGMA_RESOLUTION_FRACTION = 0.1
+SIGMA_FLOOR_RULE = ("a printed sigma smaller than 0.1 x ESPEI's experimental default for the property (50 J/mol for "
+                    "enthalpies, 0.02 J/mol/K for entropies and heat capacities) is below any measurement resolution; "
+                    "the dataset weight uses the default sigma for that value; the printed sigma is kept")
+NUMERICALLY_UNSTABLE = {
+    "experimental/MG-O/MgO-18Lia.zpf-00.json": "the ESPEI 0.9.1 / pycalphad driving-force evaluation of this dataset "
+    "against its TDB is not reproducible (finite in some runs, an error in others: re-verification 2026-10-23); "
+    "left out so that every written dataset evaluates deterministically",
+    "invariants/PD-TI/PdTi-11Guo.zpf-00.json": "the ESPEI 0.9.1 / pycalphad ZPF driving force of this dataset is NaN "
+    "in about one evaluation in four (four repeated full evaluations, 2026-10-24); left out so that every written "
+    "dataset evaluates deterministically",
+    "invariants/AL-S/AlS-19Shi.zpf-01.json": "the ESPEI 0.9.1 / pycalphad ZPF driving force of this dataset was -inf in "
+    "one of nine repeated full evaluations (2026-10-24); left out so that every written dataset evaluates "
+    "deterministically"}
+
+
+def nvals_of(d):
+    return len(d["values"]) if d["output"] == "ZPF" else len(flat_values(d))
+
+
+ESPEI_T_FLOOR = 298.15     # ESPEI filter_temperatures drops non-equilibrium values below 298.15 K
+STD_T_EQUIV = (298.0, 298.1, 298.2)
 WEIGHT_FLOOR_RULE = ("optional minimum-sigma policy (E6): sigma_eff = max(sigma, sigma_floor) with sigma_floor = "
                      "ESPEI's experimental default for the property (500 J/mol for enthalpies and for the chemical "
                      "potential of activities, 0.2 J/mol/K for entropies and heat capacities); suggested_weight = "
@@ -461,10 +491,28 @@ def check_scalar(v, rec):
     return abs(v - exp) <= VALUE_RTOL * max(1.0, abs(exp))
 
 
+def page_corrected_T(rec):
+    """The published temperature when a page-checked correction replaced the stored one (else None)."""
+    for c in rec.get("corrections") or []:
+        if c.get("field") == "temperature_K" and c.get("visual_check"):
+            return rec.get("temperature_K")
+    return None
+
+
+def std_T(t):
+    """PI rule (2026-10-24) '298 K is 298.15 K' (the literature release stores 298.15, rule
+    standard_reference_temperature)."""
+    if isinstance(t, list):
+        return [std_T(x) for x in t]
+    return 298.15 if isinstance(t, (int, float)) and t in STD_T_EQUIV else t
+
+
 def check_temperature(t, rec, basis):
     pt = rec.get("temperature_K")
     if pt is None or t is None:
         return pt is None
+    if std_T(pt) == 298.15 and std_T(t) == 298.15:
+        return True
     if abs(t - pt) <= T_TOL:
         return True
     if basis and basis.get("export_basis") == "range_midpoint" and basis.get("half_width") is not None:
@@ -493,11 +541,16 @@ def check_zpf_point(region, rec):
 def printed_sigma(rec, v_espei):
     """(sigma in the ESPEI value's units, printed-info dict) from a published record, or (None, None)."""
     u = rec.get("uncertainty") or {}
-    if u.get("basis") not in ("printed", "printed_range") or not isinstance(u.get("value"), (int, float)):
+    if u.get("basis") not in ("printed", "printed_range", "scatter_between_sources") or not isinstance(u.get("value"), (int, float)):
         return None, None
     fac = unit_factor(rec.get("unit"))
     s = abs(u["value"]) * fac
     info = {"value": u["value"], "unit": rec.get("unit")}
+    if u.get("basis") == "scatter_between_sources":
+        info["interval"] = ("sample standard deviation of the independent measurements of this compound (page-checked; "
+                            "the printed sigma, kept in the record's uncertainty_stored, is smaller than their scatter)")
+        info["coverage"] = "scatter_between_sources"
+        return s, info
     if u.get("basis") == "printed":
         info["interval"] = "±x printed; coverage not stated, taken as 1 sigma"
         info["coverage"] = "1sigma_assumed"
@@ -556,7 +609,14 @@ def uncertainty_block(out, recs, cls, zpf, T):
             sigmas.append(s)
         elif s is not None:
             e = {"sigma": rnd(s, 6), "sigma_basis": "printed", "printed": info}
-            sig_eff.append(s)
+            if default is not None and s < SIGMA_RESOLUTION_FRACTION * default:
+                # a printed sigma below a tenth of ESPEI's experimental default is below any calorimetric
+                # resolution (e.g. +-0.011 kJ/mol): the weight uses the default instead (printed sigma kept)
+                e["sigma_floor_applied"] = {"sigma_used": default, "rule": SIGMA_FLOOR_RULE}
+                sig_eff.append(default)
+                basis_counts["printed_below_resolution_floor"] += 1
+            else:
+                sig_eff.append(s)
             basis_counts["printed"] += 1
             sigmas.append(s)
         else:
@@ -737,6 +797,26 @@ def assign_phases(d, src_rel, stem, keep, recs, zpf, rule, reg):
     return out, drops
 
 
+GATE_EFFECTS_BLOCKING = ("not_espei_ready", "not_accepted")
+
+
+def gate_blocks(rec):
+    """Every value the literature release marks not ESPEI-ready is excluded. Experimental and DFT values must be
+    `espei_ready`; model-calculated values are never flagged espei_ready in the release (the flag is about
+    measured data), so for them every gate failure that blocks ESPEI (effect not_espei_ready / not_accepted)
+    excludes the value. Returns the drop reason or None."""
+    fl = rec.get("flags") or {}
+    gf = [g["code"] for g in rec.get("gate_failures") or [] if g.get("effect") in GATE_EFFECTS_BLOCKING]
+    if gf:
+        return "not_espei_ready:literature_gate"
+    if rec.get("evidence_class") in ("experimental", "dft") and not fl.get("espei_ready"):
+        pr = fl.get("espei_phase_rule") or {}
+        if pr.get("result") == "fail" and "phase_rule:" + pr.get("reason", "") in DROP_REASONS:
+            return "phase_rule:" + pr["reason"]
+        return "phase_rule:not_espei_ready"
+    return None
+
+
 def rule_reason(rec, rule):
     """Drop reason from the published record: a blocking flag, or the physical phase rule (the record's own result;
     computed here for values that were never espei_ready, e.g. model-calculated values)."""
@@ -809,7 +889,7 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
     res = {"datasets": {}, "rows": {}, "drops": [], "dropped_datasets": [], "papers": {}, "src_counts": Counter(),
            "match_kind": Counter(), "sigma_stats": [], "_ustat": {}, "release_has_ra": release_has_ra, "_recs": {},
            "upstream": {"duplicate_reads": [], "reference_state": []}, "e5": [], "e6": Counter(),
-           "phase_drops": Counter(), "phase_groups": Counter()}
+           "phase_drops": Counter(), "phase_groups": Counter(), "std_T": 0}
     for sub, default_folder in SOURCES:
         for f in sorted(glob.glob(os.path.join(db, sub, "*", "*.json"))):
             if os.path.basename(f) == "provenance.json":
@@ -817,6 +897,10 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
             src_rel = os.path.relpath(f, db).replace(os.sep, "/")
             tdb_dir, fname = f.split(os.sep)[-2], os.path.basename(f)
             d = json.load(open(f, encoding="utf-8"))
+            if d.get("conditions", {}).get("T") is not None and std_T(d["conditions"]["T"]) != d["conditions"]["T"]:
+                d["conditions"]["T"] = std_T(d["conditions"]["T"])
+                d["orchid_standard_temperature"] = "298 K read as the standard reference temperature 298.15 K"
+                res["std_T"] += 1
             res["src_counts"][sub] += 1
             if sub == "general/espei" and "dft" in (d.get("tags") or []):
                 res["dropped_datasets"].append({"source": src_rel, "reason": ["dft_superseded"], "values": None})
@@ -835,6 +919,7 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                 raise SystemExit("unexpected: %s has %d observations for %d values" % (src_rel, len(obs), npts))
             bases = {b["observation"]: b for b in d.get("orchid_value_bases") or []}
             keep, recs, reasons = [], [], []
+            T_from_release = {}
             fv = None if zpf else flat_values(d)
             for i, oid in enumerate(obs):
                 rec, how = lookup(oid)
@@ -845,6 +930,8 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                     why = "not_accepted"
                 elif rec.get("evidence_class") != cls:
                     why = "evidence_class_mismatch"
+                elif gate_blocks(rec):
+                    why = gate_blocks(rec)
                 elif zpf:
                     b = ((bases.get(oid) or {}).get("values") or [{}])[0]
                     if not check_temperature(T[i], rec, b):
@@ -859,7 +946,10 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                     elif value_gate(d["output"], fv[i], rec, d["conditions"]["T"]):
                         why = value_gate(d["output"], fv[i], rec, d["conditions"]["T"])
                     elif not check_temperature(d["conditions"]["T"], rec, None):
-                        why = "temperature_differs_from_release"
+                        if page_corrected_T(rec) is not None and not isinstance(d["conditions"]["T"], list):
+                            T_from_release[i] = page_corrected_T(rec)
+                        else:
+                            why = "temperature_differs_from_release"
                 if why:
                     res["drops"].append({"source": src_rel, "index": i, "reason": why, "orchid_id": (rec or {}).get("id")})
                     reasons.append(why)
@@ -925,6 +1015,13 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                         out["values"] = [[[fv[i] for i in keep]]]
                 if not zpf:
                     out["phases"] = list(g["phases"])
+                    Tk = {T_from_release.get(i) for i in keep}
+                    if Tk != {None}:
+                        if len(Tk) != 1:
+                            raise SystemExit("mixed page-corrected temperatures in one dataset: " + src_rel)
+                        out["conditions"]["T"] = Tk.pop()
+                        out["orchid_temperature_note"] = ("temperature from the published records (page-checked "
+                                                          "correction of the stored temperature)")
                 ids = [r["id"] for _, r in recs]
                 pids, measured = [], []
                 for _, r in recs:
@@ -1009,10 +1106,24 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                     out["orchid_phase_assignment"] = g["assignment"]
                 if g["kind"] == "compound_endmember":
                     to_solver(out, g, recs)
+                    Tsol = out["conditions"]["T"]
+                    if any(t < ESPEI_T_FLOOR for t in (Tsol if isinstance(Tsol, list) else [Tsol])):
+                        if isinstance(Tsol, list):
+                            raise SystemExit("unexpected: solver dataset with a temperature list: " + src_rel)
+                        for i, (oid, r) in zip(keep, recs):
+                            res["drops"].append({"source": src_rel, "index": i, "reason": "below_espei_temperature_floor",
+                                                 "orchid_id": r["id"]})
+                        res["dropped_datasets"].append({"source": src_rel, "reason": ["below_espei_temperature_floor"],
+                                                        "values": len(keep)})
+                        continue
                 syst = lit.system_name([c for c in d["components"] if c.upper() != "VA"])
                 rel = "%s/%s/%s.%s" % (folder, syst, tdb_dir, fname)
                 if len(groups) > 1 or g["kind"] == "compound_endmember":
                     rel = rel[:-5] + "-" + re.sub(r"[^A-Za-z0-9_]+", "_", "_".join(g["phases"])) + ".json"
+                if rel in NUMERICALLY_UNSTABLE:
+                    res["dropped_datasets"].append({"source": src_rel, "reason": ["pycalphad_evaluation_unstable"],
+                                                    "values": nvals_of(out), "note": NUMERICALLY_UNSTABLE[rel]})
+                    continue
                 if rel in res["datasets"]:
                     raise SystemExit("path collision: " + rel)
                 res["datasets"][rel] = out
@@ -1784,6 +1895,24 @@ def readme(S, C, cite):
         "  tags:", "    orchid: {disabled: true}             # every ORCHID dataset (literature and DFT) off ...",
         "    calphad_certified: {disabled: false}  # ... except the certified ones (tags apply in this order)",
         "```", "", "(ESPEI applies `tags` before it removes disabled datasets, so the second tag re-enables.)", "",
+        "## Inclusion and temperatures (cleanup 2026-10-24)", "",
+        "- Every value the literature release marks not ESPEI-ready is left out: experimental and DFT values must be "
+        "`espei_ready`; model values (never flagged espei_ready, the flag is about measured data) are left out when a "
+        "literature gate marks them `not_espei_ready` or `not_accepted` (`not_espei_ready:literature_gate`).",
+        "- 298 K is 298.15 K: a dataset temperature of 298 / 298.1 / 298.2 K is the standard reference temperature "
+        "and is written as 298.15 K (the literature records store 298.15 too, rule `standard_reference_temperature`), "
+        "so ESPEI's `filter_temperatures` (non-equilibrium values below 298.15 K) removes nothing; a non-equilibrium "
+        "value really below 298.15 K is left out and listed (`below_espei_temperature_floor`).",
+        "- One published observation supplies at most one value per folder (`duplicate_of_other_dataset`).",
+        "- A printed sigma below 0.1 x ESPEI's experimental default (e.g. +-0.011 kJ/mol) is below any measurement "
+        "resolution: the dataset weight uses the default for that value (`sigma_floor_applied` in "
+        "`orchid_uncertainty`; the printed sigma is kept).",
+        "- `experimental/MG-O/MgO-18Lia.zpf-00.json`, `invariants/PD-TI/PdTi-11Guo.zpf-00.json` and "
+        "`invariants/AL-S/AlS-19Shi.zpf-01.json` are left out: "
+        "their pycalphad driving-force evaluation is not reproducible (`pycalphad_evaluation_unstable`).",
+        "- A compound whose independent measured formation enthalpies disagree by more than their printed sigmas "
+        "carries a scatter-aware sigma (`uncertainty.basis = scatter_between_sources`, sample standard deviation of the "
+        "independent values; page-checked); the dataset weight uses it.", "",
         "## Phase assignment", "",
         PR.RULE_TEXT, "",
         "Every value's phase comes from its published literature record (printed label -> phase registry -> the "
@@ -2169,6 +2298,55 @@ def refresh_row(C, rel):
                   "median_abs_driving_force_J")})
 
 
+def dedup_observation_ids(C):
+    """E3b: one published observation (ORCHID id) supplies at most one value per folder. A later property dataset
+    (sorted path order) that repeats an id loses that value (`duplicate_of_other_dataset`); a dataset left empty is
+    not written. Returns the number of values removed."""
+    seen, n = {}, 0
+    for rel in sorted(C["datasets"]):
+        d = C["datasets"][rel]
+        if d["output"] == "ZPF":
+            continue
+        folder = rel.split("/")[0]
+        obs = d["orchid"]["observations"]
+        dup = [j for j, o in enumerate(obs) if (folder, o["id"]) in seen]
+        for j, o in enumerate(obs):
+            seen.setdefault((folder, o["id"]), rel)
+        if not dup:
+            continue
+        vals = d["values"]
+        flat = flat_values(d)
+        if not (len(vals) == 1 and len(vals[0]) == 1 and len(flat) == len(obs)):
+            raise SystemExit("unexpected value layout in %s" % rel)
+        for j in sorted(dup, reverse=True):
+            kept = seen[(folder, obs[j]["id"])]
+            C["datasets"][kept]["orchid"].setdefault("also_reported_as", []).append({"dataset": rel, "ids": [obs[j]["id"]]})
+            C["drops"].append({"source": C["rows"][rel]["source_dataset"].replace("db-v2.1/", "", 1), "index": j,
+                               "reason": "duplicate_of_other_dataset", "orchid_id": obs[j]["id"], "same_as": kept})
+            vals[0][0].pop(j)
+            obs.pop(j)
+            for k, v in d["conditions"].items():
+                if k.startswith("X_") and isinstance(v, list):
+                    v.pop(j)
+            if d.get("solver"):
+                d["solver"]["sublattice_configurations"].pop(j)
+                if d["solver"].get("sublattice_occupancies"):
+                    d["solver"]["sublattice_occupancies"].pop(j)
+            uv = (d.get("orchid_uncertainty") or {}).get("values")
+            if isinstance(uv, list) and len(uv) > j:
+                uv.pop(j)
+            n += 1
+        d["orchid"]["values_dropped"] = (d["orchid"].get("values_dropped") or 0) + len(dup)
+        if not obs:
+            r = C["rows"].pop(rel)
+            C["datasets"].pop(rel)
+            C["dropped_datasets"].append({"source": r["source_dataset"].replace("db-v2.1/", "", 1),
+                                          "reason": ["duplicate_of_other_dataset"], "values": r["n_values"]})
+        else:
+            refresh_row(C, rel)
+    return n
+
+
 def dedup_properties(C):
     """E3 for property datasets: a dataset identical to another of the same folder and system (same output, phases,
     conditions, values, solver and reference states; e.g. two assessment folders quoting the same table) is written
@@ -2201,6 +2379,7 @@ def phase_constraints(C, D, data, pub):
     counts = Counter()
     merged, changed = ec.dedup_zpf(C)
     counts["E3_property_datasets_dropped"] = dedup_properties(C)
+    counts["E3_duplicate_observation_values_removed"] = dedup_observation_ids(C)
     counts["E3_regions_removed"] = len(merged)
     counts["E3_datasets_dropped"] = sum(1 for x in C["dropped_datasets"] if x["reason"] == ["duplicate_identical_zpf"])
     brackets, b_skipped, b_made = ec.build_brackets(C, R)        # before E2: printed compositions
@@ -2211,6 +2390,13 @@ def phase_constraints(C, D, data, pub):
         if not rel.startswith("dft/") and ec.apply_e2(d, stem, R, counts):
             d["orchid"].pop("espei_evaluation", None)
             changed.add(rel)
+    # E3 again after E2: nulling stoichiometric compositions can make two regions identical
+    merged2, changed2 = ec.dedup_zpf(C)
+    merged += merged2
+    changed |= changed2
+    counts["E3_regions_removed"] = len(merged)
+    counts["E3_regions_removed_after_E2"] = len(merged2)
+    counts["E3_datasets_dropped"] = sum(1 for x in C["dropped_datasets"] if x["reason"] == ["duplicate_identical_zpf"])
     for rel in sorted(changed):
         if rel in C["rows"]:
             refresh_row(C, rel)

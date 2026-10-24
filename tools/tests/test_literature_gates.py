@@ -286,5 +286,103 @@ check("G12 1 atm default relabelled, stored basis kept", out[s1["id"]]["pressure
       and out[s1["id"]]["pressure_basis_stored"] == "stated_default_1_atm")
 check("report has before/after counts and markdown", rep["records_in"] >= rep["records_out"] and "## 7." in G.gates_md(rep))
 
+# ------------------------------------------------------------------ cleanup 2026-10-24: page-checked phase lists etc.
+check("phase_key: glyph / LaTeX / Greek-name / parenthesis / separator spellings coincide",
+      G.phase_key('α"') == G.phase_key("α″") and G.phase_key("\\beta Yb") == G.phase_key("βYb")
+      and G.phase_key("gamma") == G.phase_key("γ") and G.phase_key("(εSb)") == G.phase_key("εSb")
+      and G.phase_key("In3Ir-LT") == G.phase_key("In3 Ir_LT") and G.phase_key("C₁Pu") == G.phase_key("C1Pu")
+      and G.phase_key("betaS") == G.phase_key("βS") and G.phase_key("Laves_C15") != G.phase_key("Laves_C36"))
+check("numbered liquids are liquids in G6; Strukturbericht L12 / La are not",
+      all(G.is_liq_g6({"label": l}) for l in ("L1", "L2", "L#1", "Liquid#2", "LIQUID#1", "L'"))
+      and not any(G.is_liq_g6({"label": l}) for l in ("L12", "La", "Lu")))
+inv = dict(property="INVARIANT_TEMPERATURE", observation_type="invariant_reaction", unit="K", record_kind="invariant_table")
+loc = {"artifact": "table", "asset": "doi:10.1/t/p5/tab-2", "page": 5}
+hdr = rec(value=739.0, temperature_K=739.0, transition_kind="eutectic", locator=dict(loc, row=1),
+          phases=[{"label": "L"}, {"label": "Mg2Pb"}, {"label": "Phase 2"}, {"label": "Phase 3"}, {"label": "HCP_A3 (Mg)"}],
+          phase_compositions=[{"phase": "Phase 2", "composition": {"PB": 0.0975}, "composition_source": "printed",
+                               "basis": "mole_fraction"}], **inv)
+mono = rec(value=1100.0, temperature_K=1100.0, transition_kind="monotectic", locator=dict(loc, row=2),
+           phases=[{"label": "Liquid#1"}, {"label": "Liquid#2"}, {"label": "Ni3Al"}], **inv)
+miss = rec(value=1000.0, temperature_K=1000.0, transition_kind="eutectic", locator=dict(loc, row=3),
+           phases=[{"label": "L"}, {"label": "NiAl"}], reaction={"printed": "L -> NiAl + Ni3Al"}, **inv)
+eo = rec(value=900.0, temperature_K=900.0, transition_kind="eutectic", locator=dict(loc, row=4),
+         phases=[{"label": "NiAl"}, {"label": "Ni3Al"}, {"label": "Ni5Al3"}], **inv)
+ter = rec(value=880.0, temperature_K=880.0, transition_kind="other", locator=dict(loc, row=5),
+          phases=[{"label": "L"}, {"label": "NiAl"}, {"label": "Ni3Al"}, {"label": "τ"}], **inv)
+deg = rec(value=850.0, temperature_K=850.0, transition_kind="polymorphic", locator=dict(loc, row=6),
+          phases=[{"label": "B27"}, {"label": "B33"}, {"label": "NiAl"}, {"label": "Ni3Al"}], **inv)
+old_mis = rec(value=740.0, temperature_K=740.0, transition_kind="eutectic", locator=dict(loc, row=7),
+              phases=[{"label": "L"}, {"label": "Mg2Pb"}, {"label": "Phase 2"}, {"label": "HCP_A3 (Mg)"}], **inv)
+tchk = vc(kind="invariant_table", verdict="checked", drop_labels={"Phase 2": "composition column header", "Phase 3": "composition column header"},
+          records={miss["id"]: {"action": "add_labels", "labels": ["Ni3Al"]}, eo["id"]: {"action": "reaction_type", "type": "eutectoid", "printed": "EO"},
+                   ter["id"]: {"action": "higher_order", "system": "AL-CR-NI"}, deg["id"]: {"action": "as_printed"}})
+out, rep = run([hdr, mono, miss, eo, ter, deg, old_mis], {"invariant_table:doi:10.1/t/p5/tab-2": tchk,
+                                                          "record:" + old_mis["id"]: vc(kind="record_phases", verdict="misread")})
+h = out[hdr["id"]]
+check("G6 page check: header labels dropped, stored list and composition kept aside, no flag",
+      [p["label"] for p in h["phases"]] == ["L", "Mg2Pb", "HCP_A3 (Mg)"] and h["phases_stored"][2] == "Phase 2"
+      and h["phase_compositions_dropped"][0]["phase"] == "Phase 2" and not codes(h)
+      and any(c["rule"] == "non_phase_labels_dropped_on_page" and c.get("visual_check") for c in h["corrections"]))
+check("G6 monotectic with Liquid#1 and Liquid#2 is consistent (both kept)", len(out[mono["id"]]["phases"]) == 3 and not codes(out[mono["id"]]))
+check("G6 page check: missing printed phase added", [p["label"] for p in out[miss["id"]]["phases"]] == ["L", "NiAl", "Ni3Al"]
+      and not codes(out[miss["id"]]))
+check("G6 page check: reaction type set to the printed one, stored kept",
+      out[eo["id"]]["transition_kind"] == "eutectoid" and out[eo["id"]]["transition_kind_stored"] == "eutectic" and not codes(out[eo["id"]]))
+check("G6 page check: higher-order row reassigned to the named system", out[ter["id"]]["system"] == "AL-CR-NI"
+      and out[ter["id"]]["flags"]["extraction_accepted"])
+check("G6 page check: degenerate four-phase row as printed stays accepted, not ESPEI-ready",
+      "binary_degenerate_reaction_as_printed" in codes(out[deg["id"]]) and out[deg["id"]]["flags"]["extraction_accepted"]
+      and not out[deg["id"]]["flags"]["espei_ready"])
+check("page: a record-level 'misread' of the phase list is not demoted once the table check corrects it",
+      out[old_mis["id"]]["flags"]["extraction_accepted"] and not codes(out[old_mis["id"]]))
+pf = rec(property="HM_FORM", unit="kJ/mol-atom", value=196.18, value_printed=1373.27, phases=[{"label": "Mn3O4"}], system="MN-O",
+         temperature_K=298.0, temperature_printed="298 K", flags={"extraction_accepted": True, "espei_ready": True, "magnitude_suspect": True})
+st = rec(property="SM", unit="J/mol-atom/K", value=30.0, temperature_K=298.0, temperature_printed=None, phases=[{"label": "NiAl"}])
+asp = rec(property="HM_FORM", unit="kJ/mol-atom", value=-260.0, phases=[{"label": "NiAl"}])
+out, rep = run([pf, st, asp], {"page_fix:" + pf["id"]: vc(kind="page_fix", verdict="corrected", fields={"value": -196.18}, printed="-1373.27"),
+                               "record:" + asp["id"]: vc(kind="record_value", verdict="as_stored")})
+check("page_fix: value read on the page replaces the stored one (kept), magnitude flag cleared",
+      out[pf["id"]]["value"] == -196.18 and out[pf["id"]]["value_stored"] == 196.18 and not out[pf["id"]]["flags"]["magnitude_suspect"]
+      and out[pf["id"]]["value_printed"] == 1373.27)
+check("298 K is 298.15 K (printed string kept, correction entry)", out[pf["id"]]["temperature_K"] == 298.15
+      and out[st["id"]]["temperature_K"] == 298.15 and out[pf["id"]]["temperature_printed"] == "298 K"
+      and any(c["rule"] == "standard_reference_temperature" for c in out[st["id"]]["corrections"]))
+check("G2 out-of-range value printed so: accepted, flagged, not ESPEI-ready",
+      out[asp["id"]]["flags"]["extraction_accepted"] and "value_outside_typical_range_as_printed" in codes(out[asp["id"]])
+      and not out[asp["id"]]["flags"]["espei_ready"])
+g7a = rec(property="HM_FORM", unit="kJ/mol-atom", value=-12.0, phases=[{"label": "\\sigma"}], locator={"artifact": "table", "asset": "doi:x/p9/tab-1", "page": 9, "row": 1})
+g7b = copy.deepcopy(g7a); g7b["id"], g7b["phases"] = "ORC-SIG2", [{"label": "σ"}]
+g7c = copy.deepcopy(g7a); g7c["id"], g7c["phases"], g7c["locator"] = "ORC-FE3O4", [{"label": "Magnetite (Fe3O4)"}], dict(g7a["locator"], row=2)
+g7d = copy.deepcopy(g7c); g7d["id"], g7d["phases"] = "ORC-FE3O4B", [{"label": "Fe3O4"}]
+g7e = copy.deepcopy(g7a); g7e["id"], g7e["phases"], g7e["locator"] = "ORC-PD7", [{"label": "Pd7Er"}], dict(g7a["locator"], row=3)
+g7f = copy.deepcopy(g7e); g7f["id"], g7f["phases"] = "ORC-PD3", [{"label": "Pd3Er"}]
+out, rep = run([g7a, g7b, g7c, g7d, g7e, g7f])
+check("G7 spelling variants of one label merged (\\sigma / σ; Fe3O4 / Magnetite (Fe3O4))",
+      ("ORC-SIG2" not in out or g7a["id"] not in out) and ("ORC-FE3O4" not in out or "ORC-FE3O4B" not in out))
+check("G7 two different readings of one printed value kept apart and flagged",
+      "phase_label_readings_disagree" in codes(out["ORC-PD7"]) and "phase_label_readings_disagree" in codes(out["ORC-PD3"]))
+cm = rec(property="PHASE_COMPOSITION", observation_type="phase_region_vertex_set", temperature_K=1200.0, record_kind="general_table",
+         phases=[{"label": "NiAl"}], phase_compositions=[{"phase": "NiAl", "composition": {"AL": 0.30, "NI": 0.70},
+                                                          "composition_source": "printed", "basis": "mole_fraction"}])
+out, rep = run([cm])
+check("G9 composition deviating from the formula (printed solubility) is flag-only",
+      "composition_label_mismatch" in codes(out[cm["id"]]) and out[cm["id"]]["flags"]["espei_ready"])
+lq = rec(property="CPM", unit="J/mol-atom/K", value=42.0, temperature_K=298.15, system="CA-O", phases=[{"label": "CaO(liq-am)"}])
+out, rep = run([lq])
+check("G5 liquid / amorphous property at room temperature not ESPEI-ready", "liquid_property_at_room_temperature" in codes(out[lq["id"]]))
+
+cz = rec(property="HM_FORM", unit="kJ/mol-atom", value=-24.4, temperature_K=1123.0, system="CU-ZR", phases=[{"label": "CuZr"}],
+         uncertainty={"value": 0.96, "basis": "printed"})
+out, rep = run([cz], {"page_fix:" + cz["id"]: vc(kind="page_fix", verdict="corrected", fields={
+    "temperature_K": 298.15, "uncertainty": {"value": 8.749, "basis": "scatter_between_sources"}}),
+    "flag:" + cz["id"]: vc(kind="page_flag", verdict="confirmed", related_records=["ORC-X"], flags=[
+        {"code": "measured_at_other_stoichiometry", "effect": "not_espei_ready", "detail": "x"},
+        {"code": "same_measurement_listed_in_other_paper", "effect": "not_espei_ready", "detail": "y"}])})
+o = out[cz["id"]]
+check("page_fix: temperature and scatter-aware sigma replace the stored ones (kept); several page flags apply",
+      o["temperature_K"] == 298.15 and o["temperature_K_stored"] == 1123.0 and o["uncertainty"]["value"] == 8.749
+      and o["uncertainty_stored"]["value"] == 0.96 and {"measured_at_other_stoichiometry", "same_measurement_listed_in_other_paper"} <= codes(o)
+      and o["related_records"] == ["ORC-X"] and not o["flags"]["espei_ready"])
+
 print("%d failures" % len(fails))
 sys.exit(1 if fails else 0)

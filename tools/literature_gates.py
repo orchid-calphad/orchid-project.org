@@ -36,7 +36,7 @@ from espei_constraints import ELEMENT_TM_TB
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VISUAL_FILE = os.path.join(HERE, "literature_visual_checks.json")
-GATE_RELEASE = "literature-gates 2026-10-23"
+GATE_RELEASE = "literature-gates 2026-10-24 (cleanup)"
 
 TEMPERATURE_PROPS = {"INVARIANT_TEMPERATURE", "TRANSITION_TEMPERATURE"}
 EQUILIBRIUM_PROPS = TEMPERATURE_PROPS | {"PHASE_COMPOSITION", "PHASE_ASSEMBLAGE"}
@@ -69,7 +69,7 @@ def vc_of(check):
 
 
 def fail(r, gate, code, effect, detail=None, check=None):
-    """Record a gate failure. effect: not_accepted | not_espei_ready | flag_only."""
+    """Record a gate failure. effect: not_accepted | not_espei_ready | not_certified | flag_only."""
     gf = r.setdefault("gate_failures", [])
     if any(x["code"] == code for x in gf):
         return False
@@ -82,6 +82,8 @@ def fail(r, gate, code, effect, detail=None, check=None):
     fl = r["flags"]
     if effect == "not_accepted":
         fl["extraction_accepted"] = False
+    if effect == "not_certified":
+        fl["espei_certified"] = False
     if effect in ("not_accepted", "not_espei_ready"):
         if fl.get("espei_ready"):
             fl["espei_ready_before_gates"] = True
@@ -128,6 +130,37 @@ def norm_label(l):
     l = unicodedata.normalize("NFKC", l or "")
     l = l.replace("′", "'").replace("″", '"').replace("’", "'").replace("−", "-").replace("–", "-")
     return re.sub(r"\s+", "", l).lower()
+
+
+GREEK_NAMES = {"alpha": "α", "beta": "β", "gamma": "γ", "delta": "δ", "epsilon": "ε", "eps": "ε", "zeta": "ζ", "eta": "η",
+               "theta": "θ", "kappa": "κ", "lambda": "λ", "mu": "μ", "sigma": "σ", "tau": "τ", "phi": "φ", "chi": "χ",
+               "psi": "ψ", "omega": "ω", "xi": "ξ", "nu": "ν", "pi": "π", "rho": "ρ", "iota": "ι", "upsilon": "υ"}
+_GREEK_WORD = re.compile(r"\\?\b(" + "|".join(sorted(GREEK_NAMES, key=len, reverse=True)) + r")(?!(?-i:[a-z]))", re.I)
+_KEY_GLYPH = str.maketrans({"−": "-", "–": "-", "—": "-", "‐": "-", "′": "'", "’": "'", "″": '"', "ϕ": "φ", "ϵ": "ε"})
+_KEY_WORDS = re.compile(r"(?i)\b(?:phase|sol\.?|solution|solid solution|ss)(?![a-z])")
+
+
+def phase_key(label):
+    """Spelling-independent key of a printed phase label: Unicode compatibility forms (subscripts), LaTeX and spelled
+    Greek letters (\\sigma, gamma -> σ, γ), dash / prime glyphs (″ = two primes), case, white space, '_', '-', '.',
+    outer parentheses and the words 'phase' / 'sol.' / 'solution' are ignored. Used to find a phase printed (or read)
+    twice under two spellings; never to rename a stored label."""
+    s = unicodedata.normalize("NFKC", label or "")
+    s = _GREEK_WORD.sub(lambda m: GREEK_NAMES[m.group(1).lower()], s)
+    s = s.replace("\\", "").replace("{", "").replace("}", "").replace("$", "").translate(_KEY_GLYPH).replace("''", '"')
+    s = _KEY_WORDS.sub("", s)
+    s = re.sub(r"[\s_\-·.]+", "", s).lower()
+    while len(s) > 2 and s.startswith("(") and s.endswith(")") and s.count("(") == 1:
+        s = s[1:-1]
+    return s
+
+
+_G6_LIQ = re.compile(r"^\(?\s*(?:L|Liq|Liquid|liq|liquid|LIQUID)\s*[#_]?\s*(?:\d|'+|\"|′+|″|I{1,3})?\s*#?\s*\)?$")
+
+
+def is_liq_g6(p):
+    """Liquid test of the invariant gate: phase_rule.is_liquid_label plus numbered liquids (L1, L2, L#1, L', LI)."""
+    return is_liq(p) or bool(_G6_LIQ.match((p.get("label") or "").strip()))
 
 
 def formula_elements(label):
@@ -192,33 +225,82 @@ class Report:
 _GLYPH = str.maketrans({"−": "-", "–": "-", "—": "-", "‐": "-", "′": "'", "’": "'", "″": '"'})
 
 
+def _label_tokens(label):
+    s = unicodedata.normalize("NFKC", label or "")
+    s = _GREEK_WORD.sub(lambda m: GREEK_NAMES[m.group(1).lower()], s)
+    s = s.replace("\\", "").replace("{", "").replace("}", "").replace("$", "").translate(_KEY_GLYPH).lower()
+    toks = {t.strip("-_.'") for t in re.split(r"[\s,;()\[\]/]+", s)}
+    return {t for t in toks if t and t not in ("phase", "sol", "sol.", "solution", "ss", "to", "and")}
+
+
 def _cosmetic_phases(r):
-    out = []
+    """[(key, label)] of the named phases of a record: the liquid under any spelling is one phase."""
+    out = {}
     for p in r.get("phases") or []:
         lab = (p.get("label") or "").translate(_GLYPH).strip()
         if lab.upper() in phase_rule.NOT_PRINTED:
             continue
-        out.append("liquid" if is_liq(p) and not re.search(r"\d", lab) else lab)
-    return tuple(sorted(set(out)))
+        k = "liquid" if is_liq_g6(p) and not re.search(r"\d", lab) else phase_key(lab)
+        out.setdefault(k, lab)
+    return sorted(out.items())
+
+
+def _formula_fractions(label):
+    c, _ = parity.parse_phase(label, None)
+    if not c:
+        return None
+    tot = float(sum(c.values()))
+    return {e.upper(): round(float(n) / tot, 2) for e, n in c.items()} if tot else None
+
+
+def _same_phase(a, b):
+    """Two spellings / readings of one phase label: the same key, one label's words contained in the other's
+    ('Fe3O4' / 'Magnetite (Fe3O4)', 'C14 Laves' / 'C14 Laves TiMn2'), or the same formula composition
+    ('UC1.90' / 'C0.655U0.345')."""
+    (ka, la), (kb, lb) = a, b
+    if ka == kb:
+        return True
+    ta, tb = _label_tokens(la), _label_tokens(lb)
+    if ta and tb and (ta <= tb or tb <= ta):
+        return True
+    fa, fb = _formula_fractions(la), _formula_fractions(lb)
+    return bool(fa and fb and len(fa) > 1 and set(fa) == set(fb) and all(abs(fa[e] - fb[e]) <= 0.01 for e in fa))
+
+
+def _phases_compatible(pa, pb):
+    if not pa or not pb:
+        return True
+    return all(any(_same_phase(x, y) for y in pb) for x in pa) and all(any(_same_phase(y, x) for x in pa) for y in pb)
 
 
 def _specificity(r):
     named = sum(1 for p in r.get("phases") or [] if (p.get("label") or "").strip().upper() not in phase_rule.NOT_PRINTED)
     mapped = sum(1 for p in r.get("phases") or [] if p.get("model_phase"))
-    return (bool(r["flags"].get("extraction_accepted")), bool(r["flags"].get("espei_ready")), named, mapped, len(r.get("readers") or []),
-            len(r.get("phase_compositions") or []), bool(r.get("overall_composition")), bool(r.get("reference_state")))
+    # last tie-break: a label that names the formula ('NiAl (B2)') over one that does not ('B2')
+    formula = any(_formula_fractions(p.get("label")) for p in r.get("phases") or [])
+    toks = sum(len(_label_tokens(p.get("label"))) for p in r.get("phases") or [])
+    return (bool(r["flags"].get("extraction_accepted")), bool(r["flags"].get("espei_ready")), named, mapped,
+            len(r.get("readers") or []),
+            len(r.get("phase_compositions") or []), bool(r.get("overall_composition")), bool(r.get("reference_state")),
+            formula, toks)
 
 
 def _compatible(a, b):
     """Two readings of one printed value differ only cosmetically: the same named phases (or none on one side) and the
     same compositions (or none on one side)."""
-    pa, pb = _cosmetic_phases(a), _cosmetic_phases(b)
-    if pa and pb and pa != pb:
+    if not _phases_compatible(_cosmetic_phases(a), _cosmetic_phases(b)):
         return False
     for f in ("overall_composition", "phase_compositions"):
         if a.get(f) and b.get(f) and json.dumps(a[f], sort_keys=True) != json.dumps(b[f], sort_keys=True):
             return False
     return True
+
+
+def _compatible_but_phases(a, b):
+    for f in ("overall_composition", "phase_compositions"):
+        if a.get(f) and b.get(f) and json.dumps(a[f], sort_keys=True) != json.dumps(b[f], sort_keys=True):
+            return False
+    return bool(_cosmetic_phases(a)) and bool(_cosmetic_phases(b))
 
 
 def g7_dedupe(records, rep):
@@ -246,6 +328,14 @@ def g7_dedupe(records, rep):
                 fits[0][1].append(r)
             else:
                 kept.append((r, []))     # a new reading, or ambiguous between two (kept apart)
+        if len(kept) > 1:
+            # one printed value read with different phase labels: at most one reading is right
+            for best, _ in kept:
+                if all(_compatible_but_phases(best, k[0]) for k in kept if k[0] is not best) and _cosmetic_phases(best):
+                    fail(best, "G7", "phase_label_readings_disagree", "not_espei_ready",
+                         "the same printed value is also stored with phase(s) %s" % "; ".join(
+                             ", ".join(labels(k[0])) for k in kept if k[0] is not best)[:200])
+                    rep.add("G7", "phase_label_readings_disagree", best, "flagged")
         for best, others in kept:
             if not others:
                 continue
@@ -259,6 +349,13 @@ def g7_dedupe(records, rep):
                 pids.update(x.get("merged_pids") or [])
                 drop.add(id(x))
             best["merged_ids"] = sorted(ids)
+            # the other readings' spellings of a single phase stay with the kept record (`label_variants`)
+            bp = best.get("phases") or []
+            if len(bp) == 1:
+                var = sorted({(x.get("phases") or [{}])[0].get("label") for x in others if len(x.get("phases") or []) == 1}
+                             - {bp[0].get("label"), None, "UNKNOWN"})
+                if var:
+                    bp[0]["label_variants"] = sorted(set(bp[0].get("label_variants") or []) | set(var))
             if pids - {best.get("pid")}:
                 best["merged_pids"] = sorted(pids - {best.get("pid")})
             rep.add("G7", "cosmetic_duplicate_merged", best, "merged", merged=len(others),
@@ -528,6 +625,9 @@ def g1_temperatures(records, rule, visual, store_units, rep):
             for r in rows:
                 v = printed_number(r.get("temperature_printed"))
                 if v is None:
+                    # a footnote mark after the number ('287*', '271†') does not change the cell's unit
+                    v = printed_number(re.sub(r"\s*[*†‡§]+\s*$", "", str(r.get("temperature_printed") or "")) or None)
+                if v is None:
                     continue
                 newT = round(v + C_TO_K, 4) if unit == "C" else v
                 if abs((r.get("temperature_K") or 0) - newT) < 0.01:
@@ -766,6 +866,8 @@ def _scale_groups(records):
         bad = [r for r in g if not _value_ok(r, r["value"])]
         if not bad:
             continue
+        if all(_value_ok(r, -r["value"]) for r in bad):
+            continue     # a missing minus sign (G3 checks it), not a J / kJ scale
         for f in (1e-3, 1e3):
             if len(bad) >= 2 and all(_value_ok(r, r["value"] * f) for r in bad) and len(bad) >= 0.8 * len(g):
                 out[k] = (f, len(bad), len(g))
@@ -903,6 +1005,13 @@ def g2_magnitudes(records, visual, rep):
             r["value_stored"], r["value"] = v, new
             rep.add("G2", "value_corrected_from_page", r, "corrected", before=v, after=new)
             continue
+        if chk and chk.get("verdict") == "as_stored" and chk.get("kind") in ("record_value", "values"):
+            # read correctly: the page prints this value; it stays accepted but is not used for fitting
+            fail(r, "G2", "value_outside_typical_range_as_printed", "not_espei_ready",
+                 "%s = %g %s is outside [%g, %g]; the page prints it so" % (p, v, unit, lo, hi), chk)
+            r["flags"]["magnitude_suspect"] = True
+            rep.add("G2", "value_outside_typical_range_as_printed", r, "flagged", value=v)
+            continue
         effect = "not_accepted"
         if r.get("evidence_class") == "dft" and re.search(r"relative|ΔE|\bE\b", pp + " " + str((r.get("locator") or {}).get("caption"))):
             effect = "not_espei_ready"   # relative energies of hypothetical structures can be large
@@ -976,6 +1085,10 @@ RK_PARAM = re.compile(r"^\s*(?:\^?\s*\d\s*L|L\s*[_^]?\s*\{?\s*\d|L\s*\(|[ab]\s*$
                       r"Redlich|RK\b|\d\s*L\s*$|.*\bcoefficient\b|.*\bcoeff\.)", re.I)
 
 
+ROOM_T_LIQUID_PROPS = {"HM_FORM", "GM_FORM", "SM_FORM", "SM", "CPM", "ENTROPY", "HEAT_CONTENT"}
+GAS_ELEMENTS = {"O", "N", "H", "F", "CL", "AR", "HE", "NE", "KR", "XE"}
+
+
 def g5_semantics(records, rep):
     for r in records:
         p = r.get("property") or ""
@@ -1035,6 +1148,15 @@ def g5_semantics(records, rep):
         if p in ("HM_FORM", "GM_FORM", "SM_FORM") and r.get("phases") and all(is_liq(x) for x in r["phases"]):
             fail(r, "G5", "formation_on_liquid", "not_espei_ready", "formation quantity assigned to a liquid")
             rep.add("G5", "formation_on_liquid", r, "flagged")
+        T = r.get("temperature_K")
+        if p in ROOM_T_LIQUID_PROPS and r.get("phases") and all(is_liq(x) for x in r["phases"]) and \
+                isinstance(T, (int, float)) and T <= 310:
+            tms = [tm(e) for e in r["elements"] if e not in GAS_ELEMENTS and tm(e)]
+            if tms and min(tms) > 350:
+                fail(r, "G5", "liquid_property_at_room_temperature", "not_espei_ready",
+                     "%s of a liquid / amorphous phase at %g K, far below the melting points of the system's "
+                     "metals: a hypothetical (model) state, not an equilibrium datum" % (p, T))
+                rep.add("G5", "liquid_property_at_room_temperature", r, "flagged")
         if p in ("SM", "ENTROPY") and INCREMENT.search(pp):
             correct(r, "G5", "property", p, "SM_INCREMENT", "printed_entropy_increment", {"property_printed": pp})
             r["property_code_before_gates"], r["property"] = p, "SM_INCREMENT"
@@ -1058,15 +1180,15 @@ TWO_PHASE = {"congruent melting": 1, "congruent transformation": 0, "polymorphic
 
 def _liq_key(p):
     n = norm_label(p.get("label"))
-    if is_liq(p):
-        m = re.match(r"^(?:l|liq\.?|liquid|melt)[#_]?(\d|'+|\"+)?", n)
+    if is_liq_g6(p):
+        m = re.match(r"^\(?(?:liquid|liq\.?|melt|l)[#_]?(\d|'+|\"+|i{1,3}(?=\)?$))?", n)
         return "liquid" + ((m.group(1) or "") if m else n)
     return None
 
 
 def normalize_phases(r):
-    """Drop non-phase labels and repeated phases (same normalized label, or the same unnumbered liquid printed
-    twice); the dropped labels are kept in `phases_dropped`."""
+    """Drop non-phase labels and repeated phases (the same phase under two spellings: phase_key, or the same
+    unnumbered liquid printed twice); the dropped labels are kept in `phases_dropped`."""
     ph = r.get("phases") or []
     if len(ph) < 2:
         return []
@@ -1081,7 +1203,7 @@ def normalize_phases(r):
         named = list(ph)
     seen, keep = {}, []
     for p in named:
-        k = _liq_key(p) or ("model:" + p["model_phase"] if p.get("model_phase") and not is_liq(p) and False else norm_label(p.get("label")))
+        k = _liq_key(p) or phase_key(p.get("label"))
         if k in seen:
             prev = seen[k]
             if not prev.get("model_phase") and p.get("model_phase"):
@@ -1093,24 +1215,92 @@ def normalize_phases(r):
         seen[k] = p
         keep.append(p)
     if dropped:
-        r["phases_stored"] = [x.get("label") for x in ph]
+        r.setdefault("phases_stored", [x.get("label") for x in ph])
         r["phases"] = keep
-        r["phases_dropped"] = dropped
+        r.setdefault("phases_dropped", []).extend(dropped)
     return dropped
 
 
-def g6_invariants(records, rep):
+REACTION_TYPES = set(THREE_PHASE) | set(TWO_PHASE) | {"other", "quasi-peritectic", "critical point", "magnetic"}
+
+
+def _table_check(r, visual):
+    return visual.get("invariant_table:" + str(asset_of(r)))
+
+
+def _record_action(chk, r):
+    return ((chk or {}).get("records") or {}).get(r["id"]) or {}
+
+
+def g6_page_phase_list(r, chk, rep):
+    """Phase-list corrections read on the page (tools/literature_visual_checks.json, key invariant_table:<asset>):
+    stored labels that are not phases of the row (column headers, composition labels, a phase repeated under another
+    spelling) are dropped, phases the printed reaction names but the reading missed are added, and the reaction type is
+    set to the printed one. The stored list stays in `phases_stored`; compositions printed under a dropped label move
+    to `phase_compositions_dropped`."""
+    if not chk:
+        return False
+    act = _record_action(chk, r)
+    # the page check judged the listed rows (`rows`); its dropped labels apply to those rows only
+    drop = chk.get("drop_labels") or {} if (not chk.get("rows") or r["id"] in chk["rows"]) else {}
+    ph = r.get("phases") or []
+    changed = False
+    gone = [p for p in ph if p.get("label") in drop]
+    if gone and len(ph) - len(gone) >= 1:
+        before = [p.get("label") for p in ph]
+        r.setdefault("phases_stored", list(before))
+        r["phases"] = [p for p in ph if p.get("label") not in drop]
+        for p in gone:
+            r.setdefault("phases_dropped", []).append({"label": p.get("label"), "reason": "not a phase of the row on the page: %s" % drop[p.get("label")]})
+        pcs = r.get("phase_compositions") or []
+        moved = [pc for pc in pcs if pc.get("phase") in drop]
+        if moved:
+            r["phase_compositions_dropped"] = moved
+            r["phase_compositions"] = [pc for pc in pcs if pc.get("phase") not in drop]
+        correct(r, "G6", "phases", before, [p.get("label") for p in r["phases"]], "non_phase_labels_dropped_on_page",
+                {"dropped": {p.get("label"): drop[p.get("label")] for p in gone}}, chk)
+        rep.add("G6", "phase_list_corrected_on_page", r, "corrected", dropped=[p.get("label") for p in gone])
+        changed = True
+    if act.get("action") == "add_labels" and act.get("labels"):
+        have = {phase_key(p.get("label")) for p in r.get("phases") or []}
+        add = [l for l in act["labels"] if phase_key(l) not in have]
+        if add:
+            before = [p.get("label") for p in r.get("phases") or []]
+            r.setdefault("phases_stored", list(before))
+            r["phases"] = list(r.get("phases") or []) + [{"label": l, "label_source": "page_check"} for l in add]
+            correct(r, "G6", "phases", before, [p.get("label") for p in r["phases"]], "printed_reaction_phase_added_on_page",
+                    {"added": add, "reaction_printed": (r.get("reaction") or {}).get("printed")}, chk)
+            rep.add("G6", "phase_added_on_page", r, "corrected", added=add)
+            changed = True
+    if act.get("action") == "reaction_type" and act.get("type") in REACTION_TYPES and act["type"] != r.get("transition_kind"):
+        before = r.get("transition_kind")
+        r["transition_kind_stored"] = before
+        r["transition_kind"] = act["type"]
+        if isinstance(r.get("reaction"), dict) and r["reaction"].get("type") == before:
+            r["reaction"]["type"] = act["type"]
+        correct(r, "G6", "transition_kind", before, act["type"], "reaction_type_read_from_page",
+                {"printed": act.get("printed")}, chk)
+        rep.add("G6", "reaction_type_corrected_on_page", r, "corrected", before=before, after=act["type"])
+        changed = True
+    return changed
+
+
+def g6_invariants(records, rep, visual=None):
+    visual = visual or {}
     for r in records:
         if r.get("property") not in TEMPERATURE_PROPS and r.get("observation_type") not in ("invariant_reaction", "phase_transition"):
             continue
         d = normalize_phases(r)
         if d:
             rep.add("G6", "phase_list_normalized", r, "corrected", dropped=[x["label"] for x in d])
+        chk = _table_check(r, visual)
+        page_fixed = g6_page_phase_list(r, chk, rep)
+        act = _record_action(chk, r)
         ph = r.get("phases") or []
         n = len(ph)
         if n == 0:
             continue
-        nl = sum(1 for p in ph if is_liq(p))
+        nl = sum(1 for p in ph if is_liq_g6(p))
         tk = r.get("transition_kind")
         nel = len(r["elements"])
         why = None
@@ -1126,14 +1316,28 @@ def g6_invariants(records, rep):
                 why = ("reaction_liquid_count_inconsistent", "%s with %d liquid phase(s)" % (tk, nl))
         elif nel == 3 and n > 4:
             why = ("ternary_more_than_four_phases", "%d distinct phases in a ternary invariant" % n)
+        if act.get("action") == "misread":
+            fail(r, "G6", "phase_list_misread_on_page", "not_accepted", "page check: %s" % (act.get("note") or chk.get("seen") or "")[:200], chk)
+            rep.add("G6", "phase_list_misread_on_page", r, "demoted")
+            continue
+        if act.get("action") == "higher_order" and not r["flags"].get("system_reassigned"):
+            fail(r, "page", "higher_order_system_row", "not_accepted",
+                 "page check: a reaction of a higher-order system; the page names no unambiguous system", chk)
+            rep.add("page", "higher_order_system_row", r, "demoted")
+            continue
+        if why and act.get("action") == "as_printed":
+            code = "binary_degenerate_reaction_as_printed" if why[0] == "binary_more_than_three_phases" else why[0] + "_as_printed"
+            why = (code, why[1] + "; the page prints it so")
         if why:
-            fail(r, "G6", why[0], "not_espei_ready", why[1])
+            fail(r, "G6", why[0], "not_espei_ready", why[1], chk)
             rep.add("G6", why[0], r, "flagged", kind=tk, phases=labels(r))
             if why[0].startswith("binary_more"):
                 for lab in labels(r):
                     if foreign_formula_elements(lab, r["elements"]):
                         r["flags"]["system_mismatch"] = True
                         break
+        elif page_fixed:
+            r["_g6_page_fixed"] = True
 
 
 # ----------------------------------------------------------------------------------------------- G9 compositions
@@ -1198,7 +1402,9 @@ def g9_compositions(records, visual, rep):
                     rep.add("G9", "composition_from_formula", r, "corrected", phase=pc.get("phase"))
                 else:
                     code = "composition_copied_across_rows" if copied else "composition_label_mismatch"
-                    fail(r, "G9", code, "not_espei_ready",
+                    # a printed composition that deviates from the label's formula is, on the page sample, a real
+                    # solubility / homogeneity range as printed: flagged only; copied compositions block ESPEI
+                    fail(r, "G9", code, "not_espei_ready" if copied else "flag_only",
                          "phase %s printed composition %s deviates %.2f from its formula" % (pc.get("phase"), comp, dev), chk)
                     rep.add("G9", code, r, "flagged", phase=pc.get("phase"))
                 break
@@ -1325,6 +1531,10 @@ def g_page_verdicts(records, visual, rep):
         if not chk or r["flags"].get("system_reassigned"):
             continue
         v = chk.get("verdict")
+        if r.get("_g6_page_fixed") and chk.get("kind") == "record_phases":
+            # the misreading was the phase list (header labels read as phases), corrected on the page check of the table
+            rep.counts[("page", "phase_list_misread_corrected", "corrected")] += 1
+            continue
         if v == "misread":
             fail(r, "page", "misread_on_page", "not_accepted", "page check: %s" % (chk.get("seen") or "")[:200], chk)
             rep.add("page", "misread_on_page", r, "demoted")
@@ -1333,17 +1543,117 @@ def g_page_verdicts(records, visual, rep):
             rep.add("page", "higher_order_system_row", r, "demoted")
 
 
+# ----------------------------------------------------------------------------------------------- page fixes / T_ref
+
+STD_T_PRINTED = re.compile(r"^\s*~?\s*298(?:\.[012]0?)?\s*(?:K)?\s*(?:\((?:caption|subscript[^)]*)\)?.*)?$")
+PAGE_FIX_FIELDS = ("value", "unit", "temperature_K", "evidence_class", "property", "uncertainty", "reference_state",
+                   "temperature_basis")
+
+
+def g0_page_fixes(records, visual, rep):
+    """Record-level corrections read on the rendered page (key page_fix:<id>, verdict corrected): the stored field is
+    kept (`value_stored`, `unit_stored`, `temperature_K_stored`, `evidence_class_before_gates`,
+    `property_code_before_gates`) and the record gets a `corrections` entry with the page check. Applied before the
+    other gates, which then judge the corrected value."""
+    for r in records:
+        chk = visual.get("page_fix:" + r["id"])
+        if not chk or chk.get("verdict") != "corrected":
+            continue
+        for f in PAGE_FIX_FIELDS:
+            if f not in (chk.get("fields") or {}):
+                continue
+            new = chk["fields"][f]
+            before = r.get(f)
+            if before == new:
+                continue
+            store = {"value": "value_stored", "unit": "unit_stored", "temperature_K": "temperature_K_stored",
+                     "evidence_class": "evidence_class_before_gates", "property": "property_code_before_gates",
+                     "uncertainty": "uncertainty_stored", "reference_state": "reference_state_stored",
+                     "temperature_basis": "temperature_basis_stored"}[f]
+            r.setdefault(store, before)
+            r[f] = new
+            if f == "temperature_K":
+                if r.get("property") in TEMPERATURE_PROPS and r.get("value") == before:
+                    r.setdefault("value_stored", r.get("value"))
+                    r["value"] = new
+                pl = r["flags"].pop("plausibility", None)
+                if pl:
+                    r["flags"]["plausibility_before_correction"] = pl
+                    r["flags"]["calphad_check"] = "not_available"
+                    r["flags"]["espei_certified"] = False
+            if f == "evidence_class":
+                r.setdefault("origin", {})["class_gate"] = chk.get("origin_class") or new
+            if f in ("value", "unit") and r["flags"].get("magnitude_suspect"):
+                # the magnitude was the suspicion; the page settles the value
+                r["flags"]["magnitude_suspect_before_page_fix"] = True
+                r["flags"]["magnitude_suspect"] = False
+            correct(r, "page", f, before, new, chk.get("rule") or "read_from_page", {"printed": chk.get("printed")}, chk)
+            rep.add("page", "page_fix_" + f, r, "corrected", before=before, after=new)
+    for r in records:
+        chk = visual.get("flag:" + r["id"])
+        if not chk:
+            continue
+        for fl in chk.get("flags") or ([{"code": chk["code"], "effect": chk.get("effect"), "detail": chk.get("detail")}] if chk.get("code") else []):
+            fail(r, "page", fl["code"], fl.get("effect") or "not_espei_ready", (fl.get("detail") or chk.get("seen") or "")[:240], chk)
+            rep.add("page", fl["code"], r, "flagged")
+        if chk.get("related_records"):
+            r["related_records"] = chk["related_records"]
+
+
+def g0_standard_temperature(r, rep):
+    """PI rule (2026-10-24) '298 K is 298.15 K': a temperature printed as 298 K / 298.2 K (or read from a '298'
+    subscript) denotes the standard reference temperature and is stored as 298.15 K; the printed string is kept."""
+    T = r.get("temperature_K")
+    if not isinstance(T, (int, float)) or T not in (298.0, 298.1, 298.2) or r.get("temperature_range_K"):
+        return
+    tp = r.get("temperature_printed")
+    if tp is not None and not STD_T_PRINTED.match(str(tp)):
+        return
+    r["temperature_K_stored"] = T
+    r["temperature_K"] = 298.15
+    if r.get("property") in TEMPERATURE_PROPS and r.get("value") == T:
+        r["value_stored"], r["value"] = r.get("value"), 298.15
+    correct(r, "G1", "temperature_K", T, 298.15, "standard_reference_temperature",
+            {"printed": tp if tp is not None else (r.get("property_printed") or (r.get("locator") or {}).get("caption") or "")[:120]})
+    rep.counts[("G1", "standard_reference_temperature_298.15", "corrected")] += 1
+
+
 # ----------------------------------------------------------------------------------------------- driver
+
+def expand_visual(visual):
+    """Table-level page checks name single rows of a higher-order system (with the system the page names): they are
+    turned into record-level checks (record:<id>, verdict higher_order, system) so that G4 reassigns the system."""
+    out = dict(visual)
+    for k, c in visual.items():
+        if not k.startswith("invariant_table:"):
+            continue
+        for rid, act in (c.get("records") or {}).items():
+            if act.get("action") != "higher_order" or not act.get("system"):
+                continue
+            prev = dict(out.get("record:" + rid) or {})
+            e = {x: c[x] for x in ("page", "pdf_sha256_prefix", "image_sha256", "checked") if c.get(x) is not None}
+            e.update({"key": "record:" + rid, "kind": "record_phases", "verdict": "higher_order", "system": act["system"],
+                      "seen": (act.get("note") or c.get("seen") or "")[:300], "from_table_check": k})
+            if prev and not prev.get("system"):
+                prev.update({"system": act["system"], "from_table_check": k})
+                e = prev
+            elif prev:
+                continue
+            out["record:" + rid] = e
+    return out
+
 
 def apply(records, rule, visual=None, store_units=None, plaus_store=None, describe=None):
     """Mutates the records; returns (records, report dict)."""
-    visual = load_visual() if visual is None else visual
+    visual = expand_visual(load_visual() if visual is None else visual)
     rep = Report()
     acc0 = sum(1 for r in records if r["flags"].get("extraction_accepted"))
     ready0 = sum(1 for r in records if r["flags"].get("espei_ready"))
     n0 = len(records)
+    g0_page_fixes(records, visual, rep)
     g4_system(records, visual, rep)
     for r in records:
+        g0_standard_temperature(r, rep)
         g12_pressure(r, rep)
         g11_plausibility(r, plaus_store or {}, rep)
         g10_readers(r, rep)
@@ -1351,13 +1661,14 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     g5_semantics(records, rep)
     g2_magnitudes(records, visual, rep)
     g3_signs(records, visual, rep)
-    g6_invariants(records, rep)
+    g6_invariants(records, rep, visual)
     g9_compositions(records, visual, rep)
     g8_evidence(records, visual, describe, rep)
     g4_flags(records, rep)
     g_page_verdicts(records, visual, rep)
     records = g7_dedupe(records, rep)
     for r in records:
+        r.pop("_g6_page_fixed", None)
         if r.get("gate_failures"):
             r["gate_failures"].sort(key=lambda x: (x["gate"], x["code"]))
             r["flags"]["gate_failures"] = [x["code"] for x in r["gate_failures"]]
@@ -1445,10 +1756,33 @@ def gates_md(report):
           "beside a named phase) and repeated phases (`phases_dropped`, `phases_stored`); binary three-phase reactions "
           "must have three phases with the right number of liquids, congruent melting two phases with one liquid, "
           "solid-state reactions no liquid; a binary row with four or more phases is flagged (likely a higher-order "
-          "system).",
+          "system). Repeats are found with a spelling-independent key (`phase_key`: subscripts, LaTeX and spelled "
+          "Greek letters, prime glyphs, separators, outer parentheses); numbered liquids (L1, L2, Liquid#2) count as "
+          "liquids. Page checks of whole tables (cleanup 2026-10-24, key `invariant_table:<asset>`): labels that are "
+          "not phases of the row (column headers such as 'Phase 2', 'X^M', 'T/K', composition labels, a phase from a "
+          "neighbouring column) are dropped (compositions printed under them move to `phase_compositions_dropped`); "
+          "a phase the printed reaction names but the reading missed is added (`label_source: page_check`); the "
+          "reaction type is set to the printed one (`transition_kind_stored`); a row of a higher-order system moves "
+          "to the system the page names (else not accepted); a row whose odd phase count or type is printed so stays "
+          "accepted and not ESPEI-ready (`*_as_printed`, `binary_degenerate_reaction_as_printed`).",
           "* G7 duplicates. Values identical in paper, property, value, unit, temperature, table and row (or quote) "
           "that differ only cosmetically (UNKNOWN beside a named phase, glyph variants, reader lists) are merged into "
-          "the most specified record (`merged_ids`).",
+          "the most specified record (`merged_ids`). Labels are compared with `phase_key`, by contained words "
+          "('Fe3O4' / 'Magnetite (Fe3O4)') and by formula composition ('UC1.90' / 'C0.655U0.345'); two readings of one "
+          "printed value with different phases are kept apart and flagged `phase_label_readings_disagree` (not "
+          "ESPEI-ready).",
+          "* Display fix (2026-10-24, not a data change): the compound pages' DFT table labelled the energy above hull "
+          "'eV/atom', but `dft_parity.json` stores it in kJ/mol-atom (`ehull`; Parquet `ehull_kJ_per_mol_atom`). The "
+          "column now reads 'E above hull (kJ/mol-atom)' with an eV/atom column beside it; the MCP server's "
+          "`e_above_hull_eV` is now converted (and `e_above_hull_kJ_per_mol_atom` added).",
+          "* Standard reference temperature (PI rule 2026-10-24: '298 K is 298.15 K'). A temperature stored as 298 / "
+          "298.1 / 298.2 K and printed as 298 K (or read from a '298' subscript) is stored as 298.15 K, printed string "
+          "kept (`standard_reference_temperature`).",
+          "* Page fixes (cleanup 2026-10-24, keys `page_fix:<id>`, `flag:<id>`): a value, unit, temperature, property "
+          "code or evidence class read on the rendered page replaces the stored one (kept in `*_stored` / "
+          "`*_before_gates`, `corrections` with the page check) before the other gates run; values the page prints as "
+          "stored but outside the physical range stay accepted and are not ESPEI-ready "
+          "(`value_outside_typical_range_as_printed`).",
           "* G8 evidence class. Running-text model values whose sentence names only first-principles methods become "
           "`dft`; those whose sentence names only experimental methods (and cite a source) become `experimental` "
           "(cited); both only when the page check confirms the sentence context (otherwise `evidence_class_review`). Values "
@@ -1458,7 +1792,9 @@ def gates_md(report):
           "their own experiments are not evaluations in this sense.",
           "* G9 compositions. Compositions not summing to 1, printed compositions far from the printed formula (and "
           "compositions repeated from another row) are flagged; recomputed from the printed formula when the page "
-          "confirms the formula; activities stored as 0 are not ESPEI-ready.",
+          "confirms the formula; activities stored as 0 are not ESPEI-ready. A printed composition far from its "
+          "label's formula is, on the page sample, a real solubility / homogeneity range as printed: flag only "
+          "(`composition_label_mismatch`); compositions copied across rows block ESPEI.",
           "* G10 readers. `reader_tier` is the pipeline status of the table or passage (which reader passes ran), "
           "not a claim about the value; a row read only by a later reader can carry the table's earlier tier. The "
           "agreement claim is `reader_agreement`; where the record builder did not classify a value (invariant tables, "
