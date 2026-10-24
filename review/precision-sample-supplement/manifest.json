@@ -1,0 +1,492 @@
+{
+  "design": {
+    "allocation": "per sub-sample: primary strata proportional (largest remainder) with a minimum; secondary levels proportional within a primary stratum, at least one per non-empty level when there is room",
+    "draw": "candidates sorted by id within a stratum cell; random.Random(seed).sample in fixed stratum order (S-ASM: shuffle, then one field per diagram); items shuffled within each sub-sample, then numbered",
+    "min_per_primary_stratum": {
+      "S-ASM": 6,
+      "S-ESPEI": 7,
+      "S-REG": 6
+    },
+    "packets": {
+      "k": 3,
+      "overlap": "round(10%) of each sub-sample's own items of the next packet, evenly spaced",
+      "own": "position i with i %% k == packet-1"
+    },
+    "s_asm_exclusions": {
+      "blind_sample_diagrams": 48,
+      "boundary_flag": "release field boundary_basis",
+      "excluded": {
+        "diagram_in_earlier_blind_sample": 683,
+        "diagram_with_expert_tier5_decision": 1000
+      },
+      "expert_diagrams": 77,
+      "population_released": 23131
+    },
+    "s_asm_protocol": "blind: the page shows the drawing with the field tinted and the released point marked; no machine name, basis, stratum or record id",
+    "seed": 20261024,
+    "sizes": {
+      "S-ASM": 50,
+      "S-ESPEI": 50,
+      "S-REG": 50
+    },
+    "strata": {
+      "S-ASM": "naming basis x boundary flag (release field boundary_basis)",
+      "S-ESPEI": "data type x evidence class",
+      "S-REG": "structure tier x chemistry"
+    }
+  },
+  "files_sha256": {
+    "INSTRUCTIONS.md": "52ad41d9e04de1e54c1ee7a57307ddd744b64089f02fd1e8846ce653532c8cd0",
+    "img/A001-whole.jpg": "04a2a3f3ef8357f3db288adf96e126f0a9b22d5b2e5ba3ef305e5ef6ee41d2d6",
+    "img/A001-zoom.jpg": "ccb5616ca0b34d215d2c972ba52e4de0896272e113ed5b110f20c62b55ff8f04",
+    "img/A002-whole.jpg": "0026d29993ac439e7aa30cb305d6cc6632b05a4a40188a92046f40d41024d8d3",
+    "img/A002-zoom.jpg": "15891758f26c88443db92142495e63654a708a938f30b2a5bb768f920fd7947d",
+    "img/A003-whole.jpg": "8605d255f69160b678c05f2647146bbf99b042a49aba4871f5301e8a37e88c0b",
+    "img/A003-zoom.jpg": "d074fc3c6c149d60df032536cba3c8cc3ae0601f9cfe78019464cd276d294068",
+    "img/A004-whole.jpg": "c969a68d0eb7f6009acdf43463f650147ba474bbe2e1ad87ae467d2f8401acef",
+    "img/A004-zoom.jpg": "4c0275483ae1c848d2c5830c832f647845f2c9376f9e03ad5f7f0481f4393cb3",
+    "img/A005-whole.jpg": "e51829d91dd05361d4d57c8f55d5144d0dc4ae4fe4142c24c5efc2b6d131eaa1",
+    "img/A005-zoom.jpg": "17d048a8588c98b740274bca8f90dd5e9a6cf5b67f9d3b8c9e96912d4bc1a280",
+    "img/A006-whole.jpg": "33a22f95566c72daf45b08e75bfd15d56f28045a49884c4137ca93e4fafa1a1f",
+    "img/A006-zoom.jpg": "659dd21d74e9517ae827d3512a4f57c4bbf060820e05602abd11f18b88982a70",
+    "img/A007-whole.jpg": "27975c00116a3919c02072c1113a03a4aca81f8af93eedfcb204d94cd968ba33",
+    "img/A007-zoom.jpg": "8f0ffafd120d099771c694087dd36c1af9211cb66717f4156dc6bf112fffebe4",
+    "img/A008-whole.jpg": "cb317572cc4003b25dfdc969af15c2026ffaf128c6360133492d1aeb1137b261",
+    "img/A008-zoom.jpg": "e0dce9c5b77759963885179b460fc27beadea393b0be74c644351149ec69c850",
+    "img/A009-whole.jpg": "91975c4b8f34e595229e8caad0f2503c5db0faf5251d7b18df6a13613fa47d5e",
+    "img/A009-zoom.jpg": "36c7c42717916c70441fda5c313c509bc026c8ce6bb594a7f4518ed8c0bbdfe6",
+    "img/A010-whole.jpg": "97dad389cb2d8097f8339daf63e5144145e60764a45edea2d60d14c73c7db46b",
+    "img/A010-zoom.jpg": "711ea2213aa46183230cb4824487fade4331c93d231a6a3f99f4db004fa3d106",
+    "img/A011-whole.jpg": "586410826681d3b7a3e3423d294864c470281f1291e48d27cf696ca25ff03e5d",
+    "img/A011-zoom.jpg": "50b30731825cfb0a2d983b15ecb632ba9641e9f57d4bbc386d5feb8b0164591e",
+    "img/A012-whole.jpg": "995bbdcf0add911ca3f8794b95c47ad3554ed4b7c8b7905c21304ecb50feeefa",
+    "img/A012-zoom.jpg": "ce760b37b7bc05f673754372a7cb4ead331a70df6ea8febb9d527fb77894c008",
+    "img/A013-whole.jpg": "1c7f18ddf08d441663f5466353c3932e2cb3593d3b66b2916f69b08027e906e4",
+    "img/A013-zoom.jpg": "5146515b411ee9a672b195cdcae732c2d295d21dfc14b9508afdd8fe5cf98562",
+    "img/A014-whole.jpg": "2347275d50cfe7e68113b41af2e54ec35360b68ffaa0966fabc2d2092cc9959f",
+    "img/A014-zoom.jpg": "b3382a0234af183fab9666ef91a5bb6fca6f29739385d6c283f7eeb9eb2ac288",
+    "img/A015-whole.jpg": "cc20dee8767734c2afe4c1ded94d8315ea9a8de091dcd1edad1bf2b1c3bc1e99",
+    "img/A015-zoom.jpg": "086ac49f86bc23c6d0f3c4dd9111d5d5eea8a3a00efb811d82e4c8ca1da95292",
+    "img/A016-whole.jpg": "89c86dbe2d65527741343655acc67215b92decc6df91fd7d79ab255d3fcf05fe",
+    "img/A016-zoom.jpg": "01d9d33391191cbd46421170024687ae55320dc2d2743ddf6482897dd8812144",
+    "img/A017-whole.jpg": "62636a30cd7e562bc501f1ed5a402a76d1c4c51c011427b6674217753bb02b74",
+    "img/A017-zoom.jpg": "c75068be9efe14b8802fea5f1508e210bd7e21339660dc3b53d15001cd66511a",
+    "img/A018-whole.jpg": "c7575decbe7c95e85c5979e686e89fc48ec104ea03516586a6423c7e10e33154",
+    "img/A018-zoom.jpg": "f2d188cde69a49b3c55035646093ebeea9ed780b35ff6ab0cd4ed9178902b26e",
+    "img/A019-whole.jpg": "389c9d8118a92a1d5e012bb586c3765e108080ab1666de0ea1af03cca4d64697",
+    "img/A019-zoom.jpg": "4ddef2b387f8c9e033de4c7b68742713c63d6158af5e0a9380cb69ed2899f24b",
+    "img/A020-whole.jpg": "095426480845e910106a8e9ab8b9755e89fc4b8eb633f95478cec99e20108859",
+    "img/A020-zoom.jpg": "4f038e5669a3aad2a16f5baf6d097717762753c5ab70d9a2558a2b6dfa18a87f",
+    "img/A021-whole.jpg": "ddcf01f4fc09e810321836132bbb8d4f2d4340c27a26a452d26446ea50d470d0",
+    "img/A021-zoom.jpg": "02c892478f8148bfbc6278bcf13c53e1f91cd551307be2076c77a6fe4e93bc72",
+    "img/A022-whole.jpg": "a54fe307ee5823dfcbede7fed9b79f59898844051350f91a5b75a63c1936d5ea",
+    "img/A022-zoom.jpg": "33baba39b6d0b3747fb906f7ce220ab11968d31f1876ee79f28901ad24223c69",
+    "img/A023-whole.jpg": "33377a649ef71b98ac472d111e2065f3185ad07a138a0d747b995d794edb3fe0",
+    "img/A023-zoom.jpg": "16ec19b664948410e201b95845986dc7a7767e7e7f1c829f54beeda524e49dd7",
+    "img/A024-whole.jpg": "aea0aee960132a0d912d77f191e25e02098203be4ab0848e6c767cc6dc3a2c07",
+    "img/A024-zoom.jpg": "e89b5d784fd9cb21b28fdc0f16b5b7f23ff09b26e1aab9b29cdc07a4eb622d59",
+    "img/A025-whole.jpg": "ac499043061ccca3c0de5ea1eb874f7b5b97eda8ceefba09d48127fec0e43f01",
+    "img/A025-zoom.jpg": "883ae710e15255add0f1d9eddfebe0dddf534dd9e88b876a34694147e975ed83",
+    "img/A026-whole.jpg": "1f46fb3c0bc82849014e6b16bdf8490ca087b392962fb5dcd515f7cc708c938a",
+    "img/A026-zoom.jpg": "7f0dbe6f869e53bd664b189d0dfcf77c4f7cb64321fb892dc2dcd0efd1624f43",
+    "img/A027-whole.jpg": "3573dd60150945dd5784dca898432a3bff234e611b88c0808498b772afbf4959",
+    "img/A027-zoom.jpg": "97f67c04e0cfa34ea68de541c0e69099cd9afa05f91713ef44fbb17632d5de29",
+    "img/A028-whole.jpg": "eb68c3dd4198a6ed9865ece4e269f29103c849fedcb78ad700698effaeff43f5",
+    "img/A028-zoom.jpg": "a08f5b97e1bd654edcf26629e6d9688cb665d36a219c077353d543662ff5e0b0",
+    "img/A029-whole.jpg": "83f671a7366bb113cb611c522bcdd87504f3772f3525dc2222aacf0f721c6749",
+    "img/A029-zoom.jpg": "83563c4ff887232d0d3dcc4125f01d3fa38ce16bc15206a7054f0cff69408ef7",
+    "img/A030-whole.jpg": "073c586a1b9dc0100fc086fbd76f3759e95fdb2a0fca55e636ad9ccda39b014d",
+    "img/A030-zoom.jpg": "3030bb43aa3c2dd815d9930117cc9e95129931b6b4e22561dbfb4b461dece069",
+    "img/A031-whole.jpg": "061e228adeaac7e119fa0da01df0f34e678cfee5c4e245963b553c74f2276d05",
+    "img/A031-zoom.jpg": "eb23332c92f8a2a6a3cce4db5ced092587ae7cd65b2bed50315965374f9c5eb2",
+    "img/A032-whole.jpg": "ec5baa89cc79372e59da4f771f26a82b9209944ba41edb7b4cbcfb3e9dbcd342",
+    "img/A032-zoom.jpg": "31625c9b63a551e69481fe980fc8c270dbc8bf2e744a51e69c4efef26c0ac607",
+    "img/A033-whole.jpg": "ea0cc776b41fac20bd1082b84022657cabafffcba07fc192aef610fa123c000f",
+    "img/A033-zoom.jpg": "e3822c2e144f7a84be2bcab3c203d1963c9c25c1e7a5bfe576e2e51ec110b22d",
+    "img/A034-whole.jpg": "fc049a759e43d347f2bfe2b1c062af314a8e5cef00c52e73783901fde607e3b2",
+    "img/A034-zoom.jpg": "a7534209f05823e0eee7a8950501ca89f25c661dae2678f0fac49c86164b4e32",
+    "img/A035-whole.jpg": "a563d5bd2f2402d748e90efacf0a82ac41a6057000d2c65e466405ec3d47538b",
+    "img/A035-zoom.jpg": "473a694f8dc83ee5975cc0dfa4c903046d719508916834a701c6dba39842bd52",
+    "img/A036-whole.jpg": "54bbd092585362336cbdf50c3cd14a1159f4719a693f6eb67021e544a93487e4",
+    "img/A036-zoom.jpg": "60b584cbb36ec30eaafb6cf8c0046fbc97e9a4f40708b06ead5e90bfd148d50c",
+    "img/A037-whole.jpg": "118db9050505987105f12078140f8f9e10ae6a5f855866bfe26e8fe742ae843f",
+    "img/A037-zoom.jpg": "0a96ef0daf5d6ac3bfb52b24c5ebf0109093c503192ea845c2063c2581d6242c",
+    "img/A038-whole.jpg": "fb41acea5da9bdcd366298c7556e29afeafc8bc233268612711c0884849308ce",
+    "img/A038-zoom.jpg": "447bb4f2f53ec7e0c338d15390c0928dde91bddde96faae03fe12d660856ab06",
+    "img/A039-whole.jpg": "9806805f7fb6fedbdb66a263240ee5ed00a820288ca8578245be7ad6d15e947f",
+    "img/A039-zoom.jpg": "08914a63e0ad4b7d01f55a108e27cbf64e537790006b799d4d4b5287512e7990",
+    "img/A040-whole.jpg": "faeea39fdad8dd9b5d77345b885767b853d31d1c356f3da12159f760ad74edb3",
+    "img/A040-zoom.jpg": "ab3391540eca92e1f740c7bcb77aa893762344dff4f54c57ab7ea86f7ed3c715",
+    "img/A041-whole.jpg": "02828cb07bf72b70f4dc3cafa1b2083a71bb448b052da7648d4482d1d4ca721c",
+    "img/A041-zoom.jpg": "53c1ea82e3bc985744df218902792ab28b81d52f6f655f5615deccd048691cea",
+    "img/A042-whole.jpg": "b07d36ea3faa9a303af2fceeaf12c0b76f80ab0b088dddf224dac750b460a7d6",
+    "img/A042-zoom.jpg": "a2f29add55545274c61e44feee8b76d07f55416fed2cb6696c5fd37f22dfc893",
+    "img/A043-whole.jpg": "1fecbbea09844fef09dffcb3e9d5a8c5aef3217c3bd4993ce135f62c2d06dd9e",
+    "img/A043-zoom.jpg": "ba8686c2bdc1890ed25ac6d2552630134a8d894b4d0287f029909a331d2729ef",
+    "img/A044-whole.jpg": "5bfe0def7fac1e156032e67e9068f2a5c64105dd2c59a28e8ac5f03cfa4ecd77",
+    "img/A044-zoom.jpg": "2418b84c5a6a3d43acc346f537a0b025315b8860ac932bfda181c7dbb045085a",
+    "img/A045-whole.jpg": "3731a17793ee6ff5a17dd21965873b25a963ae5b89dddb117da5094731a5352b",
+    "img/A045-zoom.jpg": "400b36a566e6b32c2af4f1cd8f5d9a97806df3f94e7a53d24520651c93c7e6e6",
+    "img/A046-whole.jpg": "8444320a41570f9b162de1a5f22a66620e39b05ecbcb656b86b8600e314d470e",
+    "img/A046-zoom.jpg": "8d8563216d77d9105047fe14ad5427c7d89cec7c12cb52718a042eccf76c282e",
+    "img/A047-whole.jpg": "ca97b6214dbad87ca524a3d05520f7b62785a7a30fe8267f8a4124385be99f3e",
+    "img/A047-zoom.jpg": "1136ff40af5ee2e01bceaa40e9d97d34cbba4b2c463ff6b240923d70a2e0efe1",
+    "img/A048-whole.jpg": "2be1891ec2917d94439ba97c25b505e3143acc12ba043172eb73ebe071e7fa5c",
+    "img/A048-zoom.jpg": "c0a5132124a0370f8512784c900819bcbdc516605e904fafbfed171eb8677bf5",
+    "img/A049-whole.jpg": "606122e1456b6c4b7f833c3e27a170d827e61a27af24fd300de750371058d51e",
+    "img/A049-zoom.jpg": "4eec9c63eeb4367036ae27ab13f66ed23119eada34377fbb3aa9750e9f09cc5d",
+    "img/A050-whole.jpg": "1cfb181dc8629571d8365d06042bfd685795442be86739f0c11dc440ec1a0bc5",
+    "img/A050-zoom.jpg": "c82d1ec5487294d628e6c13d94752b03966c4e9d9b96b299f7515b0f52363620",
+    "img/E001-page.jpg": "bc86d8002b18f552ca33fbc008cf7230f34d875b4a8ae0d5a9d00b1fd3bc8e02",
+    "img/E002-page.jpg": "bf1e5f6ab213622d4ee8ad2cb1122cee908b03a6a25559ca08189e0f4d3d3eef",
+    "img/E003-page.jpg": "b48e31c8601452c25b39dafd4834b40015336727e0b1951ed941c381909d857a",
+    "img/E004-page.jpg": "ee1a0b074c1e650ffd7c16ddba32bf35ed04f2352c5b190fae8f7b3e6266fc77",
+    "img/E005-page.jpg": "7d35da13694ef12817cdbed5aa345efb9f87233697b5b4f651e4fe22446fc4bb",
+    "img/E006-page.jpg": "04c631603f39edff4fe62065c6f618cef6ee095bf5a190aeee82dba0dc4253d8",
+    "img/E007-page.jpg": "3dc75913f8aa5cf159b8feac9b3aba93318cb6aab502189dab26ea76de732afc",
+    "img/E008-page.jpg": "f6c83f1679a4f58b3e754972e193e4612a8f784f2f1569eb647dad4903cc6c5e",
+    "img/E009-page.jpg": "42206227f21afb79fd4ebea3d35d1a2ec90a2410759b11e2da58f59a7bd6065e",
+    "img/E010-page.jpg": "6e83f9b481e64cd388ffaeb55b26a5c41900e4f34b0859737bcacae04304daf9",
+    "img/E011-page.jpg": "41e4ad4a8885c8a72cc3a949624b2e978604678f8707a547586faf432f9028d2",
+    "img/E012-page.jpg": "d7a43e7f8838e6424f0f0deee8639569595b57bf31fdc18d25ca04b317fa0cce",
+    "img/E013-page.jpg": "95e68363f23696aa8ab6c415001ef4f383ee0a117308036e4f0cd0164b5a999a",
+    "img/E014-page.jpg": "5ffc287407f35b38aa77533ed223d0c1331fa9fa5be36e0efb8bf8d9cb478b68",
+    "img/E015-page.jpg": "da46241904819a02594de5ef9dffeaca3efc970cf3d95a6db86f8049546d01fa",
+    "img/E016-page.jpg": "cd0aa3d9c90dc5451ed9414c8cf51e6cee40d4f6253d2be6ae2f3f1f7d9e51e4",
+    "img/E017-page.jpg": "95e68363f23696aa8ab6c415001ef4f383ee0a117308036e4f0cd0164b5a999a",
+    "img/E018-page.jpg": "4e98ce9cb181f96bd1810a397e07a3d6a59fa241e03700d6aa601f2981d5fe63",
+    "img/E019-page.jpg": "63e9b59a32fdedaecfabe31e67b586fa3a109d76567c392a989acf12811b2a33",
+    "img/E020-page.jpg": "b74545258671135f5bcc418ce07a35151b46e08d74ece48824198f7dddd3ee70",
+    "img/E021-page.jpg": "e1fd6413b21638b042efb8a5841dc1d74b500b1a7db6ef2bc78b21d7108887b1",
+    "img/E022-page.jpg": "725171ade8acc4feba65b95902bc8ecb4ea0e26d1cdc582d71779dbe6c9fac25",
+    "img/E023-page.jpg": "60d8773425653961fb405dcfb93b6eb3adbd799a901db0e610ce3af8ddb1dd9a",
+    "img/E024-page.jpg": "f2a52bdd47511e826b7e4dc27501127b6a22ce498a3299519ace621fa4d239ed",
+    "img/E025-page.jpg": "e60c427064797c6cbb64379b7402743b056f11fc87c2d0c8f5b807570e7a9acd",
+    "img/E026-page.jpg": "9f4554724434abf62f25dbe3e974ed5794e18594071a22daad791531ffa7059a",
+    "img/E027-page.jpg": "c6d2b463ead57cc62feba855b5f3fc6ef4350dbb4fd44a76a1b6adb0ba5c0d7f",
+    "img/E028-page.jpg": "90625424232bab496b26fdf1af72f544eb72e65c573540fe2df9befb439a0e57",
+    "img/E029-page.jpg": "95e68363f23696aa8ab6c415001ef4f383ee0a117308036e4f0cd0164b5a999a",
+    "img/E030-page.jpg": "522b9cb11cd0cd081ef7c4877477e7e1496c2b66edc2caa3eb1617345c9a4ff4",
+    "img/E031-page.jpg": "7e60cf77c576222369baf24844f350c2240d88af8cf41cfb6053e6f7f95f19d2",
+    "img/E032-page.jpg": "7f5e21292642b3fe6bfbcf36336f38fba2593ca2c9c7a103455cdf6281e0a210",
+    "img/E033-page.jpg": "aa3379ba54ac3d1e2347352454c8b5e28bf61e8db6c79e4cf2538deec53c9dd3",
+    "img/E034-page.jpg": "2aa47bc4e76fa1bf7341dbf19f9f1073f71529bbb328c19cd5827eeeb8394c91",
+    "img/E035-page.jpg": "016e8ec98b70ce0ecd5fe7474158a844b6ca8b5c9a0a3519060ce49222f63fb7",
+    "img/E036-page.jpg": "2aa47bc4e76fa1bf7341dbf19f9f1073f71529bbb328c19cd5827eeeb8394c91",
+    "img/E037-page.jpg": "7ae309e209dfc91f3c1ad13412ff016d8db5e1546decd5770b949a0c8b8c4be9",
+    "img/E038-page.jpg": "62ea0ad70ffb93bd9402b01869bf0a9cdacc0ae13f961ce81f925fa6c452084e",
+    "img/E039-page.jpg": "bbacc668812fe2ab65f8afa4cf28079bf3076621a8c4838e4eea17a70e7f0a13",
+    "img/E040-page.jpg": "95e68363f23696aa8ab6c415001ef4f383ee0a117308036e4f0cd0164b5a999a",
+    "img/E041-page.jpg": "95e68363f23696aa8ab6c415001ef4f383ee0a117308036e4f0cd0164b5a999a",
+    "img/E042-page.jpg": "abd8f6d1418e28f8fe67644ed27cee32481f85e9e236e67c282c30184f3f03af",
+    "img/E043-page.jpg": "52134c7d6d9a94fa37b52e2e62fd549affb1f092604628f85868f05b6b1df7d7",
+    "img/E044-page.jpg": "f1b460fcf6fa311ea3fe4a6725a4b1cb4d7e9697776da5c382126aecc23bb51e",
+    "img/E045-page.jpg": "95e68363f23696aa8ab6c415001ef4f383ee0a117308036e4f0cd0164b5a999a",
+    "img/E046-page.jpg": "953d9e393582f053278b64ba766d56e9b4c29aac0c5b00b0be3b8e3332749ed1",
+    "img/E047-page.jpg": "6cbd76abfa51dcaa4a11e55515d365489b3798447b7532d83b43f671421f1cfa",
+    "img/E048-page.jpg": "25685f5bc39a28ddd79b02fe942ee38d9fe51812cfb8ef271eace3d3f93ccbfe",
+    "img/E049-page.jpg": "e60c427064797c6cbb64379b7402743b056f11fc87c2d0c8f5b807570e7a9acd",
+    "img/E050-page.jpg": "25685f5bc39a28ddd79b02fe942ee38d9fe51812cfb8ef271eace3d3f93ccbfe",
+    "index.html": "8253587eabb2184c409e1f30561f733abd7e02e0db768525ce5fa687228c7526",
+    "key.json": "47ebe0709151bf7c8f0f45f24e1da2c1aeb8168a1ccfef7535ee63c1fb0bd24e",
+    "packets/ORCHID_supplement_packet_1.html": "e3bec798db365591965aa292f0200931c0503d6b5ed976bcf068b35cbbcd5ab2",
+    "packets/ORCHID_supplement_packet_2.html": "0d8e578c8de5f5a9059f47cf6cd44b0fd755dd4cf5b7dce5922201e07c62ff8e",
+    "packets/ORCHID_supplement_packet_3.html": "83f3e74820b3561d19d05eb11ba91cda2ff30d0ec58d601711a2730f3eef6048",
+    "packets/packets.json": "e1b6b486417ef9990391b629801f7c4572d9bd3b85f7d2a66e2725e8af0a7ed2",
+    "sample.json": "5de96369d66446fe3e29a3ce21fdd5bef3af6dc4d37c200c772c528bc504493c"
+  },
+  "items_without_page_image": [],
+  "key_sha256": "47ebe0709151bf7c8f0f45f24e1da2c1aeb8168a1ccfef7535ee63c1fb0bd24e",
+  "n_items": 150,
+  "n_items_by_subsample": {
+    "S-ASM": 50,
+    "S-ESPEI": 50,
+    "S-REG": 50
+  },
+  "note": "Freeze record of the supplementary precision sample. Local-only files (index.html, packets/, img/, key.json) are restricted or blind and never committed; their sha256 is recorded here. tools/build_supplement.py check verifies them.",
+  "population": {
+    "blind_key_sha256": "71054786c030f33d491be1414a959fe202cb111bb4007d20e45bc37ed83a6c2d",
+    "espei_literature_datasets_digest": "e1d3793a38434d0d672a40385e1fee02f6644b1079cda4f15420ef115abc5f39",
+    "files_sha256": {
+      "assessed-phase-assemblages/records.jsonl.gz": "3dcef74924b4b398cabd32af0dac54c8436180064a85994f138235afd3897aba",
+      "espei/index.json": "d7e03c16643822b929436bf4d3ee94362819db09922ea8b3245ff4ca75455d6a",
+      "literature/orchid-literature.jsonl.gz": "befef97c22dd57323e16f2c3f392d9ca737645c71b70ca8b26b0fb9a6570337f",
+      "literature/papers.json": "29cd3cd104a8b5e1e14892fad9b5472e44a39c9d5f7f906e198749aa1a3c6c49",
+      "phases/registry.json": "1415ffb07902a17693fd7c08de899ec8c4b1996741a4f3b4c2ec697399f3d43f",
+      "phases/systems/AG-PU.json": "54a04f939bc89013e6a796a5bb1df3e091f11dd2f3a240f6a66c1d45a6b0e052",
+      "phases/systems/AG-SC.json": "c7aa98ce7010c22dd4df98e5a65adc082ef042d6e799492b058122d880fbaf72",
+      "phases/systems/AL-CO.json": "74d036f2e6ebb6df3f2a19dd47afb5d06fcd4a329c1a4b78f92b0795fb2dcd3f",
+      "phases/systems/AL-PT.json": "ed5d73b13ec45599804d59df9eb0f7a6d4b3b977ad02fcccea6799ac522ead99",
+      "phases/systems/AL-RE.json": "e0d9bfe77463b54a77e62fc51a2fb2ca86fd0c0a6f4a2860b869d60df698a52a",
+      "phases/systems/AL-V.json": "645ed0a6fe2c99f1b38c167d29c14528e00fd750d33d6414f547f66fa51a34e5",
+      "phases/systems/AS-P.json": "0a9ddf30d8549d77326c3703f3429b9a63bcc8785110db2cf33f2cdc3ef2f3a6",
+      "phases/systems/AS-U.json": "c18ffa55078bdeea0ccaf6c47bb2b24809f30f5f96b631d9956f6df798cbd238",
+      "phases/systems/AU-ER.json": "3ea8d4db346c4e4ae7eaa3b67b6fd796780c3839e35b277385ee24d59ba0fa69",
+      "phases/systems/AU-SN.json": "c1f31b1aefc190aa9535f7112c269931dcc5945de6e7c42346a16071ff65bb8f",
+      "phases/systems/B-DY.json": "71fd9c2c26b1bfca6ffc1f559e0534556875714c7084371b760d8b578fc28520",
+      "phases/systems/B-N.json": "a7d385986b828c69e17b0f6c72820717022be9b546eaa603a25a6034997a3afb",
+      "phases/systems/B-NB.json": "4cfe2ffd76539d7323e22421c6aef4c0bace80de6a62c544bcaf7d94914ec9af",
+      "phases/systems/BA-GE.json": "1de8e66f1e6b14921ec4c545b490622fbd8a1e27129259c637da740b16b154c1",
+      "phases/systems/BI-MN.json": "4b2b2b482746c5cc14a57138c34d35a6fe91c94fcb61912662be4efe89b4989d",
+      "phases/systems/CA-SB.json": "11521eba09820586d3d8a8bbb8af8f8429fe5ad98b65a6f1a7774352e442c06d",
+      "phases/systems/CD-SR.json": "81383280da557d49dfbfed77b3104ef0995114cb2a665b86359033c23e31fffb",
+      "phases/systems/CE-CO.json": "c3b8d3540ef2897b1a3ff2f69807f89c7b4c70e07402e0838129e67be3aab48b",
+      "phases/systems/CE-MN.json": "7fb22bef20c8f949581179cedb8721b5cd0404526f092d2fc5f389582d3871c4",
+      "phases/systems/CO-DY.json": "75ea5ad9c3d0728797fe56da2a5659f808ef82c6d02caff7802df8ee217381b1",
+      "phases/systems/CO-HO.json": "857ff1f88b8ef2d26db45a5a41548e5ebeb43bb74003e1a2d417fdce538425b8",
+      "phases/systems/CO-MG.json": "bad538c8ac3a86863ea238bd2b6d8b379a995f8a423ed3d53660b166ddb6da0e",
+      "phases/systems/CO-Y.json": "55e59861b7e6b413f08bc186bcf09759675051d4c93cbad70ef0a73d98cacdb5",
+      "phases/systems/CR-NI.json": "7d77edb024cfcee7b964d12fe30f02778a64aba24fb3da89a9d1ce2bda0f9fdb",
+      "phases/systems/DY-NI.json": "e72f2a056440aae7be0e3dd35f57c2a5ba1a5e3f9c978bc8c770e94330de33aa",
+      "phases/systems/FE-GD.json": "3e495cc61f6a4fc2e61e6872db29d609be074a462414a7d53e2f29a637dcd9d7",
+      "phases/systems/FE-S.json": "d5c03354f7bfe0e0a0820b3b078ac4427b36cd451a4a2639b03105c9845b6b82",
+      "phases/systems/GA-SR.json": "6e98d3b708e52ae7008ffb3fc583336b4bae1be5892db3806cfa66270866a85c",
+      "phases/systems/GD-SB.json": "6edd43e76519afe0287b251efe9f382571c80bccbd19e0aa74b281d14fa343f8",
+      "phases/systems/GD-TL.json": "dfa4c00d0e2544fb1b793840ba7fe25b8a0ff1b77cbcb96a0d2821901b822eeb",
+      "phases/systems/GE-NA.json": "bf8017ec2f0ed24e677adb6740c42f802f238bb03d2e0dc23b918fe5322b6382",
+      "phases/systems/GE-SN.json": "8d90a4d437e1265b0ef1fd6bfd1125da565653a924f3b9c8beea751061dbd660",
+      "phases/systems/IN-SR.json": "5d8145a44f4c9b6218bc54965712849ae0ac504f7fb9979d5b21156bbac1a77a",
+      "phases/systems/K-NA.json": "5f3f1f266e007a168bb14fcf384156512fce4b18d24971887c36f5d54c09d266",
+      "phases/systems/K-SB.json": "b99988a5ebbf4e972687135c6fd2075b553e65adf223d260241f670dbf4c02e7",
+      "phases/systems/LA-PT.json": "4f000fc36af6de9cdd9cbaffba31c1be44e62602ddb91df992cca701ca40d309",
+      "phases/systems/LA-SI.json": "a52618cdff9980e5efab1e37c1eecc2124112090c0569efedb600c7cf78894e4",
+      "phases/systems/LI-N.json": "e4ee5cbd2f75871ada415cc8a032904671e133049048e5f0d18f5da137219291",
+      "phases/systems/MN-W.json": "2a1b6692264cc2aaacc2ca4d9bd5c63e1466a991bf0653204c4acc8624ccd1cf",
+      "phases/systems/MO-N.json": "882d0347eb0f65dfb89efeb78dd2a53f28383186ceee27c68c8d75946ebdb5e8",
+      "phases/systems/NI-P.json": "dd18e79e86b2cdaf99a88fe787d5fd42d3125c66905e4b7e48f037f33cfa774d",
+      "phases/systems/NI-TH.json": "cae461408ccad0b827c2433cc585b1c49cb4c9b412496a440aa161ca465abb84",
+      "phases/systems/O-V.json": "08a30ed53628b37e540905956694da023862f895a7d4bfc3e130147941442e7d",
+      "phases/systems/PR-ZN.json": "eb69faa6b68c9134078234a1191a77cd7bb207e71ef9db9508ce2ed7f36618a3",
+      "phases/systems/RH-ZR.json": "66af761c64b87c0ee257507aec6bd2f7f1ac2b2af1b3b3f7c704fd4b73059629",
+      "phases/systems/SB-SM.json": "3b9a6da382e6910ed8ada845ff55e351fa3e0413b9bcbc3bd94ff251b85a7dc6",
+      "phases/systems/SB-TE.json": "c127e142d52fc00ae35ed71e12ecac2e92b4e175c98b44c4413489f177fcdc47",
+      "phases/systems/SN-TB.json": "dfa0fe41cf24bcb8d6dfb1b4dc912765bbf84babc71aa307b8b596e0a7832cf1",
+      "phases/systems/TI-ZN.json": "7c85e723aa16cc042c2391592a62ca2fdaafce4093e299e328beeaec87ff1919",
+      "phases/systems/TI-ZR.json": "49cb744a57893ad9367aeee945e84467aa4f8b66be408a47d3dff50b4edc3abd"
+    },
+    "orchid_data": "/Users/raymundo.arroyave/projects/orchid-data",
+    "orchid_data_commit": "0d9f7c4c3a5b34cd98200ae9b8cc50d60fef95cf",
+    "orchid_data_dirty": false,
+    "orchid_project_org_commit": "c1449ebd713b43e39d50e2a55bfc1abda302bf3c"
+  },
+  "sample_sha256": "5de96369d66446fe3e29a3ce21fdd5bef3af6dc4d37c200c772c528bc504493c",
+  "schema": "orchid-precision-supplement-manifest/1",
+  "strata": {
+    "S-ASM": [
+      {
+        "population": 2795,
+        "sampled": 4,
+        "stratum": "deterministic_printed_label|printed_solid"
+      },
+      {
+        "population": 74,
+        "sampled": 1,
+        "stratum": "deterministic_printed_label|mixed"
+      },
+      {
+        "population": 159,
+        "sampled": 1,
+        "stratum": "deterministic_printed_label|dashed_estimated"
+      },
+      {
+        "population": 5,
+        "sampled": 1,
+        "stratum": "deterministic_printed_label|frame_only"
+      },
+      {
+        "population": 2013,
+        "sampled": 3,
+        "stratum": "deterministic_phase_rules|printed_solid"
+      },
+      {
+        "population": 32,
+        "sampled": 1,
+        "stratum": "deterministic_phase_rules|mixed"
+      },
+      {
+        "population": 21,
+        "sampled": 1,
+        "stratum": "deterministic_phase_rules|dashed_estimated"
+      },
+      {
+        "population": 7,
+        "sampled": 1,
+        "stratum": "deterministic_phase_rules|frame_only"
+      },
+      {
+        "population": 5263,
+        "sampled": 11,
+        "stratum": "reader_consensus|printed_solid"
+      },
+      {
+        "population": 507,
+        "sampled": 1,
+        "stratum": "reader_consensus|mixed"
+      },
+      {
+        "population": 478,
+        "sampled": 1,
+        "stratum": "reader_consensus|dashed_estimated"
+      },
+      {
+        "population": 7,
+        "sampled": 1,
+        "stratum": "reader_consensus|frame_only"
+      },
+      {
+        "population": 7048,
+        "sampled": 14,
+        "stratum": "deterministic_adjacency|printed_solid"
+      },
+      {
+        "population": 302,
+        "sampled": 1,
+        "stratum": "deterministic_adjacency|mixed"
+      },
+      {
+        "population": 154,
+        "sampled": 1,
+        "stratum": "deterministic_adjacency|dashed_estimated"
+      },
+      {
+        "population": 3,
+        "sampled": 1,
+        "stratum": "deterministic_adjacency|frame_only"
+      },
+      {
+        "population": 2127,
+        "sampled": 3,
+        "stratum": "adjudicator|printed_solid"
+      },
+      {
+        "population": 280,
+        "sampled": 1,
+        "stratum": "adjudicator|mixed"
+      },
+      {
+        "population": 172,
+        "sampled": 1,
+        "stratum": "adjudicator|dashed_estimated"
+      },
+      {
+        "population": 1,
+        "sampled": 1,
+        "stratum": "adjudicator|frame_only"
+      }
+    ],
+    "S-ESPEI": [
+      {
+        "population": 5486,
+        "sampled": 15,
+        "stratum": "invariant_zpf|experimental"
+      },
+      {
+        "population": 1141,
+        "sampled": 6,
+        "stratum": "phase_boundary_zpf|experimental"
+      },
+      {
+        "population": 160,
+        "sampled": 1,
+        "stratum": "phase_boundary_zpf|model"
+      },
+      {
+        "population": 437,
+        "sampled": 2,
+        "stratum": "formation_enthalpy|experimental"
+      },
+      {
+        "population": 295,
+        "sampled": 1,
+        "stratum": "formation_enthalpy|model"
+      },
+      {
+        "population": 1050,
+        "sampled": 4,
+        "stratum": "formation_enthalpy|dft"
+      },
+      {
+        "population": 630,
+        "sampled": 5,
+        "stratum": "mixing_partial_entropy|experimental"
+      },
+      {
+        "population": 315,
+        "sampled": 2,
+        "stratum": "mixing_partial_entropy|model"
+      },
+      {
+        "population": 552,
+        "sampled": 6,
+        "stratum": "heat_capacity|experimental"
+      },
+      {
+        "population": 6,
+        "sampled": 1,
+        "stratum": "heat_capacity|model"
+      },
+      {
+        "population": 181,
+        "sampled": 5,
+        "stratum": "activity|experimental"
+      },
+      {
+        "population": 53,
+        "sampled": 2,
+        "stratum": "activity|model"
+      }
+    ],
+    "S-REG": [
+      {
+        "population": 4179,
+        "sampled": 17,
+        "stratum": "A_standard_name|metal-metal"
+      },
+      {
+        "population": 2080,
+        "sampled": 9,
+        "stratum": "A_standard_name|with_metalloid_or_nonmetal"
+      },
+      {
+        "population": 104,
+        "sampled": 4,
+        "stratum": "B_dft_unique_match|metal-metal"
+      },
+      {
+        "population": 46,
+        "sampled": 2,
+        "stratum": "B_dft_unique_match|with_metalloid_or_nonmetal"
+      },
+      {
+        "population": 779,
+        "sampled": 4,
+        "stratum": "C_assessment_declared|metal-metal"
+      },
+      {
+        "population": 474,
+        "sampled": 2,
+        "stratum": "C_assessment_declared|with_metalloid_or_nonmetal"
+      },
+      {
+        "population": 820,
+        "sampled": 3,
+        "stratum": "liquid_or_gas|metal-metal"
+      },
+      {
+        "population": 716,
+        "sampled": 3,
+        "stratum": "liquid_or_gas|with_metalloid_or_nonmetal"
+      },
+      {
+        "population": 744,
+        "sampled": 3,
+        "stratum": "unassigned|metal-metal"
+      },
+      {
+        "population": 554,
+        "sampled": 3,
+        "stratum": "unassigned|with_metalloid_or_nonmetal"
+      }
+    ]
+  }
+}

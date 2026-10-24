@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>__TITLE__</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1b20;--muted:#5e5a66;--line:#e2dfe6;--card:#fff;--accent:#7b3fa0;--accent2:#f2eaf7;
+--exp:#1d7448;--exp-bg:#e3f3ea;--mod:#2c58a8;--mod-bg:#e5ecf9;--dft:#a3520a;--dft-bg:#fbeedf;--uns:#5f5a66;--uns-bg:#ecebee;--warn:#9a3412}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--dft:#f2ad6b;--dft-bg:#3a2612;--uns:#bdb7c6;--uns-bg:#2a2730;--warn:#fdba74}}
+:root[data-theme="dark"]{--bg:#141218;--fg:#ece8f1;--muted:#a69fb0;--line:#2e2a35;--card:#1c1922;--accent:#c79ae6;--accent2:#2a2133;
+--exp:#74d3a2;--exp-bg:#183326;--mod:#9dbcf3;--mod-bg:#1b2840;--dft:#f2ad6b;--dft-bg:#3a2612;--uns:#bdb7c6;--uns-bg:#2a2730;--warn:#fdba74}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}
+nav{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:14px 0}
+nav .brand{font-weight:700;font-size:1.15rem;margin-right:auto;color:var(--fg)}
+h1{font-size:clamp(1.4rem,4vw,1.9rem);margin:24px 0 6px;line-height:1.2}
+h3{font-size:1.05rem;margin:14px 0 4px}h4{font-size:.98rem;margin:10px 0 2px}
+.lead{color:var(--muted);max-width:820px;margin:0 0 6px}
+.note{background:var(--accent2);border-radius:8px;padding:10px 12px;margin:12px 0;font-size:.95rem}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.bar label{font-size:.9rem}
+input[type=text],select,textarea{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px;max-width:100%}
+textarea{width:100%;min-height:64px}
+button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+button.ph{padding:2px 8px;margin:2px;font-size:.88rem}
+.progress{font-variant-numeric:tabular-nums;font-weight:600}
+.meter{height:6px;background:var(--line);border-radius:3px;overflow:hidden;flex:1 1 160px;min-width:120px}
+.meter i{display:block;height:100%;background:var(--accent);width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+dl{display:grid;grid-template-columns:minmax(110px,190px) 1fr;gap:4px 14px;margin:0}
+dt{color:var(--muted);font-size:.88rem}
+dd{margin:0;overflow-wrap:anywhere}
+.value{font-size:1.2rem;font-weight:600;font-variant-numeric:tabular-nums}
+blockquote{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--accent2);border-radius:0 6px 6px 0}
+.badge{display:inline-block;font-size:.75rem;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--uns-bg);color:var(--uns)}
+.b-experimental{background:var(--exp-bg);color:var(--exp)}.b-model{background:var(--mod-bg);color:var(--mod)}.b-dft{background:var(--dft-bg);color:var(--dft)}
+fieldset{border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:6px 10px}
+legend{font-size:.9rem;font-weight:600;padding:0 4px}
+fieldset label{display:inline-flex;align-items:center;gap:4px;margin:2px 14px 2px 0;font-size:.95rem}
+.q{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 12px}
+.muted{color:var(--muted)}.warn{color:var(--warn)}
+code{font-size:.85em;background:var(--accent2);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.82rem;background:var(--accent2);padding:8px;border-radius:6px;margin:4px 0}
+details pre{max-height:360px;overflow:auto}
+table.b{border-collapse:collapse;font-size:.88rem;margin:4px 0;font-variant-numeric:tabular-nums}
+table.b td,table.b th{border:1px solid var(--line);padding:2px 8px;text-align:left;vertical-align:top}
+img.crop{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:zoom-in}
+img.crop.big{max-width:none;cursor:zoom-out}
+.scroll{overflow:auto;max-width:100%}
+.instr{font-size:.95rem}.instr li{margin:2px 0}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:18px 0 36px;color:var(--muted);font-size:.88rem}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav><span class="brand">ORCHID</span><span class="muted">Internal review · local page, not for publication</span></nav></div></header>
+<main class="wrap">
+<h1>Precision sample supplement: phase registry, ESPEI-ready values, assessed diagrams</h1>
+<p class="lead"><b id="n-items">…</b> items drawn at random from the final ORCHID release<span id="packet-info"></span>.
+For each item, compare what ORCHID released with the source and answer the questions. Answers are saved in this browser as you go;
+press <b>Download results</b> when you finish (and now and then as a backup) and send the file back.</p>
+<details class="note instr"><summary><b>Instructions</b> (read once before you start)</summary>__INSTRUCTIONS__</details>
+<p class="note">This page holds page images of copyrighted papers and of the ASM handbook. <b>Do not upload, post or forward it</b> outside the review team.</p>
+
+<div class="bar">
+  <label for="reviewer">Reviewer name</label>
+  <input type="text" id="reviewer" autocomplete="name" placeholder="Your name" style="flex:1 1 200px">
+</div>
+<div class="bar">
+  <span class="progress" id="progress">0 / 0 answered</span>
+  <span class="meter" aria-hidden="true"><i id="meter"></i></span>
+</div>
+<div class="bar">
+  <button type="button" id="prev">← Previous</button>
+  <label for="jump" class="muted">Item</label>
+  <select id="jump" aria-label="Jump to item" style="flex:1 1 180px;min-width:0"></select>
+  <button type="button" id="next">Next →</button>
+  <button type="button" id="next-open">Next unanswered</button>
+</div>
+
+<article class="card" id="item" aria-live="polite"></article>
+
+<section class="card" id="answers" aria-label="Your answers">
+  <div id="questions"></div>
+  <label for="note" style="display:block;margin-top:8px;font-size:.9rem;font-weight:600">Note (what is wrong, where you looked)</label>
+  <textarea id="note"></textarea>
+  <p class="muted" id="saved" style="font-size:.85rem;margin:6px 0 0"></p>
+</section>
+
+<div class="bar">
+  <button type="button" class="primary" id="download">Download results</button>
+  <button type="button" id="clear">Clear my answers</button>
+  <span class="muted" id="status"></span>
+</div>
+<p class="muted" style="font-size:.85rem">Sample <code id="sha"></code> · seed <span id="seed"></span>.
+Results are scored by <code>tools/score_supplement.py</code>.</p>
+</main>
+<footer><div class="wrap">Internal review page (local only). Page images are crops of licensed copies used for verification by the review team and are not redistributed.</div></footer>
+<script type="application/json" id="sample-data">__SAMPLE__</script>
+<script type="application/json" id="image-data">__IMAGES__</script>
+<script>
+"use strict";
+const SAMPLE_SHA256 = "__SHA__";
+const $ = id => document.getElementById(id);
+function h(t, a, ...k) { const e = document.createElement(t); if (a) for (const x in a) { if (x === "class") e.className = a[x]; else e.setAttribute(x, a[x]); } k.forEach(c => { if (c != null && c !== false) e.append(c instanceof Node ? c : String(c)); }); return e; }
+const S = JSON.parse($("sample-data").textContent);
+const IMG = JSON.parse($("image-data").textContent);
+const ITEMS = S.items;
+const PACKET = S.packet || null;
+const KEY = "orchid-precision-supplement:" + SAMPLE_SHA256.slice(0, 16) + ":" + (PACKET ? "p" + PACKET.index : "all");
+const YN = ["yes", "no", "cant_tell"], YNA = ["yes", "no", "cant_tell", "na"];
+const QUESTIONS = {
+  "S-REG": [
+    {id: "names", label: "Name and aliases all denote this phase?", opts: YN},
+    {id: "structure", label: "Structure correct (n/a if none asserted)?", opts: YNA},
+    {id: "tdb_definition", label: "PHASE / CONSTITUENT text matches the TDB file?", opts: YN},
+    {id: "example_dois", label: "Example papers refer to this phase?", opts: YNA},
+  ],
+  "S-ESPEI": [
+    {id: "value", label: "Value correct (vs the page, after any stated conversion)?", opts: YN},
+    {id: "unit", label: "Unit / basis correct?", opts: YN},
+    {id: "conditions", label: "T, P and composition correct?", opts: YN},
+    {id: "phases", label: "Phases correct?", opts: YNA},
+    {id: "reference_state", label: "Reference state correct?", opts: YNA},
+    {id: "conversion", label: "Conversion correct (n/a if none)?", opts: YNA},
+    {id: "uncertainty", label: "Uncertainty taken correctly (printed σ as printed)?", opts: YNA},
+  ],
+  "S-ASM": [],
+};
+const ASM_OPTS = [["__name", "name"], ["cannot_tell", "cannot tell"], ["tracing_fault", "not one field (tracing fault)"], ["source_undetermined", "undetermined in the source"]];
+const OPTL = {yes: "yes", no: "no", cant_tell: "can't tell", na: "n/a"};
+const KINDL = {"S-REG": "phase registry", "S-ESPEI": "ESPEI-ready value", "S-ASM": "assessed diagram (blind)"};
+let state = {reviewer: "", answers: {}};
+let cur = 0;
+
+function load() {
+  try { const s = localStorage.getItem(KEY); if (s) { const v = JSON.parse(s); if (v && typeof v === "object" && v.answers) state = {reviewer: String(v.reviewer || ""), answers: v.answers}; } } catch (e) { /* storage unavailable */ }
+  try { const c = Number(localStorage.getItem(KEY + ":cur")); if (c >= 0 && c < ITEMS.length) cur = c; } catch (e) {}
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.setItem(KEY + ":cur", String(cur)); $("saved").textContent = "Saved in this browser."; }
+  catch (e) { $("saved").textContent = "Not saved: browser storage is unavailable. Download results before closing."; }
+}
+function asmDecision(a) { if (!a || !a.pick) return null; if (a.pick === "__name") return (a.name || "").trim() || null; return a.pick; }
+function isAnswered(it) { const a = state.answers[it.item]; if (!a) return false; if (it.kind === "S-ASM") return !!asmDecision(a); return QUESTIONS[it.kind].every(q => a[q.id]); }
+function fmt(v) { if (v == null) return ""; if (typeof v === "number") return String(v); if (typeof v === "string") return v; return JSON.stringify(v); }
+function row(dl, k, v) { if (v == null || v === "" || (Array.isArray(v) && !v.length)) return; dl.append(h("dt", null, k), h("dd", null, v)); }
+function doiLink(doi) { if (!doi) return null; return h("a", {href: "https://doi.org/" + encodeURI(doi), target: "_blank", rel: "noopener noreferrer"}, "doi:" + doi); }
+function safeURL(u) { return /^https:\/\/(orchid-project\.org|github\.com\/orchid-calphad)\//.test(u || "") ? u : null; }
+function badge(ev) { return h("span", {class: "badge b-" + ev}, ev === "dft" ? "DFT" : ev); }
+function pre(t) { return h("pre", null, t); }
+function crop(src, alt) { if (!src) return null; const i = h("img", {class: "crop", src: src, alt: alt, loading: "lazy"}); i.addEventListener("click", () => i.classList.toggle("big")); return h("div", {class: "scroll"}, i); }
+function compText(c) { return Object.keys(c || {}).sort().map(k => k + " " + c[k]).join(", "); }
+function sigmaCell(v) { if (v == null) return "—"; if (typeof v === "object") return fmt(v.value) + (v.basis ? " (" + v.basis + ")" : ""); return fmt(v); }
+
+function renderREG(v, box) {
+  const dl = h("dl");
+  row(dl, "System", v.system);
+  row(dl, "Phase", h("span", null, h("span", {class: "value"}, v.preferred_name || ""), " ", h("code", null, v.phase_id)));
+  row(dl, "Status", v.status);
+  const st = v.structure;
+  if (st && st.basis !== "liquid" && st.basis !== "gas") {
+    const sg = st.space_group ? (st.space_group.symbol || "") + (st.space_group.number ? " (No. " + st.space_group.number + ")" : "") : "";
+    row(dl, "Structure (asserted)", h("span", null, h("b", null, [st.prototype, st.strukturbericht, st.pearson, sg].filter(x => x).join(" · ")),
+      h("span", {class: "muted", style: "display:block;font-size:.88rem"}, "tier " + (st.tier || "?") + " · " + (st.label || st.basis || "") + (st.structure_type ? " · " + st.structure_type : ""))));
+    if (st.caveats && st.caveats.length) row(dl, "Caveats", st.caveats.join("; "));
+    if (st.source && st.source.rows) row(dl, "Source rows", h("span", null, (st.source.citation || "") + " ", doiLink(st.source.doi), pre(st.source.rows.map(r => JSON.stringify(r)).join("\n"))));
+  } else if (st) {
+    row(dl, "Structure", st.basis + " (no crystal structure asserted)");
+  } else {
+    row(dl, "Structure", h("span", {class: "muted"}, "none asserted (" + (v.review_reasons || []).join(", ") + ") — answer n/a"));
+    if (v.candidates && v.candidates.length) row(dl, "Candidates (not asserted)", pre(v.candidates.map(c => [c.source, c.prototype, c.strukturbericht, c.pearson, c.space_group && (c.space_group.symbol || c.space_group)].filter(x => x).join(" · ")).join("\n")));
+  }
+  const byNs = {};
+  (v.names || []).forEach(n => { (byNs[n.namespace] = byNs[n.namespace] || []).push(n); });
+  const nm = h("span");
+  Object.keys(byNs).sort().forEach(ns => nm.append(h("span", {style: "display:block"}, h("b", null, ns + ": "), byNs[ns].map(n => ns === "paper" ? n.label + " [" + n.name.split(":").slice(1, -1).join(":") + (n.basis ? "; " + n.basis : "") + "]" : n.label).join(" · "))));
+  row(dl, "Names / aliases", nm);
+  if (v.stoichiometry) row(dl, "Stoichiometry", compText(v.stoichiometry));
+  box.append(dl);
+  const m = v.model;
+  if (m) {
+    box.append(h("h4", null, "TDB definition (one of " + v.n_models + " model" + (v.n_models === 1 ? "" : "s") + ", drawn at random)"));
+    const pv = m.provenance || {}, vb = m.verbatim || {};
+    const links = h("p", {class: "muted", style: "margin:2px 0;font-size:.9rem"}, h("code", null, m.path || m.tdb), " · phase ", h("code", null, m.phase_name), " ");
+    const wu = safeURL(pv.website_url), gu = safeURL(pv.github_url);
+    if (wu) links.append(h("a", {href: wu, target: "_blank", rel: "noopener noreferrer"}, "open the TDB file"), " ");
+    if (gu) links.append(h("a", {href: gu + (vb.phase ? "#L" + vb.phase.line_start : ""), target: "_blank", rel: "noopener noreferrer"}, "on GitHub (line " + (vb.phase ? vb.phase.line_start : "?") + ")"));
+    box.append(links);
+    const parts = [];
+    if (vb.phase) parts.push("line " + vb.phase.line_start + (vb.phase.line_end !== vb.phase.line_start ? "-" + vb.phase.line_end : "") + ":  " + vb.phase.text);
+    if (vb.constituent) parts.push("line " + vb.constituent.line_start + (vb.constituent.line_end !== vb.constituent.line_start ? "-" + vb.constituent.line_end : "") + ":  " + vb.constituent.text);
+    (vb.type_definitions || []).forEach(t => parts.push("line " + t.line_start + ":  " + t.text));
+    box.append(pre(parts.join("\n") || "(no verbatim definition in the release)"));
+    if (m.tdb_comment_structure) box.append(h("p", {class: "muted", style: "font-size:.88rem;margin:2px 0"}, "TDB comment: " + m.tdb_comment_structure.join("; ")));
+  }
+  box.append(h("h4", null, "Example papers (first " + (v.references || []).length + " of " + v.n_references + ")"));
+  if (!(v.references || []).length) box.append(h("p", {class: "muted"}, "none listed — answer n/a"));
+  (v.references || []).forEach(r => box.append(h("p", {style: "margin:2px 0;font-size:.95rem"}, doiLink(r.doi), " ", h("span", null, r.citation || ""),
+    h("span", {class: "muted", style: "display:block;font-size:.85rem"}, "role: " + (r.roles || []).join("; ") + ((r.labels || []).length ? " · labels: " + r.labels.join(", ") : "")))));
+}
+
+function zpfText(val) { return (val || []).map(vx => vx[0] + ": " + (vx[1] || []).map((c, i) => "X(" + c + ") = " + (vx[2] && vx[2][i] != null ? vx[2][i] : "null")).join(", ")).join("\n"); }
+
+function renderESPEI(v, box, it) {
+  const r = v.record || {}, p = v.paper || {}, u = v.uncertainty || {}, b = u.budget || {};
+  const dl = h("dl");
+  row(dl, "Dataset", h("span", null, h("code", null, v.dataset), " · value " + (v.value_index + 1)));
+  row(dl, "Output", v.output + (r.property_printed ? " (printed: " + r.property_printed + ")" : ""));
+  row(dl, "Value (ESPEI)", v.output === "ZPF" ? pre(zpfText(v.value)) : h("span", {class: "value"}, fmt(v.value) + (v.unit ? " " + v.unit : "")));
+  row(dl, "Conditions", Object.keys(v.conditions || {}).sort().map(k => k + " = " + fmt(v.conditions[k])).join(" · "));
+  if (v.solver) row(dl, "Sublattices", "site ratios " + fmt(v.solver.sublattice_site_ratios) + " · configuration " + fmt(v.solver.configuration) + (v.solver.occupancies ? " · occupancies " + fmt(v.solver.occupancies) : ""));
+  row(dl, "Phases (dataset)", (v.phases || []).join(", "));
+  if (v.reference_state) row(dl, "Reference state", pre(JSON.stringify(v.reference_state)));
+  if (v.reference_states) row(dl, "Reference states", pre(JSON.stringify(v.reference_states)));
+  const nt = v.notes || {};
+  if (Object.keys(nt).length) row(dl, "Conversions / notes", pre(Object.keys(nt).sort().map(k => k + ": " + (typeof nt[k] === "string" ? nt[k] : JSON.stringify(nt[k]))).join("\n")));
+  if (u.dft_value_printed) row(dl, "DFT value printed", fmt(u.dft_value_printed.value) + " " + (u.dft_value_printed.unit || ""));
+  const tb = h("table", {class: "b"});
+  const comp = (lbl, bb) => { tb.append(h("tr", null, h("th", null, lbl), ...["sigma_printed", "sigma_reading", "sigma_method", "sigma_composition", "sigma_scatter", "sigma_conversion", "sigma_effective"].map(k => h("td", null, sigmaCell(bb[k]))))); };
+  tb.append(h("tr", null, h("th", null, ""), ...["printed", "reading", "method", "composition", "scatter", "conversion", "effective"].map(k => h("th", null, k))));
+  if (b.temperature_K || b.composition_mole_fraction) { if (b.temperature_K) comp("T (K)", b.temperature_K); if (b.composition_mole_fraction) comp("x", b.composition_mole_fraction); }
+  else comp(v.unit || "value", b);
+  row(dl, "Uncertainty budget", h("span", null, h("div", {class: "scroll"}, tb), h("span", {class: "muted", style: "font-size:.85rem"},
+    "basis: " + (u.sigma_basis || "") + (u.printed ? " · printed: " + JSON.stringify(u.printed) : "") + (u.temperature_sigma_K != null ? " · printed T σ: " + u.temperature_sigma_K + " K (" + (u.temperature_sigma_basis || "") + ")" : "") + (b.method_class ? " · method class: " + b.method_class + " (" + (b.method_basis || "") + ")" : ""))));
+  if (v.weight != null) row(dl, "Weight", fmt(v.weight));
+  box.append(dl);
+  box.append(h("h3", null, "Source record (what was read from the page)"));
+  const d2 = h("dl");
+  row(d2, "Evidence class", h("span", null, badge(r.evidence_class || ""), r.origin && r.origin.basis ? h("span", {class: "muted", style: "font-size:.85rem"}, " " + r.origin.basis) : null));
+  row(d2, "Printed value", fmt(r.value_printed != null ? r.value_printed : r.value) + (r.unit_printed ? " " + r.unit_printed : (r.unit ? " " + r.unit : "")));
+  if (r.temperature_printed || r.temperature_K != null) row(d2, "Temperature", (r.temperature_printed ? "printed: " + r.temperature_printed + " · " : "") + (r.temperature_K != null ? r.temperature_K + " K" : "") + (r.temperature_basis ? " · " + r.temperature_basis : ""));
+  if (r.reaction) row(d2, "Reaction", (r.reaction.printed || "") + (r.reaction.type ? " · " + r.reaction.type : ""));
+  if (r.phases) row(d2, "Phases (printed)", r.phases.map(x => x.label + (x.model_phase ? " → " + x.model_phase : "")).join("; "));
+  if (r.phase_compositions) row(d2, "Phase compositions", pre(r.phase_compositions.map(pc => (pc.phase || "?") + ": " + compText(pc.composition) + (pc.basis ? " (" + pc.basis + ")" : "")).join("\n")));
+  if (r.overall_composition) row(d2, "Overall composition", compText(r.overall_composition));
+  if (r.uncertainty) row(d2, "Uncertainty (record)", JSON.stringify(r.uncertainty));
+  if (r.reference_state) row(d2, "Reference state (record)", JSON.stringify(r.reference_state));
+  if (r.corrections) row(d2, "Corrections", pre(JSON.stringify(r.corrections, null, 1)));
+  const L = r.locator || {};
+  row(d2, "Where", (L.artifact === "table" ? "page " + fmt(L.page) + " · Table " + fmt(L.label) + (L.row != null ? " · row " + fmt(L.row) : "") + (L.caption ? " — " + L.caption : "") : "page " + fmt(r.quote_page != null ? r.quote_page : L.page)));
+  if (r.quote) row(d2, "Quote", h("blockquote", null, r.quote));
+  const cit = h("span", null, p.citation || r.paper || "", " ", doiLink(p.doi));
+  row(d2, "Paper", cit);
+  if (r.cited_sources && r.cited_sources.length) row(d2, "Cited source(s)", h("span", null, ...r.cited_sources.map(c => h("span", {style: "display:block"}, (c.label ? "[" + c.label + "] " : "") + (c.reference || c.paper || "") + " ", doiLink(c.doi)))));
+  box.append(d2);
+  const im = IMG[it.item] || {};
+  box.append(h("h4", null, "Page " + (v.page_image_page || "") + " of the paper (click to enlarge)"));
+  box.append(im.page ? crop(im.page, "page of the paper") : h("p", {class: "warn"}, "No page image: open the paper through its DOI link."));
+  box.append(h("details", {style: "margin-top:10px"}, h("summary", {class: "muted", style: "font-size:.88rem"}, "Full released content"), pre(JSON.stringify(v, null, 2))));
+}
+
+function renderASM(v, box, it) {
+  const im = IMG[it.item] || {};
+  box.append(h("p", {class: "muted", style: "margin:0"}, (v.T_range_C ? v.T_range_C[0] + "–" + v.T_range_C[1] + " °C · " : "") + (v.x_range_at_pct ? v.x_range_at_pct[0] + "–" + v.x_range_at_pct[1] + " at.% " + (v.axis_element || "") : "") +
+    " · released point (black ring): " + v.point.T_C + " °C, " + v.point.x_at_pct + " at.% " + v.point.x_component));
+  box.append(h("p", {style: "margin:4px 0"}, "Name the phases present in the ", h("b", null, "orange-tinted field"), " from the drawing alone."));
+  box.append(im.zoom ? crop(im.zoom, it.item + " field enlarged") : h("p", {class: "warn"}, "image missing"));
+  if (im.whole) box.append(h("details", null, h("summary", null, "Whole diagram"), crop(im.whole, it.item + " whole diagram")));
+}
+
+function renderItem() {
+  const it = ITEMS[cur], v = it.view, box = $("item");
+  box.replaceChildren();
+  const head = it.kind === "S-ASM" ? (v.system + " (handbook p. " + v.handbook_page + ")") : (v.system || (v.record || {}).system || "");
+  box.append(h("p", {class: "muted", style: "margin:0 0 6px;font-size:.9rem"}, "Item " + (cur + 1) + " of " + ITEMS.length + " · ", h("b", null, it.item), " · " + KINDL[it.kind] + (it.stratum ? " · stratum " + it.stratum : "")));
+  box.append(h("h3", {style: "margin-top:0"}, head));
+  if (it.kind === "S-REG") renderREG(v, box);
+  else if (it.kind === "S-ESPEI") renderESPEI(v, box, it);
+  else renderASM(v, box, it);
+  renderAnswers();
+  $("jump").value = String(cur);
+  $("prev").disabled = cur === 0; $("next").disabled = cur === ITEMS.length - 1;
+}
+
+function renderAnswers() {
+  const it = ITEMS[cur], a = state.answers[it.item] || {}, qs = $("questions");
+  qs.replaceChildren();
+  if (it.kind === "S-ASM") {
+    const fs = h("fieldset", null, h("legend", null, "Your reading of the tinted field"));
+    ASM_OPTS.forEach(([o, l]) => {
+      const inp = h("input", {type: "radio", name: "asm-pick", value: o, id: "asm-" + o});
+      if (a.pick === o) inp.checked = true;
+      inp.addEventListener("change", () => setASM({pick: o}));
+      fs.append(h("label", {for: inp.id}, inp, l));
+    });
+    const box = h("input", {type: "text", id: "asm-name", placeholder: "e.g. L+(Cu) — click phases below or type", style: "width:100%;margin-top:6px"});
+    box.value = a.name || "";
+    box.addEventListener("input", () => setASM({pick: "__name", name: box.value}));
+    fs.append(box);
+    const pick = h("div", {style: "margin-top:4px"});
+    (ITEMS[cur].view.phase_buttons || []).forEach(p => { const b = h("button", {type: "button", class: "ph"}, p); b.addEventListener("click", () => { const curv = box.value ? box.value.split("+") : []; box.value = curv.concat([p]).join("+"); setASM({pick: "__name", name: box.value}); }); pick.append(b); });
+    const clr = h("button", {type: "button", class: "ph"}, "clear"); clr.addEventListener("click", () => { box.value = ""; setASM({name: ""}); }); pick.append(clr);
+    fs.append(pick);
+    const conf = h("select", {id: "asm-conf"}, ...["high", "medium", "low"].map(c => h("option", {value: c}, c)));
+    conf.value = a.confidence || "medium";
+    conf.addEventListener("change", () => setASM({confidence: conf.value}));
+    fs.append(h("p", {style: "margin:6px 0 0"}, h("label", {for: "asm-conf"}, "Confidence "), conf));
+    qs.append(fs);
+  } else {
+    const grid = h("div", {class: "q"});
+    QUESTIONS[it.kind].forEach(q => {
+      const fs = h("fieldset", null, h("legend", null, q.label));
+      q.opts.forEach(o => {
+        const inp = h("input", {type: "radio", name: "q-" + q.id, value: o, id: "q-" + q.id + "-" + o});
+        if (a[q.id] === o) inp.checked = true;
+        inp.addEventListener("change", () => setAnswer(q.id, o));
+        fs.append(h("label", {for: inp.id}, inp, OPTL[o]));
+      });
+      grid.append(fs);
+    });
+    qs.append(grid);
+  }
+  $("note").value = a.note || "";
+  $("saved").textContent = "";
+}
+function ensure(id) { return state.answers[id] || (state.answers[id] = {}); }
+function stamp(a) { a.updated = new Date().toISOString(); save(); progress(); }
+function setAnswer(field, v) { const a = ensure(ITEMS[cur].item); a[field] = v; stamp(a); }
+function setASM(o) { const a = ensure(ITEMS[cur].item); Object.assign(a, o); if (!a.confidence) a.confidence = "medium"; stamp(a); if (o.pick === "__name") { const r = document.getElementById("asm-__name"); if (r) r.checked = true; } }
+function progress() {
+  const done = ITEMS.filter(isAnswered).length;
+  $("progress").textContent = done + " / " + ITEMS.length + " answered";
+  $("meter").style.width = (100 * done / ITEMS.length).toFixed(1) + "%";
+  [...$("jump").options].forEach((o, i) => { const it = ITEMS[i]; o.textContent = (isAnswered(it) ? "✓ " : "· ") + it.item + " · " + (it.kind === "S-ASM" ? it.view.system : (it.view.system || (it.view.record || {}).system || "")); });
+}
+function go(i) { cur = Math.max(0, Math.min(ITEMS.length - 1, i)); save(); renderItem(); window.scrollTo(0, $("item").offsetTop - 8); }
+
+function canonicalize(v) {
+  if (Array.isArray(v)) return v.map(canonicalize);
+  if (v && typeof v === "object") { const o = {}; Object.keys(v).sort().forEach(k => { if (v[k] !== undefined) o[k] = canonicalize(v[k]); }); return o; }
+  return v;
+}
+function canonicalJSON(v) { return JSON.stringify(canonicalize(v), null, 2) + "\n"; }
+
+function results() {
+  const answers = [];
+  ITEMS.forEach(it => {
+    const a = state.answers[it.item];
+    if (!a) return;
+    const o = {item: it.item, n: it.n, kind: it.kind};
+    if (it.kind === "S-ASM") { o.decision = asmDecision(a); o.confidence = a.confidence || null; }
+    else QUESTIONS[it.kind].forEach(q => { o[q.id] = a[q.id] || null; });
+    o.note = (a.note || "").trim();
+    o.updated = a.updated || null;
+    answers.push(o);
+  });
+  return {schema: "orchid-precision-supplement-review/1", sample_sha256: SAMPLE_SHA256, sample_schema: S.schema, seed: S.design.seed,
+          packet: PACKET ? PACKET.index : null, reviewer: state.reviewer.trim(), timestamp: new Date().toISOString(), n_items: ITEMS.length,
+          n_answered_complete: ITEMS.filter(isAnswered).length, answers};
+}
+function download() {
+  if (!state.reviewer.trim()) { $("status").textContent = "Enter your name first."; $("reviewer").focus(); return; }
+  const blob = new Blob([canonicalJSON(results())], {type: "application/json"});
+  const a = h("a", {href: URL.createObjectURL(blob), download: "precision-supplement-" + state.reviewer.trim().replace(/[^A-Za-z0-9_-]+/g, "_") + (PACKET ? "-p" + PACKET.index : "") + "-" + SAMPLE_SHA256.slice(0, 8) + ".json"});
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $("status").textContent = "Downloaded.";
+}
+
+load();
+$("n-items").textContent = ITEMS.length;
+if (PACKET) $("packet-info").textContent = " (packet " + PACKET.index + " of " + PACKET.of + ": " + PACKET.own + " items of your own and " + PACKET.overlap + " shared with packet " + PACKET.overlap_from_packet + " to measure agreement)";
+$("sha").textContent = SAMPLE_SHA256.slice(0, 16);
+$("seed").textContent = S.design.seed;
+ITEMS.forEach((it, i) => $("jump").append(h("option", {value: String(i)}, it.item)));
+$("reviewer").value = state.reviewer;
+$("reviewer").addEventListener("input", e => { state.reviewer = e.target.value; save(); });
+$("note").addEventListener("input", e => { const a = ensure(ITEMS[cur].item); a.note = e.target.value; a.updated = new Date().toISOString(); save(); });
+$("prev").addEventListener("click", () => go(cur - 1));
+$("next").addEventListener("click", () => go(cur + 1));
+$("next-open").addEventListener("click", () => { for (let k = 1; k <= ITEMS.length; k++) { const i = (cur + k) % ITEMS.length; if (!isAnswered(ITEMS[i])) return go(i); } $("status").textContent = "All items answered."; });
+$("jump").addEventListener("change", e => go(Number(e.target.value)));
+$("download").addEventListener("click", download);
+$("clear").addEventListener("click", () => { if (!confirm("Clear all answers saved in this browser?")) return; state.answers = {}; save(); renderItem(); progress(); });
+renderItem(); progress();
+</script>
+</body>
+</html>
