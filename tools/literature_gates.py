@@ -48,6 +48,9 @@ GATES = {
     "G4": "system assignment", "G5": "property semantics", "G6": "invariant phase lists",
     "G7": "duplicates", "G8": "evidence class", "G9": "compositions", "G10": "reader tier / agreement",
     "G11": "CALPHAD plausibility fields", "G12": "pressure basis", "page": "page checks (visual)",
+    "R2": "audit round 2 (2026-10-24): per-column basis and sign read on the page, printed sigma rescaled with its value, "
+          "absolute entropies, heat-content and expression temperatures, 298-subscript and calorimeter temperatures, "
+          "first-principles rows, formation from compounds, reference-state text (tools/literature_r2_thermo.py)",
 }
 
 
@@ -1121,19 +1124,22 @@ GAS_ELEMENTS = {"O", "N", "H", "F", "CL", "AR", "HE", "NE", "KR", "XE"}
 
 
 def g5_semantics(records, rep):
+    import literature_r2_thermo  # noqa: E402  (audit round 2: absolute entropies are not formation entropies)
     for r in records:
         p = r.get("property") or ""
         pp = str(r.get("property_printed") or "")
         txt = text_of(r)
         # absolute-entropy code on an excess / magnetic contribution or an entropy of formation
-        if p in ("SM", "ENTROPY") and not INCREMENT.search(pp):
+        r2_abs = any(c.get("rule") == "absolute_entropy_labelled_formation" for c in r.get("corrections") or [])
+        if p in ("SM", "ENTROPY") and not INCREMENT.search(pp) and not r2_abs:
             cap = str((r.get("locator") or {}).get("caption") or "")
             new = None
             if re.search(r"\bmag", pp, re.I):
                 new, rule = "SM_MAGNETIC", "printed_magnetic_contribution"
             elif re.search(r"\^?\s*ex\b|excess|\bE\b|S\s*\^?\s*E\b", pp):
                 new, rule = "SM_EXCESS", "printed_excess_entropy"
-            elif FORMATION_WORD.search(pp) or (re.fullmatch(r"\s*[sS]\s*(?:\(.*\))?\s*", pp) and re.search(r"entrop\w* \(?s?\)? ?of formation|formation", cap, re.I)):
+            elif (FORMATION_WORD.search(pp) or (re.fullmatch(r"\s*[sS]\s*(?:\(.*\))?\s*", pp) and re.search(r"entrop\w* \(?s?\)? ?of formation|formation", cap, re.I))) \
+                    and not literature_r2_thermo.entropy_too_large_for_formation(r):
                 new, rule = "SM_FORM", "printed_entropy_of_formation"
             if new:
                 correct(r, "G5", "property", p, new, rule, {"property_printed": pp, "caption": cap[:120] or None})
@@ -1698,6 +1704,8 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     ready0 = sum(1 for r in records if r["flags"].get("espei_ready"))
     n0 = len(records)
     g0_page_fixes(records, visual, rep)
+    import literature_r2_thermo  # noqa: E402  (audit round 2: units, temperatures, reference states; A3 / A4)
+    literature_r2_thermo.apply(records, visual, rep)
     g4_system(records, visual, rep)
     g4_unit_gas_elements(records, rep)
     for r in records:

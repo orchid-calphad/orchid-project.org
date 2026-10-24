@@ -626,6 +626,7 @@ def base_record(obs, kind, store, paper, art, readers):
         "temperature_K": num(cond.get("T_K")),
         "temperature_printed": cond.get("T_printed"),
         "temperature_basis": cond.get("T_basis"),
+        "_T_measurement_K": num(cond.get("T_measurement_K")),   # row temperature (audit round 2; popped by the gates)
         "temperature_max_K": num(cond.get("T_max_K")),
         "temperature_range_K": cond.get("T_range_K"),
         "temperature_bound": cond.get("T_bound"),
@@ -1063,6 +1064,8 @@ papers, page images, crops and full text are **not** redistributed.
 | `phase_compositions_dropped` | compositions printed under a label that the page check found not to be a phase of the row (a column header); kept, not used |
 | `transition_kind_stored` | the reaction type before a page-checked correction to the printed type |
 | `uncertainty_stored`, `reference_state_stored`, `temperature_basis_stored` | the stored uncertainty / reference state before a page-checked correction (e.g. a scatter-aware sigma for compounds whose independent measurements disagree, `uncertainty.basis = scatter_between_sources`; a printed sigma combined with the composition offset of a value measured at a phase's historical formula, `uncertainty.basis = printed_with_composition_offset`; the reference state the page states; a value converted to the standard reference state carries the conversion in `corrections[].evidence.conversion`; primary works of `cited_sources` resolved from the paper's reference list keep the unresolved entries in `corrections[].before`) |
+| `property_expression` | (audit round 2) `{{form, term, printed, temperature_range_K}}` when the value is one coefficient of a printed expression in T (`A + B T`, a Cp polynomial); the property code then ends in `_EXPRESSION_TERM` and the record has no single temperature (`temperature_K_stored` keeps the one stored before) |
+| `calorimeter_temperature_K`, `reference_temperature_K` | (audit round 2) the calorimeter temperature of a standard enthalpy of formation stored at 298.15 K (direct-synthesis / solute-solvent drop calorimetry); the reference temperature of a heat content H(T) - H(298) stored at its row temperature T. Property codes `HM_FROM_COMPOUNDS` / `GM_FROM_COMPOUNDS` / `SM_FROM_COMPOUNDS`: formation quantities whose printed reference is compounds (e.g. oxides), not the elements; `flags.non_crystalline_state`: liquid / amorphous / glassy state printed at room temperature |
 | `related_records` | ids of records of the same measurement listed in another paper (a compilation), or of the independent measurements behind a scatter-aware sigma |
 | `merged_ids`, `merged_pids` | ids (and persistent locators) of records that were exact duplicates of this one and were merged into it |
 | `value_range` | `{{min,max}}` when a range was printed; `value_expression`: a printed expression (model parameters) |

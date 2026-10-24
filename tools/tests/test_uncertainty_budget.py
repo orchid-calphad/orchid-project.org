@@ -32,7 +32,7 @@ def rec(i, src, v, method="calorimetry", unit="kJ/mol-atom", sigma=None, comp=No
     r = {"id": "R%d" % i, "property": prop, "value": v, "unit": unit, "evidence_class": "experimental",
          "flags": {"extraction_accepted": True}, "elements": ["AL", "NI"], "system": "AL-NI",
          "overall_composition": comp or {"AL": 0.5, "NI": 0.5}, "temperature_K": T, "method": method,
-         "origin": {"measured_in": src, "own_work_of_paper": True}, "paper": src, "phases": [{"label": "AlNi"}]}
+         "origin": {"measured_in": src, "own_work_of_paper": True}, "paper": src, "phases": [{"label": "B2"}]}
     if sigma is not None:
         r["uncertainty"] = {"basis": "printed", "value": sigma}
     return r
