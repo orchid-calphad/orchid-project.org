@@ -30,7 +30,9 @@ Train/validation/test split (literature_values.split): sha256("orchid-split-v1:"
 as an integer mod 100: < 80 train, < 90 validation, else test. No paper spans two splits.
 Machine-learning folds (literature_values, dft_parity; tools/ml_folds.py): chemical_system, fold_lso =
 int(sha256(chemical_system), 16) mod 5 (leave-chemical-system-out), fold_lpo = int(sha256(paper_id), 16) mod 5
-(leave-paper-out). Subsystems are systems of their own.
+(leave-paper-out). Subsystems are systems of their own. literature_values.system is the chemical system of the
+record's own state (a binary compound or pure element printed in a higher-order paper is filed under its subsystem);
+literature_values.source_system is the system of the source table / paper.
 
 Requires pyarrow. No network.
 
@@ -162,7 +164,7 @@ def lit_schema(pa):
         ("model_reproduced_by_calculation", b), ("model_unlinked_reason", s),
         ("readers", ls), ("reader_tier", s), ("reader_agreement", s), ("reader_agreement_label", s),
         ("tool_release", s), ("release", s), ("split", s),
-        ("chemical_system", s), ("fold_lso", i), ("fold_lpo", i),
+        ("chemical_system", s), ("fold_lso", i), ("fold_lpo", i), ("source_system", s),
     ]
     return pa.schema(cols)
 
@@ -266,6 +268,8 @@ def lit_row(r, papers, release):
         "tool_release": r.get("tool_release"), "release": release, "split": split_of(pid),
         # machine-learning folds (tools/ml_folds.py), as in the JSON release
         "chemical_system": r["system"], "fold_lso": ml_folds.fold(r["system"]), "fold_lpo": ml_folds.fold(pid),
+        # chemical system of the source table / paper (audit round 2, A1 C4: `system` is the state's own system)
+        "source_system": r.get("source_system") or r["system"],
     }
     for k in BOOL_FLAGS:
         out["flag_" + k] = bool(fl.get(k))
