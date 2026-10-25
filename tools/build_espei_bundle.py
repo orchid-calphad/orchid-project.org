@@ -2085,7 +2085,8 @@ def readme(S, C, cite):
     pc = S["phase_constraints"]["folders"]
     fx = S["fixes"]
     pcontent = {"assessed": "assessed (handbook) phase-field points, Dataset assessed-phase-assemblages, in the phase "
-                            "names of each TDB that has ZPF datasets here (tag `assessed_phase_diagram`)",
+                            "names of each TDB that has ZPF datasets here (tag `assessed_phase_diagram`); the dense field grid of the validated "
+                            "diagrams (Cu-Zr) is a separate dataset per TDB, suffix `.dense.json`, tag `dense_field_grid`",
                 "derived/invariant-brackets": "DERIVED: phase sets just above and below each printed invariant "
                                               "(tag `derived_bracket`)",
                 "derived/liquid-stability": "DERIVED: single-phase liquid above the highest liquidus where the "
@@ -2293,7 +2294,11 @@ def readme(S, C, cite):
         "assessed-phase-assemblages (one point inside each named field of an expert-drawn handbook diagram) with the "
         "phase names of that TDB (phase registry); points with a phase that the TDB does not model, or models twice, "
         "are left out; `orchid.confidence` per point. Evidence class assessed_phase_diagram: neither experimental nor "
-        "CALPHAD.", "",
+        "CALPHAD.",
+        "- `assessed/<SYS>/<TDB>.<DIAGRAM>.dense.json` (tags `assessed_phase_diagram`, `dense_field_grid`; validated "
+        "diagrams only, currently Cu-Zr): the dense interior grid of the same diagram (assessed-phase-assemblages "
+        "`dense-field-grid/`), as separate datasets so that they can be weighted apart from the one-point-per-field "
+        "datasets; `orchid.field_weight_share` per point (1 / points in the field: one observation per field).", "",
         "Counts (brackets written and skipped by reason, systems with liquid-stability points) are in validation.json "
         "(`phase_constraints`). Suggested use: weight each group so that it contributes comparably to the measured "
         "data (e.g. per-type weights proportional to 1/N), and check the fitted model's invariant temperatures "

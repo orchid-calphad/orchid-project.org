@@ -522,15 +522,18 @@ def build_brackets(C, R, folders=("experimental", "invariants")):
 def assessed_per_tdb(data, R, stems_by_sys):
     root = os.path.join(data, "assessed-phase-assemblages")
     conf, budget = {}, {}
-    rp = os.path.join(root, "records.jsonl.gz")
-    if os.path.exists(rp):
-        with gzip.open(rp, "rt", encoding="utf-8") as fh:
-            for line in fh:
-                r = json.loads(line)
-                conf[r["id"]] = r.get("confidence")
-                budget[r["id"]] = r.get("uncertainty_budget")
+    for rp in (os.path.join(root, "records.jsonl.gz"), os.path.join(root, "dense-field-grid", "records.jsonl.gz")):
+        if os.path.exists(rp):
+            with gzip.open(rp, "rt", encoding="utf-8") as fh:
+                for line in fh:
+                    r = json.loads(line)
+                    conf[r["id"]] = r.get("confidence")
+                    budget[r["id"]] = r.get("uncertainty_budget")
     out, skipped = {}, Counter()
-    for f in sorted(glob.glob(os.path.join(root, "espei-zpf", "*.json"))):
+    # primary points (one per field), then the dense field grid of the validated diagrams (separate datasets, suffix .dense)
+    srcs = [(f, "espei-zpf", "") for f in sorted(glob.glob(os.path.join(root, "espei-zpf", "*.json")))] + \
+           [(f, "espei-zpf-dense", ".dense") for f in sorted(glob.glob(os.path.join(root, "espei-zpf-dense", "*.json")))]
+    for f, srcdir, suffix in srcs:
         d = json.load(open(f, encoding="utf-8"))
         diag = os.path.basename(f)[:-5]
         sysn = diag.rsplit("-p", 1)[0]
@@ -563,20 +566,25 @@ def assessed_per_tdb(data, R, stems_by_sys):
                     ids2.append(rid)
             if not vals:
                 continue
-            rel = "assessed/%s/%s.%s.json" % (sysn, stem, diag)
+            rel = "assessed/%s/%s.%s%s.json" % (sysn, stem, diag, suffix)
             out[rel] = {
                 "components": list(d["components"]),
                 "phases": sorted({vx[0] for reg in vals for vx in reg if vx[0] != "__HYPERPLANE__"}),
                 "conditions": {"P": d["conditions"].get("P", 101325.0), "T": T2}, "output": "ZPF", "values": vals,
                 "reference": d.get("reference"),
-                "tags": ["assessed_phase_diagram", "orchid"],
+                "tags": list(d.get("tags") or ["assessed_phase_diagram", "orchid"]),
                 "comment": d.get("comment", "") + " Phase names mapped to %s.tdb through the ORCHID phase registry "
                                                   "(points whose phases are not all in that TDB are left out)." % stem,
                 "orchid": {"evidence_class": "assessed_phase_diagram", "diagram": diag, "target_tdb": stem + ".tdb",
                            "record_ids": ids2, "confidence": [conf.get(r) for r in ids2],
                            "points_left_out": len(d["values"]) - len(vals),
-                           "source": "assessed-phase-assemblages/espei-zpf/%s.json" % diag},
+                           "source": "assessed-phase-assemblages/%s/%s.json" % (srcdir, diag)},
             }
+            if suffix:
+                o_ = d["orchid"]
+                keep = [k for k, (rid, v) in enumerate(zip(ids, d["values"])) if rid in set(ids2)]
+                out[rel]["orchid"].update(point_method=o_.get("point_method"), dense_method_version=o_.get("dense_method_version"),
+                                          field=[o_["field"][k] for k in keep], field_weight_share=[o_["field_weight_share"][k] for k in keep])
             ubud = assessed_budget_points(ids2, budget)
             if ubud:
                 out[rel]["orchid_uncertainty_budget"] = ubud

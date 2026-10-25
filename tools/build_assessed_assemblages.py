@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import copy
 import csv
 import glob
 import gzip
@@ -78,6 +79,25 @@ LINE_COMPOUND_AT = 1.0    # a phase whose printed range is at most this wide (at
 GAP_MAX = 0.02            # tie-line: a drawn line wider than this (normalised) is not a clean single boundary
 P_PA = 101325.0
 MAX_FILE_BYTES = 45 * 1000 * 1000
+
+# ---- dense field grid (PI decision 2026-10-24: "the dense assessed phase assemblages are facts"; staged change S1)
+# Interior points on a regular (T, x) grid inside every named field, in addition to the primary point of each field.
+# Method version 1.0.0 is the grid of the orchid-espei-demo Amendment 4 / PhaseForge+ Cu-Zr final fit, validated by
+# reproducing its 177 points (tools/tests/test_dense_field_grid.py). Enabled by default only where validated.
+DENSE_VERSION = "1.0.0"
+DENSE_DIR = "dense-field-grid"
+DENSE_ESPEI_DIR = "espei-zpf-dense"
+DENSE_VALIDATED = {"CU-ZR-p371"}
+DENSE_STEP_T_K, DENSE_STEP_X, DENSE_MAX_PER_FIELD, DENSE_LIQUID_BAND_K = 50.0, 0.05, 40, 150.0
+# Phase labels the release leaves unmapped on its primary records but that the validated grid resolves (demo decisions,
+# recorded on every dense record that uses them; the primary records keep phase_id null): label -> (registry id, reason)
+DENSE_LABEL_OVERRIDES = {
+    "CU-ZR-p371": {
+        "CuZr": ("phase:cu-zr:cuzr-b2", "the printed structure cP2 (CsCl, B2) is the registry phase CuZr-B2; the release's "
+                 "primary records leave the label unmapped because SGTE assessments disagree (BCC_B2 vs CUZR_B2)"),
+        "Cu51Zr14": ("phase:cu-zr:cu51zr14", "the printed composition 21.5 at.% Zr and structure (hP65, Ag51Gd14 type) match "
+                     "the only registry phase of that name; left unmapped on the primary records by the deterministic mapper"),
+    }}
 CAVEAT = ("drawing-based; boundary positions in assessed diagrams carry low credence -- use as weak/soft constraints")
 COMPILATION = {"role": "compilation", "citation": "H. Okamoto, Desk Handbook: Phase Diagrams for Binary Alloys, 2nd ed., "
                "ASM International, Materials Park, OH (2010)", "doi": None}
@@ -414,6 +434,50 @@ def field_point(mask, xs, Ts):
             "centroid": centroid}
 
 
+def dense_grid_cells(mask, xs, Ts, liquid_only):
+    """Regular (T, x) grid inside one field (method DENSE_VERSION): spacing dT = min(50 K, height / 4), dx = min(0.05,
+    width / 4) anchored at the lower-left corner of the field plus half a step; a node is kept when it lies in the field
+    at least MARGIN (frame-normalised) from every other field or drawn line; at most DENSE_MAX_PER_FIELD points (even
+    subsample); the single-phase liquid only within DENSE_LIQUID_BAND_K above its lower boundary at that x. Returns
+    [(row, col, clearance)]."""
+    nT, nx = mask.shape
+    dxn, dTn = 1.0 / (nx - 1), 1.0 / (nT - 1)
+    dist = ndimage.distance_transform_edt(np.pad(mask, 1), sampling=(dTn, dxn))[1:-1, 1:-1]
+    rows, cols = np.nonzero(mask)
+    T0, T1, x0, x1 = Ts[rows.min()], Ts[rows.max()], xs[cols.min()], xs[cols.max()]
+    dT, dx = min(DENSE_STEP_T_K, (T1 - T0) / 4), min(DENSE_STEP_X, (x1 - x0) / 4)
+    cand = []
+    for T in np.arange(T0 + dT / 2, T1, dT):
+        i = int(np.argmin(abs(Ts - T)))
+        for x in np.arange(x0 + dx / 2, x1, dx):
+            j = int(np.argmin(abs(xs - x)))
+            if not mask[i, j] or dist[i, j] < MARGIN:
+                continue
+            if liquid_only and Ts[i] - Ts[np.nonzero(mask[:, j])[0].min()] > DENSE_LIQUID_BAND_K:
+                continue
+            cand.append((i, j, float(dist[i, j])))
+    if len(cand) > DENSE_MAX_PER_FIELD:
+        cand = [cand[k] for k in np.linspace(0, len(cand) - 1, DENSE_MAX_PER_FIELD).astype(int)]
+    return cand
+
+
+def dense_enabled(a, diag):
+    mode = getattr(a, "dense", "default")
+    return mode in ("all", "report") or (mode == "default" and diag in DENSE_VALIDATED)
+
+
+def espei_names(asm, rinfo):
+    """(TDB phase names, labels without a name, any vacancy sublattice) of an assemblage."""
+    tnames, miss = [], []
+    for e in asm:
+        ri = rinfo.get(e["phase_id"]) if e["phase_id"] else None
+        if ri and ri["preferred_name"].upper() in ri["tdb_names"] and ri["preferred_name"].upper() in ri.get("independent_names", []):
+            tnames.append(ri["preferred_name"].upper())
+        else:
+            miss.append(e["label"])
+    return tnames, miss, (any(rinfo[e["phase_id"]]["va"] for e in asm if e["phase_id"]) if not miss else False)
+
+
 def run_extent(lab_row, c, fid, step):
     """From column c (inside field fid) walk along the row: (first column outside the field, first nonzero label
     beyond the drawn line or None at the frame, column of that label)."""
@@ -455,6 +519,8 @@ def build(a, log=print):
               "annotation_tools_sha256": manifest.get("tools_sha256", {}).get("pd_fields.py"),
               "phase_mapper_sha256": reg.pm_sha, "phase_mapper": reg.pm_git, "builder": "orchid-project.org/tools/build_assessed_assemblages.py"}
     records, exclusions, espei_excl = [], [], []
+    a._dense = {"records": [], "espei_excl": [], "espei": {}, "espei_pts": collections.defaultdict(list),
+                "counts": collections.Counter()}
     espei_default, espei_tl = {}, {}
     cnt = collections.Counter()
     for sd in sorted(glob.glob(os.path.join(run, "systems", getattr(a, "only", None) or "*"))):
@@ -703,6 +769,65 @@ def build(a, log=print):
                 va = any(rinfo[e["phase_id"]]["va"] for e in asm)
                 espei_pts.append((rec, tnames, va, None))
                 espei_pts_tl.append((rec, tnames, va, tl))
+            # ---- dense field grid (additional records; the primary point above is unchanged)
+            if dense_enabled(a, diag):
+                cells = dense_grid_cells(mask, xs, Ts, phases == ["L"])
+                dd = a._dense
+                dd["counts"]["fields_with_grid"] += 1
+                dd["counts"]["points"] += len(cells)
+                dd["counts"]["diagram:" + diag] += len(cells)
+                if getattr(a, "dense", "default") == "report":
+                    continue
+                asm_d = []
+                for e in asm:
+                    e2 = dict(e)
+                    ov = DENSE_LABEL_OVERRIDES.get(diag, {}).get(e["label"])
+                    if e2["phase_id"] is None and ov and ov[0] in rinfo:
+                        e2.update(phase_id=ov[0], canonical_name=rinfo[ov[0]]["preferred_name"],
+                                  mapping_basis="dense_field_grid override: " + ov[1])
+                    asm_d.append(e2)
+                for k_, (r_, c_, clr) in enumerate(cells, 1):
+                    xg, T_Cg = round(float(xs[c_]), 6), float(Ts[r_])
+                    row_ = lab[r_]
+                    jl_, _, _ = run_extent(row_, c_, fid, -1)
+                    jr_, _, _ = run_extent(row_, c_, fid, +1)
+                    cu_, cd_ = col_extent(lab[:, c_], r_, fid)
+                    mg = {"normalized": r6(clr),
+                          "isotherm_mole_fraction": r6(min(xg - float(xs[max(jl_, 0)]), float(xs[min(jr_, nx - 1)]) - xg)),
+                          "isopleth_K": r6(min(T_Cg - float(Ts[max(cu_, 0)]), float(Ts[min(cd_, nT - 1)]) - T_Cg)),
+                          "margin_note": margin["margin_note"]}
+                    cross_ = [(float(xs[j_]), T_Cg) for j_ in (jl_, jr_) if 0 <= j_ < nx] + \
+                             [(xg, float(Ts[i_])) for i_ in (cu_, cd_) if 0 <= i_ < nT]
+                    bb_, ns_, nd_ = lines.basis_at(cross_)
+                    dr = copy.deepcopy(rec)
+                    dr.update({
+                        "id": "aspa-" + sha256_bytes(("%s|%s|%d|%d" % (system, diag, fid, k_)).encode())[:16],
+                        "assemblage": asm_d, "T_K": T_Cg + 273.15, "T_C": T_Cg, "x": xg,   # raster values unrounded (grid of the validated fit)
+                        "point_method": "dense_field_grid", "centroid": None, "positional_margin": mg, "boundary_basis": bb_,
+                        "boundary_lines": {"solid": ns_, "dashed": nd_, "diagram_has_dashed_lines": bool(lines.n_dash_joins),
+                                           "note": (dashed_boundaries.BASIS_TEXT.get(bb_) or "no traced boundary line along the "
+                                                    "point's isotherm and isopleth (frame edges only)")},
+                        "tie_line": None, "tie_line_omitted": "dense_field_grid_point",
+                        "flags": list(flags) + ["dense_field_grid", "interior_grid"],
+                        "dense_grid": {"method_version": DENSE_VERSION, "primary_record_id": rec["id"], "index_in_field": k_,
+                                       "n_points_in_field": len(cells), "field_weight_share": r6(1.0 / len(cells)),
+                                       "interior_margin_normalized_min": MARGIN, "clearance_normalized": r6(clr),
+                                       "spacing": {"T_K_max": DENSE_STEP_T_K, "x_max": DENSE_STEP_X},
+                                       "weight_note": "points of one diagram are not independent: the shares of one field sum "
+                                                      "to one observation (a fit may instead weight every point equally, as the "
+                                                      "PhaseForge+ Cu-Zr example does)"}})
+                    dr["uncertainty_budget"] = assessed_budget(dr)
+                    dr["sgte_crosscheck"] = [crosscheck(gd, xg, T_Cg + 273.15, comp, asm_d, by_tdb, reg.od.get(key, frozenset()),
+                                                        reg.partners.get(key, {})) for gd in sgte]
+                    dd["records"].append(dr)
+                    tn_, miss_, va_ = espei_names(asm_d, rinfo)
+                    if miss_:
+                        dd["espei_excl"].append({"id": dr["id"], "diagram": diag, "field": fid,
+                                                 "reason": "phase without TDB name in the registry", "phases": miss_})
+                    else:
+                        dd["espei_pts"][diag].append((dr, tn_, va_, None))
+        if a._dense["espei_pts"].get(diag):
+            a._dense["espei"][diag] = espei_dataset(diag, a._dense["espei_pts"][diag], comp, elements, citations, False, dense=True)
         if espei_pts:
             espei_default[diag] = espei_dataset(diag, espei_pts, comp, elements, citations, False)
             espei_tl[diag] = espei_dataset(diag, espei_pts_tl, comp, elements, citations, True)
@@ -852,7 +977,7 @@ def assessed_budget(rec):
                                               pm["isotherm_mole_fraction"], rec.get("boundary_basis"))}}
 
 
-def espei_dataset(diag, pts, comp, elements, citations, with_tl):
+def espei_dataset(diag, pts, comp, elements, citations, with_tl, dense=False):
     comps = sorted(e.upper() for e in elements)
     if any(va for _, _, va, _ in pts):
         comps.append("VA")
@@ -881,14 +1006,26 @@ def espei_dataset(diag, pts, comp, elements, citations, with_tl):
                "assessed-phase-assemblages v%s, diagram %s; one point per phase field (centroid or pole of inaccessibility); "
                "single-phase: the phase at the point composition; two-phase: phases present, compositions unknown (null) with "
                "__HYPERPLANE__ at the point's overall composition." % (METHOD_VERSION, diag))
+    if dense:
+        comment = ("evidence_class=assessed_phase_diagram (expert-drawn diagram, not experimental, not CALPHAD); ORCHID "
+                   "assessed-phase-assemblages v%s, dense field grid (method %s), diagram %s; regular interior (T, x) grid "
+                   "inside every named field, at least %.3f (frame-normalised) from every drawn line; single-phase: the phase at "
+                   "the point composition; two-phase: phases present, compositions unknown (null) with __HYPERPLANE__ at the "
+                   "point's overall composition. Points of one diagram are not independent: orchid.field_weight_share gives "
+                   "each point's share of one observation per field." % (METHOD_VERSION, DENSE_VERSION, diag, MARGIN))
     if with_tl:
         comment += (" Variant with tie-lines: two-phase points with a tie_line block carry its endpoint compositions "
                     "(isotherm through the point intersected with the drawn boundaries); caveat: " + CAVEAT + ".")
     return {"components": comps, "phases": sorted(phases), "conditions": {"P": P_PA, "T": temps}, "output": "ZPF",
             "values": values, "reference": ref, "comment": comment,
-            "tags": ["assessed_phase_diagram", "orchid"] + (["tie_line_variant"] if with_tl else []),
-            "orchid": {"evidence_class": EVIDENCE_CLASS, "diagram": diag, "record_ids": [r["id"] for r, _, _, _ in pts],
-                       "boundary_basis": [r.get("boundary_basis") for r, _, _, _ in pts]},
+            "tags": ["assessed_phase_diagram", "orchid"] + (["tie_line_variant"] if with_tl else [])
+            + (["dense_field_grid"] if dense else []),
+            "orchid": dict({"evidence_class": EVIDENCE_CLASS, "diagram": diag, "record_ids": [r["id"] for r, _, _, _ in pts],
+                            "boundary_basis": [r.get("boundary_basis") for r, _, _, _ in pts]},
+                           **({"point_method": "dense_field_grid", "dense_method_version": DENSE_VERSION,
+                               "field": [r["field"] for r, _, _, _ in pts],
+                               "field_weight_share": [r["dense_grid"]["field_weight_share"] for r, _, _, _ in pts]}
+                              if dense else {})),
             "orchid_uncertainty_budget": budget_points([r for r, _, _, _ in pts])}
 
 
@@ -1065,6 +1202,24 @@ def write_outputs(a, records, exclusions, espei_excl, espei_default, espei_tl, c
         for diag, ds in sorted(dsets.items()):
             guard(ds, "%s/%s" % (sub, diag))
             out["%s/%s.json" % (sub, diag)] = (json.dumps(ds, ensure_ascii=False, indent=1) + "\n").encode()
+    dd = getattr(a, "_dense", None)
+    dense_recs = dd["records"] if dd else []
+    if dense_recs:
+        for r in dense_recs:
+            oc = [c["doi"] for c in r["citations"] if c["role"] == "original_evaluation" and c.get("doi")]
+            r.update(ml_folds.fields(r["system"], ("doi:" + oc[0].lower()) if oc else "handbook:" + r["diagram"]))
+            guard(r, "dense[%s]" % r["id"])
+        out[DENSE_DIR + "/records.jsonl.gz"] = gzip.compress("".join(dumps(r) + "\n" for r in dense_recs).encode(),
+                                                             compresslevel=9, mtime=0)
+        drows = [flat(r) for r in dense_recs]
+        dcsv = to_csv(drows, CSV_COLS)
+        guard_text(dcsv, DENSE_DIR + "/records.csv")
+        out[DENSE_DIR + "/records.csv"] = dcsv.encode()
+        out[DENSE_DIR + "/records.parquet"] = parquet_bytes(drows, cite)
+        out[DENSE_DIR + "/espei_exclusions.jsonl"] = "".join(dumps(e) + "\n" for e in dd["espei_excl"]).encode()
+        for diag, ds in sorted(dd["espei"].items()):
+            guard(ds, "%s/%s" % (DENSE_ESPEI_DIR, diag))
+            out["%s/%s.json" % (DENSE_ESPEI_DIR, diag)] = (json.dumps(ds, ensure_ascii=False, indent=1) + "\n").encode()
     # ---- summary
     sg = collections.Counter()
     sg_any = collections.Counter()
@@ -1145,6 +1300,14 @@ def write_outputs(a, records, exclusions, espei_excl, espei_default, espei_tl, c
         "doi_corrections": dict(DOI_CORR.provenance(), records_with_dropped_original_doi=sum(
             1 for r in records if any(c.get("doi_status") for c in r["citations"])),
             systems=sorted({r["system"] for r in records if any(c.get("doi_status") for c in r["citations"])})),
+        "dense_field_grid": None if not dense_recs else {
+            "method_version": DENSE_VERSION, "diagrams": sorted({r["diagram"] for r in dense_recs}),
+            "points": len(dense_recs), "fields": len({(r["diagram"], r["field"]) for r in dense_recs}),
+            "points_by_n_phases": dict(sorted(collections.Counter(r["n_phases"] for r in dense_recs).items())),
+            "points_in_espei": len(dense_recs) - len(dd["espei_excl"]), "points_excluded_from_espei": len(dd["espei_excl"]),
+            "default_enabled_for": sorted(DENSE_VALIDATED), "files": DENSE_DIR + "/ and " + DENSE_ESPEI_DIR + "/",
+            "label_overrides": {d: {l: v[0] for l, v in m.items()} for d, m in DENSE_LABEL_OVERRIDES.items()
+                                if d in {r["diagram"] for r in dense_recs}}},
         "cite_as": cite,
     }
     summ["files"] = {}
@@ -1167,8 +1330,9 @@ def finalize(a, out, summ, cite, pqb, espei_res):
     guard({k: v for k, v in summ.items() if k != "cite_as"}, "summary")
     out["summary.json"] = (json.dumps(summ, ensure_ascii=False, indent=1) + "\n").encode()
     out["parquet.json"] = (json.dumps(summ["parquet"], indent=1) + "\n").encode()
-    out["README.md"] = readme(summ, cite).encode()
-    out["SCHEMA.md"] = schema_md(summ).encode()
+    dr_, ds_ = dense_docs(summ)
+    out["README.md"] = (readme(summ, cite) + dr_).encode()
+    out["SCHEMA.md"] = (schema_md(summ) + ds_).encode()
     big = [rel for rel, b in out.items() if len(b) > MAX_FILE_BYTES]
     if big:
         raise SystemExit("files over 45 MB: %s" % ", ".join(big))
@@ -1177,6 +1341,50 @@ def finalize(a, out, summ, cite, pqb, espei_res):
 
 def fmt(n):
     return format(n, ",")
+
+
+def dense_docs(s):
+    """README and SCHEMA sections of the dense field grid ('' when the release has none)."""
+    d = s.get("dense_field_grid")
+    if not d:
+        return "", ""
+    ov = "; ".join("%s: %s" % (dg, ", ".join("%s -> %s" % kv for kv in m.items())) for dg, m in d["label_overrides"].items())
+    readme_ = """
+
+## Dense field grid (derived points of the assessed-diagram class)
+
+Besides the primary point of each field, a regular interior grid of (T, x) points inside every named field is released
+for the diagrams where it was validated (%s; method %s, %s points in %s fields, %s of them usable in ESPEI
+datasets). The grid is the one used by the PhaseForge+ Cu-Zr example (`cuzr-phaseforgeplus` in the ORCHID examples):
+spacing min(50 K, field height / 4) by min(0.05, field width / 4) anchored at the lower-left corner of the field plus half
+a step, kept when the node lies at least %.3f (frame-normalised) from every other field or drawn line, at most %d points
+per field (even subsample), the single-phase liquid only within %d K above its lower boundary. Like the primary points, they
+are derived coordinates and phase assemblages only (never page images, crops or handbook text), with the same record schema,
+uncertainty budget (handbook-class prior), basis, review state and citations (original evaluation first, then the
+handbook); they are distinguished by `point_method` = `dense_field_grid`, the flags `dense_field_grid` and `interior_grid`
+and the `dense_grid` block (`primary_record_id`, `n_points_in_field`, `field_weight_share`, margin used). The points of one
+diagram are not independent observations: `field_weight_share` = 1 / (points in the field), so that each field counts as
+one observation when a fit weights by it. Files: `%s/` (records.jsonl.gz, records.csv, records.parquet,
+espei_exclusions.jsonl) and `%s/` (ESPEI ZPF datasets, dense points only; the bundle carries them as
+`assessed/<SYSTEM>/<TDB>.<DIAGRAM>.dense.json`, tag `dense_field_grid`). The counts above (`points`, `espei`) are the
+primary points only. Phase labels the primary records leave unmapped but the validated grid resolves (recorded in each
+record's `mapping_basis`): %s. Enable for other diagrams only after validation (`--dense all` in the builder).
+""" % (", ".join(d["diagrams"]), d["method_version"], fmt(d["points"]), fmt(d["fields"]), fmt(d["points_in_espei"]), MARGIN,
+       DENSE_MAX_PER_FIELD, int(DENSE_LIQUID_BAND_K), DENSE_DIR, DENSE_ESPEI_DIR, ov)
+    schema_ = """
+
+## Dense field grid records (`%s/`)
+
+Same fields as above. Differences: `point_method` = `dense_field_grid`; `centroid` null; `id` = `aspa-` + hash of
+(system, diagram, field, grid index >= 1) (the primary record of a field has index 0); `tie_line` null with
+`tie_line_omitted` = `dense_field_grid_point`; `flags` add `dense_field_grid` and `interior_grid`; `phase_id` of a label
+the primary record leaves unmapped may be filled by a documented override (`mapping_basis` starts with `dense_field_grid
+override`); extra block `dense_grid` = `{method_version, primary_record_id, index_in_field, n_points_in_field,
+field_weight_share (1 / n_points_in_field), interior_margin_normalized_min, clearance_normalized, spacing, weight_note}`.
+`x` is rounded to 1e-6 (raster resolution 5e-4). The ESPEI datasets (`%s/`) carry `orchid.point_method`,
+`orchid.field` and `orchid.field_weight_share` per point and the `dense_field_grid` tag.
+""" % (DENSE_DIR, DENSE_ESPEI_DIR)
+    return readme_, schema_
 
 
 def readme(s, cite):
@@ -1429,6 +1637,11 @@ def main(argv=None):
     ap.add_argument("--tools", default=DEF_TOOLS, help="directory of phase_mapper.py (default: this tools/ directory)")
     ap.add_argument("--tdb-dir", default=DEF_TDB_DIR, help="SGTE binary TDB files (read only)")
     ap.add_argument("--espei-python", default=DEF_ESPEI, help="interpreter with ESPEI for validation")
+    ap.add_argument("--dense", choices=("default", "none", "all", "report"), default="default",
+                    help="dense field grid: default = validated diagrams only (%s); none; all = every diagram (not for release "
+                         "without validation); report = count the points of every diagram and exit, writing nothing"
+                         % ", ".join(sorted(DENSE_VALIDATED)))
+    ap.add_argument("--only", default=None, help="development: build only this diagram directory (glob); use with a scratch --data")
     ap.add_argument("--check", action="store_true", help="exit 1 if the outputs differ from a fresh build")
     a = ap.parse_args(argv)
     cache = os.environ.get("ASPA_DEV_CACHE")   # development only: reuse build() results (pickle) between runs
@@ -1440,6 +1653,12 @@ def main(argv=None):
         if cache:
             import pickle
             pickle.dump((records, exclusions, espei_excl, ed, et, cnt, method), open(cache, "wb"))
+    if a.dense == "report":
+        c = a._dense["counts"]
+        per = {k[8:]: v for k, v in c.items() if k.startswith("diagram:")}
+        print(json.dumps({"fields_with_grid": c["fields_with_grid"], "points": c["points"], "diagrams": len(per),
+                          "primary_points": len(records), "points_by_diagram": dict(sorted(per.items()))}, indent=1))
+        return 0
     out, summ, cite, pqb = write_outputs(a, records, exclusions, espei_excl, ed, et, cnt, method)
     tmp = tempfile.mkdtemp(prefix="aspa-espei-")
     try:
@@ -1449,7 +1668,10 @@ def main(argv=None):
                 os.makedirs(os.path.dirname(p), exist_ok=True)
                 with open(p, "wb") as fh:
                     fh.write(b)
-        espei_res = validate_espei(a.espei_python, [os.path.join(tmp, "espei-zpf"), os.path.join(tmp, "espei-zpf-with-tie-lines")])
+        vdirs = [os.path.join(tmp, "espei-zpf"), os.path.join(tmp, "espei-zpf-with-tie-lines")]
+        if os.path.isdir(os.path.join(tmp, DENSE_ESPEI_DIR)):
+            vdirs.append(os.path.join(tmp, DENSE_ESPEI_DIR))
+        espei_res = validate_espei(a.espei_python, vdirs)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     out = finalize(a, out, summ, cite, pqb, espei_res)
@@ -1464,7 +1686,7 @@ def main(argv=None):
                 bad.append("missing " + rel)
                 continue
             cur = open(p, "rb").read()
-            if rel == "records.parquet":
+            if rel.endswith("records.parquet"):
                 if parquet_content(cur) != parquet_content(b):
                     bad.append(rel)
             elif cur != b:
@@ -1486,7 +1708,7 @@ def main(argv=None):
     for rel, b in sorted(out.items()):
         p = os.path.join(out_dir, rel)
         os.makedirs(os.path.dirname(p), exist_ok=True)
-        if rel == "records.parquet" and os.path.exists(p) and parquet_content(open(p, "rb").read()) == parquet_content(b):
+        if rel.endswith("records.parquet") and os.path.exists(p) and parquet_content(open(p, "rb").read()) == parquet_content(b):
             continue   # same content: keep the existing bytes
         if not os.path.exists(p) or open(p, "rb").read() != b:
             with open(p + ".tmp", "wb") as fh:
