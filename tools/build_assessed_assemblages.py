@@ -442,9 +442,14 @@ def dense_grid_cells(mask, xs, Ts, liquid_only):
     [(row, col, clearance)]."""
     nT, nx = mask.shape
     dxn, dTn = 1.0 / (nx - 1), 1.0 / (nT - 1)
-    dist = ndimage.distance_transform_edt(np.pad(mask, 1), sampling=(dTn, dxn))[1:-1, 1:-1]
     rows, cols = np.nonzero(mask)
-    T0, T1, x0, x1 = Ts[rows.min()], Ts[rows.max()], xs[cols.min()], xs[cols.max()]
+    r0, r1, c0, c1 = rows.min(), rows.max(), cols.min(), cols.max()
+    # distances on the bounding box plus a one-cell ring of outside cells: identical to the full raster (the nearest
+    # outside cell of an inside cell is never farther than that ring), much faster
+    dsub = ndimage.distance_transform_edt(np.pad(mask[r0:r1 + 1, c0:c1 + 1], 1), sampling=(dTn, dxn))[1:-1, 1:-1]
+    dist = np.zeros(mask.shape)
+    dist[r0:r1 + 1, c0:c1 + 1] = dsub
+    T0, T1, x0, x1 = Ts[r0], Ts[r1], xs[c0], xs[c1]
     dT, dx = min(DENSE_STEP_T_K, (T1 - T0) / 4), min(DENSE_STEP_X, (x1 - x0) / 4)
     cand = []
     for T in np.arange(T0 + dT / 2, T1, dT):
