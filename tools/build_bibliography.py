@@ -1345,7 +1345,7 @@ def citation_text(r):
     return ", ".join(parts)
 
 
-CITE_TITLE = "ORCHID bibliography"
+CITE_TITLE = "ORCHID-Bibliography: papers and typed citation relations"
 CITE_KEY = "orchid_bibliography_2026"
 CITE_ABSTRACT = ("Every paper ORCHID knows about: Crossref bibliographic metadata (CC0), the role of each paper in "
                  "ORCHID, counts of the evidence released from it, and typed relations with provenance (citations of "

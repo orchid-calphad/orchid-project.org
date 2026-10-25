@@ -1617,15 +1617,16 @@ def zenodo_metadata(s, data):
                          "keywords": ["phase diagrams", "assessed phase diagram", "phase equilibria", "ZPF", "ESPEI", "CALPHAD",
                                       "binary alloys", "AI-ready data"],
                          "license": "cc-by-4.0", "access_right": "open", "language": "eng",
-                         "grants": [{"id": "10.13039/100000001::2608825"}], "communities": [{"identifier": "orchid"}],
+                         "communities": [{"identifier": orchid_cite.ZENODO_COMMUNITY}],
                          "related_identifiers": [
                              {"identifier": u["doi"], "relation": "isPartOf", "resource_type": "dataset", "scheme": "doi"},
                              {"identifier": orchid_cite.entry("phase-registry", data)["doi"], "relation": "references", "resource_type": "dataset", "scheme": "doi"},
                              {"identifier": orchid_cite.entry("phase-diagrams", data)["doi"], "relation": "references", "resource_type": "dataset", "scheme": "doi"},
-                             {"identifier": "https://orchid-project.org", "relation": "isSupplementTo", "scheme": "url"},
-                             {"identifier": "https://data.orchid-project.org", "relation": "isDocumentedBy", "scheme": "url"}],
-                         "notes": "Status: Version 1, machine-extracted. This work was supported by the U.S. National Science "
-                                  "Foundation under award OAC-2608825 (CSSI Elements: PhaseForge)."}}
+                             {"identifier": "https://orchid-project.org", "relation": "isDocumentedBy", "scheme": "url"},
+                             {"identifier": "https://data.orchid-project.org", "relation": "isDocumentedBy", "scheme": "url"}]
+                         + ([{"identifier": orchid_cite.PAPER["identifier"], "relation": "isSupplementTo",
+                              "scheme": orchid_cite.PAPER["scheme"]}] if orchid_cite.PAPER else []),
+                         "notes": "Status: Version 1, machine-extracted. " + orchid_cite.FUNDING_NOTE}}
 
 
 # --------------------------------------------------------------------------------------------------- main --

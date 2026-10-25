@@ -2,7 +2,7 @@
 """How to cite the ORCHID data release: one shared definition for every builder.
 
 The release is archived on Zenodo as eight citable datasets plus an umbrella record ("ORCHID data") that links
-them (DataCite isPartOf / hasPart). Their DOIs live in one file of the data repository,
+them (DataCite isPartOf / hasPart), and a software record for the examples (SOFTWARE). Their DOIs live in one file of the data repository,
 
   <orchid-data>/zenodo/dois.json      {"orchid-data": "10.5281/zenodo....", "literature": ..., ...}
 
@@ -105,21 +105,39 @@ ABSTRACT = {
 }
 # name -> (title, BibTeX key, sources to cite as well)
 DATASETS = {
-    "orchid-data": ("ORCHID data", "orchid_data_2026", ["papers", "sgte", "mp", "oqmd"]),
-    "literature": ("ORCHID literature values", "orchid_literature_2026", ["papers"]),
-    "phase-diagrams": ("ORCHID calculated binary phase diagrams", "orchid_phase_diagrams_2026", ["sgte"]),
-    "hulls": ("ORCHID binary convex hulls (Materials Project, OQMD, assessed CALPHAD)", "orchid_hulls_2026",
+    "orchid-data": ("ORCHID data: umbrella record of the ORCHID datasets", "orchid_data_2026", ["papers", "sgte", "mp", "oqmd"]),
+    "literature": ("ORCHID-Values: thermodynamic and phase-equilibrium values read from the literature", "orchid_literature_2026", ["papers"]),
+    "phase-diagrams": ("ORCHID-Diagrams: calculated binary phase diagrams", "orchid_phase_diagrams_2026", ["sgte"]),
+    "hulls": ("ORCHID-Hulls: binary convex hulls (Materials Project, OQMD, assessed CALPHAD)", "orchid_hulls_2026",
               ["mp", "oqmd", "sgte"]),
-    "dft-benchmark": ("ORCHID DFT-vs-experiment formation-enthalpy benchmark", "orchid_dft_benchmark_2026",
+    "dft-benchmark": ("ORCHID-Parity: DFT-vs-experiment formation-enthalpy benchmark", "orchid_dft_benchmark_2026",
                       ["papers", "mp", "oqmd", "kim2017"]),
-    "phase-registry": ("ORCHID phase registry (binary systems)", "orchid_phase_registry_2026",
+    "phase-registry": ("ORCHID-Registry: phase registry of binary systems", "orchid_phase_registry_2026",
                        ["sgte", "mp", "oqmd", "papers"]),
-    "assessed-phase-assemblages": ("ORCHID assessed phase assemblages (binary systems)", "orchid_assessed_assemblages_2026",
+    "assessed-phase-assemblages": ("ORCHID-Assemblages: assessed phase assemblages of binary systems", "orchid_assessed_assemblages_2026",
                                    ["assessed", "sgte"]),
-    "espei": ("ORCHID ESPEI datasets from the literature", "orchid_espei_2026", ["papers_espei", "mp", "oqmd"]),
-    "bibliography": ("ORCHID bibliography", "orchid_bibliography_2026", ["papers_bibliography"]),
+    "espei": ("ORCHID-Values ESPEI datasets: ESPEI-format datasets built from the literature values", "orchid_espei_2026", ["papers_espei", "mp", "oqmd"]),
+    "bibliography": ("ORCHID-Bibliography: papers and typed citation relations", "orchid_bibliography_2026", ["papers_bibliography"]),
 }
 NAMES = tuple(DATASETS)
+
+# Software record of the same release (Zenodo web upload of a git archive of orchid-examples; not a data record, so it
+# stays out of NAMES and DATASETS, which drive the dataset pages and citations). Its DOI lives in zenodo/dois.json.
+SOFTWARE = {"orchid-examples": ("ORCHID examples: runnable workflows on the ORCHID data (PhaseForge+, ESPEI, one-shot MLIP "
+                                "phase diagrams, MLIP formation enthalpies, quickstart)", "orchid_examples_2026")}
+SOFTWARE_NAMES = tuple(SOFTWARE)
+REPO_EXAMPLES = "https://github.com/orchid-calphad/orchid-examples"
+
+# Zenodo community of all records (PI decision 2026-10-24; the community must be created by the PI before submission).
+# `orchid` and `orchid-project` belong to other projects. One variable: change it here and rerun build_zenodo_metadata.py.
+ZENODO_COMMUNITY = "orchid-calphad"
+# The paper, once it has an identifier (arXiv id or DOI); every record then gets a DataCite "isSupplementTo" to it.
+# None until then. e.g. {"identifier": "arXiv:2611.00000", "scheme": "arxiv"}  or  {"identifier": "10.xxxx/yyyy", "scheme": "doi"}
+PAPER = None
+# NSF award 2608825 is not in Zenodo's awards database: no `grants` entry anywhere (it would be rejected). The funding
+# goes in the notes and, by hand, as a custom award in the web form (zenodo/ZENODO_FUNDING_MANUAL.md).
+FUNDING_NOTE = ("This work was supported by the U.S. National Science Foundation under award OAC-2608825 "
+                "(CSSI Elements: PhaseForge).")
 
 
 def placeholder(name: str) -> str:
@@ -128,7 +146,7 @@ def placeholder(name: str) -> str:
 
 def dois(data_root: str | None = None) -> dict:
     """name -> DOI from <orchid-data>/zenodo/dois.json (placeholders for anything missing)."""
-    out = {n: placeholder(n) for n in NAMES}
+    out = {n: placeholder(n) for n in NAMES + SOFTWARE_NAMES}
     p = os.path.join(data_root or DEFAULT_DATA, "zenodo", "dois.json")
     if os.path.exists(p):
         with open(p, encoding="utf-8") as fh:
