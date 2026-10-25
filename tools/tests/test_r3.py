@@ -98,8 +98,10 @@ if os.path.exists(path):
     recs = [json.loads(x) for x in gzip.open(path, "rt", encoding="utf-8")]
     acc = [r for r in recs if r["flags"].get("extraction_accepted")]
     by = {r["id"]: r for r in recs}
+    ledger = {c["key"]: c for c in json.load(open(os.path.join(TOOLS, "literature_visual_checks.json"), encoding="utf-8"))["checks"]}
     tiny = [r["id"] for r in acc if r["property"] in ("HM_FORM", "GM_FORM") and isinstance(r.get("value"), (int, float))
-            and 0 < abs(r["value"]) < 0.1 and str(r.get("unit", "")).startswith("kJ") and r["flags"].get("espei_ready")]
+            and 0 < abs(r["value"]) < 0.1 and str(r.get("unit", "")).startswith("kJ") and r["flags"].get("espei_ready")
+            and (ledger.get("record:" + r["id"]) or {}).get("verdict") != "as_stored"]
     check("A4-N1: no ESPEI-ready formation value below 0.1 kJ/mol-atom without a page check", not tiny, tiny[:5])
     lost = [r["id"] for r in acc if T.unit_prefix_lost(r)]
     check("A4-N1: no accepted value stored as printed/1000 under a kJ caption", not lost, lost[:5])
@@ -142,23 +144,24 @@ if os.path.exists(path):
         if pr and len({x for x in pr[0] + pr[1]}) > len(r.get("phases") or []) and \
                 not any(g["gate"] == "R3I" for g in r.get("gate_failures") or []):
             ph = [p.get("label") for p in r.get("phases") or []]
-            if any(not any(I._same(x, h) for h in ph) for x in pr[0] + pr[1]):
+            miss = [x for x in pr[0] + pr[1] if not any(I._same(x, h) for h in ph)]
+            if miss and not any(I.BAD_LABEL.search(x) or x.count("(") != x.count(")") for x in miss):
                 bad.append(r["id"])
     check("invariants (a): no table invariant misses a phase its printed reaction names (unless flagged)", not bad, bad[:5])
-    bad = [r["id"] for r in acc if r["property"] == "INVARIANT_TEMPERATURE" and (r.get("reaction") or {}).get("printed")
-           and I.parse_reaction(r["reaction"]["printed"]) and not (r.get("reaction") or {}).get("type")
-           and "|" not in str(I.derive_class(*I.parse_reaction(r["reaction"]["printed"]))) and
-           I.derive_class(*I.parse_reaction(r["reaction"]["printed"]))]
-    check("invariants (b): a printed reaction that decides its class has a class", not bad, bad[:5])
-    bad = []
-    for r in acc:
-        rx = r.get("reaction") or {}
-        pr = I.parse_reaction(rx.get("printed"))
-        if r["property"] == "INVARIANT_TEMPERATURE" and pr and rx.get("type") and \
-                not I.compatible(rx["type"], I.derive_class(*pr)) and \
-                not any(g["code"] == "reaction_class_conflicts_printed_reaction" for g in r.get("gate_failures") or []):
-            bad.append(r["id"])
-    check("invariants (d): every class agrees with its printed reaction or is flagged", not bad, bad[:5])
+    def decisive(r):
+        pr = I.parse_reaction((r.get("reaction") or {}).get("printed"))
+        if not pr or len(r.get("elements") or []) != 2:
+            return None
+        d_ = I.derive_class(*pr)
+        ok = d_ in ("congruent melting", "polymorphic") or (d_ in ("eutectic", "monotectic") and pr[2] in I.ONE_WAY
+                                                            and len(pr[0]) == 1 and I.is_liquid(pr[0][0]))
+        return d_ if ok else None
+    bad = [r["id"] for r in acc if r["property"] == "INVARIANT_TEMPERATURE" and decisive(r)
+           and not (r.get("reaction") or {}).get("type")]
+    check("invariants (b): a binary printed reaction that decides its class has a class", not bad, bad[:5])
+    bad = [r["id"] for r in acc if r["property"] == "INVARIANT_TEMPERATURE" and decisive(r)
+           and (r.get("reaction") or {}).get("type_basis") == "derived_from_printed_reaction" and (r["reaction"].get("type_stored"))]
+    check("invariants (d): a printed / stored class is never replaced by a derived one", not bad, bad[:5])
     bad = [r["id"] for r in acc if r["property"] == "INVARIANT_TEMPERATURE" and r["flags"].get("espei_ready")
            and isinstance(r.get("value"), (int, float)) and (r["value"] > 6000 or r["value"] < 20)]
     check("invariants (f): no ESPEI-ready invariant temperature below 20 K or above 6000 K", not bad, bad[:5])
@@ -180,7 +183,7 @@ if os.path.exists(path):
                                                                        str(p.get("label") or ""))]
     check("A2-N2: no oxide / carbide compound label mapped to an element structure (betaSiC(Cubic), beta-Y2O3)", not bad, bad[:5])
     bad = [r["id"] for r in acc for p in r.get("phases") or [] if p.get("model_phase") and
-           re.search(r"(?<![a-z])[A-Z][a-z]?x(?![a-z])", re.sub("[α-ω]", "", str(p.get("label") or "")))
+           re.search(r"[A-Z][a-z]?x(?=[A-Z]|$|[\s+,)\-])", re.sub("[α-ω]", "", str(p.get("label") or "")))
            and not re.match(r"^(FCC|BCC|HCP)", str(p["model_phase"]).upper())]
     check("A2-N1: no variable-formula label (InxLa, LixSi) mapped to a fixed compound", not bad, bad[:5])
     pp = os.path.join(os.path.dirname(path), "papers.json")
@@ -191,6 +194,11 @@ if os.path.exists(path):
         check("A6-N5: no value read from the COST 507 book is filed under the Mg-Zr article DOI", not mgzr, mgzr[:3])
         cost = papers.get("sha256:85fd53a1a176b694") or {}
         check("A6-N5: the COST 507 book is registered with its own citation", "COST 507" in str(cost.get("citation")))
+kp = os.path.join(data, "literature", "kim2017_crosscheck.json")
+if os.path.exists(kp) and not os.environ.get("ORCHID_LITERATURE"):
+    k = json.load(open(kp, encoding="utf-8"))
+    check("release: kim2017_crosscheck is the comparison, never the reference_not_available_locally stub",
+          k.get("status") == "compared" and ((k.get("result") or {}).get("n_overlap_formulas") or 0) > 100, k.get("status"))
 ppath = os.environ.get("ORCHID_PARITY") or os.path.join(data, "literature", "dft_parity.json")
 if os.path.exists(ppath):
     d = json.load(open(ppath, encoding="utf-8"))

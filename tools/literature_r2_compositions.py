@@ -570,6 +570,8 @@ def _state_support_r2(r):
     if len(els) < 2:
         return None, "unary"
     prop = r.get("property") or ""
+    # round-3 relabels of compound-intrinsic quantities stay compound-intrinsic for the state system
+    prop = "HM_FORM" if prop == "DEFECT_FORMATION_ENERGY" else re.sub(r"_(?:CONTRIBUTION|FROM_BASE_T)$", "", prop)
     phases = [p.get("label") for p in r.get("phases") or [] if p.get("label")]
     oc = {e: v for e, v in (r.get("overall_composition") or {}).items() if isinstance(v, (int, float))}
     if any(e not in els for e in oc):
@@ -685,6 +687,7 @@ def state_support(r):
     if len(els) < 2:
         return sup, basis
     prop = r.get("property") or ""
+    prop = "HM_FORM" if prop == "DEFECT_FORMATION_ENERGY" else re.sub(r"_(?:CONTRIBUTION|FROM_BASE_T)$", "", prop)
     F, generic, other = label_supports(r, els)
     oc = {e: v for e, v in (r.get("overall_composition") or {}).items() if isinstance(v, (int, float))}
     ocs = {e for e, v in oc.items() if v > 1e-9}

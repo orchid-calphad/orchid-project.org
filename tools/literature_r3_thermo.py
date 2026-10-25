@@ -294,12 +294,12 @@ def r3_temperature_printed(records, visual, rep):
             G.correct(r, GATE, "temperature_K", None, T, "temperature_printed_not_stored", {"printed": tp}, chk)
             rep.add(GATE, "temperature_printed_not_stored", r, "corrected", after=T)
         elif len(ts) == 2:
-            rng = [min(ts), max(ts)]
+            rng = {"min": min(ts), "max": max(ts)}
             r["temperature_range_K"] = rng
             r["temperature_basis"] = "row_temperature_range_printed"
             G.correct(r, GATE, "temperature_range_K", None, rng, "temperature_range_printed_not_stored", {"printed": tp}, chk)
             G.fail(r, GATE, "no_single_temperature", "not_espei_ready",
-                   "printed for a temperature range %g-%g K" % tuple(rng), chk)
+                   "printed for a temperature range %g-%g K" % (rng["min"], rng["max"]), chk)
             rep.add(GATE, "temperature_range_printed_not_stored", r, "corrected", after=rng)
 
 
@@ -579,12 +579,12 @@ def r3_printed_ranges(records, visual, rep):
         chk = visual.get("range:" + r["id"])
         if not chk or chk.get("verdict") != "corrected" or not chk.get("range_K"):
             continue
-        rng = [float(x) for x in chk["range_K"]]
+        rng = {"min": float(min(chk["range_K"])), "max": float(max(chk["range_K"]))}
         G.correct(r, GATE, "temperature_range_K", r.get("temperature_range_K"), rng, "printed_range_read_from_page", {}, chk)
         r["temperature_range_K"] = rng
         r["value_basis"] = "printed_range_lower_bound"
         G.fail(r, GATE, "printed_as_temperature_range", "not_espei_ready",
-               "the page prints %g-%g K; the value is the lower bound" % tuple(rng), chk)
+               "the page prints %g-%g K; the value is the lower bound" % (rng["min"], rng["max"]), chk)
         rep.add(GATE, "printed_range_read_from_page", r, "corrected")
 
 

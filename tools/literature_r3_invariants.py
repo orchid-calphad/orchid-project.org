@@ -77,7 +77,7 @@ def _same(a, b):
     return a == b or (len(a) >= 1 and len(b) >= 1 and (a in b or b in a)) or (is_liquid(a) and is_liquid(b))
 
 
-BAD_LABEL = re.compile(r"[<>:;]|^[^\w(\[]|\($|^\)|^x\b|^\d|^[a-z]$")
+BAD_LABEL = re.compile(r"[<>:;]|^[^\w(\[]|\($|^\)|^x\b|^\d")
 
 
 def derive_class(L, R, arrow):
@@ -168,32 +168,21 @@ def r3i_reactions(records, visual, rep):
                    "phases %s read from the printed reaction; not mapped to model phases" % missing,
                    cls("phases_from_printed_reaction"))
             rep.add(GATE, "phases_from_printed_reaction", r, "corrected", n=len(missing))
-        # (b)/(d) class
-        derived = derive_class(L, R, arrow)
-        if (not stored_type or stored_type in ("other", "invariant", "unknown")) and derived and "|" not in derived:
-            if stored_type:
-                rx["type_stored"] = stored_type
-                G.correct(r, GATE, "reaction.type", stored_type, derived, "reaction_class_from_printed_reaction",
-                          {"printed": printed}, cls("reaction_class_conflicts_printed_reaction"))
+        # (b)/(d) class: only a binary reaction written in a form that decides it fills a missing class; a printed /
+        # stored class is never replaced (tables print saddle, maximum, monotectoid, degenerate ... that the reaction
+        # string does not show; re-sample 2026-10-24)
+        derived = derive_class(L, R, arrow) if len(els) == 2 else None
+        decisive = derived in ("congruent melting", "polymorphic") or (
+            derived in ("eutectic", "monotectic") and arrow in ONE_WAY and len(L) == 1 and is_liquid(L[0]))
+        if not stored_type and decisive:
             rx["type"] = derived
             rx["type_basis"] = "derived_from_printed_reaction"
             r["reaction"] = rx
             rep.add(GATE, "reaction_class_from_printed_reaction", r, "corrected", type=derived)
-        elif stored_type and derived and not compatible(stored_type, derived):
-            if derived in ("eutectic", "monotectic", "syntectic", "congruent melting", "polymorphic"):
-                rx["type_stored"] = stored_type
-                rx["type"] = derived
-                rx["type_basis"] = "derived_from_printed_reaction"
-                r["reaction"] = rx
-                if r.get("transition_kind") == stored_type:
-                    r["transition_kind_stored"], r["transition_kind"] = stored_type, derived
-                G.correct(r, GATE, "reaction.type", stored_type, derived, "reaction_class_from_printed_reaction",
-                          {"printed": printed}, cls("reaction_class_conflicts_printed_reaction"))
-                rep.add(GATE, "reaction_class_corrected", r, "corrected", before=stored_type, after=derived)
-            else:
-                G.fail(r, GATE, "reaction_class_conflicts_printed_reaction", "flag_only",
-                       "class %r but the printed reaction %r reads %r" % (stored_type, printed, derived))
-                rep.add(GATE, "reaction_class_conflicts_printed_reaction", r, "flagged")
+        elif stored_type and decisive and not compatible(stored_type, derived):
+            G.fail(r, GATE, "reaction_class_conflicts_printed_reaction", "flag_only",
+                   "class %r but the printed reaction %r reads %r" % (stored_type, printed, derived))
+            rep.add(GATE, "reaction_class_conflicts_printed_reaction", r, "flagged")
         # (c) phase count
         t = rx.get("type") or derived
         n = len(printed_set)

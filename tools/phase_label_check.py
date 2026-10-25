@@ -161,7 +161,7 @@ def formula_counts(label, elements):
     return out
 
 
-VARIABLE_FORMULA = re.compile(r"(?<![A-Za-z])(?:[A-Z][a-z]?\d*)*?(?:[A-Z][a-z]?)[xy](?![a-z])(?:[A-Z][a-z]?\d*)*")
+VARIABLE_FORMULA = re.compile(r"(?<![A-Za-z])(?:[A-Z][a-z]?\d*)*?(?:[A-Z][a-z]?)x(?![a-z])(?:[A-Z][a-z]?\d*)*")
 
 
 def is_liquid_label(label):
@@ -204,6 +204,13 @@ def label_kind(label, elements):
     if re.fullmatch(r"[\s%s'’′″\d()_\-]+" % GREEK, s):
         return "greek_variant"
     return "other"
+
+
+def _interstitial_ratio_ok(label, elements, x):
+    """An interstitial compound M X_n held on an (M)(X,VA) model has n <= 1 (TiC, V2C, ZrH); Y2O3 (n = 1.5) is not."""
+    fc = formula_counts(normalize_label(label), elements) or {}
+    m = sum(v for e, v in fc.items() if e != x)
+    return bool(m) and fc.get(x, 0) / m <= 1.0 + 1e-9
 
 
 def interstitial_model(entry, x):
@@ -288,8 +295,9 @@ def check(label, model, system, elements, entry, comps, T=None, rule=None):
                 # the wrong ones (eps-Cu3Sn, eps-Fe2Ta); a calculated-field vote at the printed composition was tried
                 # and rejected because invariant compositions sit on boundaries where the neighbouring phase votes
                 return "greek_label_not_an_element_polymorph_of_this_structure"
-        elif kind.startswith("interstitial:") and interstitial_model(entry, kind.split(":")[1]):
-            pass
+        elif kind.startswith("interstitial:") and interstitial_model(entry, kind.split(":")[1]) and \
+                not re.match(r"^\s*[%s]" % GREEK, str(label)) and _interstitial_ratio_ok(label, elements, kind.split(":")[1]):
+            pass   # TiC, V2C on the (M)(X,VA) model; not a Greek-named compound or an oxide like Y2O3 (round 3, A2-N2)
         elif kind in ("greek_variant", "compound") or kind.startswith("interstitial:"):
             return "greek_or_compound_label_mapped_to_element_structure"
         elif sw:

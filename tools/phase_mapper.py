@@ -219,7 +219,7 @@ def map_phase(name, info, tdb, comps=None, elements=None):
             return hit
     if re.fullmatch(r"[PFICRA][a-z]?\d*", n):
         return None, "not a phase (space-group fragment from the table)", []
-    if re.search(r"(?<![a-z])[A-Z][a-z]?[xy](?![a-z])", re.sub("[%s]" % GREEK_CHARS, "", n)):
+    if re.search(r"[A-Z][a-z]?x(?=[A-Z]|$|[\s+,)\-])", re.sub("[%s]" % GREEK_CHARS, "", n)):
         # a variable-formula label (InxLa, CePtx) names a phase of unknown stoichiometry: never mapped by its formula
         # letters to the 1:1 compound (audit round 3, POSTFIX A2-N1)
         return None, "variable-formula label: not mapped by formula", []
