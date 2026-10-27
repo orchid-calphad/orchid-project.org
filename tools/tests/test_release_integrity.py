@@ -170,6 +170,12 @@ for rel in ("LICENSES.md", "NOTICE.md", "llms.txt", "index.md", "README.md", "DA
         check("licence wording: no fair-use / single-sentence claim in %s" % rel, not BAN.search(txt),
               (BAN.search(txt) or [""])[0])
 
+# review pages committed to the public site repository carry the same licence wording
+SITE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+for p in sorted(glob.glob(os.path.join(SITE, "review", "**", "*.html"), recursive=True)):
+    txt = open(p, encoding="utf-8", errors="replace").read()
+    check("licence wording: no fair-use claim in %s" % os.path.relpath(p, SITE), not re.search(r"fair use", txt, re.I))
+
 bi = json.load(open(os.path.join(D, "bibliography", "index.json")))["counts"]
 nb = sum(1 for line in open(os.path.join(D, "bibliography", "papers.jsonl"), encoding="utf-8") if line.strip())
 check("bibliography: index papers = papers.jsonl lines", bi.get("papers", nb) == nb, (bi.get("papers"), nb))

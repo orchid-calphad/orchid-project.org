@@ -1,4 +1,42 @@
 {
+  "amendments": [
+    {
+      "date": "2026-10-27",
+      "files": {
+        "index.html": {
+          "after": "2a6e1c73eedd09701f8fdaa4fa31107dba051e4d9ffb773e28c8acd4f12d6d32",
+          "before": "74ac2fd95589629fb53d637626fde45bad72db54f15a30b1631c1edd78c2bbd5"
+        },
+        "packets/ORCHID_review_packet_1.html": {
+          "after": "28f9c96b6aa8533b0cb7b6522d2626dcf2d62e4b89f6f1867dc7484067dab8a0",
+          "before": "a678e5e203da9785e75db90347d9f54a8970721af544f79c80624c8d5d86fc97"
+        },
+        "packets/ORCHID_review_packet_2.html": {
+          "after": "e71ac1f3679f4ed6bfd2f1c06a296487fc530a0ca18a031a71b9b5d57ce6baf6",
+          "before": "f395062fd563ea105f43c638f75071ed39bbdcb7f672e100ba3fbfcadf049522"
+        },
+        "packets/ORCHID_review_packet_3.html": {
+          "after": "6ca5d992fd5bd9413e46ce16bb696e4a9685154b478bc112703ad67a89857167",
+          "before": "d6737a12c3343f02c1c41b547ee207c128601bdb51e3f694e7b3e1f4f12816ae"
+        },
+        "packets/ORCHID_review_packet_4.html": {
+          "after": "b5efb30322b13398cf1aae55ba986b5f61ecc61c9f1c5490e8f9ca08407c62d7",
+          "before": "cd115284a11f7cc1cffbf250c70cf44cc3f3c5cb3c7e4d0ca75293dfc1baa524"
+        },
+        "packets/ORCHID_review_packet_5.html": {
+          "after": "208bd2a128c4f41b5e219ea7e69e65f535f1dd55621cb7301e3d754e64908da7",
+          "before": "73f3a11824a611c3482b311157c124e7d33bfb373cf98a9c85f24f021584df11"
+        },
+        "packets/ORCHID_review_packet_6.html": {
+          "after": "1df0c484621ff9300b28e80823857063384c5c91b01a1bcecc3f7ade802e7db6",
+          "before": "95339f0bf98ce906091f5eeefdd0ae13fe081462c12b1306e6336dcdd106cc3b"
+        }
+      },
+      "new_text": "Quotes are short excerpts kept so that each value can be checked against its paper; they remain under the publishers’ copyright, are not relicensed by ORCHID, and source papers are not redistributed.",
+      "old_text": "Quotes are single sentences reproduced under fair use so that values can be checked; source papers are not redistributed.",
+      "reason": "footer licence wording corrected (fair-use claim replaced by the release wording); items, quotes, layout and sample unchanged"
+    }
+  ],
   "design": {
     "allocation": "proportional, largest remainder, minimum per non-empty stratum",
     "draw": "records sorted by id within stratum; random.Random(seed).sample, strata in fixed order",
@@ -8,13 +46,13 @@
     "strata": "evidence_class x record_kind"
   },
   "files_sha256": {
-    "index.html": "74ac2fd95589629fb53d637626fde45bad72db54f15a30b1631c1edd78c2bbd5",
-    "packets/ORCHID_review_packet_1.html": "a678e5e203da9785e75db90347d9f54a8970721af544f79c80624c8d5d86fc97",
-    "packets/ORCHID_review_packet_2.html": "f395062fd563ea105f43c638f75071ed39bbdcb7f672e100ba3fbfcadf049522",
-    "packets/ORCHID_review_packet_3.html": "d6737a12c3343f02c1c41b547ee207c128601bdb51e3f694e7b3e1f4f12816ae",
-    "packets/ORCHID_review_packet_4.html": "cd115284a11f7cc1cffbf250c70cf44cc3f3c5cb3c7e4d0ca75293dfc1baa524",
-    "packets/ORCHID_review_packet_5.html": "73f3a11824a611c3482b311157c124e7d33bfb373cf98a9c85f24f021584df11",
-    "packets/ORCHID_review_packet_6.html": "95339f0bf98ce906091f5eeefdd0ae13fe081462c12b1306e6336dcdd106cc3b",
+    "index.html": "2a6e1c73eedd09701f8fdaa4fa31107dba051e4d9ffb773e28c8acd4f12d6d32",
+    "packets/ORCHID_review_packet_1.html": "28f9c96b6aa8533b0cb7b6522d2626dcf2d62e4b89f6f1867dc7484067dab8a0",
+    "packets/ORCHID_review_packet_2.html": "e71ac1f3679f4ed6bfd2f1c06a296487fc530a0ca18a031a71b9b5d57ce6baf6",
+    "packets/ORCHID_review_packet_3.html": "6ca5d992fd5bd9413e46ce16bb696e4a9685154b478bc112703ad67a89857167",
+    "packets/ORCHID_review_packet_4.html": "b5efb30322b13398cf1aae55ba986b5f61ecc61c9f1c5490e8f9ca08407c62d7",
+    "packets/ORCHID_review_packet_5.html": "208bd2a128c4f41b5e219ea7e69e65f535f1dd55621cb7301e3d754e64908da7",
+    "packets/ORCHID_review_packet_6.html": "1df0c484621ff9300b28e80823857063384c5c91b01a1bcecc3f7ade802e7db6",
     "packets/packets.json": "77cee2b49571adec018b3d81d5de8659fa1b40fd5836072b6a940ac42dfd889c",
     "sample.json": "5c3d02e5c1fd1343ead2d8351e5c4c114d0f91f9cda5c8f45c36946bf19aabd9"
   },
