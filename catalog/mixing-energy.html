@@ -11,7 +11,67 @@
 .chart-panel{padding:18px;min-width:0}.chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:2px 4px 14px}h2{font-family:Georgia,serif;font-weight:500;font-size:28px;margin:0}#subtitle{color:var(--muted);font-size:13px}.status{text-align:right}.status b{font-size:22px;color:var(--teal)}.canvas-wrap{position:relative;height:min(64vh,650px);min-height:420px;border:1px solid var(--line);border-radius:12px;background:#fffefa;overflow:hidden}canvas{width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}.zoom-box{position:absolute;display:none;pointer-events:none;border:1.5px solid var(--teal);background:#14a09024}.tooltip{position:absolute;pointer-events:none;display:none;max-width:420px;padding:9px 11px;border-radius:9px;background:#17211fee;color:white;box-shadow:0 8px 22px #0004;font-size:12px}.tooltip b,.tooltip span{display:block}.tooltip b{color:#7fe0d1}.tooltip .parameters{margin-top:5px;color:#f5d990;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-line}.tooltip .click-hint{margin-top:4px;color:#b9c5c0;font-size:10px}.empty{position:absolute;inset:0;display:none;place-items:center;text-align:center;color:var(--muted);padding:30px}.below{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.note-card{padding:16px;border:1px solid var(--line);border-radius:12px;background:#faf7ef}.note-card h3{font-size:13px;margin:0 0 6px}.note-card p{color:var(--muted);font-size:12px;margin:0}.swatch{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
 .table-panel{margin-top:18px;overflow:hidden}.table-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}.table-head h2{font-size:22px}.table-wrap{max-height:320px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px 12px;border-bottom:1px solid #e8e2d7;text-align:left}th{position:sticky;top:0;background:#f4f0e6;z-index:1}td:first-child{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--teal)}tr.is-hidden td{opacity:.5}.plot-toggle{border:1px solid var(--line);border-radius:7px;background:#f7f3e9;color:var(--ink);padding:4px 8px;cursor:pointer;font:700 11px/1.2 inherit}.path-link{color:inherit;text-decoration:none}.path-link:hover{text-decoration:underline}.provenance{font:10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);overflow-wrap:anywhere}
 @media(max-width:900px){.hero{grid-template-columns:1fr}.workspace{grid-template-columns:1fr}.controls{position:static}.below{grid-template-columns:1fr}}@media(max-width:540px){.shell{padding:18px 12px 40px}.topline{margin-bottom:24px}h1{font-size:42px}.chart-panel{padding:10px}.canvas-wrap{min-height:360px}}
-</style></head><body><main class="shell">
+</style><!-- orchid-chrome-css:begin (tools/site_chrome.py; rewritten by tools/build_site_numbers.py) -->
+<style id="orchid-chrome">
+.ohead,.ofoot{--o-bg:#fbfaf7;--o-fg:#1d1b20;--o-muted:#5e5a66;--o-line:#e2dfe6;--o-card:#fff;--o-accent:#7b3fa0;--o-accent2:#f2eaf7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ohead,:root:not([data-theme="light"]) .ofoot{--o-bg:#141218;--o-fg:#ece8f1;--o-muted:#a69fb0;--o-line:#2e2a35;--o-card:#1c1922;--o-accent:#c79ae6;--o-accent2:#2a2133}}
+:root[data-theme="dark"] .ohead,:root[data-theme="dark"] .ofoot{--o-bg:#141218;--o-fg:#ece8f1;--o-muted:#a69fb0;--o-line:#2e2a35;--o-card:#1c1922;--o-accent:#c79ae6;--o-accent2:#2a2133}
+header.ohead{display:block;position:static;margin:0;padding:0;background:var(--o-bg);color:var(--o-fg);border:0;border-bottom:1px solid var(--o-line);box-shadow:none;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left}
+footer.ofoot{display:block;margin:48px 0 0;padding:20px 0 36px;background:var(--o-bg);color:var(--o-muted);border:0;border-top:1px solid var(--o-line);font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;max-width:none}
+.ohead *,.ofoot *{box-sizing:border-box}
+.oin{max-width:1180px;margin:0 auto;padding:0 16px}
+.obar{display:flex;align-items:center;gap:8px 16px;padding:10px 0;flex-wrap:wrap}
+.ohead a.obrand{display:inline-flex;align-items:center;gap:8px;margin:0 auto 0 0;font-weight:700;font-size:1.1rem;color:var(--o-fg);text-decoration:none}
+.obrand img{display:block;width:26px;height:26px}
+nav.onav{display:block;margin:0;padding:0;font:inherit;background:none;border:0}
+.onav ul{display:flex;flex-wrap:wrap;gap:2px 14px;list-style:none;margin:0;padding:0}
+.onav li{margin:0;padding:0}
+.ohead .onav a{display:inline-block;margin:0;padding:4px 0;color:var(--o-accent);text-decoration:none;font-size:.9rem;font-weight:400;white-space:nowrap;border-bottom:2px solid transparent}
+.ohead .onav a:hover{border-bottom-color:var(--o-line)}
+.ohead .onav a[aria-current="page"]{color:var(--o-fg);font-weight:600;border-bottom-color:var(--o-accent)}
+.ohead button.omenu{display:none;align-items:center;gap:6px;margin:0;padding:5px 12px;font:600 .9rem/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--o-accent);background:var(--o-card);border:1px solid var(--o-line);border-radius:8px;cursor:pointer}
+.ostatus{margin:0;padding:0 0 10px;color:var(--o-muted);font-size:.82rem;line-height:1.45}
+.ostatus b{color:var(--o-fg)}
+.ostatus a{text-decoration:underline}
+.ohead a,.ofoot a{color:var(--o-accent)}
+.ofoot p{margin:0 0 8px;max-width:none}
+a.oskip{position:absolute;left:-9999px;top:0;z-index:1000;padding:8px 12px;background:var(--o-card);color:var(--o-accent)}
+a.oskip:focus{left:8px;top:8px}
+:focus-visible{outline:2px solid #7b3fa0;outline-offset:2px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#c79ae6}}
+@media (max-width:1060px){.ohead.ojs button.omenu{display:inline-flex}.ohead.ojs nav.onav{display:none;flex-basis:100%}
+.ohead.ojs.oopen nav.onav{display:block}.ohead.ojs.oopen .onav ul{flex-direction:column;gap:0;padding:4px 0 6px}
+.ohead.ojs .onav a{padding:7px 0;font-size:1rem}}
+@media (max-width:600px){.ostatus{font-size:.78rem}}
+</style>
+<!-- orchid-chrome-css:end -->
+</head><body>
+<!-- orchid-header:begin (tools/site_chrome.py; rewritten by tools/build_site_numbers.py) -->
+<a class="oskip" href="#ocontent">Skip to content</a>
+<header class="ohead"><div class="oin">
+<div class="obar"><a class="obrand" href="../"><img src="../assets/logo/orchid-icon.svg" alt="" width="26" height="26"><span>ORCHID</span></a>
+<button class="omenu" type="button" aria-expanded="false" aria-controls="onav">Menu</button>
+<nav class="onav" id="onav" aria-label="Site"><ul>
+<li><a href="../data-explorer/">Data explorer</a></li>
+<li><a href="../catalog/">Catalog</a></li>
+<li><a href="../phase-diagrams/">Phase diagrams</a></li>
+<li><a href="../phases/">Phases</a></li>
+<li><a href="https://data.orchid-project.org/bibliography/pages/index.html">Bibliography</a></li>
+<li><a href="../catalog/binary-thermo.html">Hulls</a></li>
+<li><a href="../dataset/">Data</a></li>
+<li><a href="../#data">Downloads</a></li>
+<li><a href="../#releases">Releases</a></li>
+<li><a href="../#cite">Cite</a></li>
+<li><a href="../workflow/">Workflow</a></li>
+<li><a href="../about/">About</a></li>
+<li><a href="../contribute/">Contribute</a></li>
+</ul></nav></div>
+<p class="ostatus"><b>Version 1, machine-extracted:</b> values were read by language-model readers constrained to quote their source and checked automatically, and the release was then audited on the printed pages by adversarial audits, an independent second review of fit-facing records and a preliminary human review of a frozen sample. Flags such as accepted and ESPEI-ready record screening results, not certification; known issues are listed in the <a href="../#releases">release notes</a>.</p>
+</div></header>
+<script>(function(){var s=document.currentScript,h=s&&s.previousElementSibling;if(!h||!h.classList.contains('ohead'))return;var b=h.querySelector('.omenu');h.classList.add('ojs');b.addEventListener('click',function(){var o=h.classList.toggle('oopen');b.setAttribute('aria-expanded',o?'true':'false');});})();</script>
+<span id="ocontent"></span>
+<!-- orchid-header:end -->
+<main class="shell">
 <div class="topline"><div class="brand">open-tdb / mixing lab</div><a href="index.html">Browse the catalog →</a></div>
 <section class="hero"><div><div class="eyebrow">Binary solution thermodynamics</div><h1>Every assessment. New angles.</h1><p class="lede">Compare composition curves or trace one phase–quantity pair against another at fixed temperature. Every path is evaluated from a single eligible bundled database as composition changes.</p></div><div class="formula"><b>G<sup>ex</sup> = x<sub>A</sub>x<sub>B</sub> Σ L<sup>ν</sup>(x<sub>A</sub>−x<sub>B</sub>)<sup>ν</sup></b>Directly evaluated from each archived TDB’s interaction parameters.</div></section>
 <div class="workspace"><aside class="panel controls" aria-label="Plot controls">
@@ -80,4 +140,11 @@ Vertical · ${yPhase.value}
 ${parameterSummary(best.curve.yCoeffs)}`}else{detail.textContent=`${row.elements[0]}–${row.elements[1]} · x(${component})=${best.composition.toFixed(3)} · ${fmt(best.plotY)} ${unit(quantity.value)}`;parameters.textContent=parameterSummary(best.curve.coeffs)}parameters.className='parameters';hint.className='click-hint';hint.textContent='Drag to zoom · click to hide';tooltip.append(title,detail,parameters,hint);tooltip.style.display='block';tooltip.style.left=Math.max(8,Math.min(best.rect.width-430,best.mx+14))+'px';tooltip.style.top=Math.max(8,best.my-82)+'px'});canvas.addEventListener('mouseleave',()=>{tooltip.style.display='none';if(hoveredKey){hoveredKey=null;schedule()}});canvas.addEventListener('click',event=>{if(suppressClick){suppressClick=false;return}const best=nearestCurve(event,14);if(!best)return;hidden.add(curveKey(best.curve.row));hoveredKey=null;tooltip.style.display='none';schedule()});
 resetZoom.addEventListener('click',()=>{zoomState=null;hoveredKey=null;schedule()});restoreHidden.addEventListener('click',()=>{hidden.clear();schedule()});document.getElementById('mode-buttons').addEventListener('click',event=>{const button=event.target.closest('[data-mode]');if(!button)return;mode=button.dataset.mode;hoveredKey=null;tooltip.style.display='none';schedule()});document.getElementById('phase-buttons').addEventListener('click',event=>{const button=event.target.closest('[data-phase]');if(!button)return;phase=button.dataset.phase;hoveredKey=null;document.querySelectorAll('[data-phase]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));schedule()});tempInput.addEventListener('input',()=>{tempRange.value=Math.min(4000,Math.max(100,Number(tempInput.value)||300));zoomState=null;hoveredKey=null;schedule()});tempRange.addEventListener('input',()=>{tempInput.value=tempRange.value;zoomState=null;hoveredKey=null;schedule()});[quantity,xPhase,xQuantity,yPhase,yQuantity,element,search].forEach(control=>control.addEventListener('input',()=>{hoveredKey=null;schedule()}));window.addEventListener('resize',schedule);
 try{const params=new URLSearchParams(location.search),T=params.get('T'),p=params.get('phase'),q=params.get('quantity'),e=params.get('element'),plot=params.get('plot'),xp=params.get('xphase'),xq=params.get('xquantity'),yp=params.get('yphase'),yq=params.get('yquantity');if(T){tempInput.value=T;tempRange.value=Math.min(4000,Math.max(100,Number(T)))}if(['LIQUID','FCC','BCC','HCP'].includes(p))phase=p;if(['H','G','S'].includes(q))quantity.value=q;if(plot==='parametric')mode='parametric';if(['LIQUID','FCC','BCC','HCP'].includes(xp))xPhase.value=xp;if(['H','G','S'].includes(xq))xQuantity.value=xq;if(['LIQUID','FCC','BCC','HCP'].includes(yp))yPhase.value=yp;else if(plot==='parametric'&&['LIQUID','FCC','BCC','HCP'].includes(p))yPhase.value=p;if(['H','G','S'].includes(yq))yQuantity.value=yq;else if(plot==='parametric'&&['H','G','S'].includes(q))yQuantity.value=q;if(elements.includes(e))element.value=e;document.querySelectorAll('[data-phase]').forEach(item=>item.setAttribute('aria-pressed',String(item.dataset.phase===phase)))}catch(_){}schedule();
-</script></body></html>
+</script><!-- orchid-footer:begin (tools/site_chrome.py; rewritten by tools/build_site_numbers.py) -->
+<footer class="ofoot"><div class="oin">
+<p>This work was supported by the U.S. National Science Foundation under awards OAC-2608825 and 2534344.</p>
+<p>ORCHID is developed at Texas A&amp;M University with Citrine Informatics and Oak Ridge National Laboratory. Site content: MIT; ORCHID data: CC BY 4.0; database files remain the property of their authors (<a href="../data/NOTICE.md">NOTICE</a>).</p>
+<p><a href="../about/">About</a> · <a href="../about/#software-data-credits">Credits: software and data citations</a> · <a href="../CITATIONS.md">CITATIONS.md</a> · <a href="../contribute/">Contribute</a> · <a href="../llms.txt">llms.txt</a> · <a href="../sitemap.xml">Sitemap</a> · <a href="https://github.com/orchid-calphad">GitHub</a></p>
+</div></footer>
+<!-- orchid-footer:end -->
+</body></html>

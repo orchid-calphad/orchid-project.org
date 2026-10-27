@@ -5,7 +5,10 @@ Every count on the hand-written website pages sits in an element marked `data-or
 `<b data-orchid="literature_values">77,540</b>`; this script recomputes each key from the data and rewrites the
 element text. The release-wide "Cite" blocks (between `<!-- orchid-cite:begin ... -->` and `<!-- orchid-cite:end -->`)
 of the pages in ALL_DATASET_PAGES list every dataset of tools/orchid_cite.py with its citation, the sources to cite as
-well and the BibTeX; page-specific blocks elsewhere are left alone.
+well and the BibTeX; the page-specific blocks elsewhere are rebuilt the same way for the datasets they already cite
+(found by their DOIs). Elements marked `data-orchid-name="<dataset>"` get the formal dataset name (ORCHID-Values, ...)
+from the titles in tools/orchid_cite.py. The header, release status and footer of every page in site_chrome.PAGES
+are rewritten from tools/site_chrome.py.
 
 Reads (never writes) the orchid-data repository (literature, phase-diagrams, hulls, phases, assessed phase
 assemblages, ESPEI bundle, bibliography) and this site's data/catalog.json. Deterministic; standard library only.
@@ -26,12 +29,14 @@ import sys
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import orchid_cite  # noqa: E402
+import site_chrome  # noqa: E402
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ("index.html", "dataset/index.html", "workflow/index.html", "about/index.html", "data-explorer/index.html",
          "phases/index.html", "phase-diagrams/index.html", "dft-parity/index.html")
 ALL_DATASET_PAGES = ("index.html", "dataset/index.html", "workflow/index.html", "about/index.html")
 WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+NAME = re.compile(r'(<(b|span|strong|h3)\b[^>]*\bdata-orchid-name="([a-z0-9-]+)"[^>]*>)(.*?)(</\2>)', re.S)
 MARK = re.compile(r'(<(b|span|strong)\b[^>]*\bdata-orchid="([a-z0-9_]+)"[^>]*>)(.*?)(</\2>)', re.S)
 CITE = re.compile(r"(<!-- orchid-cite:begin[^>]*-->\n)(.*?)(<!-- orchid-cite:end -->)", re.S)
 
@@ -69,8 +74,16 @@ def numbers(data):
     out["assemblage_points"] = n(asm["points"])
     out["assemblage_diagrams"] = n(asm["diagrams_with_points"])
     es = jload(os.path.join(data, "espei", "index.json"))["totals"]
+    pc = (es.get("phase_constraints") or {}).get("folders") or {}
+    pc_sets, pc_pts = sum(v["datasets"] for v in pc.values()), sum(v["points"] for v in pc.values())
+    # core: literature- and DFT-derived datasets; constraint: optional phase-constraint datasets (assessed handbook
+    # assemblages, derived invariant brackets and liquid-stability points); all: both, as released in espei/index.json
     out["espei_datasets"] = n(es["datasets"])
     out["espei_values"] = n(es["values"])
+    out["espei_constraint_datasets"] = n(pc_sets)
+    out["espei_constraint_points"] = n(pc_pts)
+    out["espei_datasets_all"] = n(es["datasets"] + pc_sets)
+    out["espei_values_all"] = n(es["values"] + pc_pts)
     bc = jload(os.path.join(data, "bibliography", "index.json"))["counts"]
     out["bibliography_papers"] = n(bc["papers"])
     out["bibliography_edges"] = n(bc["edges"])
@@ -78,9 +91,20 @@ def numbers(data):
     return out
 
 
-def cite_block(old, data):
-    """The release-wide cite block: every dataset, then the umbrella; heading and intro kept from the page."""
-    names = [x for x in orchid_cite.NAMES if x != orchid_cite.UMBRELLA] + [orchid_cite.UMBRELLA]
+def formal_name(name):
+    """Formal dataset name: the part of the orchid_cite title before the colon (ORCHID-Values, ORCHID ESPEI datasets)."""
+    return orchid_cite.DATASETS[name][0].split(":", 1)[0]
+
+
+def cited_names(old, data):
+    """Datasets a page-specific block already cites, found by DOI (placeholder or written back)."""
+    by_doi = {v: k for k, v in orchid_cite.dois(data).items()}
+    return [nm for nm in orchid_cite.NAMES if nm in {by_doi.get(d) for d in re.findall(r"doi\.org/(10\.[^\"<\s]+)", old)}]
+
+
+def cite_block(old, data, names=None):
+    """A cite block: the given datasets (default every dataset), then the umbrella; heading and intro kept."""
+    names = [x for x in (names or orchid_cite.NAMES) if x != orchid_cite.UMBRELLA] + [orchid_cite.UMBRELLA]
     head = old.split("<ul>", 1)[0]
     head = re.sub(r"\b(one|two|three|four|five|six|seven|eight|nine|ten) (citable )?datasets",
                   lambda m: WORDS[len(names) - 1] + " " + (m.group(2) or "") + "datasets", head)
@@ -108,9 +132,17 @@ def render(path, text, nums, data):
             unknown.append(key)
             return m.group(0)
         return m.group(1) + nums[key] + m.group(5)
+    def name_sub(m):
+        if m.group(3) not in orchid_cite.DATASETS:
+            unknown.append(m.group(3))
+            return m.group(0)
+        return m.group(1) + html.escape(formal_name(m.group(3)), quote=False) + m.group(5)
     new = MARK.sub(sub, text)
+    new = NAME.sub(name_sub, new)
     if path in ALL_DATASET_PAGES:
         new = CITE.sub(lambda m: m.group(1) + cite_block(m.group(2), data) + m.group(3), new)
+    else:
+        new = CITE.sub(lambda m: m.group(1) + cite_block(m.group(2), data, cited_names(m.group(2), data)) + m.group(3), new)
     return new, unknown
 
 
@@ -121,12 +153,18 @@ def main(argv=None):
     a = ap.parse_args(argv)
     nums = numbers(a.data)
     bad, wrote, used = [], [], set()
-    for rel in PAGES:
+    for rel in PAGES + tuple(p for p in site_chrome.PAGES if p not in PAGES):
         p = os.path.join(SITE, rel)
         text = open(p, encoding="utf-8").read()
-        used.update(m.group(3) for m in MARK.finditer(text))
-        new, unknown = render(rel, text, nums, a.data)
-        bad += ["%s: unknown key %s" % (rel, k) for k in unknown]
+        if rel in PAGES:
+            used.update(m.group(3) for m in MARK.finditer(text))
+            new, unknown = render(rel, text, nums, a.data)
+            bad += ["%s: unknown key %s" % (rel, k) for k in unknown]
+        else:
+            new = text
+        if rel in site_chrome.PAGES:
+            new, missing = site_chrome.apply(rel, new)
+            bad += ["%s: chrome marker missing: %s" % (rel, k) for k in missing]
         if new != text:
             if a.check:
                 bad.append("stale: " + rel)
@@ -137,7 +175,8 @@ def main(argv=None):
     if a.check:
         for b in bad:
             print(b)
-        print("FAIL: %d problem(s)" % len(bad) if bad else "OK: %d pages current (%d keys used)" % (len(PAGES), len(used)))
+        print("FAIL: %d problem(s)" % len(bad) if bad else "OK: %d pages current (%d keys used; chrome on %d pages)" % (
+            len(PAGES), len(used), len(site_chrome.PAGES)))
         return 1 if bad else 0
     for b in bad:
         print(b)

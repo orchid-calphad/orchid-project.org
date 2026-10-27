@@ -65,19 +65,73 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;colo
 .ocite{background:var(--card,#fff);border:1px solid var(--line,#e2dfe6);border-left:4px solid var(--accent,#7b3fa0);border-radius:10px;padding:4px 16px 12px;margin:28px 0 0;overflow-wrap:anywhere}.ocite h2{margin:12px 0 6px;font-size:1.2rem}.ocite ul{padding-left:20px;margin:6px 0}.ocite li{margin:4px 0}.ocite pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem;line-height:1.4;background:var(--accent2,#f2eaf7);color:var(--fg,#1d1b20);border-radius:6px;padding:8px 10px;margin:8px 0 0}.ocite .muted{color:var(--muted,#5e5a66);font-size:.9rem}
 </style>
 <script src="../assets/data-base.js"></script>
+<!-- orchid-chrome-css:begin (tools/site_chrome.py; rewritten by tools/build_site_numbers.py) -->
+<style id="orchid-chrome">
+.ohead,.ofoot{--o-bg:#fbfaf7;--o-fg:#1d1b20;--o-muted:#5e5a66;--o-line:#e2dfe6;--o-card:#fff;--o-accent:#7b3fa0;--o-accent2:#f2eaf7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ohead,:root:not([data-theme="light"]) .ofoot{--o-bg:#141218;--o-fg:#ece8f1;--o-muted:#a69fb0;--o-line:#2e2a35;--o-card:#1c1922;--o-accent:#c79ae6;--o-accent2:#2a2133}}
+:root[data-theme="dark"] .ohead,:root[data-theme="dark"] .ofoot{--o-bg:#141218;--o-fg:#ece8f1;--o-muted:#a69fb0;--o-line:#2e2a35;--o-card:#1c1922;--o-accent:#c79ae6;--o-accent2:#2a2133}
+header.ohead{display:block;position:static;margin:0;padding:0;background:var(--o-bg);color:var(--o-fg);border:0;border-bottom:1px solid var(--o-line);box-shadow:none;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left}
+footer.ofoot{display:block;margin:48px 0 0;padding:20px 0 36px;background:var(--o-bg);color:var(--o-muted);border:0;border-top:1px solid var(--o-line);font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;max-width:none}
+.ohead *,.ofoot *{box-sizing:border-box}
+.oin{max-width:1180px;margin:0 auto;padding:0 16px}
+.obar{display:flex;align-items:center;gap:8px 16px;padding:10px 0;flex-wrap:wrap}
+.ohead a.obrand{display:inline-flex;align-items:center;gap:8px;margin:0 auto 0 0;font-weight:700;font-size:1.1rem;color:var(--o-fg);text-decoration:none}
+.obrand img{display:block;width:26px;height:26px}
+nav.onav{display:block;margin:0;padding:0;font:inherit;background:none;border:0}
+.onav ul{display:flex;flex-wrap:wrap;gap:2px 14px;list-style:none;margin:0;padding:0}
+.onav li{margin:0;padding:0}
+.ohead .onav a{display:inline-block;margin:0;padding:4px 0;color:var(--o-accent);text-decoration:none;font-size:.9rem;font-weight:400;white-space:nowrap;border-bottom:2px solid transparent}
+.ohead .onav a:hover{border-bottom-color:var(--o-line)}
+.ohead .onav a[aria-current="page"]{color:var(--o-fg);font-weight:600;border-bottom-color:var(--o-accent)}
+.ohead button.omenu{display:none;align-items:center;gap:6px;margin:0;padding:5px 12px;font:600 .9rem/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--o-accent);background:var(--o-card);border:1px solid var(--o-line);border-radius:8px;cursor:pointer}
+.ostatus{margin:0;padding:0 0 10px;color:var(--o-muted);font-size:.82rem;line-height:1.45}
+.ostatus b{color:var(--o-fg)}
+.ostatus a{text-decoration:underline}
+.ohead a,.ofoot a{color:var(--o-accent)}
+.ofoot p{margin:0 0 8px;max-width:none}
+a.oskip{position:absolute;left:-9999px;top:0;z-index:1000;padding:8px 12px;background:var(--o-card);color:var(--o-accent)}
+a.oskip:focus{left:8px;top:8px}
+:focus-visible{outline:2px solid #7b3fa0;outline-offset:2px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#c79ae6}}
+@media (max-width:1060px){.ohead.ojs button.omenu{display:inline-flex}.ohead.ojs nav.onav{display:none;flex-basis:100%}
+.ohead.ojs.oopen nav.onav{display:block}.ohead.ojs.oopen .onav ul{flex-direction:column;gap:0;padding:4px 0 6px}
+.ohead.ojs .onav a{padding:7px 0;font-size:1rem}}
+@media (max-width:600px){.ostatus{font-size:.78rem}}
+</style>
+<!-- orchid-chrome-css:end -->
 </head>
 <body>
-<header><div class="wrap"><nav>
-  <a class="brand" href="../" style="display:inline-flex;align-items:center;gap:8px"><img src="../assets/logo/orchid-icon.svg" alt="" width="28" height="28">ORCHID</a>
-  <a href="../catalog/">Catalog</a><a href="../phase-diagrams/">Phase diagrams</a><a href="../phases/">Phases</a><a href="https://data.orchid-project.org/bibliography/pages/index.html">Bibliography</a><a href="../catalog/binary-thermo.html">Hulls &amp; mixing</a><a href="../data-explorer/">Data</a><a href="./" aria-current="page">About the data</a><a href="../workflow/">Workflow</a><a href="../about/">About</a>
-</nav></div></header>
+<!-- orchid-header:begin (tools/site_chrome.py; rewritten by tools/build_site_numbers.py) -->
+<a class="oskip" href="#ocontent">Skip to content</a>
+<header class="ohead"><div class="oin">
+<div class="obar"><a class="obrand" href="../"><img src="../assets/logo/orchid-icon.svg" alt="" width="26" height="26"><span>ORCHID</span></a>
+<button class="omenu" type="button" aria-expanded="false" aria-controls="onav">Menu</button>
+<nav class="onav" id="onav" aria-label="Site"><ul>
+<li><a href="../data-explorer/">Data explorer</a></li>
+<li><a href="../catalog/">Catalog</a></li>
+<li><a href="../phase-diagrams/">Phase diagrams</a></li>
+<li><a href="../phases/">Phases</a></li>
+<li><a href="https://data.orchid-project.org/bibliography/pages/index.html">Bibliography</a></li>
+<li><a href="../catalog/binary-thermo.html">Hulls</a></li>
+<li><a href="../dataset/" aria-current="page">Data</a></li>
+<li><a href="../#data">Downloads</a></li>
+<li><a href="../#releases">Releases</a></li>
+<li><a href="../#cite">Cite</a></li>
+<li><a href="../workflow/">Workflow</a></li>
+<li><a href="../about/">About</a></li>
+<li><a href="../contribute/">Contribute</a></li>
+</ul></nav></div>
+<p class="ostatus"><b>Version 1, machine-extracted:</b> values were read by language-model readers constrained to quote their source and checked automatically, and the release was then audited on the printed pages by adversarial audits, an independent second review of fit-facing records and a preliminary human review of a frozen sample. Flags such as accepted and ESPEI-ready record screening results, not certification; known issues are listed in the <a href="../#releases">release notes</a>.</p>
+</div></header>
+<script>(function(){var s=document.currentScript,h=s&&s.previousElementSibling;if(!h||!h.classList.contains('ohead'))return;var b=h.querySelector('.omenu');h.classList.add('ojs');b.addEventListener('click',function(){var o=h.classList.toggle('oopen');b.setAttribute('aria-expanded',o?'true':'false');});})();</script>
+<span id="ocontent"></span>
+<!-- orchid-header:end -->
 <main class="wrap">
 <h1>Literature data: phase equilibria and thermochemistry from published papers</h1>
-<p class="lead">Values read from the papers behind open CALPHAD assessments: invariant reactions, phase transitions, phase compositions,
+<p class="lead">Dataset <b data-orchid-name="literature">ORCHID-Values</b>. Values read from the papers behind open CALPHAD assessments: invariant reactions, phase transitions, phase compositions,
 enthalpies, heat capacities, activities and lattice parameters. Each value carries its evidence class, units and conditions, the
 citation and DOI of the work it comes from, and the sentence or table row that backs it. <a href="../data-explorer/">Open the explorer</a>
 · <a href="../dft-parity/">DFT vs experiment</a> (formation enthalpies against Materials Project and OQMD).</p>
-<p class="ostatus" id="status" style="border-left:4px solid var(--accent,#7b3fa0);background:var(--card,#fff);border-radius:0 8px 8px 0;padding:8px 12px;margin:12px 0;font-size:.95rem"><b>Version 1, machine-extracted:</b> values were read from papers by language-model readers constrained to quote their source and checked automatically (quote verification, field-placement rule, printed-page sign checks, DFT and Kim et al. 2017 cross-checks); a hand-checked precision sample is in progress.</p>
 
 <section class="stats" id="stats" aria-label="Dataset size"><div class="stat"><b>…</b><span>loading counts</span></div></section>
 
@@ -134,10 +188,10 @@ citation and DOI of the work it comes from, and the sentence or table row that b
 <h2>Related datasets</h2>
 <div class="tablewrap"><table>
 <tr><th>Dataset</th><th>Content</th></tr>
-<tr><td><a href="https://data.orchid-project.org/espei/README.md">ESPEI datasets</a></td><td><span data-orchid="espei_datasets">6,456</span> ESPEI 0.9.1 datasets (<span data-orchid="espei_values">12,516</span> values) built from these literature values and from DFT, one folder per evidence class, each value with its observation id, source DOI, uncertainty and ESPEI weight (<a href="https://data.orchid-project.org/espei/index.csv">index.csv</a>, <a href="https://data.orchid-project.org/espei/VALIDATION.md">validation</a>)</td></tr>
-<tr><td><a href="https://data.orchid-project.org/bibliography/pages/index.html">Bibliography</a></td><td><span data-orchid="bibliography_papers">9,570</span> papers: the papers read, the works their values cite, the assessments behind the TDB files and the evaluations behind the assessed diagrams, with Crossref metadata, evidence counts and <span data-orchid="bibliography_edges">60,235</span> typed relations (<a href="https://data.orchid-project.org/bibliography/papers.parquet">papers.parquet</a>, <a href="https://data.orchid-project.org/bibliography/edges.parquet">edges.parquet</a>, <a href="https://data.orchid-project.org/bibliography/DOI_MISMATCHES.md">DOI checks</a>)</td></tr>
-<tr><td><a href="../phases/">Phase registry</a></td><td><span data-orchid="registry_phases">10,430</span> phases of <span data-orchid="registry_systems">1,241</span> binary systems, linking the phase labels of these values to CALPHAD models and structures</td></tr>
-<tr><td><a href="https://data.orchid-project.org/assessed-phase-assemblages/README.md">Assessed phase assemblages</a></td><td><span data-orchid="assemblage_points">23,129</span> points in <span data-orchid="assemblage_diagrams">2,178</span> expert-drawn (assessed) binary diagrams: a separate evidence class, never mixed with these values</td></tr>
+<tr><td><a href="https://data.orchid-project.org/espei/README.md"><span data-orchid-name="espei">ORCHID ESPEI datasets</span></a></td><td><span data-orchid="espei_datasets_all">8,593</span> ESPEI 0.9.1 datasets: <span data-orchid="espei_datasets">6,456</span> (<span data-orchid="espei_values">12,516</span> values) built from these literature values and from DFT, one folder per evidence class, each value with its observation id, source DOI, uncertainty and ESPEI weight (<a href="https://data.orchid-project.org/espei/index.csv">index.csv</a>, <a href="https://data.orchid-project.org/espei/VALIDATION.md">validation</a>)</td></tr>
+<tr><td><a href="https://data.orchid-project.org/bibliography/pages/index.html"><span data-orchid-name="bibliography">ORCHID-Bibliography</span></a></td><td><span data-orchid="bibliography_papers">9,570</span> papers: the papers read, the works their values cite, the assessments behind the TDB files and the evaluations behind the assessed diagrams, with Crossref metadata, evidence counts and <span data-orchid="bibliography_edges">60,235</span> typed relations (<a href="https://data.orchid-project.org/bibliography/papers.parquet">papers.parquet</a>, <a href="https://data.orchid-project.org/bibliography/edges.parquet">edges.parquet</a>, <a href="https://data.orchid-project.org/bibliography/DOI_MISMATCHES.md">DOI checks</a>)</td></tr>
+<tr><td><a href="../phases/"><span data-orchid-name="phase-registry">ORCHID-Registry</span></a></td><td><span data-orchid="registry_phases">10,430</span> phases of <span data-orchid="registry_systems">1,241</span> binary systems, linking the phase labels of these values to CALPHAD models and structures</td></tr>
+<tr><td><a href="https://data.orchid-project.org/assessed-phase-assemblages/README.md"><span data-orchid-name="assessed-phase-assemblages">ORCHID-Assemblages</span></a></td><td><span data-orchid="assemblage_points">23,129</span> points in <span data-orchid="assemblage_diagrams">2,178</span> expert-drawn (assessed) binary diagrams: a separate evidence class, never mixed with these values</td></tr>
 </table></div>
 
 <h2>Licence</h2>
@@ -157,7 +211,7 @@ page images, figure or table crops and full text are not redistributed; read the
 <li>R. Arróyave, J. Saal, D. Shin, ORCHID-Parity: DFT-vs-experiment formation-enthalpy benchmark (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-dft-benchmark">doi:10.5281/zenodo.PENDING-dft-benchmark</a></li>
 <li>R. Arróyave, J. Saal, D. Shin, ORCHID-Registry: phase registry of binary systems (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-phase-registry">doi:10.5281/zenodo.PENDING-phase-registry</a></li>
 <li>R. Arróyave, J. Saal, D. Shin, ORCHID-Assemblages: assessed phase assemblages of binary systems (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-assessed-phase-assemblages">doi:10.5281/zenodo.PENDING-assessed-phase-assemblages</a></li>
-<li>R. Arróyave, J. Saal, D. Shin, ORCHID-Values ESPEI datasets: ESPEI-format datasets built from the literature values (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-espei">doi:10.5281/zenodo.PENDING-espei</a></li>
+<li>R. Arróyave, J. Saal, D. Shin, ORCHID ESPEI datasets: literature and database-derived thermodynamic fitting inputs (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-espei">doi:10.5281/zenodo.PENDING-espei</a></li>
 <li>R. Arróyave, J. Saal, D. Shin, ORCHID-Bibliography: papers and typed citation relations (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-bibliography">doi:10.5281/zenodo.PENDING-bibliography</a></li>
 <li>R. Arróyave, J. Saal, D. Shin, ORCHID data: umbrella record of the ORCHID datasets (version 2026.10; Version 1, machine-extracted), Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.PENDING-orchid-data">doi:10.5281/zenodo.PENDING-orchid-data</a></li>
 </ul>
@@ -228,7 +282,7 @@ page images, figure or table crops and full text are not redistributed; read the
 
 @misc{orchid_espei_2026,
   author    = {Arr{\&#x27;o}yave, Raymundo and Saal, James and Shin, Dongwon},
-  title     = {{ORCHID-Values ESPEI datasets: ESPEI-format datasets built from the literature values}},
+  title     = {{ORCHID ESPEI datasets: literature and database-derived thermodynamic fitting inputs}},
   version   = {2026.10},
   publisher = {Zenodo},
   year      = {2026},
@@ -261,8 +315,15 @@ page images, figure or table crops and full text are not redistributed; read the
 </section>
 <!-- orchid-cite:end -->
 <p class="muted" id="release"></p>
+<p class="muted pagenote">Machine-readable: <a href="../data/croissant.json">Croissant metadata</a> · <a href="../llms.txt">llms.txt</a>. Site content: MIT; literature data: CC BY 4.0.</p>
 </main>
-<footer><div class="wrap">Machine-readable: <a href="../data/croissant.json">Croissant metadata</a> · <a href="../llms.txt">llms.txt</a>. Site content: MIT; literature data: CC BY 4.0.</div></footer>
+<!-- orchid-footer:begin (tools/site_chrome.py; rewritten by tools/build_site_numbers.py) -->
+<footer class="ofoot"><div class="oin">
+<p>This work was supported by the U.S. National Science Foundation under awards OAC-2608825 and 2534344.</p>
+<p>ORCHID is developed at Texas A&amp;M University with Citrine Informatics and Oak Ridge National Laboratory. Site content: MIT; ORCHID data: CC BY 4.0; database files remain the property of their authors (<a href="../data/NOTICE.md">NOTICE</a>).</p>
+<p><a href="../about/">About</a> · <a href="../about/#software-data-credits">Credits: software and data citations</a> · <a href="../CITATIONS.md">CITATIONS.md</a> · <a href="../contribute/">Contribute</a> · <a href="../llms.txt">llms.txt</a> · <a href="../sitemap.xml">Sitemap</a> · <a href="https://github.com/orchid-calphad">GitHub</a></p>
+</div></footer>
+<!-- orchid-footer:end -->
 <script>
 "use strict";
 const $=id=>document.getElementById(id);

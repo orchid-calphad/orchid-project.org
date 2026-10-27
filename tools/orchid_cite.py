@@ -23,9 +23,13 @@ DEFAULT_DATA = os.environ.get("ORCHID_DATA") or os.path.join(os.path.dirname(SIT
 VERSION = "2026.10"
 RELEASE_TAG = "v2026.10"
 YEAR = "2026"
-STATUS = ("Version 1, machine-extracted: values were read from papers by language-model readers constrained to quote "
-          "their source and checked automatically (quote verification, field-placement rule, printed-page sign checks, "
-          "DFT and Kim et al. 2017 cross-checks); a hand-checked precision sample is in progress.")
+# Release status (PI wording 2026-10-27; also the banner of every website page, tools/site_chrome.py, which links
+# "release notes" to the Releases section of the home page)
+STATUS = ("Version 1, machine-extracted: values were read by language-model readers constrained to quote their source and "
+          "checked automatically, and the release was then audited on the printed pages by adversarial audits, an "
+          "independent second review of fit-facing records and a preliminary human review of a frozen sample. Flags "
+          "such as accepted and ESPEI-ready record screening results, not certification; known issues are listed in "
+          "the release notes.")
 PLACEHOLDER_PREFIX = "10.5281/zenodo.PENDING-"
 UMBRELLA = "orchid-data"
 LICENSE = "CC-BY-4.0"
@@ -86,7 +90,7 @@ ABSTRACT = {
     "phase-registry": "One entry per phase of each binary system: every name it goes by (TDB, corpus, paper labels, "
                       "Materials Project / OQMD ids), the CALPHAD models that describe it, where the calculated "
                       "diagrams make it stable, example literature references, and a structure type assigned only "
-                      "when certain (standard name or unique DFT match), otherwise a review candidate list.",
+                      "when the stored evidence supports an assignment under the stated tier rules (standard name or unique DFT match), otherwise a review candidate list.",
     "assessed-phase-assemblages": "One (T, x, P) point deep inside each named phase field of the expert-drawn (assessed) "
                                   "binary phase diagrams compiled in Okamoto's Desk Handbook, with the phase assemblage "
                                   "present, phase-registry ids, coordinate uncertainty, naming basis, confidence, review "

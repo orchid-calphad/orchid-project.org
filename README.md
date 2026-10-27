@@ -7,7 +7,7 @@ served by GitHub Pages at https://orchid-project.org. Releases are archived on Z
 - `data/` — released data: catalog, redistributable TDB files, convex hulls. Licences: `data/LICENSES.md`, `data/NOTICE.md`.
 - `llms.txt`, `data/croissant.json`, `CITATION.cff`, `.zenodo.json` — machine-readable metadata.
 
-Only data with clear redistribution rights are published. Version 1, machine-extracted: values were read from papers by language-model readers constrained to quote their source and checked automatically (quote verification, field-placement rule, printed-page sign checks, DFT and Kim et al. 2017 cross-checks); a hand-checked precision sample is in progress.
+Only data with clear redistribution rights are published. Version 1, machine-extracted: values were read by language-model readers constrained to quote their source and checked automatically, and the release was then audited on the printed pages by adversarial audits, an independent second review of fit-facing records and a preliminary human review of a frozen sample. Flags such as accepted and ESPEI-ready record screening results, not certification; known issues are listed in the release notes (https://orchid-project.org/#releases).
 
 ## Zenodo release
 

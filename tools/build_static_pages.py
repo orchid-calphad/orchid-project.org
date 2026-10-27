@@ -1094,7 +1094,7 @@ def phase_pages(out, data, phase_reg, date):
         if os.path.exists(os.path.join(data, "systems", "%s.html" % sy)):
             links += [("a", "%s system page" % label, DATA_URL + "systems/%s.html" % sy), " · "]
         links += [("a", "Markdown", md_url), " · ", ("a", "field reference", PHASE_DATA + "SCHEMA.md")]
-        blocks = [("p", ["%s. Structure types are assigned only when certain (tier A: standard phase name; tier B: unique "
+        blocks = [("p", ["%s. Structure types are assigned only when the stored evidence supports an assignment under the stated tier rules (tier A: standard phase name; tier B: unique "
                          "Materials Project + OQMD on-hull match, DFT-supported; tier C: one structure stated by the "
                          "assessment's crystallographic table, assessor-stated); other phases list candidates and are "
                          "marked needs_review. Stability is from phase diagrams calculated with pycalphad from the SGTE "
@@ -1180,7 +1180,7 @@ def phase_pages(out, data, phase_reg, date):
                 t["citation"] = [{"@id": doi_url(r["doi"]), "@type": "ScholarlyArticle", "name": r.get("citation") or r["doi"]}
                                  for r in refs[:5]]
             terms.append(t)
-        desc = "%s system: %s in the ORCHID phase registry, with names, structure type when certain, calculated stability, " \
+        desc = "%s system: %s in the ORCHID phase registry, with names, structure type when the stored evidence supports an assignment under the stated tier rules, calculated stability, " \
                "verbatim TDB PHASE/CONSTITUENT statements and example references." % (label, line)
         jl = {"@context": PHASE_CTX, "@type": "Dataset", "name": "%s phases — ORCHID phase registry" % label,
               "description": desc, "url": url, "license": LICENSE_URL, "creator": creator(), "isPartOf": {
@@ -1339,7 +1339,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
                 [("a", "Compounds", DATA_URL + "compounds/index.html"), " — %d formation-enthalpy pages with DFT comparison." % len(comp_summary)],
                 [("a", "Reporting papers", DATA_URL + "papers/index.html"), " — citation, DOI, systems, number of values."],
                 [("a", "Phase registry", DATA_URL + "phases/pages/index.html"), " — %d binary-system pages, %s phases: names, "
-                 "structure (when certain), stability, TDB PHASE/CONSTITUENT statements, example DOIs." % (
+                 "structure (when the stored evidence supports an assignment under the stated tier rules), stability, TDB PHASE/CONSTITUENT statements, example DOIs." % (
                      len(phase_summary), format(sum(v["n"] for v in phase_summary.values()), ","))],
                 ] + ([[("a", "Bibliography", DATA_URL + "bibliography/pages/index.html"), " — %s papers ORCHID knows "
                         "(read, cited as original sources, behind TDB files and assessed diagrams, discovery leads) with "
@@ -1402,7 +1402,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- Full JSON records: %sliterature/systems/<SYS>.json (large systems: also <SYS>.part2.json ...; see literature/index.json)" % DATA_URL,
         "- Calculated phase diagrams: %sphase-diagrams/index.json -> phase-diagrams/sgte/<file>.json" % DATA_URL,
         "- Phases (binary systems): %sphases/pages/<SYS>.md (also .html): every phase with ids, names, structure tier/basis, prototype, Strukturbericht, Pearson, space group, stability, verbatim TDB PHASE/CONSTITUENT statements, example DOIs" % DATA_URL,
-        "- Phase registry JSON (names, models with tdb_definition, stability, references, structure when certain): %sphases/systems/<SYS>.json; compact index of all phases %sphases/registry.json, fields %sphases/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL), "",
+        "- Phase registry JSON (names, models with tdb_definition, stability, references, structure when the stored evidence supports an assignment under the stated tier rules): %sphases/systems/<SYS>.json; compact index of all phases %sphases/registry.json, fields %sphases/SCHEMA.md" % (DATA_URL, DATA_URL, DATA_URL), "",
         "## Indexes",
         "- [Systems](%ssystems/index.md)" % DATA_URL,
         "- [Compounds (formation enthalpies, literature vs Materials Project / OQMD)](%scompounds/index.md); per compound: %scompounds/<FORMULA>.md" % (DATA_URL, DATA_URL),
