@@ -347,7 +347,7 @@ MIN_STRATUM = 30
 N_BOOT = 1000
 DFT_COMMENT = "0 K DFT used as 298.15 K enthalpy"
 
-CITE_TITLE = "ORCHID-Values ESPEI datasets: ESPEI-format datasets built from the literature values"
+CITE_TITLE = "ORCHID ESPEI datasets: literature and database-derived thermodynamic fitting inputs"   # = orchid_cite.DATASETS["espei"]
 CITE_KEY = "orchid_espei_2026"
 CITE_ABSTRACT = ("ESPEI-format datasets (thermochemical, phase-equilibrium ZPF and invariant-reaction ZPF) built from "
                  "the ORCHID literature values, one folder per evidence class (experimental, model, DFT: literature, "

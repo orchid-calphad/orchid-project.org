@@ -31,7 +31,7 @@ zenodo/<name>.files.json (the files of the record with sizes and SHA-256, writte
   python3 tools/zenodo_release.py scan                 # restricted types/paths, secret patterns, local paths in every record
   python3 tools/zenodo_release.py plan                 # records, files, sizes; every file present and unchanged, < 50 GB
   python3 tools/zenodo_release.py bundle [--record N]  # dist/orchid-<name>-v2026.10.zip (deterministic, MANIFEST.sha256)
-  python3 tools/zenodo_release.py writeback --doi literature=10.5281/zenodo.123 [--doi ...] [--no-rebuild]
+  python3 tools/zenodo_release.py writeback --doi literature=10.5281/zenodo.123 --doi ... (all ten) [--no-rebuild]
   python3 tools/zenodo_release.py credit [--check]     # accepted, opted-in contributors -> CONTRIBUTORS.md, Zenodo
                                                        # metadata (and CITATION.cff if contributors.json says so),
                                                        # then refresh the manifests (run before `bundle`)
@@ -41,6 +41,10 @@ repositories (data repository, website pages, CITATION.cff files, llms.txt, croi
 Zenodo metadata, ...), then reruns the builders (which read the DOIs through tools/orchid_cite.py) so derived
 hashes stay right, refreshes the file manifests and runs every --check. TDB files, gzip and Parquet bytes are never
 edited as text. Nothing here talks to Zenodo: the PI uploads the bundles (zenodo/README.md in the data repository).
+It refuses a partial DOI map (all ten records, ten distinct real DOIs) and fails if any file of the candidate trees
+(text, binary or gzip) still holds a `zenodo.PENDING-` placeholder afterwards. Its literature sync never deletes: files
+only in the destination are moved to <orchid-superseded>/<date>-zenodo-writeback/ with a README listing. Run it on a
+staged copy, not on the shared live trees (zenodo/ZENODO_PUBLISH_RUNBOOK.md: staged multi-pass rebuild).
 
 Standard library only (the Parquet rebuild inside writeback runs tools/build_parquet.py with --parquet-python).
 """
@@ -628,9 +632,27 @@ def replace_in_tree(root, mapping, dry):
     return changed
 
 
-def sync_literature(data):
-    """Mirror <site>/data/literature (where the literature builders write) into <orchid-data>/literature."""
-    src, dst = os.path.join(SITE, "data", "literature"), os.path.join(data, "literature")
+SUPERSEDED_ROOT = os.environ.get("ORCHID_SUPERSEDED") or os.path.join(os.path.dirname(SITE), "orchid-superseded")
+
+
+def _free_path(p):
+    """p, or p.1, p.2, ... if p exists (a move never overwrites an earlier superseded copy)."""
+    q, i = p, 0
+    while os.path.exists(q):
+        i += 1
+        q = "%s.%d" % (p, i)
+    return q
+
+
+def sync_literature(data, src=None, superseded_root=None, stamp=None):
+    """Mirror <site>/data/literature (where the literature builders write) into <orchid-data>/literature.
+
+    Nothing is deleted (coordination rule 6): a file present only in the destination is MOVED to
+    <superseded_root>/<stamp>-zenodo-writeback/<path relative to the data root>, and the move is listed in the README.md
+    of that folder. Returns the list of (relative path, new location) of moved files."""
+    import datetime
+    src = src or os.path.join(SITE, "data", "literature")
+    dst = os.path.join(data, "literature")
     sf, df = set(all_files(src)), set(all_files(dst))
     n = 0
     for rel in sorted(sf):
@@ -639,16 +661,66 @@ def sync_literature(data):
             os.makedirs(os.path.dirname(d), exist_ok=True)
             shutil.copyfile(s, d)
             n += 1
-    for rel in sorted(df - sf):
-        os.remove(os.path.join(dst, rel))
-        n += 1
+    moved = []
+    gone = sorted(df - sf)
+    if gone:
+        stamp = stamp or datetime.date.today().isoformat()
+        box = os.path.join(superseded_root or SUPERSEDED_ROOT, "%s-zenodo-writeback" % stamp)
+        for rel in gone:
+            relp = "literature/" + rel
+            target = _free_path(os.path.join(box, relp))
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            shutil.move(os.path.join(dst, rel), target)
+            moved.append((relp, os.path.relpath(target, box)))
+            n += 1
+        readme = os.path.join(box, "README.md")
+        new = not os.path.exists(readme)
+        with open(readme, "a", encoding="utf-8") as fh:
+            if new:
+                fh.write("# Superseded by `tools/zenodo_release.py writeback` (literature sync)\n\n"
+                         "Files present in `<orchid-data>/literature/` but no longer written by the literature builders. "
+                         "Moved here instead of deleted (ORCHID coordination rule 6). Paths are relative to the data "
+                         "root `%s`.\n\n| original path | stored here as |\n|---|---|\n" % data)
+            for relp, here in moved:
+                fh.write("| `%s` | `%s` |\n" % (relp, here))
+        print("moved %d destination-only file(s) to %s (listed in its README.md)" % (len(moved), box))
     print("synced literature/: %d file(s) updated" % n)
+    return moved
+
+
+PENDING_RE = re.compile(rb"zenodo\.PENDING-")
+
+
+def find_placeholders(root):
+    """Every file under root (outside SKIP_PREFIX) that still holds a `zenodo.PENDING-` DOI placeholder, whatever the
+    record name and whatever the file type: text and binary files are searched as bytes, .gz files decompressed."""
+    import gzip
+    hits = []
+    for rel in all_files(root):
+        if rel.startswith(SKIP_PREFIX):
+            continue
+        p = os.path.join(root, rel)
+        try:
+            opener = gzip.open if rel.endswith(".gz") else open
+            with opener(p, "rb") as fh:
+                tail = b""
+                for b in iter(lambda: fh.read(1 << 20), b""):
+                    if PENDING_RE.search(tail + b):
+                        hits.append(rel)
+                        break
+                    tail = b[-32:]
+        except (OSError, EOFError) as e:
+            hits.append("%s (unreadable: %s)" % (rel, e))
+    return hits
 
 
 def run(cmd):
     print("$ " + " ".join(cmd), flush=True)
     r = subprocess.run(cmd, cwd=SITE)
     return r.returncode
+
+
+ALL_RECORDS = tuple(RECORDS) + (EXAMPLES,)
 
 
 def cmd_writeback(a):
@@ -665,13 +737,17 @@ def cmd_writeback(a):
         mapping[name] = doi
     if len(set(mapping.values())) != len(mapping):
         raise SystemExit("the same DOI was given to two records")
+    missing = [n for n in ALL_RECORDS if n not in mapping]
+    if missing:   # a partial map would leave placeholders behind and break the reciprocal relations
+        raise SystemExit("writeback needs all %d DOIs (one --doi per record); missing: %s" % (len(ALL_RECORDS), ", ".join(missing)))
     dp = os.path.join(a.data, "zenodo", "dois.json")
     dj = json.load(open(dp, encoding="utf-8"))
     for name, doi in mapping.items():
         old = dj["dois"].get(name)
         if old and not orchid_cite.is_placeholder(old) and old != doi:
             raise SystemExit("%s already has DOI %s; edit zenodo/dois.json by hand to change it" % (name, old))
-    roots = [a.data, SITE] + ([a.examples] if os.path.exists(os.path.join(a.examples, ".git")) else [])
+    site = getattr(a, "site", None) or SITE
+    roots = [a.data, site] + ([a.examples] if os.path.exists(os.path.join(a.examples, ".git")) else [])
     for root in roots:  # (the examples repository: README and CITATION.cff carry its own DOI; commit there, then re-pin)
         ch = replace_in_tree(root, mapping, a.dry_run)
         print("%s %d file(s) in %s" % ("would change" if a.dry_run else "replaced placeholders in", len(ch), root))
@@ -686,6 +762,13 @@ def cmd_writeback(a):
     with open(dp, "w", encoding="utf-8") as fh:
         fh.write(json.dumps(dj, indent=1, ensure_ascii=False, sort_keys=True) + "\n")
     if a.no_rebuild:
+        left = ["%s: %s" % (os.path.basename(root), rel) for root in roots for rel in find_placeholders(root)]
+        for x in left:
+            print("placeholder still present: " + x)
+        if left:
+            print("FAIL: %d file(s) still hold a zenodo.PENDING- placeholder (binary files such as Parquet and .gz need "
+                  "the staged rebuild; text files need inspection)" % len(left))
+            return 1
         print("--no-rebuild: run the builders and `zenodo_release.py manifest` before bundling")
         return 0
     py, ppy = sys.executable, a.parquet_python
@@ -720,11 +803,7 @@ def cmd_writeback(a):
               [py, "tools/zenodo_release.py", "--data", a.data, "metadata", "--check"],
               [py, "tools/zenodo_release.py", "--data", a.data, "--examples", a.examples, "manifest", "--check"]]
     fails = [" ".join(c) for c in checks if run(c)]
-    left = []
-    for root in roots:
-        for name in mapping:
-            for rel in replace_in_tree(root, {name: "X"}, True):
-                left.append("%s: %s" % (os.path.basename(root), rel))
+    left = ["%s: %s" % (os.path.basename(root), rel) for root in roots for rel in find_placeholders(root)]
     for x in left:
         print("placeholder still present: " + x)
     if fails or left:
@@ -757,6 +836,7 @@ def main(argv=None):
     s.add_argument("--doi", action="append", required=True, metavar="NAME=DOI", help="e.g. literature=10.5281/zenodo.123")
     s.add_argument("--dry-run", action="store_true", help="list the files that would change; write nothing")
     s.add_argument("--no-rebuild", action="store_true", help="only replace text and update zenodo/dois.json")
+    s.add_argument("--site", default=SITE, help="website/tools repository whose text files also get the DOIs (default: %(default)s)")
     default_ppy = os.path.expanduser("~/orchid-py313/bin/python")
     s.add_argument("--parquet-python", default=default_ppy if os.path.exists(default_ppy) else sys.executable,
                    help="interpreter with pyarrow for tools/build_parquet.py (default: %(default)s)")

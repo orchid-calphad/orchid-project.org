@@ -10,7 +10,10 @@ so nothing is typed by hand and a rebuilt release regenerates the text.
   python3 tools/zenodo_release.py metadata [--check]      (or: python3 tools/build_zenodo_metadata.py [--check])
 
 Single sources of truth (tools/orchid_cite.py): titles (DATASETS, SOFTWARE), the Zenodo community (ZENODO_COMMUNITY),
-the funding sentence (FUNDING_NOTE), the authors. The record of ORCHID-Assemblages is written by
+the funding sentence (FUNDING_NOTE), the licence-scope sentence (LICENCE_SCOPE), the authors. The counts of the
+preliminary human review (not in the release files) are read from tools/human_review_summary_20261026.json.
+Descriptions follow the X4 Zenodo-record review of 2026-10-27 (flags and checks are described as screening results,
+not certification). The record of ORCHID-Assemblages is written by
 tools/build_assessed_assemblages.py (its numbers come from that builder's run); this tool leaves it alone.
 
 No `grants` entry: NSF award 2608825 is not in Zenodo's awards database and would be rejected; the funding is entered by
@@ -32,6 +35,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import orchid_cite as oc  # noqa: E402
 
 WEBSITE, DATA_URL = oc.WEBSITE, oc.DATA_URL
+TOOLS = os.path.dirname(os.path.abspath(__file__))
+HUMAN_REVIEW = "human_review_summary_20261026.json"
 DOI_SGTE, DOI_MP, DOI_OQMD1, DOI_OQMD2 = ("10.1016/j.calphad.2025.102833", "10.1063/1.4812323",
                                            "10.1007/s11837-013-0755-4", "10.1038/npjcompumats.2015.10")
 DOI_KIM, DOI_KIM_DATA = "10.1038/sdata.2017.162", "10.6084/m9.figshare.7289723"
@@ -85,6 +90,10 @@ def collect(data, examples_manifest=None):
     put("lit_biblio", len(load(data, "literature", "papers.json")), "literature/papers.json")
     put("lit_context", len(load(data, "literature", "contexts.json")), "literature/contexts.json")
     put("lit_dups", load(data, "literature", "quality_fixes.json")["duplicates"]["records_removed"], "literature/quality_fixes.json")
+    hr = load(TOOLS, HUMAN_REVIEW)
+    S = "orchid-project.org tools/%s (review summary sha256 %s)" % (HUMAN_REVIEW, hr["source"]["sha256"][:16])
+    put("hr_sample", hr["sample_size"], S), put("hr_reviewed", hr["unique_records_reviewed"], S)
+    put("hr_adjudicated", hr["adjudication_queue_records"], S)
     # --- ORCHID-Diagrams ---
     S = "parquet/phase_diagram_index.parquet"
     pi = pd.read_parquet(j(data, "parquet", "phase_diagram_index.parquet"))
@@ -169,7 +178,8 @@ def collect(data, examples_manifest=None):
 STATUS_HTML = lambda name: "<p><b>Status.</b> %s</p>" % html.escape(oc.STATUS_BY.get(name, oc.STATUS), quote=False)
 LICENCE = ("<h3>Licence</h3><p>ORCHID's data are released under CC BY 4.0, as are the SGTE (B. Hallstedt, Calphad 89 (2025) "
            "102833), Materials Project and OQMD data from which they are derived; attributions and statements of changes "
-           "are in NOTICE.md, the licence of each folder in LICENSES.md (both in the bundle).%s</p>")
+           "are in NOTICE.md, the licence of each folder in LICENSES.md (both in the bundle).%s</p><p>" +
+           html.escape(oc.LICENCE_SCOPE, quote=False) + "</p>")
 QUOTES = (" The quotations from papers that accompany values are short excerpts kept for verification; they remain under "
           "the publishers' copyright and are not relicensed. Source papers, page images and full texts are not redistributed.")
 
@@ -223,13 +233,13 @@ def description(name, data):
     t = oc.DATASETS[name][0] if name in oc.DATASETS else oc.SOFTWARE[name][0]
     part = "Part of the ORCHID data release %s." % oc.RELEASE_TAG
     if name == "literature":
-        return I("<p><b>%s</b>: thermodynamic and phase-equilibrium values read from published papers, each stored as an "
-                 "observation of an equilibrium state (quantity, phases, temperature, pressure, phase compositions, reference "
-                 "state) with its evidence class, source paper and DOI, page, and the table row or verbatim sentence it was read "
-                 "from. " % t + part + " Short name in the paper: Values.</p>") + STATUS_HTML(name) + \
+        return I("<p><b>%s</b>: thermodynamic and phase-equilibrium values read from published papers. Records retain the "
+                 "reported quantity, available conditions, phase labels, evidence class and source locator; some records "
+                 "describe transitions, expressions or incompletely specified states. " % t + part +
+                 " Short name in the paper: Values.</p>") + STATUS_HTML(name) + \
             "<h3>What</h3>" + I(lis([
-                "{values} values from {lit_papers} papers covering {lit_systems} chemical systems; {accepted} accepted (reader "
-                "agreement plus deterministic checks).",
+                "{values} values from {lit_papers} papers covering {lit_systems} chemical systems; {accepted} carry the accepted "
+                "flag of the implemented screening rules.",
                 "Evidence classes, never mixed or averaged: experimental {ev_experimental}, model {ev_model} (CALPHAD or other "
                 "models; {tdb_linked} linked to the exact TDB file by SHA-256), DFT {ev_dft}, unspecified {ev_unspecified}.",
                 "Invariant reactions {pg_invariant}, phase transitions {pg_transition}, phase equilibria {pg_equilibrium}, "
@@ -242,15 +252,20 @@ def description(name, data):
                 "<code>experimental_context</code>); fields documented in <code>literature/SCHEMA.md</code>, datasheet in "
                 "<code>DATASET_CARD.md</code>."])) + \
             "<h3>How</h3>" + I("<p>Tables and passages of lawfully held papers were read independently by language-model readers "
-                               "(Gemini Flash, Claude Opus, Gemini Pro for confirmation) and the PDF text layer; a value is accepted "
-                               "only on reader agreement plus deterministic checks: quote verification (the sentence must be verbatim "
+                               "(Gemini Flash, Claude Opus, Gemini Pro for confirmation) and the PDF text layer; the accepted flag "
+                               "requires reader agreement plus deterministic checks: quote verification (the sentence must be verbatim "
                                "on one page and contain the printed value; released quotes are at most 500 characters, a longer one is clipped at export to a contiguous part that still contains the printed value, flag <code>quote_clipped</code>), the field-placement rule (fields not printed in the quote "
                                "or row are dropped), printed-page sign checks of formation enthalpies, and cross-checks against DFT "
                                "(Materials Project, OQMD) and Kim et al. 2017. {lit_dups} exact duplicates were merged; reaction types "
                                "and property codes mapped to controlled vocabularies; every correction is listed with its evidence in "
-                               "<code>literature/QUALITY_FIXES.md</code>.</p>") + \
+                               "<code>literature/QUALITY_FIXES.md</code>. The accepted flag records the result of the implemented screening "
+                               "rules, and espei_ready records eligibility under the export rules; neither flag certifies that every "
+                               "value, phase or measurement condition is correct.</p>") + \
             "<h3>Limitations</h3>" + I(lis([
-                "Version 1 is machine-extracted; a hand-checked precision sample is in progress.",
+                "Version 1 is machine-extracted. Preliminary human responses cover {hr_reviewed} distinct records from a frozen "
+                "sample of {hr_sample}, followed by a separate AI-assisted adjudication of {hr_adjudicated} records selected for "
+                "concerns or comments; these results do not establish population-wide accuracy or independently validate the "
+                "repaired release.",
                 "Values in figures are not included; coverage across systems is uneven.",
                 "{basis_unstated} formation values have a per-atom vs per-formula basis the paper does not state (unit "
                 "<code>kJ/mol (basis unstated)</code>, not converted); {basis_inferred} carry a per-atom basis inferred only by a "
@@ -260,8 +275,8 @@ def description(name, data):
                 "<code>experimental</code> values cited from older work carry the citing paper's reading; <code>unspecified</code> "
                 "values may be experimental or calculated; check <code>flag_source_disputed</code>, "
                 "<code>flag_magnitude_suspect</code> and <code>flag_system_mismatch</code> before use.",
-                "<code>flag_espei_ready</code> marks a fully specified state, not a review verdict: do not feed values to an "
-                "optimizer without review."])) + LICENCE % QUOTES + files_html(name) + cite_html(name, data) + footer_html()
+                "<code>flag_espei_ready</code> marks eligibility under the export rules, not a review verdict: do not feed "
+                "values to an optimizer without review."])) + LICENCE % QUOTES + files_html(name) + cite_html(name, data) + footer_html()
     if name == "phase-diagrams":
         return I("<p><b>%s</b>: binary phase diagrams calculated with {pd_engine} from the SGTE binary collection (Hallstedt 2025, "
                  "CC BY 4.0), each tied to the exact TDB file by SHA-256 and to the original assessment it encodes (citation and "
@@ -277,7 +292,11 @@ def description(name, data):
             I("<h3>How</h3><p>{pd_engine} at 1 atm, run on every SGTE binary file of the ORCHID catalog (open-tdb).</p>") + \
             "<h3>Limitations</h3>" + I(lis([
                 "Calculated values are model results, not measurements, and are as good as the assessment and the calculation grid.",
-                "{pd_failed} files did not calculate; metastable and pressure-dependent features are not represented."])) + \
+                "{pd_failed} files did not calculate; metastable and pressure-dependent features are not represented.",
+                "The checks establish consistency between sampled mapped boundaries and equilibrium solutions from the same "
+                "engine; they do not independently validate the assessments or all boundary points.",
+                "Requested temperature ranges and the actual extents of stored boundaries are distinct, and a stored point "
+                "outside the requested range carries no additional validation."])) + \
             LICENCE % "" + files_html(name) + cite_html(name, data) + footer_html()
     if name == "hulls":
         return I("<p><b>%s</b>: binary formation-energy convex hulls from two DFT databases and isotherms of assessed CALPHAD "
@@ -295,11 +314,15 @@ def description(name, data):
                 "entries; Parquet table <code>hull_vertices</code>."])) + \
             I("<h3>How</h3><p>Deterministic lower-hull builder (standard library, open-tdb) over pinned snapshots; collinear and "
               "degenerate structures are retained, upstream stability disagreement is enumerated rather than reconciled; "
-              "{h_mp_agree} of {h_mp_systems} MP systems reproduce the upstream stability flag exactly.</p>") + \
+              "{h_mp_agree} of {h_mp_systems} MP systems reproduce the upstream stability flag exactly. Agreement in a hull "
+              "consistency check tests the stated computational representation, not the experimental accuracy of the "
+              "energies.</p>") + \
             "<h3>Limitations</h3>" + lis([
                 "DFT hulls are at 0 K and carry formation enthalpy only.",
                 "Materials Project and OQMD use different reference states and corrections; their energies are not comparable and "
                 "must not be averaged.",
+                "The MP, OQMD and assessed hulls retain their respective database versions, energy conventions and temperatures; "
+                "comparisons across them require explicit reference-state treatment.",
                 "OQMD stability is derived by the builder (no upstream cross-check)."]) + \
             LICENCE % "" + files_html(name) + cite_html(name, data) + footer_html()
     if name == "dft-benchmark":
@@ -312,10 +335,13 @@ def description(name, data):
                 "kJ/mol-atom).",
                 "Default subset (experimental, accepted, signed, not magnitude-suspect): MAE {par_mp_mae} kJ/mol-atom over {par_mp_n} "
                 "Materials Project pairs (Spearman {par_mp_spearman}) and {par_oqmd_mae} over {par_oqmd_n} OQMD pairs (Spearman "
-                "{par_oqmd_spearman}); statistics by chemistry, method and evidence class, exclusions counted by reason.",
+                "{par_oqmd_spearman}); statistics by chemistry, method and evidence class, exclusions counted by reason. The "
+                "full pair table includes multiple evidence classes; the reported DFT–experiment statistics use the documented "
+                "screened experimental subset.",
                 "Cross-check against Kim et al. 2017 experimental formation enthalpies: {kim_overlap} formulas in common, MAE "
                 "{kim_mae} kJ/mol-atom, sign agreement {kim_sign}%, {kim_differ} formulas differing by more than 10 kJ/mol-atom listed "
-                "with record ids.",
+                "with record ids. The Kim comparison describes its recorded build and must be regenerated against the frozen "
+                "release before its numerical results are used as current validation.",
                 "Files: <code>literature/dft_parity.json</code> (rules, statistics, points, records, papers), "
                 "<code>literature/kim2017_crosscheck.json|.md</code>, Parquet <code>dft_parity</code>."])) + \
             "<h3>How</h3><p>Formulas are parsed from printed phase labels; reduced compositions (4-decimal mole fractions) are matched " \
@@ -324,13 +350,15 @@ def description(name, data):
             "</p><h3>Limitations</h3>" + lis([
                 "Literature values are machine-extracted (Version 1); each point keeps its quote and page so it can be checked.",
                 "Binary compounds only; values whose per-atom basis is not stated are excluded.",
+                "These discrepancies reflect DFT error together with residual uncertainty in extraction, composition, "
+                "temperature, provenance and reference state, and are not independent measurements of DFT error alone.",
                 "MP and OQMD energies use different references and are not comparable with each other."]) + \
             LICENCE % (QUOTES + " The Kim et al. 2017 values used in the cross-check come from the Figshare deposit %s under the MIT "
                        "licence (notice in NOTICE.md)." % DOI_KIM_DATA) + files_html(name) + cite_html(name, data) + footer_html()
     if name == "phase-registry":
         return I("<p><b>%s</b>, version 0: one entry per phase of each binary system, with every name the phase goes by, the CALPHAD "
                  "models that describe it, where calculated phase diagrams make it stable, example literature references, and a "
-                 "crystal-structure type assigned only when certain. " % t + part + " Short name in the paper: Registry.</p>") + \
+                 "crystal-structure type assigned when the stored evidence supports an assignment under the stated tier rules. " % t + part + " Short name in the paper: Registry.</p>") + \
             "<h3>What</h3>" + I(lis([
                 "<code>phases/registry.json</code>: compact index (id, system, names, structure tier and prototype, counts) of "
                 "{reg_phases} phases in {reg_systems} binary systems, with the full records (models with TDB definitions, stability, "
@@ -353,8 +381,10 @@ def description(name, data):
             "files, the Hallstedt 2025 crystallographic table, the ORCHID SGTE-corpus phase mappings and literature values, the " \
             "calculated binary phase diagrams and the Materials Project / OQMD hull layers. No model or network calls.</p>" \
             "<h3>Limitations</h3>" + lis([
-                "A structure type is assigned only when certain or, for tier C, as stated by the assessment's crystallographic table; "
-                "everything else is a review candidate, not a claim.",
+                "A structure type is assigned when the stored evidence supports an assignment under the stated tier rules (for "
+                "tier C, as stated by the assessment's crystallographic table); everything else is a review candidate, not a claim.",
+                "Phase identities, aliases and structure assignments retain their evidence tier and review state; assignments "
+                "supported by the implemented rules can still require source-specific adjudication.",
                 "DFT entries are computed 0 K structures, not the CALPHAD phase; tier B requires agreement of both databases and a "
                 "unique structure type for the space group and stoichiometry.",
                 "Paper labels come from machine-extracted literature values (Version 1); mapping basis is recorded per name.",
@@ -369,14 +399,20 @@ def description(name, data):
                 "invariant-reaction tables; {es_invariants}), <code>model/</code> (values the papers calculated with a CALPHAD model, "
                 "TDB SHA-256; {es_model}) and <code>dft/</code> (<code>literature</code>, <code>mp</code>, <code>oqmd</code>: "
                 "HM_FORM of TDB phase endmembers mapped through the ORCHID phase registry; {es_dft}).",
-                "Every value carries its ORCHID observation id and source DOI and passes the inclusion rules of the published "
-                "literature values; its uncertainty is in physical units (printed; ESPEI's experimental default where none was "
-                "printed; DFT sigma calibrated against experiment, leave-system-out) with the ESPEI weight derived from it.",
+                "Literature-derived values retain their ORCHID identifiers and source provenance and are screened against the "
+                "literature release; direct MP and OQMD entries retain their database provenance and follow the corresponding "
+                "DFT export rules.",
+                "Uncertainties are in physical units (printed; ESPEI's experimental default where none was printed; DFT sigma "
+                "calibrated against experiment, leave-system-out). Weights follow the exported uncertainty policy; unequal "
+                "thermochemical uncertainties are represented by separate fitting records, and ZPF likelihood tolerances are "
+                "not obtained by converting temperature uncertainties into thermochemical weights.",
                 "Optional phase constraints, tagged and kept in their own folders (never mixed with measured data): "
                 "<code>derived/invariant-brackets/</code> and <code>derived/liquid-stability/</code> ({es_derived} datasets) and "
                 "<code>assessed/</code> (assessed handbook phase-field points in each assessment's phase names; {es_assessed} datasets).",
                 "Validated with ESPEI {es_version} <code>check_dataset</code> and <code>load_datasets</code> (<code>VALIDATION.md</code>); "
-                "encoding fixes are counted there, literature records to correct are listed in <code>UPSTREAM_CORRECTIONS.md</code>."])) + \
+                "encoding fixes are counted there, literature records to correct are listed in <code>UPSTREAM_CORRECTIONS.md</code>. "
+                "ESPEI validation checks the dataset format and loading behavior, while fitting suitability remains dependent on "
+                "state identification, model-phase mapping and source quality."])) + \
             "<h3>Limitations</h3>" + lis([
                 "Version 1, machine-extracted literature values.",
                 "Model-calculated values carry a method floor calibrated against experimental values of the same state, a lower bound "
@@ -386,9 +422,11 @@ def description(name, data):
                 "Derived phase constraints encode the semantics of printed reactions; they are not measurements."]) + \
             LICENCE % QUOTES + files_html(name) + cite_html(name, data) + footer_html()
     if name == "bibliography":
-        return I("<p><b>%s</b>, version 2026.10: every paper the ORCHID CALPHAD data project knows about, with Crossref bibliographic "
+        return I("<p><b>%s</b>, version 2026.10: papers known to the ORCHID CALPHAD data project, with Crossref bibliographic "
                  "metadata, the role each paper plays in ORCHID, counts of the evidence ORCHID released from it, and typed relations. "
-                 % t + part + " Short name in the paper: Bibliography.</p>") + STATUS_HTML(name) + \
+                 "The bibliography combines works found through the documented corpus, citation, TDB and handbook sources; it is "
+                 "not an exhaustive bibliography of the field. " % t + part + " Short name in the paper: Bibliography.</p>") + \
+            STATUS_HTML(name) + \
             "<h3>What</h3>" + I(lis([
                 "{bib_papers} works ({bib_doi} with DOI; {bib_nodoi} without, with stable ids from first author, year and title): "
                 "{bib_read} read by ORCHID, {bib_cited} cited as the original source of extracted values, {bib_tdb} assessments behind "
@@ -401,7 +439,8 @@ def description(name, data):
                 "DOIs matched from printed references (handbook source lines, cited sources of values, TDB header citations) are "
                 "checked against Crossref (first author, year, title, journal): {bib_verified} verified, {bib_weak} weak (kept, "
                 "flagged), {bib_unverifiable} without a Crossref record; {bib_dropped} mismatched DOIs were dropped (works kept without "
-                "DOI; listed in DOI_MISMATCHES.md).",
+                "DOI; listed in DOI_MISMATCHES.md). A verified citation link records the outcome of the stated bibliographic check "
+                "and does not certify the measurements or claims of the linked work.",
                 "Files: papers.jsonl/.csv/.parquet, edges.jsonl/.csv/.parquet, papers/&lt;key&gt;.json (one record per paper), "
                 "systems/&lt;SYS&gt;.json and systems_index.json, BibTeX and CSL-JSON (Crossref metadata), papers.jsonld (schema.org "
                 "ScholarlyArticle), SCHEMA.md, DOI_MISMATCHES.md, CITATION.cff."])) + \
@@ -432,7 +471,10 @@ def description(name, data):
         return ("<p><b>%s</b> (Open Repository for CALPHAD Hypotheses, Intelligence, and Discovery), release %s: umbrella record of "
                 "eight citable datasets, each a separate Zenodo record with its own DOI (the ESPEI datasets are derived from "
                 "ORCHID-Values and deposited apart because they are used apart):</p>" % ("ORCHID data", oc.RELEASE_TAG)) + lis(rows) + \
-            "<p>The runnable workflows that use the release are archived as a software record: %s.</p>" % ex + STATUS_HTML("literature") + \
+            "<p>The runnable workflows that use the release are archived as a software record: %s.</p>" % ex + \
+            "<p>This umbrella links eight dataset records and the examples software archive within one versioned ORCHID release; " \
+            "several records are derived from the same observations and should not be treated as independent evidence.</p>" + \
+            STATUS_HTML("literature") + \
             "<p>This record holds the release documentation: README, CHANGELOG, DATASET_CARD (datasheet with loading examples for pandas, " \
             "DuckDB and Hugging Face <code>datasets</code>), licences and attributions, the Parquet manifest, and the Zenodo metadata of " \
             "all ten records with the list of every number in it (<code>zenodo/metadata_numbers.json</code>). The data files are in the " \
@@ -441,15 +483,17 @@ def description(name, data):
             LICENCE % (QUOTES + " Kim et al. 2017 cross-check values: MIT (NOTICE.md); Crossref metadata in bibliography/: CC0.") + \
             files_html(name) + cite_html(name, data) + footer_html()
     if name == "orchid-examples":
-        return ("<p><b>%s</b>: runnable, documented examples of the workflows described in the ORCHID paper, each rebuildable in minutes "
-                "without a GPU from cached outputs: tuning an MLIP-informed Cu-Zr CALPHAD description with gradient-based ESPEI against "
+        return ("<p><b>%s</b>: runnable, documented examples of the workflows described in the ORCHID paper: tuning an MLIP-informed Cu-Zr CALPHAD description with gradient-based ESPEI against "
                 "ORCHID data (PhaseForge+), the classic ESPEI MCMC route as a documented negative example, prevalence-weighted scoring of "
                 "one-shot MLIP phase diagrams against ORCHID evidence, the saturation of MLIP formation-enthalpy accuracy at the DFT level, "
-                "PhaseForge input structures, and a quickstart notebook. Each example pins the ORCHID release commit and its software "
-                "versions. Software record of release %s; the data it uses are in the ORCHID data records (umbrella: doi:%s).</p>"
+                "PhaseForge input structures, and a quickstart notebook. Cached examples can be inspected without rerunning the "
+                "expensive calculations, while full model generation and fitting require the dependencies and resources documented "
+                "for each workflow. Each example pins the ORCHID release commit and its software versions. Software record of release %s; the data it uses are in the ORCHID data records (umbrella: doi:%s).</p>"
                 % ("ORCHID examples", oc.RELEASE_TAG, _doi(data, oc.UMBRELLA))) + \
             I("<p>Contents: {ex_files} files ({ex_kb} kB), the git archive of commit <code>{ex_commit}</code> of "
-              "<a href=\"%s\">github.com/orchid-calphad/orchid-examples</a>.</p>" % oc.REPO_EXAMPLES) + \
+              "<a href=\"%s\">github.com/orchid-calphad/orchid-examples</a>. The archive is built from the commit recorded in "
+              "its manifest; reproduction results apply only to the tested commit and the documented cached paths.</p>"
+              % oc.REPO_EXAMPLES) + \
             "<h3>Licence</h3><p>Code (all <code>.py</code> and <code>.sh</code> files, notebook code cells, CI workflow): MIT (<code>LICENSE</code>). " \
             "Data in the repository keep the licences of their sources (<code>LICENSE-DATA.md</code>): values derived from ORCHID and the SGTE " \
             "TDB files are CC BY 4.0, with attribution to the ORCHID release and to Hallstedt (2025). The record's licence field states the " \

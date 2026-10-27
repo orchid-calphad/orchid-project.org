@@ -1607,16 +1607,17 @@ def zenodo_metadata(s, data):
             "<code>assessed_phase_diagram</code>. Part of the ORCHID data release %s.</p>"
             "<h3>What</h3><ul><li>%s points from %s diagrams (centroid %s, pole of inaccessibility %s); %s two-phase points "
             "with a drawing-based tie_line block (low credence).</li><li>ESPEI ZPF datasets, one per diagram: default "
-            "(two-phase compositions null with a __HYPERPLANE__ at the point) and a variant with tie-line endpoints; "
-            "validated with ESPEI.</li><li>JSONL, CSV, Parquet, exclusions with reasons, SCHEMA.md.</li></ul>"
+            "(two-phase compositions null with a __HYPERPLANE__ at the point) and a variant with tie-line endpoints. "
+            "The files pass ESPEI dataset-format checks; this establishes format compatibility and does not validate the "
+            "scientific correctness of all assemblages or their locations.</li><li>JSONL, CSV, Parquet, exclusions with reasons, SCHEMA.md.</li></ul>"
             "<h3>Limitations</h3><ul><li>Version 1, machine-extracted: fields named by deterministic rules, model readers, "
-            "an adjudicator and partial expert review (basis and review state per record).</li><li>Boundary and tie-line "
-            "positions are drawing-based; use them as soft constraints at most.</li><li>No page images, crops or handbook "
-            "text are distributed.</li></ul><h3>How to cite</h3><p>%s</p><p>Part of: %s</p><p>Cite each diagram's "
+            "an adjudicator and partial expert review (basis and review state per record).</li><li>Drawing-based tie "
+            "lines and interior points are soft constraints with recorded naming basis and review state.</li><li>No page "
+            "images, crops or handbook text are distributed.</li></ul><h3>Licence</h3><p>CC BY 4.0. %s</p><h3>How to cite</h3><p>%s</p><p>Part of: %s</p><p>Cite each diagram's "
             "original evaluation and the Okamoto handbook as the compilation.</p>"
             % (e["title"], orchid_cite.RELEASE_TAG, fmt(s["points"]), fmt(s["diagrams_with_points"]),
                fmt(s["point_method"]["centroid"]), fmt(s["point_method"]["pole_of_inaccessibility"]),
-               fmt(s["two_phase_tie_lines"]["with_tie_line"]), e["text"], u["text"]))
+               fmt(s["two_phase_tie_lines"]["with_tie_line"]), orchid_cite.LICENCE_SCOPE, e["text"], u["text"]))
     return {"_comment": "Zenodo deposition metadata (legacy REST format). Written by tools/build_assessed_assemblages.py. "
                         "DOI placeholders 10.5281/zenodo.PENDING-<name> are replaced by tools/zenodo_release.py writeback.",
             "record": DATASET, "doi": e["doi"],
@@ -1652,7 +1653,25 @@ def main(argv=None):
                          % ", ".join(sorted(DENSE_VALIDATED)))
     ap.add_argument("--only", default=None, help="development: build only this diagram directory (glob); use with a scratch --data")
     ap.add_argument("--check", action="store_true", help="exit 1 if the outputs differ from a fresh build")
+    ap.add_argument("--zenodo-only", action="store_true",
+                    help="only (re)write (or with --check, compare) zenodo/%s.metadata.json from the released "
+                         "%s/summary.json, without rebuilding the data" % (DATASET, OUT_DIR))
     a = ap.parse_args(argv)
+    if a.zenodo_only:
+        zp = os.path.join(a.data, "zenodo", DATASET + ".metadata.json")
+        with open(os.path.join(a.data, OUT_DIR, "summary.json"), encoding="utf-8") as fh:
+            zen = (json.dumps(zenodo_metadata(json.load(fh), a.data), ensure_ascii=False, indent=1) + "\n").encode()
+        cur = open(zp, "rb").read() if os.path.exists(zp) else None
+        if a.check:
+            print(("%s is current" if cur == zen else "stale: %s") % os.path.relpath(zp, a.data),
+                  file=sys.stdout if cur == zen else sys.stderr)
+            return 0 if cur == zen else 1
+        if cur != zen:
+            with open(zp + ".tmp", "wb") as fh:
+                fh.write(zen)
+            os.replace(zp + ".tmp", zp)
+            print("wrote " + os.path.relpath(zp, a.data))
+        return 0
     cache = os.environ.get("ASPA_DEV_CACHE")   # development only: reuse build() results (pickle) between runs
     if cache and os.path.exists(cache):
         import pickle

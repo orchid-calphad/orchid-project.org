@@ -116,7 +116,7 @@ DATASETS = {
                        ["sgte", "mp", "oqmd", "papers"]),
     "assessed-phase-assemblages": ("ORCHID-Assemblages: assessed phase assemblages of binary systems", "orchid_assessed_assemblages_2026",
                                    ["assessed", "sgte"]),
-    "espei": ("ORCHID-Values ESPEI datasets: ESPEI-format datasets built from the literature values", "orchid_espei_2026", ["papers_espei", "mp", "oqmd"]),
+    "espei": ("ORCHID ESPEI datasets: literature and database-derived thermodynamic fitting inputs", "orchid_espei_2026", ["papers_espei", "mp", "oqmd"]),
     "bibliography": ("ORCHID-Bibliography: papers and typed citation relations", "orchid_bibliography_2026", ["papers_bibliography"]),
 }
 NAMES = tuple(DATASETS)
@@ -135,8 +135,13 @@ ZENODO_COMMUNITY = "orchid-calphad"
 # None until then. e.g. {"identifier": "arXiv:2611.00000", "scheme": "arxiv"}  or  {"identifier": "10.xxxx/yyyy", "scheme": "doi"}
 PAPER = None
 # NSF award 2608825 is not in Zenodo's awards database: no `grants` entry anywhere (it would be rejected). The funding
-# goes in the notes and, by hand, as a custom award in the web form (zenodo/ZENODO_FUNDING_MANUAL.md).
-FUNDING_NOTE = 'This work was supported by the U.S. National Science Foundation under awards OAC-2608825 (CSSI Elements: PhaseForge) and 2534344 (Autonomous Robotic Metallurgist: An NSF Materials Innovation Platform, ARM-MIP).'
+# goes in the notes and, by hand, as two Funding entries in the web form (zenodo/ZENODO_FUNDING_MANUAL.md). The sentence
+# does not depend on the award titles (the official title of 2608825 is not independently confirmed; X4 review 2026-10-27).
+FUNDING_NOTE = "This work was supported by the U.S. National Science Foundation under awards OAC-2608825 and 2534344."
+# Scope of the CC BY 4.0 licence of the dataset records (X4 review 2026-10-27): a scope statement, not a legal clearance.
+LICENCE_SCOPE = ("The stated licence covers the ORCHID-produced content in this deposit; upstream data and software retain "
+                 "their documented terms and attribution requirements, and no publisher pages, handbook drawings or "
+                 "restricted TDB source files are included.")
 
 
 def placeholder(name: str) -> str:
