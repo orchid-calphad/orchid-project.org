@@ -1247,6 +1247,13 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
             records, json.load(fh), evidence_id="ORCHID-IC-20261027-v1", gate="IC20261027",
             rule="source_adjudicated_independent_check",
             gap="independent_check_correction_requires_downstream_revalidation")
+    # round 2 of the same evidence (ORCHID-IC-20261027-v2): Codex's page-checked patches for the same-table candidates,
+    # cross-checked independently on the pages (64 of 172 agree; x1_crosscheck.md)
+    with open(os.path.join(os.path.dirname(__file__), "independent_check_corrections_20261027_v2.json"), encoding="utf-8") as fh:
+        qreport["independent_check_corrections_v2"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-IC-20261027-v2", gate="IC20261027",
+            rule="source_adjudicated_independent_check",
+            gap="independent_check_correction_requires_downstream_revalidation")
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     # audit round 3 (H9): formation values left in a unit other than kJ/mol-atom / kJ/mol (basis unstated), by unit
     fu = Counter(str(r.get("unit")) for r in records if r.get("property") in ("HM_FORM", "GM_FORM")
