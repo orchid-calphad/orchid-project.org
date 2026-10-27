@@ -1254,6 +1254,13 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
             records, json.load(fh), evidence_id="ORCHID-IC-20261027-v2", gate="IC20261027",
             rule="source_adjudicated_independent_check",
             gap="independent_check_correction_requires_downstream_revalidation")
+    # table context (ORCHID-TC-20261027-v1): the Pd3Sn group of Cui et al. 2020, Table 1, whose continuation rows lost the
+    # phase and the printed shared structure; checked on the rendered page (PI review question 9; Codex handoff)
+    with open(os.path.join(os.path.dirname(__file__), "table_context_corrections_20261027.json"), encoding="utf-8") as fh:
+        qreport["table_context_corrections"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-TC-20261027-v1", gate="TC20261027",
+            rule="source_adjudicated_table_context",
+            gap="table_context_correction_requires_downstream_revalidation")
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     # audit round 3 (H9): formation values left in a unit other than kJ/mol-atom / kJ/mol (basis unstated), by unit
     fu = Counter(str(r.get("unit")) for r in records if r.get("property") in ("HM_FORM", "GM_FORM")
