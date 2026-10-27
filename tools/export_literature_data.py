@@ -1264,12 +1264,34 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     # known issues (ORCHID-KI-20261027-v1, Y5): Ga-Sn Table 2 continuation rows extracted twice (the page-3 copy gets
     # duplicate_of the page-4 record), Fe-Y Table 3 Opt values at 973 K and Ag-Se Table 1 standard entropies at 298.15 K
     # (temperature from the printed page); the Ga-Sn metastable rows are flagged in the page-check ledger (metastable_state)
+    # table context, batches 1-15 (ORCHID-TC-20261027-v1): 287 table pages of accepted candidates read on the rendered page;
+    # phase labels and printed shared structure only (no forward fill across groups, no symmetry inference); seeded 10 %
+    # recheck agrees on phase identity and structure 303/303 (integration/table-context-batches-20261027/INDEX.md)
+    with open(os.path.join(os.path.dirname(__file__), "table_context_corrections_20261027_batches.json"), encoding="utf-8") as fh:
+        qreport["table_context_batches"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-TC-20261027-v1", gate="TC20261027",
+            rule="source_adjudicated_table_context",
+            gap="table_context_correction_requires_downstream_revalidation")
     for _ki in ("known_issues_corrections_20261027.json", "known_issues_corrections_20261027_extension.json"):
         with open(os.path.join(os.path.dirname(__file__), _ki), encoding="utf-8") as fh:
             qreport.setdefault("known_issue_corrections", {})[_ki] = human_review_corrections.apply(
                 records, json.load(fh), evidence_id="ORCHID-KI-20261027-v1", gate="KI20261027",
                 rule="source_adjudicated_known_issue",
                 gap="known_issue_correction_requires_downstream_revalidation")
+    # the table-context corrections name the printed phases after the gates ran: file those records under the system of
+    # their own state again (audit round 2, A1 C4; literature_r2_compositions.c4_state_system), as every other record is
+    import literature_r2_compositions as r2c
+
+    class _Refile:
+        def __init__(self):
+            self.n = Counter()
+
+        def add(self, gate, code, r, action, **kw):
+            self.n[code] += 1
+    _tc = [r for r in records if any(c.get("gate") == "TC20261027" for c in r.get("corrections") or [])]
+    _rf = _Refile()
+    r2c.c4_state_system(_tc, _rf)
+    qreport["table_context_refiled"] = dict(_rf.n)
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     # audit round 3 (H9): formation values left in a unit other than kJ/mol-atom / kJ/mol (basis unstated), by unit
     fu = Counter(str(r.get("unit")) for r in records if r.get("property") in ("HM_FORM", "GM_FORM")
