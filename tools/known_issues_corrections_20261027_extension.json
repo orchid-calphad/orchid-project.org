@@ -1,0 +1,617 @@
+[
+ {
+  "record_id": "ORC-4XNDYINBXE",
+  "reviewed_record_id": "ORC-4XNDYINBXE",
+  "verdict": "DUPLICATE",
+  "before": {
+   "paper": "doi:10.1007/bf02667485",
+   "pid": "doi:10.1007/bf02667485/p3/tab-2/r91#phase_region_vertex_set",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02667485/p3/tab-2",
+    "caption": "Experimental Ga-Sn Liquidus and Solidus Temperatures",
+    "label": "2",
+    "page": 3,
+    "row": 91
+   },
+   "property": "PHASE_COMPOSITION",
+   "value": null,
+   "unit": null,
+   "temperature_K": 459.25,
+   "overall_composition": {
+    "GA": 0.2,
+    "SN": 0.8
+   },
+   "phases": [
+    {
+     "label": "L",
+     "model_phase": "LIQUID"
+    }
+   ],
+   "duplicate_of": null
+  },
+  "after": {
+   "duplicate_of": "ORC-3NTGBUXSJY"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/bf02667485",
+   "pdf_sha256": "c4fb4c2705766e9df5da63be6627c3ac166ba1d1e259b1a9fc538fe98667bfd1",
+   "pdf_page": 4,
+   "rationale": "Same printed source row as ORC-3NTGBUXSJY (Table 2 continued, 85Tre, 0.80 at.% Sn column, 186.10 °C). Not an independent observation.",
+   "kept_id": "ORC-3NTGBUXSJY",
+   "kept_pid": "doi:10.1007/bf02667485/p4/tab-2/r39#phase_region_vertex_set",
+   "printed_row_page4": 39,
+   "scope": "extension_same_row_pairs_not_in_X1",
+   "page3_image_sha256": "05fe402fe9e2b1571058390ecfd95dac95788ee3864234cc90debf4bb80d3a1e",
+   "decision": "Kept ORC-3NTGBUXSJY: its locator (PDF page 4, Table 2 continued, row 39) is where the row is printed; ORC-4XNDYINBXE carries a page-3 locator (row 91) for a row that page 3 does not print (page 3 ends at 0.7050 / 167.0 °C). Other differing fields: overall_composition_basis, phase_compositions. Same composition (0.80) in both copies; only the basis wording differs (the duplicate was corrected separately in round 1 of the independent check)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "c4fb4c2705766e9d",
+   "image_sha256": "2780e4fe3ec8a79b67318600eeb89d46a4eb320225dfca644e5ad29e5bc051f6",
+   "seen": "Row 39 of the page-4 continuation (85Tre, 186.10 °C) is printed once; page 3 ends at 0.7050 / 167.0 °C, so the page-3 copy is the same printed row.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Duplicate of ORC-3NTGBUXSJY (same printed row, PDF page 4); not independent evidence: exclude from fitting, counts and calibration."
+ },
+ {
+  "record_id": "ORC-QIQEYQLXPF",
+  "reviewed_record_id": "ORC-QIQEYQLXPF",
+  "verdict": "DUPLICATE",
+  "before": {
+   "paper": "doi:10.1007/bf02667485",
+   "pid": "doi:10.1007/bf02667485/p3/tab-2/r70#phase_transition",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02667485/p3/tab-2",
+    "caption": "Experimental Ga-Sn Liquidus and Solidus Temperatures",
+    "label": "2",
+    "page": 3,
+    "row": 70
+   },
+   "property": "TRANSITION_TEMPERATURE",
+   "value": 497.15,
+   "unit": "K",
+   "temperature_K": 497.15,
+   "overall_composition": {
+    "SN": 1.0
+   },
+   "phases": [
+    {
+     "label": "L",
+     "model_phase": "LIQUID"
+    },
+    {
+     "label": "(Sn)"
+    }
+   ],
+   "duplicate_of": null
+  },
+  "after": {
+   "duplicate_of": "ORC-WN2IJIA7PS"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/bf02667485",
+   "pdf_sha256": "c4fb4c2705766e9df5da63be6627c3ac166ba1d1e259b1a9fc538fe98667bfd1",
+   "pdf_page": 4,
+   "rationale": "Same printed source row as ORC-WN2IJIA7PS (Table 2 continued, 64Pre, 0.9930 at.% Sn column, 224.00 °C). Not an independent observation.",
+   "kept_id": "ORC-WN2IJIA7PS",
+   "kept_pid": "doi:10.1007/bf02667485/p4/tab-2/r18#phase_transition",
+   "printed_row_page4": 18,
+   "scope": "extension_same_row_pairs_not_in_X1",
+   "page3_image_sha256": "05fe402fe9e2b1571058390ecfd95dac95788ee3864234cc90debf4bb80d3a1e",
+   "decision": "Kept ORC-WN2IJIA7PS: its locator (PDF page 4, Table 2 continued, row 18) is where the row is printed; ORC-QIQEYQLXPF carries a page-3 locator (row 70) for a row that page 3 does not print (page 3 ends at 0.7050 / 167.0 °C). Other differing fields: method, method_basis. The duplicate carries method \"Thermal analysis\", printed on page 3 for [64Pre] and not repeated on page 4; the kept record has no method (an omission, not a wrong value)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "c4fb4c2705766e9d",
+   "image_sha256": "2780e4fe3ec8a79b67318600eeb89d46a4eb320225dfca644e5ad29e5bc051f6",
+   "seen": "Row 18 of the page-4 continuation (64Pre, 224.00 °C) is printed once; page 3 ends at 0.7050 / 167.0 °C, so the page-3 copy is the same printed row.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Duplicate of ORC-WN2IJIA7PS (same printed row, PDF page 4); not independent evidence: exclude from fitting, counts and calibration."
+ },
+ {
+  "record_id": "ORC-CDWLM3NPYU",
+  "reviewed_record_id": "ORC-CDWLM3NPYU",
+  "verdict": "DUPLICATE",
+  "before": {
+   "paper": "doi:10.1007/bf02667485",
+   "pid": "doi:10.1007/bf02667485/p3/tab-2/r71#phase_transition",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02667485/p3/tab-2",
+    "caption": "Experimental Ga-Sn Liquidus and Solidus Temperatures",
+    "label": "2",
+    "page": 3,
+    "row": 71
+   },
+   "property": "TRANSITION_TEMPERATURE",
+   "value": 488.15,
+   "unit": "K",
+   "temperature_K": 488.15,
+   "overall_composition": {
+    "SN": 1.0
+   },
+   "phases": [
+    {
+     "label": "L",
+     "model_phase": "LIQUID"
+    },
+    {
+     "label": "(Sn)"
+    }
+   ],
+   "duplicate_of": null
+  },
+  "after": {
+   "duplicate_of": "ORC-IGSAH2IQHO"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/bf02667485",
+   "pdf_sha256": "c4fb4c2705766e9df5da63be6627c3ac166ba1d1e259b1a9fc538fe98667bfd1",
+   "pdf_page": 4,
+   "rationale": "Same printed source row as ORC-IGSAH2IQHO (Table 2 continued, 64Pre, 0.9850 at.% Sn column, 215.00 °C). Not an independent observation.",
+   "kept_id": "ORC-IGSAH2IQHO",
+   "kept_pid": "doi:10.1007/bf02667485/p4/tab-2/r19#phase_transition",
+   "printed_row_page4": 19,
+   "scope": "extension_same_row_pairs_not_in_X1",
+   "page3_image_sha256": "05fe402fe9e2b1571058390ecfd95dac95788ee3864234cc90debf4bb80d3a1e",
+   "decision": "Kept ORC-IGSAH2IQHO: its locator (PDF page 4, Table 2 continued, row 19) is where the row is printed; ORC-CDWLM3NPYU carries a page-3 locator (row 71) for a row that page 3 does not print (page 3 ends at 0.7050 / 167.0 °C). Other differing fields: method, method_basis. The duplicate carries method \"Thermal analysis\", printed on page 3 for [64Pre] and not repeated on page 4; the kept record has no method (an omission, not a wrong value)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "c4fb4c2705766e9d",
+   "image_sha256": "2780e4fe3ec8a79b67318600eeb89d46a4eb320225dfca644e5ad29e5bc051f6",
+   "seen": "Row 19 of the page-4 continuation (64Pre, 215.00 °C) is printed once; page 3 ends at 0.7050 / 167.0 °C, so the page-3 copy is the same printed row.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Duplicate of ORC-IGSAH2IQHO (same printed row, PDF page 4); not independent evidence: exclude from fitting, counts and calibration."
+ },
+ {
+  "record_id": "ORC-CDS7CM3LGU",
+  "reviewed_record_id": "ORC-CDS7CM3LGU",
+  "verdict": "DUPLICATE",
+  "before": {
+   "paper": "doi:10.1007/bf02667485",
+   "pid": "doi:10.1007/bf02667485/p3/tab-2/r72#phase_transition",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02667485/p3/tab-2",
+    "caption": "Experimental Ga-Sn Liquidus and Solidus Temperatures",
+    "label": "2",
+    "page": 3,
+    "row": 72
+   },
+   "property": "TRANSITION_TEMPERATURE",
+   "value": 481.15,
+   "unit": "K",
+   "temperature_K": 481.15,
+   "overall_composition": {
+    "SN": 1.0
+   },
+   "phases": [
+    {
+     "label": "L",
+     "model_phase": "LIQUID"
+    },
+    {
+     "label": "(Sn)"
+    }
+   ],
+   "duplicate_of": null
+  },
+  "after": {
+   "duplicate_of": "ORC-GTWR65HPI6"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/bf02667485",
+   "pdf_sha256": "c4fb4c2705766e9df5da63be6627c3ac166ba1d1e259b1a9fc538fe98667bfd1",
+   "pdf_page": 4,
+   "rationale": "Same printed source row as ORC-GTWR65HPI6 (Table 2 continued, 64Pre, 0.9750 at.% Sn column, 208.00 °C). Not an independent observation.",
+   "kept_id": "ORC-GTWR65HPI6",
+   "kept_pid": "doi:10.1007/bf02667485/p4/tab-2/r20#phase_transition",
+   "printed_row_page4": 20,
+   "scope": "extension_same_row_pairs_not_in_X1",
+   "page3_image_sha256": "05fe402fe9e2b1571058390ecfd95dac95788ee3864234cc90debf4bb80d3a1e",
+   "decision": "Kept ORC-GTWR65HPI6: its locator (PDF page 4, Table 2 continued, row 20) is where the row is printed; ORC-CDS7CM3LGU carries a page-3 locator (row 72) for a row that page 3 does not print (page 3 ends at 0.7050 / 167.0 °C). Other differing fields: method, method_basis. The duplicate carries method \"Thermal analysis\", printed on page 3 for [64Pre] and not repeated on page 4; the kept record has no method (an omission, not a wrong value)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "c4fb4c2705766e9d",
+   "image_sha256": "2780e4fe3ec8a79b67318600eeb89d46a4eb320225dfca644e5ad29e5bc051f6",
+   "seen": "Row 20 of the page-4 continuation (64Pre, 208.00 °C) is printed once; page 3 ends at 0.7050 / 167.0 °C, so the page-3 copy is the same printed row.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Duplicate of ORC-GTWR65HPI6 (same printed row, PDF page 4); not independent evidence: exclude from fitting, counts and calibration."
+ },
+ {
+  "record_id": "ORC-DNK4NAG4MR",
+  "reviewed_record_id": "ORC-DNK4NAG4MR",
+  "verdict": "DUPLICATE",
+  "before": {
+   "paper": "doi:10.1007/bf02667485",
+   "pid": "doi:10.1007/bf02667485/p3/tab-2/r73#phase_transition",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02667485/p3/tab-2",
+    "caption": "Experimental Ga-Sn Liquidus and Solidus Temperatures",
+    "label": "2",
+    "page": 3,
+    "row": 73
+   },
+   "property": "TRANSITION_TEMPERATURE",
+   "value": 471.15,
+   "unit": "K",
+   "temperature_K": 471.15,
+   "overall_composition": {
+    "SN": 1.0
+   },
+   "phases": [
+    {
+     "label": "L",
+     "model_phase": "LIQUID"
+    },
+    {
+     "label": "(Sn)"
+    }
+   ],
+   "duplicate_of": null
+  },
+  "after": {
+   "duplicate_of": "ORC-7ZALBWGIFU"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/bf02667485",
+   "pdf_sha256": "c4fb4c2705766e9df5da63be6627c3ac166ba1d1e259b1a9fc538fe98667bfd1",
+   "pdf_page": 4,
+   "rationale": "Same printed source row as ORC-7ZALBWGIFU (Table 2 continued, 64Pre, 0.9680 at.% Sn column, 198.00 °C). Not an independent observation.",
+   "kept_id": "ORC-7ZALBWGIFU",
+   "kept_pid": "doi:10.1007/bf02667485/p4/tab-2/r21#phase_transition",
+   "printed_row_page4": 21,
+   "scope": "extension_same_row_pairs_not_in_X1",
+   "page3_image_sha256": "05fe402fe9e2b1571058390ecfd95dac95788ee3864234cc90debf4bb80d3a1e",
+   "decision": "Kept ORC-7ZALBWGIFU: its locator (PDF page 4, Table 2 continued, row 21) is where the row is printed; ORC-DNK4NAG4MR carries a page-3 locator (row 73) for a row that page 3 does not print (page 3 ends at 0.7050 / 167.0 °C). Other differing fields: method, method_basis. The duplicate carries method \"Thermal analysis\", printed on page 3 for [64Pre] and not repeated on page 4; the kept record has no method (an omission, not a wrong value)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "c4fb4c2705766e9d",
+   "image_sha256": "2780e4fe3ec8a79b67318600eeb89d46a4eb320225dfca644e5ad29e5bc051f6",
+   "seen": "Row 21 of the page-4 continuation (64Pre, 198.00 °C) is printed once; page 3 ends at 0.7050 / 167.0 °C, so the page-3 copy is the same printed row.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Duplicate of ORC-7ZALBWGIFU (same printed row, PDF page 4); not independent evidence: exclude from fitting, counts and calibration."
+ },
+ {
+  "record_id": "ORC-DF7472YVNT",
+  "reviewed_record_id": "ORC-DF7472YVNT",
+  "verdict": "DUPLICATE",
+  "before": {
+   "paper": "doi:10.1007/bf02667485",
+   "pid": "doi:10.1007/bf02667485/p3/tab-2/r74#phase_transition",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02667485/p3/tab-2",
+    "caption": "Experimental Ga-Sn Liquidus and Solidus Temperatures",
+    "label": "2",
+    "page": 3,
+    "row": 74
+   },
+   "property": "TRANSITION_TEMPERATURE",
+   "value": 445.15,
+   "unit": "K",
+   "temperature_K": 445.15,
+   "overall_composition": {
+    "SN": 1.0
+   },
+   "phases": [
+    {
+     "label": "L",
+     "model_phase": "LIQUID"
+    },
+    {
+     "label": "(Sn)"
+    }
+   ],
+   "duplicate_of": null
+  },
+  "after": {
+   "duplicate_of": "ORC-AKDBB47J22"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/bf02667485",
+   "pdf_sha256": "c4fb4c2705766e9df5da63be6627c3ac166ba1d1e259b1a9fc538fe98667bfd1",
+   "pdf_page": 4,
+   "rationale": "Same printed source row as ORC-AKDBB47J22 (Table 2 continued, 64Pre, 0.950 at.% Sn column, 172.00 °C). Not an independent observation.",
+   "kept_id": "ORC-AKDBB47J22",
+   "kept_pid": "doi:10.1007/bf02667485/p4/tab-2/r22#phase_transition",
+   "printed_row_page4": 22,
+   "scope": "extension_same_row_pairs_not_in_X1",
+   "page3_image_sha256": "05fe402fe9e2b1571058390ecfd95dac95788ee3864234cc90debf4bb80d3a1e",
+   "decision": "Kept ORC-AKDBB47J22: its locator (PDF page 4, Table 2 continued, row 22) is where the row is printed; ORC-DF7472YVNT carries a page-3 locator (row 74) for a row that page 3 does not print (page 3 ends at 0.7050 / 167.0 °C). Other differing fields: method, method_basis. The duplicate carries method \"Thermal analysis\", printed on page 3 for [64Pre] and not repeated on page 4; the kept record has no method (an omission, not a wrong value)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "c4fb4c2705766e9d",
+   "image_sha256": "2780e4fe3ec8a79b67318600eeb89d46a4eb320225dfca644e5ad29e5bc051f6",
+   "seen": "Row 22 of the page-4 continuation (64Pre, 172.00 °C) is printed once; page 3 ends at 0.7050 / 167.0 °C, so the page-3 copy is the same printed row.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Duplicate of ORC-AKDBB47J22 (same printed row, PDF page 4); not independent evidence: exclude from fitting, counts and calibration."
+ },
+ {
+  "record_id": "ORC-ZNUAG7JVLT",
+  "reviewed_record_id": "ORC-ZNUAG7JVLT",
+  "verdict": "DUPLICATE",
+  "before": {
+   "paper": "doi:10.1007/bf02667485",
+   "pid": "doi:10.1007/bf02667485/p3/tab-2/r75#phase_transition",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02667485/p3/tab-2",
+    "caption": "Experimental Ga-Sn Liquidus and Solidus Temperatures",
+    "label": "2",
+    "page": 3,
+    "row": 75
+   },
+   "property": "TRANSITION_TEMPERATURE",
+   "value": 294.15,
+   "unit": "K",
+   "temperature_K": 294.15,
+   "overall_composition": {
+    "SN": 1.0
+   },
+   "phases": [
+    {
+     "label": "L",
+     "model_phase": "LIQUID"
+    },
+    {
+     "label": "(Sn)"
+    }
+   ],
+   "duplicate_of": null
+  },
+  "after": {
+   "duplicate_of": "ORC-HLQIZJZXO6"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/bf02667485",
+   "pdf_sha256": "c4fb4c2705766e9df5da63be6627c3ac166ba1d1e259b1a9fc538fe98667bfd1",
+   "pdf_page": 4,
+   "rationale": "Same printed source row as ORC-HLQIZJZXO6 (Table 2 continued, 64Pre, 0.9290 at.% Sn column, 21.00 °C). Not an independent observation.",
+   "kept_id": "ORC-HLQIZJZXO6",
+   "kept_pid": "doi:10.1007/bf02667485/p4/tab-2/r23#phase_transition",
+   "printed_row_page4": 23,
+   "scope": "extension_same_row_pairs_not_in_X1",
+   "page3_image_sha256": "05fe402fe9e2b1571058390ecfd95dac95788ee3864234cc90debf4bb80d3a1e",
+   "decision": "Kept ORC-HLQIZJZXO6: its locator (PDF page 4, Table 2 continued, row 23) is where the row is printed; ORC-ZNUAG7JVLT carries a page-3 locator (row 75) for a row that page 3 does not print (page 3 ends at 0.7050 / 167.0 °C). Other differing fields: method, method_basis. The duplicate carries method \"Thermal analysis\", printed on page 3 for [64Pre] and not repeated on page 4; the kept record has no method (an omission, not a wrong value)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "c4fb4c2705766e9d",
+   "image_sha256": "2780e4fe3ec8a79b67318600eeb89d46a4eb320225dfca644e5ad29e5bc051f6",
+   "seen": "Row 23 of the page-4 continuation (64Pre, 21.00 °C) is printed once; page 3 ends at 0.7050 / 167.0 °C, so the page-3 copy is the same printed row.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Duplicate of ORC-HLQIZJZXO6 (same printed row, PDF page 4); not independent evidence: exclude from fitting, counts and calibration."
+ },
+ {
+  "record_id": "ORC-ISVWSHHAMW.00e875",
+  "reviewed_record_id": "ORC-ISVWSHHAMW.00e875",
+  "verdict": "CORRECT",
+  "before": {
+   "paper": "doi:10.1007/s11669-021-00887-9",
+   "pid": "doi:10.1007/s11669-021-00887-9/p5/tab-3/r07#equilibrium_property",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/s11669-021-00887-9/p5/tab-3",
+    "caption": "The enthalpies of formation at different temperatures (DH f ;0 , DH f ;298 ,DH f ;973 ) of the Fe-Y systems from DFT calculations (DFT), CALPHAD-modeling (Opt), and experimental (Exp) measurements",
+    "label": "3",
+    "page": 5,
+    "row": 7
+   },
+   "property": "HM_FORM",
+   "property_printed": "ΔHf,0",
+   "value": -1.634,
+   "unit": "kJ/mol-atom",
+   "evidence_class": "dft",
+   "phases": [
+    {
+     "label": "Fe17Y2",
+     "model_phase": "FE17Y2"
+    }
+   ],
+   "temperature_K": null,
+   "temperature_basis": "not_printed"
+  },
+  "after": {
+   "temperature_K": 0.0,
+   "temperature_basis": "quantity_label"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/s11669-021-00887-9",
+   "pdf_sha256": "3f29cdd51065fce09418b4b1ab2e530ed0da84afa77ca20ef87e68a1c543481c",
+   "pdf_page": 5,
+   "rationale": "Table 3 prints this DFT value (Fe17Y2, -1.634 kJ/mol-at, ref 29) in the ΔH f,0 column; the other DFT rows of the column are stored at 0 K with basis quantity_label.",
+   "scope": "extension_fey_dft_0K"
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 5,
+   "pdf_sha256_prefix": "3f29cdd51065fce0",
+   "image_sha256": "4b83af6ea9bf011ae044c9624a82de1913c810ae0408ea4a79ba6b9450bdcbb2",
+   "seen": "Fe17Y2 -1.634 kJ/mol-at in the ΔH f,0 column, method DFT, ref 29.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Temperature set from the printed column header (0 K static calculation); revalidate before fitting."
+ },
+ {
+  "record_id": "ORC-2KCVPYYADX.130ba7",
+  "reviewed_record_id": "ORC-2KCVPYYADX.130ba7",
+  "verdict": "CORRECT",
+  "before": {
+   "paper": "doi:10.1007/s11669-021-00887-9",
+   "pid": "doi:10.1007/s11669-021-00887-9/p5/tab-3/r16#equilibrium_property",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/s11669-021-00887-9/p5/tab-3",
+    "caption": "The enthalpies of formation at different temperatures (DH f ;0 , DH f ;298 ,DH f ;973 ) of the Fe-Y systems from DFT calculations (DFT), CALPHAD-modeling (Opt), and experimental (Exp) measurements",
+    "label": "3",
+    "page": 5,
+    "row": 16
+   },
+   "property": "HM_FORM",
+   "property_printed": "ΔHf,0",
+   "value": -4.829,
+   "unit": "kJ/mol-atom",
+   "evidence_class": "dft",
+   "phases": [
+    {
+     "label": "Fe23Y6",
+     "model_phase": "FE23Y6_D8A"
+    }
+   ],
+   "temperature_K": null,
+   "temperature_basis": "not_printed"
+  },
+  "after": {
+   "temperature_K": 0.0,
+   "temperature_basis": "quantity_label"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/s11669-021-00887-9",
+   "pdf_sha256": "3f29cdd51065fce09418b4b1ab2e530ed0da84afa77ca20ef87e68a1c543481c",
+   "pdf_page": 5,
+   "rationale": "Table 3 prints this DFT value (Fe23Y6, -4.829 kJ/mol-at, ref 29) in the ΔH f,0 column; the other DFT rows of the column are stored at 0 K with basis quantity_label.",
+   "scope": "extension_fey_dft_0K"
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 5,
+   "pdf_sha256_prefix": "3f29cdd51065fce0",
+   "image_sha256": "4b83af6ea9bf011ae044c9624a82de1913c810ae0408ea4a79ba6b9450bdcbb2",
+   "seen": "Fe23Y6 -4.829 kJ/mol-at in the ΔH f,0 column, method DFT, ref 29.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Temperature set from the printed column header (0 K static calculation); revalidate before fitting."
+ },
+ {
+  "record_id": "ORC-OK6SBILEZM.1b3a51",
+  "reviewed_record_id": "ORC-OK6SBILEZM.1b3a51",
+  "verdict": "CORRECT",
+  "before": {
+   "paper": "doi:10.1007/s11669-021-00887-9",
+   "pid": "doi:10.1007/s11669-021-00887-9/p5/tab-3/r25#equilibrium_property",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/s11669-021-00887-9/p5/tab-3",
+    "caption": "The enthalpies of formation at different temperatures (DH f ;0 , DH f ;298 ,DH f ;973 ) of the Fe-Y systems from DFT calculations (DFT), CALPHAD-modeling (Opt), and experimental (Exp) measurements",
+    "label": "3",
+    "page": 5,
+    "row": 25
+   },
+   "property": "HM_FORM",
+   "property_printed": "ΔHf,0",
+   "value": -7.519,
+   "unit": "kJ/mol-atom",
+   "evidence_class": "dft",
+   "phases": [
+    {
+     "label": "Fe3Y",
+     "model_phase": "FE3Y"
+    }
+   ],
+   "temperature_K": null,
+   "temperature_basis": "not_printed"
+  },
+  "after": {
+   "temperature_K": 0.0,
+   "temperature_basis": "quantity_label"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/s11669-021-00887-9",
+   "pdf_sha256": "3f29cdd51065fce09418b4b1ab2e530ed0da84afa77ca20ef87e68a1c543481c",
+   "pdf_page": 5,
+   "rationale": "Table 3 prints this DFT value (Fe3Y, -7.519 kJ/mol-at, ref 29) in the ΔH f,0 column; the other DFT rows of the column are stored at 0 K with basis quantity_label.",
+   "scope": "extension_fey_dft_0K"
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 5,
+   "pdf_sha256_prefix": "3f29cdd51065fce0",
+   "image_sha256": "4b83af6ea9bf011ae044c9624a82de1913c810ae0408ea4a79ba6b9450bdcbb2",
+   "seen": "Fe3Y -7.519 kJ/mol-at in the ΔH f,0 column, method DFT, ref 29.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Temperature set from the printed column header (0 K static calculation); revalidate before fitting."
+ },
+ {
+  "record_id": "ORC-VZGTM7TYQ3.057816",
+  "reviewed_record_id": "ORC-VZGTM7TYQ3.057816",
+  "verdict": "CORRECT",
+  "before": {
+   "paper": "doi:10.1007/s11669-021-00887-9",
+   "pid": "doi:10.1007/s11669-021-00887-9/p5/tab-3/r34#equilibrium_property",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/s11669-021-00887-9/p5/tab-3",
+    "caption": "The enthalpies of formation at different temperatures (DH f ;0 , DH f ;298 ,DH f ;973 ) of the Fe-Y systems from DFT calculations (DFT), CALPHAD-modeling (Opt), and experimental (Exp) measurements",
+    "label": "3",
+    "page": 5,
+    "row": 34
+   },
+   "property": "HM_FORM",
+   "property_printed": "ΔHf,0",
+   "value": -7.646,
+   "unit": "kJ/mol-atom",
+   "evidence_class": "dft",
+   "phases": [
+    {
+     "label": "Fe2Y",
+     "model_phase": "FE2Y_C15"
+    }
+   ],
+   "temperature_K": null,
+   "temperature_basis": "not_printed"
+  },
+  "after": {
+   "temperature_K": 0.0,
+   "temperature_basis": "quantity_label"
+  },
+  "evidence": {
+   "report_id": "ORCHID-KI-20261027-v1",
+   "doi": "10.1007/s11669-021-00887-9",
+   "pdf_sha256": "3f29cdd51065fce09418b4b1ab2e530ed0da84afa77ca20ef87e68a1c543481c",
+   "pdf_page": 5,
+   "rationale": "Table 3 prints this DFT value (Fe2Y, -7.646 kJ/mol-at, ref 29) in the ΔH f,0 column; the other DFT rows of the column are stored at 0 K with basis quantity_label.",
+   "scope": "extension_fey_dft_0K"
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 5,
+   "pdf_sha256_prefix": "3f29cdd51065fce0",
+   "image_sha256": "4b83af6ea9bf011ae044c9624a82de1913c810ae0408ea4a79ba6b9450bdcbb2",
+   "seen": "Fe2Y -7.646 kJ/mol-at in the ΔH f,0 column, method DFT, ref 29.",
+   "checked": "2026-10-27; Claude (Studio sub-agent) rendered-page check at 150 dpi, AI-assisted, not human re-review"
+  },
+  "residual_concern": "Temperature set from the printed column header (0 K static calculation); revalidate before fitting."
+ }
+]

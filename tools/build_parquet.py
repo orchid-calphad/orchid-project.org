@@ -122,7 +122,7 @@ def lit_schema(pa):
     phd = L(pa.struct([("label", s), ("model_phase", s), ("mapping_confidence", s),
                               ("pearson_symbol", s), ("prototype", s), ("parent_phase", s)]))
     cols = [
-        ("id", s), ("pid", s), ("system", s), ("elements", ls), ("n_elements", i), ("record_kind", s),
+        ("id", s), ("pid", s), ("duplicate_of", s), ("system", s), ("elements", ls), ("n_elements", i), ("record_kind", s),
         ("observation_type", s), ("property", s), ("property_group", s), ("property_printed", s),
         ("value", f), ("value_min", f), ("value_max", f), ("value_expression", s), ("unit", s),
         ("value_stored", f), ("unit_stored", s), ("value_printed", f), ("unit_printed", s),
@@ -201,7 +201,7 @@ def lit_row(r, papers, release):
     pap = papers.get(pid) or {}
     cited = r.get("cited_sources") or []
     out = {
-        "id": r["id"], "pid": r.get("pid"), "system": r["system"], "elements": list(r.get("elements") or []),
+        "id": r["id"], "pid": r.get("pid"), "duplicate_of": r.get("duplicate_of"), "system": r["system"], "elements": list(r.get("elements") or []),
         "n_elements": len(r.get("elements") or []), "record_kind": r.get("record_kind"),
         "observation_type": r.get("observation_type"), "property": r.get("property"),
         "property_group": r.get("property_group"), "property_printed": r.get("property_printed"),

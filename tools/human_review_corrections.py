@@ -54,6 +54,9 @@ def apply(records, patches, evidence_id=EVIDENCE_ID, gate='HR20261026', rule='so
             rec.setdefault('gate_failures', []).append({
                 'gate': gate, 'code': 'human_review_residual_concern',
                 'effect': 'not_espei_ready', 'detail': patch['residual_concern']})
+            mirror = flags.setdefault('gate_failures', [])
+            if 'human_review_residual_concern' not in mirror:
+                mirror.append('human_review_residual_concern')
     return {'evidence_id': evidence_id, 'applied': [p['record_id'] for _, p in pending],
             'already_applied': already, 'fields_changed': sum(
                 sum(p['before'].get(k) != v for k, v in p['after'].items()) for _, p in pending)}

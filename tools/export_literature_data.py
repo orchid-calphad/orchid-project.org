@@ -1261,6 +1261,15 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
             records, json.load(fh), evidence_id="ORCHID-TC-20261027-v1", gate="TC20261027",
             rule="source_adjudicated_table_context",
             gap="table_context_correction_requires_downstream_revalidation")
+    # known issues (ORCHID-KI-20261027-v1, Y5): Ga-Sn Table 2 continuation rows extracted twice (the page-3 copy gets
+    # duplicate_of the page-4 record), Fe-Y Table 3 Opt values at 973 K and Ag-Se Table 1 standard entropies at 298.15 K
+    # (temperature from the printed page); the Ga-Sn metastable rows are flagged in the page-check ledger (metastable_state)
+    for _ki in ("known_issues_corrections_20261027.json", "known_issues_corrections_20261027_extension.json"):
+        with open(os.path.join(os.path.dirname(__file__), _ki), encoding="utf-8") as fh:
+            qreport.setdefault("known_issue_corrections", {})[_ki] = human_review_corrections.apply(
+                records, json.load(fh), evidence_id="ORCHID-KI-20261027-v1", gate="KI20261027",
+                rule="source_adjudicated_known_issue",
+                gap="known_issue_correction_requires_downstream_revalidation")
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     # audit round 3 (H9): formation values left in a unit other than kJ/mol-atom / kJ/mol (basis unstated), by unit
     fu = Counter(str(r.get("unit")) for r in records if r.get("property") in ("HM_FORM", "GM_FORM")
