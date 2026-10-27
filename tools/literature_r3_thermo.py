@@ -272,6 +272,8 @@ TNUM = re.compile(r"(\d{3,4}(?:\.\d+)?)\s*(K|°\s*C|ºC|C)?(?![\d.])")
 def r3_temperature_printed(records, visual, rep):
     chk = visual.get("r3_class:temperature_printed_not_stored")
     for r in records:
+        if G.temperature_withdrawn_on_page(r):
+            continue
         if r.get("temperature_K") is not None or r.get("value") is None or r.get("temperature_range_K"):
             continue
         p = r.get("property") or ""
@@ -516,15 +518,17 @@ def r3_state_phases(records, visual, rep):
     chk = visual.get("r3_class:state_phases_from_quote")
     for r in records:
         p = r.get("property") or ""
-        if p not in STATE_PHASE_PROPS or r.get("phases"):
+        if p not in STATE_PHASE_PROPS or has_real_phases(r):
             continue
-        ph, why = None, "no phases extracted"
+        old_phases = [x for x in G.labels(r) if x is not None]
+        ph, why = None, "no phases extracted" if not r.get("phases") else "placeholder phases only (%s)" % ", ".join(
+            str(x) for x in G.labels(r))
         pchk = visual.get("state_phases:" + r["id"])
         if pchk and pchk.get("verdict") == "corrected" and pchk.get("phases"):
             r["phases"] = [{"label": x, "label_source": "page"} for x in pchk["phases"]]
             if pchk.get("reaction") and isinstance(r.get("reaction"), dict) and not r["reaction"].get("printed"):
                 r["reaction"]["printed_from_page"] = pchk["reaction"]
-            G.correct(r, GATE, "phases", [], list(pchk["phases"]), "state_phases_read_from_page",
+            G.correct(r, GATE, "phases", old_phases, list(pchk["phases"]), "state_phases_read_from_page",
                       {"reaction": pchk.get("reaction")}, pchk)
             G.fail(r, GATE, "phases_read_from_page", "not_espei_ready",
                    "phases read on the rendered page; not mapped to model phases", pchk)
@@ -539,7 +543,7 @@ def r3_state_phases(records, visual, rep):
                 ph, why = recover_compound(r)
         if ph:
             r["phases"] = [{"label": x, "label_source": "quote"} for x in ph]
-            G.correct(r, GATE, "phases", [], [x for x in ph], "state_phases_from_quote",
+            G.correct(r, GATE, "phases", old_phases, [x for x in ph], "state_phases_from_quote",
                       {"basis": why, "quote_page": r.get("quote_page")}, chk)
             G.fail(r, GATE, "phases_recovered_from_quote", "not_espei_ready",
                    "phases read from the quote (%s); not mapped to model phases" % why, chk)
@@ -548,6 +552,16 @@ def r3_state_phases(records, visual, rep):
             G.fail(r, GATE, "state_phases_missing", "not_accepted",
                    "%s without the phases of its state (%s)" % (p, why))
             rep.add(GATE, "state_phases_missing", r, "demoted", reason=why.split(":")[0])
+
+
+# "na" is deliberately absent: it is the element sodium (Na) in a lower-cased comparison
+PLACEHOLDER_PHASE_LABELS = {"", "unknown", "other", "unspecified", "n/a", "none", "?", "-"}
+
+
+def has_real_phases(r):
+    """True when the record names at least one phase that is not a placeholder (audit round 4: R3 tested only for an
+    empty list, so ['UNKNOWN'], ['other'] and ['unspecified'] passed as 'phases recorded')."""
+    return any(str(x).strip().lower() not in PLACEHOLDER_PHASE_LABELS for x in G.labels(r) if x is not None)
 
 
 def r3_assessed_database_class(records, visual, rep):

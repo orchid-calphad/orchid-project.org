@@ -136,8 +136,7 @@ ZENODO_COMMUNITY = "orchid-calphad"
 PAPER = None
 # NSF award 2608825 is not in Zenodo's awards database: no `grants` entry anywhere (it would be rejected). The funding
 # goes in the notes and, by hand, as a custom award in the web form (zenodo/ZENODO_FUNDING_MANUAL.md).
-FUNDING_NOTE = ("This work was supported by the U.S. National Science Foundation under award OAC-2608825 "
-                "(CSSI Elements: PhaseForge).")
+FUNDING_NOTE = 'This work was supported by the U.S. National Science Foundation under awards OAC-2608825 (CSSI Elements: PhaseForge) and 2534344 (Autonomous Robotic Metallurgist: An NSF Materials Innovation Platform, ARM-MIP).'
 
 
 def placeholder(name: str) -> str:

@@ -215,7 +215,10 @@ if os.path.exists(pl):
         for p in r.get("phases") or []:
             mp = str(p.get("model_phase") or "").upper().split("#")[0]
             if (p.get("pearson_symbol") or p.get("prototype")) and p.get("structure_basis") not in ("mapped_model_phase",
-                                                                                                  "system_alias"):
+                                                                                                  "system_alias") and not (
+                    p.get("structure_basis") == "printed_source_page" and any(
+                        c.get("gate") == "page" and c.get("field") == "phases" and c.get("visual_check")
+                        for c in r.get("corrections", []))):
                 unattributed += 1
             if not mp or not PLC.ELEMENT_MODEL.match(mp):
                 continue

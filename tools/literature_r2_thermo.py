@@ -575,6 +575,8 @@ T_IN_LABEL = re.compile(r"(?:\(\s*|\bat\s+|_\{?\s*|\(at\s+)(\d{3,4}(?:\.\d+)?)\s
 def r2_temperature_in_label(records, rep, check=None):
     """The printed quantity names its temperature (G^ex_Li (633 K), ΔGf at 1000 K) but the record has none."""
     for r in records:
+        if G.temperature_withdrawn_on_page(r):
+            continue
         if r.get("temperature_K") is not None or r.get("value") is None or r.get("temperature_range_K"):
             continue
         lab = str(r.get("property_printed") or "")

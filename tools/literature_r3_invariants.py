@@ -180,7 +180,7 @@ def r3i_reactions(records, visual, rep):
             r["reaction"] = rx
             rep.add(GATE, "reaction_class_from_printed_reaction", r, "corrected", type=derived)
         elif stored_type and decisive and not compatible(stored_type, derived):
-            G.fail(r, GATE, "reaction_class_conflicts_printed_reaction", "flag_only",
+            G.fail(r, GATE, "reaction_class_conflicts_printed_reaction", "not_espei_ready",
                    "class %r but the printed reaction %r reads %r" % (stored_type, printed, derived))
             rep.add(GATE, "reaction_class_conflicts_printed_reaction", r, "flagged")
         # (c) phase count

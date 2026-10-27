@@ -359,6 +359,8 @@ class Registry:
             return None, ("unmapped: printed structure %s contradicts the only solid structure of %s (%s); phase-table "
                           "reading suspect" % (pear, el, ELEMENT_ONLY_SOLID[el]))
         base = re.sub(r"#\d+$", "", label) if not re.fullmatch(r"L#\d+", label) else label
+        # A compound can share hP2/cF4 with a terminal solution. That is not identity evidence.
+        formula_named = len(self.PM.formula_dict(base) or {}) >= 2 or bool(re.search(r"[+-]\s*x", base))
         ids, bases = collections.defaultdict(list), []
         for g in self.grids_of(key):
             t = self.tdb(g["tdb"], axis_order)
@@ -368,7 +370,7 @@ class Registry:
             if sha != g["sha256"]:
                 continue
             m, basis, _ = self.PM.map_phase(base, info, tdbp, comps, list(axis_order))
-            if not m and not (base.startswith("(") and base.endswith(")")):
+            if not m and not formula_named and not (base.startswith("(") and base.endswith(")")):
                 # a letter-named phase with a standard solution structure (e.g. Ag-Al delta, A3) is that TDB solution
                 # phase, as in the pipeline's compare_handbook_tdb.py: Strukturbericht first, else the A-type Pearson symbol
                 sb = re.sub(r"[_\s]", "", info.get("strukturbericht") or "").upper()
@@ -1594,6 +1596,7 @@ same points in the phase names of each assessment (TDB) that has ESPEI ZPF datas
 
 
 def zenodo_metadata(s, data):
+    import project_credits
     e = orchid_cite.entry(DATASET, data)
     u = orchid_cite.entry(orchid_cite.UMBRELLA, data)
     desc = ("<p><b>%s</b>: one record per named phase field of the expert-drawn (assessed) binary phase diagrams compiled "
@@ -1617,7 +1620,7 @@ def zenodo_metadata(s, data):
     return {"_comment": "Zenodo deposition metadata (legacy REST format). Written by tools/build_assessed_assemblages.py. "
                         "DOI placeholders 10.5281/zenodo.PENDING-<name> are replaced by tools/zenodo_release.py writeback.",
             "record": DATASET, "doi": e["doi"],
-            "metadata": {"title": e["title"], "upload_type": "dataset", "version": orchid_cite.VERSION, "description": desc,
+            "metadata": {"title": e["title"], "upload_type": "dataset", "version": orchid_cite.VERSION, "description": desc + project_credits.html_block() + "<p>" + orchid_cite.FUNDING_NOTE + "</p>",
                          "creators": [{"name": "%s, %s" % (f, g), "affiliation": af, "orcid": o} for f, g, af, o in orchid_cite.AUTHORS],
                          "keywords": ["phase diagrams", "assessed phase diagram", "phase equilibria", "ZPF", "ESPEI", "CALPHAD",
                                       "binary alloys", "AI-ready data"],
@@ -1630,7 +1633,7 @@ def zenodo_metadata(s, data):
                              {"identifier": "https://orchid-project.org", "relation": "isDocumentedBy", "scheme": "url"},
                              {"identifier": "https://data.orchid-project.org", "relation": "isDocumentedBy", "scheme": "url"}]
                          + ([{"identifier": orchid_cite.PAPER["identifier"], "relation": "isSupplementTo",
-                              "scheme": orchid_cite.PAPER["scheme"]}] if orchid_cite.PAPER else []),
+                              "scheme": orchid_cite.PAPER["scheme"]}] if orchid_cite.PAPER else []) + project_credits.related_identifiers(),
                          "notes": "Status: Version 1, machine-extracted. " + orchid_cite.FUNDING_NOTE}}
 
 

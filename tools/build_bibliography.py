@@ -1014,7 +1014,7 @@ class Bib:
                 if loc.get("artifact") == "table":
                     e["tables"].add(where)
                 elif loc.get("artifact") == "text_passage":
-                    e["passages"].add(r.get("quote") or where)
+                    e["passages"].add((r.get("flags") or {}).get("quote_original_sha256") or r.get("quote") or where)   # (a clipped quote is identified by its original)
                 e["tier"][r.get("reader_tier") or "unknown"] += 1
                 if r.get("reader_agreement"):
                     e["agree"][r["reader_agreement"]] += 1

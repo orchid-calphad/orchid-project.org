@@ -41,8 +41,12 @@ copy; this script is standard library only. No network, no model calls. Determin
 """
 from __future__ import annotations
 
+import dft_evidence_identity as dft_identity
+import mgpb_evidence_review as mgpb_review
+import boride_evidence_review as boride_review
 import argparse
 import csv
+import copy
 import glob
 import gzip
 import hashlib
@@ -93,6 +97,7 @@ DROP_REASONS = {
                                      "also the model phase of another printed phase of the row",
     "not_in_release": "observation not published in the literature release (added or re-read after the release)",
     "not_accepted": "published with extraction_accepted = false",
+    "duplicate_unit_representation": "alternate printed unit column of the same observation; canonical identity retained",
     "evidence_class_mismatch": "published evidence class differs from the folder's class (classes are never mixed)",
     "value_differs_from_release": "dataset value differs from the published value (e.g. a quality fix applied in "
                                   "the release: per-formula -> per-atom basis); the dataset value is not used",
@@ -476,6 +481,11 @@ def published(lit_dir):
                 alias[x] = r["id"]
     papers = json.load(open(os.path.join(lit_dir, "papers.json"), encoding="utf-8"))
     index = json.load(open(os.path.join(lit_dir, "index.json"), encoding="utf-8"))
+    import srsi_evidence_review
+    srsi_evidence_review.annotate(pub.values())
+    boride_review.annotate(pub.values())
+    dft_identity.annotate(pub.values())
+    mgpb_review.annotate(pub.values())
     return pub, alias, papers, index
 
 
@@ -576,25 +586,16 @@ def check_zpf_point(region, rec):
 def printed_sigma(rec, v_espei):
     """(sigma in the ESPEI value's units, printed-info dict) from a published record, or (None, None)."""
     u = rec.get("uncertainty") or {}
-    if u.get("basis") not in ("printed", "printed_range", "scatter_between_sources", "printed_with_composition_offset") \
-            or not isinstance(u.get("value"), (int, float)):
+    if u.get("basis") in ("scatter_between_sources", "printed_with_composition_offset"):
+        if isinstance(u.get("printed"), (int, float)):
+            u = {"basis": "printed", "value": u["printed"]}
+        else:
+            u = rec.get("uncertainty_stored") or {}
+    if u.get("basis") not in ("printed", "printed_range") or not isinstance(u.get("value"), (int, float)):
         return None, None
     fac = unit_factor(rec.get("unit"))
     s = abs(u["value"]) * fac
     info = {"value": u["value"], "unit": rec.get("unit")}
-    if u.get("basis") == "scatter_between_sources":
-        info["interval"] = ("sample standard deviation of the independent measurements of this compound (page-checked; "
-                            "the printed sigma, kept in the record's uncertainty_stored, is smaller than their scatter)")
-        info["coverage"] = "scatter_between_sources"
-        return s, info
-    if u.get("basis") == "printed_with_composition_offset":
-        info["interval"] = ("printed sigma combined in quadrature with |dx| x local hull slope: the source measured the "
-                            "historical formula of this phase (page-checked; printed sigma in the record's "
-                            "uncertainty_stored)")
-        info["coverage"] = "printed_with_composition_offset"
-        if u.get("note"):
-            info["note"] = u["note"]
-        return s, info
     if u.get("basis") == "printed":
         info["interval"] = "±x printed; coverage not stated, taken as 1 sigma"
         info["coverage"] = "1sigma_assumed"
@@ -731,7 +732,8 @@ def uncertainty_block(out, recs, cls, zpf, T):
     weight = round(dsig / m, 6) if m else None
     rule = ("dataset weight = %s / median sigma_effective of the dataset's values (uncertainty budget of the "
             "published values: max(printed, reading, method floor) with composition / conversion in quadrature, "
-            "group scatter when larger%s); ESPEI 0.9.1 %s data take one weight per dataset"
+            "group scatter when larger%s); this export uses a scalar weight for %s data; unequal-sigma groups "
+            "are split before release"
             % (dname, "; activities: sigma_mu = R T sigma_a / a" if prop == "ACR" else "",
                "non-equilibrium" if out.get("solver") else "equilibrium/activity"))
     if cls == "model":
@@ -1082,6 +1084,8 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                     why = "not_accepted"
                 elif rec.get("evidence_class") != cls:
                     why = "evidence_class_mismatch"
+                elif not dft_identity.canonical(rec):
+                    why = "duplicate_unit_representation"
                 elif gate_blocks(rec):
                     why = gate_blocks(rec)
                 elif zpf:
@@ -1218,7 +1222,8 @@ def build_corpus(corpus, pdfs, data, pub, alias, papers):
                                                         ("paper", r.get("paper")),
                                                         ("measured_in", (r.get("origin") or {}).get("measured_in")),
                                                         ("caveats", cv or None),
-                                                        ("also_read_as", also_read.get(r["id"]) or None)) if v is not None})
+                                                        ("evidence_identity", r.get("evidence_identity")),
+                                                        ("also_read_as", ((also_read.get(r["id"]) or []) + [rid for rid in r.get("evidence_identity", {}).get("alias_ids", []) if rid not in (also_read.get(r["id"]) or [])]) or None)) if v is not None})
                 caveats = sorted(set(caveats))
                 weight, ublock, utags, ustat = uncertainty_block(out, recs, cls, zpf, T)
                 tags = list(out.get("tags") or [])
@@ -1422,7 +1427,7 @@ def calibration_pairs(data, pub):
 
 
 def lit_dft_candidate(r):
-    return (r.get("evidence_class") == "dft" and r.get("property") == "HM_FORM" and r.get("unit") == "kJ/mol-atom"
+    return (not boride_review.fitting_blocked(r) and dft_identity.canonical(r) and r.get("evidence_class") == "dft" and r.get("property") == "HM_FORM" and r.get("unit") == "kJ/mol-atom"
             and r["flags"].get("extraction_accepted") and len(r.get("elements") or []) == 2
             and isinstance(r.get("value"), (int, float)) and not isinstance(r.get("value"), bool))
 
@@ -1599,6 +1604,10 @@ def build_dft(data, pub, papers, pairs):
                                   "release": d["provenance"].get("source_release", d["provenance"].get("mp_release")),
                                   "theoretical": v.get("theoretical")})
     for r in sorted(pub.values(), key=lambda x: x["id"]):
+        if r.get("evidence_class") == "dft" and boride_review.fitting_blocked(r):
+            excluded.append({"source":"literature", "system":r["system"], "id":r["id"],
+                             "compound":None, "reason":next(g["code"] for g in r["gate_failures"] if g.get("code") in {boride_review.GATE, boride_review.IDENTITY_GATE})})
+            continue
         if not lit_dft_candidate(r):
             continue
         sid = r["system"]
@@ -1746,6 +1755,12 @@ def build_dft(data, pub, papers, pairs):
                                                   "applied)", "sigma_rule": SIGMA_RULE_BUDGET + "; DFT: sigma_method "
                                                   "= calibrated sigma_DFT, no printed sigma", "values": unc_vals},
         }
+        if src == "literature":
+            for mapping in ds["orchid"]["mapping"]:
+                identity = pub[mapping["id"]].get("evidence_identity")
+                if identity:
+                    mapping["also_read_as"] = identity["alias_ids"]
+                    mapping["evidence_identity"] = identity
         ds["orchid"] = {k: v for k, v in ds["orchid"].items() if v is not None}
         folder = "dft/" + src
         rel = "%s/%s/%s.%s.json" % (folder, sid, tdb[:-4] if tdb.lower().endswith(".tdb") else tdb, ph)
@@ -2153,12 +2168,12 @@ def readme(S, C, cite):
         "`invariants/AL-S/AlS-19Shi.zpf-01.json` are left out: "
         "their pycalphad driving-force evaluation is not reproducible (`pycalphad_evaluation_unstable`).",
         "- A compound whose independent measured formation enthalpies disagree by more than their printed sigmas "
-        "carries a scatter-aware sigma (`uncertainty.basis = scatter_between_sources`, sample standard deviation of the "
+        "retains its reported sigma in `uncertainty` and a separate scatter estimate (sample standard deviation of the "
         "independent values; page-checked); it is the budget's `sigma_scatter` and replaces sigma_effective when larger.",
         "- A formation enthalpy that the source measured at the historical formula of a phase (e.g. Cu4Zr or Cu9Zr2 "
         "for Cu5Zr, Cu3Zr for Cu51Zr14, Cu3Zr2 for Cu10Zr7, as the source table itself attributes them) is used for "
         "the modern phase; the offset |dx| x local hull slope is the budget's `sigma_composition`, added in quadrature "
-        "(`uncertainty.basis = printed_with_composition_offset`; the flag `stoichiometry_mismatch` stays, flag-only).",
+        "(the reported sigma stays in `uncertainty`; estimate provenance is in the value budget; the flag `stoichiometry_mismatch` stays, flag-only).",
         "- A value printed relative to a non-SER reference phase that the page states (e.g. bcc-Zr at 1123 K) is "
         "written converted to the TDB's SER phases at the same temperature with the SGTE unary lattice stability "
         "(`orchid_value_note`; the record's `corrections` entry gives the conversion and keeps the printed value); "
@@ -2181,7 +2196,7 @@ def readme(S, C, cite):
         "invariant, ZPF regions with a gas and no printed pressure, and ZPF regions that carry no composition and no "
         "hyperplane (zero driving force in ESPEI 0.9.1).", "",
         "## Uncertainties", "",
-        "ESPEI 0.9.1 has no per-value uncertainty field: the sigma it uses is a reference sigma divided by the "
+        "ORCHID supplies uncertainties to ESPEI 0.9.1 through weights: the sigma it uses is a reference sigma divided by the "
         "dataset's `weight` (500 J/mol for HM, 0.2 J/K/mol for SM and CPM, 500 J/mol on the chemical potential for "
         "activities; ESPEI: \"estimated from NIST TRC uncertainties\", i.e. for experiments). Every value carries its "
         "**uncertainty budget** in `orchid_uncertainty.values[].budget`, in the dataset's units, with the components "
@@ -2189,15 +2204,33 @@ def readme(S, C, cite):
         "last printed digit), `sigma_method` (method-class floor, with `method_class`, `method_basis`, "
         "`method_n_pairs`, `method_entry` into `experimental/CALIBRATION_EXPERIMENT.json`), `sigma_composition` "
         "(value measured at a historical formula), `sigma_scatter` (page-checked mutually inconsistent group), "
-        "`sigma_conversion` (reference-state conversion) and `sigma_effective`. Printed printed values and sigmas are "
+        "`sigma_conversion` (reference-state conversion) and `sigma_effective`. Source-reported values and sigmas are "
         "never altered; the budget comes from the literature release (`uncertainty_budget`).", "",
         "**Rule** (`sigma_rule`): sigma_effective = max( sqrt( max(sigma_printed, sigma_reading, sigma_method)^2 + "
         "sigma_composition^2 + sigma_conversion^2 ), sigma_scatter ). The method floor is a between-study scatter, "
         "so it already contains each study's statistical error: printed sigma and floor are not added in quadrature "
         "(that would count the statistical part twice); the larger is used. Composition offset and conversion are "
         "independent of the measurement and are added in quadrature; a group scatter replaces the result when "
-        "larger. **The weight written is ESPEI's reference sigma / median sigma_effective of the dataset, by "
-        "default** (the former opt-in `orchid_weight_floor.suggested_weight` is kept, marked superseded).", "",
+        "larger. **The weight written is ESPEI's reference sigma / the observation's effective uncertainty.** "
+        "Groups with unequal effective uncertainties are split into single-observation files; groups with equal "
+        "uncertainties retain their common weight. Activities use sigma_mu = R T sigma_a / a. "
+        "The former opt-in `orchid_weight_floor.suggested_weight` is kept, marked superseded; it is not an active weight.", "",
+        "**Policy history (2026-10-25):** this refines the 2026-10-24 effective-uncertainty weighting policy by "
+        "replacing the median weight of unequal-sigma groups with individual weights. It does not change any "
+        "literature value, reported uncertainty, estimated component, calibration, reference-state conversion, "
+        "or inclusion decision. The reported/estimated separation remains in force. "
+        "`UNCERTAINTY_SPLITS.json` maps removed parent files to their replacements and records their old weights.", "",
+        "**Downstream fitting:** run `python espei/check_weights.py --bundle espei` before any weight overrides. "
+        "For an explicit target and input selection, also run `check_fit.py` as described in `FIT_PREFLIGHT.md`. "
+        "Use a clean copy of the regenerated bundle, with files selected from `index.json`; "
+        "do not mix the old parent files with their replacements or count both as evidence. Keep the exported "
+        "`weight` fields. Do not replace them with `suggested_weight` or reapply the default/sigma conversion. "
+        "Any `apply_tags` or property-level weight setting is an additional user choice and must be recorded "
+        "alongside the release and ESPEI version. Shared paper, source-dataset, and method/calibration links are "
+        "preserved, including `orchid_weighting.parent_dataset` and `measured_in`. Splitting does not establish "
+        "independence: the diagonal likelihood used here does not model covariance between measurements from "
+        "the same study. No correlation coefficients have been inferred. Use the retained links when assessing "
+        "sensitivity to shared-source effects.", "",
         "**Method floors** are calibrated from ORCHID itself, like the DFT sigma: for each value type and method "
         "class, independent measurements of the same state from different primary sources (one value per source, "
         "re-listings counted once), robust between-study sigma = 1.4826 x state-weighted median|d| / sqrt(2), "
@@ -2207,14 +2240,14 @@ def readme(S, C, cite):
         cal_table_bundle(C["uncal"]) + ["",
         "Which sigma applies to which data:", "",
         table([["experimental thermochemical", "uncertainty budget: max(printed, reading, method floor) (+ composition "
-                "/ conversion in quadrature; group scatter when larger)", "ESPEI default / median sigma_effective of "
-                "the dataset (one weight per dataset in ESPEI 0.9.1); per-value equivalents recorded"],
+                "/ conversion in quadrature; group scatter when larger)", "ESPEI default / sigma_effective of the observation; "
+                "unequal-sigma groups split into single-observation files"],
                ["DFT (literature, MP, OQMD)", "calibrated against experiment (dft/CALIBRATION.md): robust sigma of "
                 "the value's stratum, leave-system-out, as `sigma_method`; bias recorded, not applied",
                 "500 J/mol / sigma_DFT per value (a conversion, not a claim that DFT is accurate to 500 J/mol)"],
                ["model-calculated (model/)", "budget with `sigma_method` = the model class's robust deviation from "
                 "experiment (formation quantities) or a documented prior; not a measurement uncertainty",
-                "ESPEI default / median sigma_effective; exclude with the `model` tag if you prefer"],
+                "ESPEI default / individual sigma_effective; exclude with the `model` tag if you prefer"],
                ["ZPF (experimental/ ZPF, invariants/)", "temperature and composition budgets per region (printed, "
                 "method floor of the invariant / phase-composition class); ESPEI weighs ZPF by a driving-force "
                 "tolerance", "1 (not set)"],
@@ -2342,6 +2375,7 @@ from `values` and the matching `conditions` entries.
 | `orchid.observations[]` | per value, in order: `id` (ORCHID literature id), `reader_agreement` (`multi_reader`, `single_reader`, `single_reader_text_layer`; absent when not classified), `paper`, `measured_in`, `caveats` |
 | `orchid.papers`, `orchid.dois` | paper ids (`literature/papers.json`) and DOIs involved: source, containing paper, printed cited works |
 | `orchid.source_dataset`, `orchid.values_dropped`, `orchid.espei_evaluation` | corpus file; values removed by the gate; invariant ZPF driving forces against the assessment |
+| `orchid.mapping[].also_read_as`, `orchid.mapping[].evidence_identity` | source-verified duplicate IDs retained with the canonical fitting observation; decisions in `DFT_EVIDENCE_IDENTITIES.json` |
 | `orchid.dft_source`, `orchid.tdb`, `orchid.registry_phase`, `orchid.mapping[]` | DFT: source; TDB file (name, path, SHA-256, phase); phase-registry id; per value: id (MP / OQMD entry or ORCHID id), compound, mapping basis, space group, match quality |
 | `orchid_value_bases` | ZPF from ranges / central values: how a temperature was derived, keyed by ORCHID id |
 | `orchid_model_evidence` | model datasets: `tdb` (name, path, SHA-256, catalog entry), `link_basis`, `model_citation`, `model_reproduction` |
@@ -2350,13 +2384,23 @@ from `values` and the matching `conditions` entries.
 | `orchid_certification` | literature datasets: `basis` (`pycalphad_invariant_agreement`), `all_values_certified`, `n_certified`, `values[]` {id, espei_certified, calphad_check}; tag `calphad_certified` when all values are certified |
 | `orchid_reference_state` | activities (E5): `element`, `phase` written, `basis` (`printed` / `not_printed_implied`), `quote`, `where`, `record_reference_state_agrees`, `written_before_audit` |
 | `orchid_weight_floor` | thermochemical data (E6, **superseded** 2026-10-24): `superseded` (text), `suggested_weight` (the former opt-in suggestion), `weight_before_2026_10_24`, `weight_written` (from sigma_effective), `sigma_floor` (+ unit), `rule` |
+| `orchid_weighting` | split datasets: `rule`, `parent_dataset`, `parent_value_index`, `parent_n_values`, `parent_weight`, `parent_values_dropped`, `source_dataset`, `measured_in`, `correlation_status`, `correlation_note`. Source linkage does not imply independence; covariance is not quantified. `UNCERTAINTY_SPLITS.json` gives the complete parent-to-child mapping. |
 | `orchid_uncertainty_budget` | phase-constraint datasets (assessed/, derived/): per point, the temperature and composition budget (components as in `orchid_uncertainty.values[].budget`) |
 | `orchid_zpf_encoding` | ZPF (E2): number of line-compound vertices written with composition null, hyperplanes added, rule |
 | `orchid.observations[i].also_reported_as` | E3: the same ZPF region from other datasets (`id`, `paper`, `measured_in`, `dataset`) |
 | `orchid.observations[i].also_read_as` | E4: ids of the same printed row read again (not written as separate values) |
+| `orchid.observations[i].evidence_identity` | canonical identity and alternate unit representations of one observation; unresolved experimental conditions remain excluded from fitting. Source decisions: `MGPB_EVIDENCE_REVIEW.json` |
 | `orchid.points` (derived brackets) | per point: `source_observation`, `side` (above/below), `T_invariant_K`, `offset_K`, `T_sigma_K`, `T_sigma_basis`, `x0`, `hyperplane_delta`, `reaction_printed`, `reaction_type`, `phases_above`, `phases_below` |
 | `orchid.basis` (liquid stability) | `T_liq_max_K` and the temperatures it was taken from |
 | `orchid.record_ids`, `orchid.confidence` (assessed) | assessed-phase-assemblages record id and confidence per point; `target_tdb`, `points_left_out` |
+
+## Target TDB provenance
+
+For a downstream fit, record the target TDB SHA-256 and match it to `phases/tdb_provenance.json`.
+`generation_method` and `tags` distinguish `phaseforge` from `phaseforge_plus`; `potential` records the MLIP name
+and checkpoint digests. Preserve these in the fitting run manifest together with the input-data version and
+weight overrides. These model-provenance tags are not ESPEI evidence tags and must not be passed to `apply_tags`
+as weight rules. An unmatched TDB digest has unknown provenance; never infer it from its filename.
 
 ## Uncertainties (`orchid_uncertainty`)
 
@@ -2531,6 +2575,16 @@ def build_files(C, D, val, data, release, dp_release, P):
                                       "upstream_corrections": C["upstream"],
                                       "phase_constraints": S["phase_constraints"],
                                       "summary": S})
+    files["check_weights.py"] = open(os.path.join(SITE, "tools", "check_espei_weights.py"), "rb").read()
+    files["DFT_EVIDENCE_IDENTITIES.json"] = dumps(dft_identity.REVIEW)
+    files["MGPB_EVIDENCE_REVIEW.json"] = dumps(mgpb_review.REVIEW)
+    files["BORIDE_EVIDENCE_REVIEW.json"] = dumps(boride_review.REVIEW)
+    files["check_fit.py"] = open(os.path.join(SITE, "tools", "check_espei_fit.py"), "rb").read()
+    files["FIT_PREFLIGHT.md"] = open(os.path.join(SITE, "tools", "espei_fit_preflight.md"), "rb").read()
+    files["UNCERTAINTY_SPLITS.json"] = dumps({"rule": "individual_effective_uncertainty_v1",
+        "parent_datasets": len(C.get("uncertainty_splits", [])),
+        "observations": sum(x["n_values"] for x in C.get("uncertainty_splits", [])),
+        "splits": C.get("uncertainty_splits", [])})
     files["UPSTREAM_CORRECTIONS.md"] = upstream_md(C).encode("utf-8")
     files["VALIDATION.md"] = validation_md(S, val, C, D, release).encode("utf-8")
     files["UNCERTAINTY_SUMMARY.md"] = uncertainty_md(C, D).encode("utf-8")
@@ -2893,6 +2947,123 @@ def evaluation_summary(ev, alld):
             "all_finite": all((ev.get(r) or {}).get("status") == "ok" for r in alld), "by_folder_kind": res}
 
 
+def split_unequal_uncertainties(C, pub):
+    """Split retained non-ZPF groups with unequal effective sigmas, without changing observation membership.
+
+    Run after duplicate and likelihood gates. Preserve the common source and parent weight for traceability;
+    separation is an export/weighting operation, not evidence that the observations are independent.
+    Unsupported array layouts fail closed instead of silently pairing a value with the wrong conditions.
+    """
+    changes = []
+    for rel, d in list(sorted(C["datasets"].items())):
+        if d["output"] == "ZPF":
+            continue
+        uv = (d.get("orchid_uncertainty") or {}).get("values") or []
+        sigmas = [v.get("sigma_effective_used") for v in uv]
+        if len(set(sigmas)) <= 1:
+            continue
+        if any(not isinstance(s, (int, float)) or not math.isfinite(s) or s <= 0 for s in sigmas):
+            raise ValueError("cannot split missing or invalid effective uncertainty: " + rel)
+        obs = d["orchid"]["observations"]
+        values = d["values"]
+        n = len(uv)
+        if not (len(values) == len(values[0]) == 1 and len(values[0][0]) == len(obs) == n):
+            raise ValueError("unsupported uncertainty-split value layout: " + rel)
+        # Corpus records have scalar P/T and point-aligned compositions/configurations.
+        if any(isinstance(d["conditions"].get(k), list) for k in ("P", "T")):
+            raise ValueError("uncertainty split requires scalar P and T: " + rel)
+        for key, val in d["conditions"].items():
+            if isinstance(val, list) and (not key.startswith("X_") or len(val) != n):
+                raise ValueError("unaligned uncertainty-split conditions: " + rel)
+        solver = d.get("solver") or {}
+        for key in ("sublattice_configurations", "sublattice_occupancies"):
+            if key in solver and len(solver[key]) != n:
+                raise ValueError("unaligned uncertainty-split solver: " + rel)
+        parent_row = C["rows"][rel]
+        children = []
+        for i, observation in enumerate(obs):
+            oid = observation["id"]
+            r = pub[oid]
+            child = copy.deepcopy(d)
+            child["values"] = [[[values[0][0][i]]]]
+            for key, val in d["conditions"].items():
+                if isinstance(val, list):
+                    child["conditions"][key] = [val[i]]
+            for key in ("sublattice_configurations", "sublattice_occupancies"):
+                if key in solver:
+                    child["solver"][key] = [copy.deepcopy(solver[key][i])]
+            child["orchid"]["observations"] = [copy.deepcopy(observation)]
+            child["orchid"].pop("values_dropped", None)
+            child["orchid"].pop("espei_evaluation", None)
+            if "orchid_value_bases" in child:
+                child["orchid_value_bases"] = [v for v in child["orchid_value_bases"] if v.get("observation") == oid]
+            pa = child.get("orchid_phase_assignment") or {}
+            if "outside_calculated_field" in pa:
+                pa["outside_calculated_field"] = [v for v in pa["outside_calculated_field"] if v.get("id") == oid]
+            weight, block, tags, stat = uncertainty_block(child, [(None, r)], parent_row["evidence_class"],
+                                                         False, child["conditions"]["T"])
+            if block["values"][0]["sigma_effective_used"] != sigmas[i]:
+                raise ValueError("split would change effective uncertainty: " + oid)
+            # Retain the already exported budget verbatim; only the actual weight changes.
+            child["orchid_uncertainty"]["values"] = [copy.deepcopy(uv[i])]
+            child["orchid_uncertainty"]["values"][0]["weight_used"] = weight
+            child["orchid_uncertainty"]["weight_rule"] = (
+                "weight = default_sigma / this observation's sigma_effective_used; unequal-uncertainty "
+                "groups are split into single-observation datasets, retaining their common source provenance")
+            child["weight"] = weight
+            child["tags"] = [t for t in child["tags"] if t not in
+                             ("no_printed_uncertainty", "single_reader", "single_reader_text_layer", "orchid_caveat",
+                              "calphad_certified")]
+            for tag in tags:
+                if tag not in child["tags"]:
+                    child["tags"].append(tag)
+            agreement = observation.get("reader_agreement")
+            if agreement in ("single_reader", "single_reader_text_layer"):
+                child["tags"].append(agreement)
+            if observation.get("caveats"):
+                child["tags"].append("orchid_caveat")
+            if "orchid_weight_floor" in child:
+                child["orchid_weight_floor"]["weight_written"] = weight
+                child["orchid_weight_floor"]["comparison_scope"] = "superseded comparison metadata of parent_dataset"
+            child["orchid_weighting"] = {
+                "rule": "individual_effective_uncertainty_v1",
+                "parent_dataset": rel, "parent_value_index": i, "parent_n_values": n,
+                "parent_weight": d.get("weight", 1.0),
+                "parent_values_dropped": d["orchid"].get("values_dropped", 0),
+                "source_dataset": d["orchid"].get("source_dataset"),
+                "measured_in": (r.get("origin") or {}).get("measured_in") or r.get("paper"),
+                "correlation_status": "not quantified",
+                "correlation_note": "Shared source and method/calibration provenance are retained. Splitting "
+                                    "does not establish statistical independence. No covariance is invented; "
+                                    "the ESPEI likelihood used here does not model cross-observation covariance."}
+            child["comment"] = re.sub(r"(in value order\): ).*$", lambda m: m.group(1) + oid, child["comment"])
+            certification_block(child, [(None, r)])
+            childrel = rel[:-5] + "-u-" + re.sub(r"[^A-Za-z0-9_-]", "_", oid) + ".json"
+            if childrel in C["datasets"]:
+                raise ValueError("uncertainty-split path collision: " + childrel)
+            cr = copy.deepcopy(parent_row)
+            cr.update(path=childrel, n_values=1, n_values_dropped=0, observation_ids=[oid], weight=weight,
+                      reader_agreement={observation.get("reader_agreement") or "not_classified": 1},
+                      sigma_min=rnd(min(stat["sigmas"]), 6) if stat["sigmas"] else None,
+                      sigma_median=rnd(median(stat["sigmas"]), 6) if stat["sigmas"] else None,
+                      sigma_max=rnd(max(stat["sigmas"]), 6) if stat["sigmas"] else None,
+                      sigma_effective_median=rnd(sigmas[i], 6), sigma_basis_counts=stat["basis_counts"],
+                      espei_median_abs_driving_force_J=None)
+            cr["tags"] = child["tags"]
+            cr["caveats"] = observation.get("caveats") or []
+            C["datasets"][childrel] = child
+            C["rows"][childrel] = cr
+            C["_ustat"][childrel] = stat
+            C["_recs"][childrel] = [r]
+            children.append(childrel)
+        for key in ("datasets", "rows", "_ustat", "_recs"):
+            C[key].pop(rel, None)
+        changes.append({"parent_dataset": rel, "parent_weight": d.get("weight", 1.0),
+                        "n_values": n, "sigma_min": min(sigmas), "sigma_max": max(sigmas), "children": children})
+    C["uncertainty_splits"] = changes
+    return changes
+
+
 def uncertainty_calibration(lit_dir, pub):
     """The literature release's method-floor calibration (bytes, dict); every published record must carry a budget
     made with exactly this calibration (else the literature release is stale: re-export it)."""
@@ -2977,6 +3148,16 @@ def main(argv=None):
             P["datasets"].pop(rel)
             P["rows"].pop(rel)
     ev_excluded, ev_cut, ev = evaluation_gate(C, D, P, a.data, a.espei_python)
+    splits = split_unequal_uncertainties(C, pub)
+    children = {rel: C["datasets"][rel] for split in splits for rel in split["children"]}
+    if children:
+        child_ev = run_evaluation(children, a.data, a.espei_python)
+        bad = {rel: result for rel, result in child_ev.items() if result.get("status") != "ok"}
+        if bad:
+            raise SystemExit("split datasets failed likelihood checks; no release written: " + json.dumps(bad))
+        for split in splits:
+            ev.pop(split["parent_dataset"], None)
+        ev.update(child_ev)
     for rel, d in C["datasets"].items():                     # certification over the values finally written
         certification_block(d, [(None, r) for r in C["_recs"][rel]])
     alld = dict(C["datasets"])

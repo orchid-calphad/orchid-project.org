@@ -1586,7 +1586,15 @@ def g_page_verdicts(records, visual, rep):
 
 STD_T_PRINTED = re.compile(r"^\s*~?\s*298(?:\.[012]0?)?\s*(?:K)?\s*(?:\((?:caption|subscript[^)]*)\)?.*)?$")
 PAGE_FIX_FIELDS = ("value", "unit", "temperature_K", "evidence_class", "property", "uncertainty", "reference_state",
-                   "temperature_basis", "cited_sources", "quote_page")
+                   "temperature_basis", "cited_sources", "quote_page", "temperature_range_K", "temperature_bound",
+                   "system", "source_system", "elements", "overall_composition", "overall_composition_basis",
+                   "phases", "component", "property_expression", "property_group", "temperature_uncertainty", "unit_basis")
+
+
+def temperature_withdrawn_on_page(record):
+    """A reviewed removal of a measurement T overrides automated temperature inference."""
+    return any(c.get("gate") == "page" and c.get("field") == "temperature_K" and c.get("after") is None
+               for c in record.get("corrections", []))
 
 
 def g0_page_fixes(records, visual, rep):
@@ -1609,12 +1617,13 @@ def g0_page_fixes(records, visual, rep):
                      "evidence_class": "evidence_class_before_gates", "property": "property_code_before_gates",
                      "uncertainty": "uncertainty_stored", "reference_state": "reference_state_stored",
                      "temperature_basis": "temperature_basis_stored", "cited_sources": None,
-                     "quote_page": None}[f]   # quote_page: the unreadable stored page is in quality_fixes.json changes
+                     "quote_page": None, "temperature_range_K": "temperature_range_K_stored",
+                     "temperature_bound": "temperature_bound_stored"}.get(f, f + "_stored")
             if store:   # cited sources: the unresolved entries stay in the correction's `before`
                 r.setdefault(store, before)
             r[f] = new
             if f == "temperature_K":
-                if r.get("property") in TEMPERATURE_PROPS and r.get("value") == before:
+                if chk["fields"].get("property", r.get("property")) in TEMPERATURE_PROPS and r.get("value") == before:
                     r.setdefault("value_stored", r.get("value"))
                     r["value"] = new
                 pl = r["flags"].pop("plausibility", None)
@@ -1697,6 +1706,36 @@ def expand_visual(visual):
     return out
 
 
+def reconcile_reaction_systems(records, rep):
+    """Include explicitly named reaction partners added after state-system narrowing."""
+    for r in records:
+        if not any(f.get("code") == "phases_added_from_printed_reaction" for f in r.get("gate_failures", [])):
+            continue
+        source = set((r.get("source_system") or "").split("-"))
+        current = set(r.get("elements") or [])
+        named = set()
+        for phase in r.get("phases") or []:
+            label = phase.get("label") or ""
+            element = r2c.pure_element(label, list(source))
+            if element:
+                named.add(element)
+            formula = r2c.formula_fractions(label, list(source))
+            if formula:
+                named.update(formula)
+        expanded = current | named
+        if current < expanded <= source:
+            new = "-".join(sorted(expanded))
+            correct(r, "R3I", "system", r["system"], new, "system_includes_printed_reaction_partners",
+                    {"phases": [p.get("label") for p in r.get("phases") or []], "source_system": r["source_system"]})
+            r["system"], r["elements"] = new, sorted(expanded)
+            r["flags"]["system_is_state_subsystem"] = expanded < source
+            rep.add("R3I", "system_includes_printed_reaction_partners", r, "corrected")
+            # Reaction classification previously saw the narrowed component set.
+            # Re-evaluate after restoring explicitly printed reaction partners.
+            import literature_r3_invariants
+            literature_r3_invariants.r3i_reactions([r], {}, rep)
+
+
 def apply(records, rule, visual=None, store_units=None, plaus_store=None, describe=None):
     """Mutates the records; returns (records, report dict)."""
     _visual_given = visual is not None
@@ -1732,6 +1771,7 @@ def apply(records, rule, visual=None, store_units=None, plaus_store=None, descri
     r2c.after_system(records, rep)          # A1 C4: file each record under the system of its own state
     import literature_r3_invariants  # noqa: E402  (audit round 3: invariant-reaction QA family, on final records)
     literature_r3_invariants.apply(records, visual, rep)
+    reconcile_reaction_systems(records, rep)
     for r in records:
         r.pop("_g6_page_fixed", None)
         if r.get("gate_failures"):

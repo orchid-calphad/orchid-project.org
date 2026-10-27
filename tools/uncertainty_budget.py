@@ -609,7 +609,7 @@ def primary_source(rec):
 
 
 # values whose basis, unit or reliability the page leaves open (audit round 2): kept as printed, never calibration pairs
-CALIBRATION_EXCLUDED_CODES = {"row_basis_contradicts_column_header", "unit_inconsistent_with_figure_on_page",
+CALIBRATION_EXCLUDED_CODES = {"boride_source_identity_unresolved", "boride_primary_source_state_review_pending", "experimental_conditions_require_primary_source_review", "row_basis_contradicts_column_header", "unit_inconsistent_with_figure_on_page",
                               "energy_basis_not_printed_rows_inconsistent", "source_marks_value_unreliable",
                               "table_basis_value_not_convertible", "table_basis_formula_unparsed",
                               "formation_from_compounds_not_from_elements", "expression_coefficient_not_a_value"}
@@ -617,7 +617,10 @@ CALIBRATION_EXCLUDED_CODES = {"row_basis_contradicts_column_header", "unit_incon
 
 def usable(rec):
     fl = rec.get("flags") or {}
-    if any(g.get("code") in CALIBRATION_EXCLUDED_CODES for g in rec.get("gate_failures") or []):
+    if rec.get("evidence_identity", {}).get("canonical_id", rec.get("id")) != rec.get("id"):
+        return False
+    if any(g.get("code") in CALIBRATION_EXCLUDED_CODES or str(g.get("code")).startswith("independent_check_")
+           for g in rec.get("gate_failures") or []):   # records under the independent source check are not calibration pairs
         return False
     return fl.get("extraction_accepted") and not any(fl.get(b) for b in BLOCKING)
 
@@ -965,6 +968,15 @@ def reading_component(rec, quantity):
             if isinstance(oc.get(el), (int, float)) and abs(oc[el] - 1.0) <= 1e-9:
                 # the pure component in its reference state: a = 1 by definition, not a reading (round 3, A3 sec. 10)
                 return {"value": 0.0, "basis": "defined_by_reference_state"}
+        # An additive Celsius offset changes neither resolution nor uncertainty.
+        # Do not infer extra precision from the .15 introduced by conversion.
+        celsius_fix = next((c for c in rec.get("corrections", [])
+                            if c.get("field") == "temperature_K"
+                            and c.get("rule") == "printed_Celsius_to_Kelvin"), None)
+        if prop in ("INVARIANT_TEMPERATURE", "TRANSITION_TEMPERATURE") and celsius_fix:
+            d = decimals(celsius_fix.get("before"))
+            return ({"value": _r(0.5 * 10.0 ** (-d)), "basis": "last_printed_digit"}
+                    if d is not None else None)
         src = vp if vp is not None else v
         d = decimals(src)
         if d is None or not isinstance(v, (int, float)):
@@ -1089,36 +1101,73 @@ def method_component(rec, quantity, vt, cal):
     return e
 
 
+def estimated_uncertainty(rec):
+    """Read a documented estimate without treating it as reported uncertainty."""
+    u = rec.get("uncertainty") or {}
+    if u.get("basis") in ("scatter_between_sources", "printed_with_composition_offset"):
+        return u
+    return (((rec.get("uncertainty_budget") or {}).get("quantities") or {}).get("value") or {}).get(
+        "estimate_provenance") or {}
+
+
+def separate_reported_uncertainty(rec):
+    """Keep the source sigma primary; retain the estimate and method in the budget.
+
+    Called after budget construction so this representation change cannot alter
+    the calibrated components or effective sigma used by the fitting exporter.
+    """
+    import copy
+    u = rec.get("uncertainty") or {}
+    if u.get("basis") not in ("scatter_between_sources", "printed_with_composition_offset"):
+        return
+    stored = rec.get("uncertainty_stored") or {}
+    if isinstance(u.get("printed"), (int, float)):
+        reported = {"basis": "printed", "value": u["printed"]}
+    elif stored.get("basis") in ("printed", "printed_range"):
+        reported = copy.deepcopy(stored)
+    else:
+        reported = None
+    q = rec["uncertainty_budget"]["quantities"]["value"]
+    q["estimate_provenance"] = copy.deepcopy(u)
+    rec["uncertainty"] = reported
+    rec.setdefault("corrections", []).append({
+        "gate": "uncertainty_budget", "field": "uncertainty",
+        "before": copy.deepcopy(u), "after": copy.deepcopy(reported),
+        "rule": "reported_uncertainty_separated_from_estimate",
+        "evidence": {"estimate_location": "uncertainty_budget.quantities.value.estimate_provenance",
+                     "effective_uncertainty_unchanged": True}})
+
+
 def composition_component(rec, quantity):
     if quantity != "value":
         return None
-    u = rec.get("uncertainty") or {}
+    u = estimated_uncertainty(rec)
     note = str(u.get("note") or "")
     if u.get("basis") == "printed_with_composition_offset" and isinstance(u.get("sigma_composition_offset"),
                                                                           (int, float)):
         m = re.search(r"\|dx\|\s*([\d.]+)\s*x\s*slope\s*([\d.]+)", note)
         return {"value": _r(u["sigma_composition_offset"]), "dx": float(m.group(1)) if m else None,
                 "slope_kJ_per_mol_per_x": float(m.group(2)) if m else None, "basis": "page_checked",
-                "note": "uncertainty.note"}
+                "note": "uncertainty_budget.quantities.value.estimate_provenance.note"}
     m = re.search(r"own sigma ([\d.]+) \(printed_with_composition_offset\)", note)
     st = rec.get("uncertainty_stored") or {}
     if u.get("basis") == "scatter_between_sources" and m and isinstance(st.get("value"), (int, float)):
         own = float(m.group(1))
         return {"value": _r(math.sqrt(max(own ** 2 - st["value"] ** 2, 0.0))), "dx": None,
                 "slope_kJ_per_mol_per_x": None, "basis": "page_checked",
-                "note": "sqrt(own %g^2 - printed %g^2) of uncertainty.note" % (own, st["value"])}
+                "note": "sqrt(own %g^2 - printed %g^2) of uncertainty_budget.quantities.value.estimate_provenance.note" % (own, st["value"])}
     return None
 
 
 def scatter_component(rec, quantity):
     if quantity != "value":
         return None
-    u = rec.get("uncertainty") or {}
+    u = estimated_uncertainty(rec)
     if u.get("basis") != "scatter_between_sources" or not isinstance(u.get("value"), (int, float)):
         return None
     ids = sorted(set(re.findall(r"ORC-[A-Z0-9]+(?:\.[a-f0-9]{6})?", str(u.get("note") or ""))) | {rec["id"]})
     return {"value": _r(u["value"]), "n_sources": u.get("n_sources"), "group": ids,
-            "basis": "page_checked mutually_inconsistent group", "note": "uncertainty.note"}
+            "basis": "page_checked mutually_inconsistent group", "note": "uncertainty_budget.quantities.value.estimate_provenance.note"}
 
 
 def conversion_component(rec, quantity):
@@ -1163,6 +1212,8 @@ def quantity_unit(rec, quantity, vt):
 
 
 def budget(rec, cal, cal_id):
+    import copy
+    estimate = estimated_uncertainty(rec)
     qs = {}
     for qn, vt in quantities(rec):
         sp, sr = printed_component(rec, qn, vt)
@@ -1172,6 +1223,10 @@ def budget(rec, cal, cal_id):
         q["sigma_effective"] = combine(q)
         if q["sigma_effective"] is None:
             q["sigma_effective_reason"] = (q["sigma_method"] or {}).get("reason") or "no component applies"
+        if qn == "value" and estimate:
+            q["estimate_provenance"] = copy.deepcopy(estimate)
+            if q.get("sigma_printed"):
+                q["sigma_printed"]["where"] = "uncertainty"
         qs[qn] = q
     b = {"calibration": cal_id, "sigma_rule": SIGMA_RULE, "quantities": qs}
     if not qs:
@@ -1183,6 +1238,7 @@ def annotate(records, cal):
     cid = calibration_id(cal)
     for r in records:
         r["uncertainty_budget"] = budget(r, cal, cid)
+        separate_reported_uncertainty(r)
     return records
 
 

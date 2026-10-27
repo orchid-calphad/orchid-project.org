@@ -64,6 +64,7 @@ for _els, _tab in (
         ("U NP", {"α": "ORTHORHOMBIC", "β": "TETRAGONAL", "γ": "BCC"}),
         ("PU", {"δ": "FCC", "δ'": "TETRAGONAL BCT", "ε": "BCC"}),
         ("MN", {"α": "CBCC", "β": "CUB", "γ": "FCC", "δ": "BCC"}),
+        ("AL", {"α": "FCC"}), ("SB", {"α": "RHOMBOHEDRAL"}), ("GA", {"α": "ORTHORHOMBIC"}),
         ("SN", {"α": "DIAMOND", "β": "BCT"}), ("B", {"α": "RHOMBO", "β": "RHOMBO"}), ("C", {"α": "GRAPHITE"})):
     for _e in _els.split():
         POLYMORPH[_e] = {g: set(f.split()) for g, f in _tab.items()}
@@ -265,12 +266,48 @@ def majority_inside(entry, comps, model, T, rule):
     return True
 
 
+def terminal_mapping_error(label, model, elements, entry):
+    """Reject a terminal label when its named element cannot occupy the model, or its polymorph conflicts."""
+    label = normalize_label(label)
+    kind = label_kind(label, elements)
+    if kind not in ("element", "solution"):
+        return None
+    if kind == "element" and any(n != 1 for n in (formula_counts(label, elements) or {}).values()):
+        return None  # H2 / O2 molecular species are not terminal atomic solid-solution labels.
+    named = {e.upper() for e in re.findall(r"[A-Z][a-z]?", _greek_free(label))} & set(elements)
+    models = (entry or {}).get("models") or []
+    for el in named:
+        known = [m for m in models if m.get("sublattices") and
+                 all(s.get("constituents") for s in m["sublattices"])]
+        if known and not any(all(el in s["constituents"] or "VA" in s["constituents"]
+                                 for s in m["sublattices"]) and
+                             any(el in s["constituents"] for s in m["sublattices"]) for m in known):
+            return "terminal_element_absent_from_model_endmembers"
+    g = re.search(r"([%s])(['’′]?)" % GREEK, label)
+    fam = family(str(model).upper().split("#")[0])
+    if fam is None:
+        pearson = ((entry or {}).get("structure") or {}).get("pearson") or ""
+        fam = {"cF4": "FCC", "cI2": "BCC", "hP2": "HCP", "hP4": "DHCP", "cF8": "DIAMOND"}.get(pearson)
+        if not fam and pearson.startswith("o"):
+            fam = "ORTHORHOMBIC"
+    if g and fam:
+        greek = g[1] + ("'" if g[2] else "")
+        for el in named:
+            allowed = POLYMORPH.get(el, {}).get(greek)
+            if allowed and not any(fam.startswith(a) for a in allowed):
+                return "element_polymorph_contradicts_model"
+    return None
+
+
 def check(label, model, system, elements, entry, comps, T=None, rule=None):
     """None when the mapping is kept, else the rejection code. comps: printed mole-fraction compositions {El: x} of
     this phase in the record."""
     label = normalize_label(label)
     mp = str(model).upper().split("#")[0]
     kind = label_kind(label, elements)
+    terminal_error = terminal_mapping_error(label, model, elements, entry)
+    if terminal_error:
+        return terminal_error
     if kind == "liquid":
         return None if LIQUID_MODEL.match(mp) else "liquid_label_mapped_to_non_liquid_model"
     fam = family(mp) if ELEMENT_MODEL.match(mp) else None
@@ -439,6 +476,14 @@ def apply(records, rule):
                 code = "same_model_as_another_phase_of_the_row"
             else:
                 code = None
+            if code is None and entry is None and rule is not None and label_kind(lab, elements) in ("element", "solution"):
+                # A ternary extraction can refer to a binary model absent from its own registry section.
+                # Reject only when all available subsystem models independently contradict the terminal label.
+                subentries = [ns[str(mp).upper().split("#")[0]] for sys, ns in rule.by_tdbname.items()
+                              if set(sys.split("-")) <= set(elements) and str(mp).upper().split("#")[0] in ns]
+                reasons = [terminal_mapping_error(lab, mp, elements, en) for en in subentries]
+                if reasons and all(reasons) and len(set(reasons)) == 1:
+                    code = reasons[0]
             code = code or check(lab, mp, system, elements, entry, comps, r.get("temperature_K"), rule)
             if code is None:
                 if p.get("pearson_symbol") or p.get("prototype"):
@@ -446,13 +491,40 @@ def apply(records, rule):
                 counts["kept"] += 1
                 continue
             rej = {"model_phase": mp, "reason": code}
+            replacement = None
+            if code in ("terminal_element_absent_from_model_endmembers", "element_polymorph_contradicts_model"):
+                # A named polymorph plus the model's actual constituents can identify one terminal model.
+                candidates = {}
+                normalized = normalize_label(lab)
+                greek_match = re.search(r"([%s])(['’′]?)" % GREEK, normalized)
+                greek = (greek_match[1] + ("'" if greek_match[2] else "")) if greek_match else None
+                named = {e.upper() for e in _ELEM.findall(_greek_free(normalized))} & set(elements)
+                if greek and named and all(greek in POLYMORPH.get(e, {}) for e in named):
+                    for candidate, en in names.items():
+                        if not ELEMENT_MODEL.match(candidate) or not en.get("models"):
+                            continue
+                        if terminal_mapping_error(lab, candidate, elements, en) is None:
+                            candidates.setdefault(en["id"], (candidate, en))
+                if len(candidates) == 1:
+                    replacement = next(iter(candidates.values()))
             for k in ("pearson_symbol", "prototype", "mapping_confidence"):
                 if p.get(k) is not None:
                     rej[k] = p.pop(k)
             p.pop("model_phase")
             p["model_phase_rejected"] = rej
+            if replacement:
+                target, en = replacement
+                p["model_phase"] = target
+                p["model_phase_basis"] = "terminal_model_from_sublattices_and_polymorph"
+                st = en.get("structure") or {}
+                if st.get("pearson"):
+                    p["pearson_symbol"] = st["pearson"]
+                if st.get("prototype"):
+                    p["prototype"] = st["prototype"]
+                p["structure_basis"] = "mapped_model_phase"
+                counts["terminal_mapping_corrected"] += 1
             r.setdefault("corrections", []).append({
-                "gate": "PL", "field": "phases.model_phase", "before": mp, "after": None, "rule": code,
+                "gate": "PL", "field": "phases.model_phase", "before": mp, "after": replacement[0] if replacement else None, "rule": code,
                 "evidence": {"label": lab, "release": RELEASE}})
             counts["rejected:" + code] += 1
             counts["rejected"] += 1

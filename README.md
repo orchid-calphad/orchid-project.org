@@ -15,3 +15,11 @@ Release v2026.10 is archived as five citable datasets plus an umbrella record (m
 `zenodo/` folder of `orchid-calphad/orchid-data`). `tools/zenodo_release.py plan | bundle | writeback` checks the
 records, builds one deterministic zip per record into the ignored `dist/`, and writes the reserved DOIs back into
 both repositories; every builder reads the DOIs from `zenodo/dois.json` through `tools/orchid_cite.py`.
+
+## Funding
+
+This work was supported by the U.S. National Science Foundation under awards [OAC-2608825](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2608825) (CSSI Elements: PhaseForge) and [2534344](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2534344) (Autonomous Robotic Metallurgist: An NSF Materials Innovation Platform, ARM-MIP).
+
+## Software and data credits
+
+See [papers and repositories](CITATIONS.md) for pycalphad, ESPEI, PhaseForge, PhaseForge+, Materials Project, and OQMD. [Machine-readable citations](CITATIONS.json) are also provided.

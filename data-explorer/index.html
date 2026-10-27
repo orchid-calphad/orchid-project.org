@@ -306,7 +306,7 @@ function details(r){const d=h("div",{class:"det"});const dl=h("dl");d.append(dl)
      r.value_printed!==undefined&&r.value_printed!==r.value?h("span",{class:"muted"},` · printed ${r.value_printed} ${r.unit_printed||""}`):"");
   kv(dl,"Property",propName(r.property),r.property_printed?h("span",{class:"muted"},` · printed “${r.property_printed}”`):"");
   if(r.uncertainty)kv(dl,"Uncertainty","± "+fmtNum(r.uncertainty.value)+" ",h("span",{class:"muted"},r.uncertainty.basis==="printed"?"(printed)":`(${r.uncertainty.note||r.uncertainty.basis}; not a measured uncertainty)`));
-  kv(dl,"Temperature",r.temperature_K!==undefined?fmtNum(r.temperature_K)+" K":"",r.temperature_printed?h("span",{class:"muted"},` · printed ${r.temperature_printed}`):"",r.temperature_basis&&r.temperature_basis!=="printed"?h("span",{class:"muted"},` · ${r.temperature_basis.replace(/_/g," ")}`):"",
+  kv(dl,"Temperature",r.temperature_K!=null?fmtNum(r.temperature_K)+" K":"not established",r.temperature_printed?h("span",{class:"muted"},` · printed ${r.temperature_printed}`):"",r.temperature_basis&&r.temperature_basis!=="printed"?h("span",{class:"muted"},` · ${r.temperature_basis.replace(/_/g," ")}`):"",
      r.temperature_uncertainty?h("span",{class:"muted"},` · ±${fmtNum(r.temperature_uncertainty.value)} K (${r.temperature_uncertainty.basis.replace(/_/g," ")})`):"");
   kv(dl,"Pressure",r.pressure_Pa?fmtNum(r.pressure_Pa)+" Pa":"",r.pressure_basis?h("span",{class:"muted"},` (${r.pressure_basis.replace(/_/g," ")})`):"");
   if(r.phases&&r.phases.length)kv(dl,"Phases",r.phases.map(p=>p.label+(p.model_phase?` → ${p.model_phase}`:"")+(p.pearson_symbol?` (${p.pearson_symbol})`:"")).join("; "));
@@ -338,10 +338,19 @@ function details(r){const d=h("div",{class:"det"});const dl=h("dl");d.append(dl)
   if(fl.specification_gaps)fs.push("gaps: "+fl.specification_gaps.join(", "));if(fl.espei_ready)fs.push("ESPEI-ready");
   if(r.reader_agreement_label)fs.push("readers: "+r.reader_agreement_label);
   kv(dl,"Flags",fs.join(" · "));
+  const reviewed=(r.corrections||[]).filter(c=>c.gate==="HR20261026");
+  if(reviewed.length){const ul=h("ul",{class:"ctx"});
+    const display=v=>v==null?"not established":typeof v==="object"?JSON.stringify(v):String(v);
+    reviewed.forEach(c=>{const ev=c.evidence||{};ul.append(h("li",null,
+      c.field.replace(/_/g," ")+": "+display(c.before)+" → "+display(c.after),
+      ev.rationale?h("div",null,ev.rationale):"",
+      h("div",{class:"muted"},"Source adjudication following student review"+(ev.pdf_page?" · PDF page "+ev.pdf_page:"")+" ",doiLink(ev.doi))));});
+    kv(dl,"Review corrections",ul);}
+
   kv(dl,"Provenance",`${r.record_kind.replace(/_/g," ")} · readers ${(r.readers||[]).join(", ")} · tier ${r.reader_tier||"?"} · ${r.tool_release||""}`,h("div",{class:"muted"},"id "+r.id+" · "+(r.pid||"")));
   return d;}
 
-function downloadCSV(){const cols=["id","system","record_kind","observation_type","property","property_printed","value","unit","uncertainty","temperature_K","temperature_printed","pressure_Pa","phases","phase_compositions","overall_composition","reaction","evidence_class","origin","method","conditions","cited_sources","paper","paper_citation","paper_doi","quote","quote_page","locator","model","flags","readers","reader_tier","tool_release","pid"];
+function downloadCSV(){const cols=["id","system","record_kind","observation_type","property","property_printed","value","unit","uncertainty","temperature_K","temperature_printed","pressure_Pa","phases","phase_compositions","overall_composition","reaction","evidence_class","origin","method","conditions","cited_sources","paper","paper_citation","paper_doi","quote","quote_page","locator","model","flags","readers","reader_tier","tool_release","pid","corrections"];
   const esc=v=>{if(v===undefined||v===null)return "";const s=typeof v==="object"?JSON.stringify(v):String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
   const lines=[cols.join(",")];DOC.records.forEach(r=>{const P=DOC.papers[r.paper]||{};const x=Object.assign({},r,{system:CURSYS,paper_citation:P.citation,paper_doi:P.doi,locator:Object.assign({},DOC.artifacts[(r.locator||{}).ref]||{},r.locator),model:r.model?DOC.models[r.model]:undefined});lines.push(cols.map(c=>esc(x[c])).join(","));});
   const url=URL.createObjectURL(new Blob([lines.join("\n")+"\n"],{type:"text/csv"}));const a=h("a",{href:url,download:`orchid-literature-${CURSYS}.csv`});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}

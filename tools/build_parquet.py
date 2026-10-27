@@ -112,7 +112,7 @@ BOOL_FLAGS = ["espei_ready", "judge_adjudicated", "magnitude_suspect", "source_d
               "composition_conflict_between_readers", "unit_conflict_between_readers", "page_unreadable",
               "basis_inferred_from_magnitude", "basis_corrected_from_formula", "sign_from_heading",
               "dft_outlier_unexplained", "reference_state_dropped_not_in_quote", "espei_certified",
-              "espei_ready_upstream"]
+              "espei_ready_upstream", "quote_clipped"]
 
 
 def lit_schema(pa):
@@ -120,7 +120,7 @@ def lit_schema(pa):
     ls = L(s)
     comp = L(pa.struct([("phase", s), ("element", s), ("value", f), ("basis", s), ("source", s)]))
     phd = L(pa.struct([("label", s), ("model_phase", s), ("mapping_confidence", s),
-                              ("pearson_symbol", s), ("prototype", s)]))
+                              ("pearson_symbol", s), ("prototype", s), ("parent_phase", s)]))
     cols = [
         ("id", s), ("pid", s), ("system", s), ("elements", ls), ("n_elements", i), ("record_kind", s),
         ("observation_type", s), ("property", s), ("property_group", s), ("property_printed", s),
@@ -133,7 +133,8 @@ def lit_schema(pa):
         ("sigma_effective", f), ("sigma_unit", s), ("sigma_rule", s), ("uncertainty_calibration", s),
         ("sigma_x_effective", f), ("sigma_x_method", f), ("sigma_x_method_class", s),
         ("sigma_T_condition_effective", f), ("uncertainty_budget", s),
-        ("bound", s), ("temperature_bound_K", f),
+        ("evidence_identity", s), ("source_evidence_review", s),
+        ("bound", s), ("temperature_bound_K", f), ("temperature_bound_json", s), ("property_expression_json", s),
         ("temperature_K", f), ("temperature_min_K", f), ("temperature_max_K", f), ("temperature_printed", s),
         ("temperature_basis", s), ("temperature_approximate", b), ("temperature_uncertainty_value", f),
         ("temperature_uncertainty_basis", s), ("pressure_Pa", f), ("pressure_basis", s),
@@ -210,6 +211,7 @@ def lit_row(r, papers, release):
         "value_printed": fnum(r.get("value_printed")), "unit_printed": r.get("unit_printed"),
         "uncertainty_value": fnum(unc.get("value")), "uncertainty_basis": unc.get("basis"),
         "uncertainty_note": unc.get("note"), "bound": bound, "temperature_bound_K": tb_k,
+        "temperature_bound_json": jstr(tb), "property_expression_json": jstr(r.get("property_expression")),
         "temperature_K": fnum(r.get("temperature_K")), "temperature_min_K": fnum(tr.get("min")),
         "temperature_max_K": fnum(r.get("temperature_max_K", tr.get("max"))),
         "temperature_printed": r.get("temperature_printed"), "temperature_basis": r.get("temperature_basis"),
@@ -218,7 +220,7 @@ def lit_row(r, papers, release):
         "pressure_Pa": fnum(r.get("pressure_Pa")), "pressure_basis": r.get("pressure_basis"),
         "phases": [p.get("label") for p in ph], "model_phases": [p.get("model_phase") for p in ph],
         "phase_details": [{k: p.get(k) for k in ("label", "model_phase", "mapping_confidence", "pearson_symbol",
-                                                 "prototype")} for p in ph],
+                                                 "prototype", "parent_phase")} for p in ph],
         "reaction": rx.get("printed"), "reaction_type": rtype,
         "transition_kind": r.get("transition_kind"), "transition_kind_printed": r.get("transition_kind_printed"),
         "property_code_raw": r.get("property_code_raw"), "unit_basis": r.get("unit_basis"),
@@ -275,6 +277,8 @@ def lit_row(r, papers, release):
     }
     for k in BOOL_FLAGS:
         out["flag_" + k] = bool(fl.get(k))
+    out["evidence_identity"] = jstr(r.get("evidence_identity")) if r.get("evidence_identity") else None
+    out["source_evidence_review"] = jstr(r.get("source_evidence_review")) if r.get("source_evidence_review") else None
     out.update(budget_columns(r.get("uncertainty_budget")))
     return out
 
@@ -328,7 +332,7 @@ def ctx_schema(pa):
                       ("context_readers", L(s)), ("item_id", s), ("type", s)]
                      + [(k, s) for k in CTX_FIELDS]
                      + [("temperature_K", pa.float64()), ("duration_hours", pa.float64()), ("quote", s),
-                        ("page", pa.int32()), ("extraction_accepted", b), ("second_reader_agrees", b),
+                        ("quote_clipped", b), ("page", pa.int32()), ("extraction_accepted", b), ("second_reader_agrees", b),
                         ("has_dropped_fields", b), ("review_flags", L(s))])
 
 
@@ -423,7 +427,7 @@ def build_tables(data, pa):
                    "section_basis": c.get("section_basis"), "context_reader_tier": c.get("reader_tier"),
                    "context_readers": c.get("readers"), "item_id": it.get("id"), "type": it.get("type"),
                    "temperature_K": fnum(t.get("T_K")), "duration_hours": fnum(d.get("hours")),
-                   "quote": it.get("quote"), "page": it.get("page"),
+                   "quote": it.get("quote"), "quote_clipped": bool(it.get("quote_clipped")), "page": it.get("page"),
                    "extraction_accepted": it.get("extraction_accepted"),
                    "second_reader_agrees": it.get("second_reader_agrees"),
                    "has_dropped_fields": bool(it.get("has_dropped_fields")),

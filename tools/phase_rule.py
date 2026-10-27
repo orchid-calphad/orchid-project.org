@@ -164,6 +164,7 @@ class PhaseRule:
 
     # ------------------------------------------------------------------ label -> registry phase --
     def map_label(self, rec, label, model_phase):
+        import phase_label_check as plc
         pk = rec.get("paper") or ""
         ns = ("paper:" + pk[4:]) if pk.startswith("doi:") else ("paper:sha256-" + pk[7:] if pk.startswith("sha256:")
                                                                   else None)
@@ -172,6 +173,8 @@ class PhaseRule:
         # only: it never maps the same printed label in another system of the paper
         cands = {p["id"]: p for p in (self.by_paper.get(key, []) if ns else [])
                  if p.get("system") == rec.get("system") or (key, p["id"]) not in self.alias_paper_names}
+        cands = {pid: p for pid, p in cands.items() if not plc.terminal_mapping_error(
+            label, p.get("preferred_name", ""), rec.get("elements") or rec.get("system", "").split("-"), p)}
         if not cands and model_phase:
             p = self.by_tdbname.get(rec.get("system"), {}).get(str(model_phase).upper().split("#")[0])
             if p:
@@ -191,7 +194,8 @@ class PhaseRule:
                 key = tuple(sorted((k.upper(), round(float(v) / tot, 4)) for k, v in c.items()))
                 for p in self.by_formula.get(rec.get("system"), {}).get(key, []):
                     cands[p["id"]] = p
-        return list(cands.values())
+        return [p for p in cands.values() if not plc.terminal_mapping_error(
+            label, p.get("preferred_name", ""), rec.get("elements") or rec.get("system", "").split("-"), p)]
 
     @staticmethod
     def compound(p):

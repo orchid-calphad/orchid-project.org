@@ -1,0 +1,1650 @@
+{
+  "review_id": "srsi-table2-20261026",
+  "reporting_doi": "10.1016/j.calphad.2011.09.007",
+  "existing_resolved_doi": "10.1016/j.calphad.2009.07.001",
+  "verified_original_doi": "10.1016/j.jallcom.2009.05.083",
+  "pdf_page": 2,
+  "table": 2,
+  "reference_label": "17",
+  "basis": "The GGA and LDA entries in Table 2 are first-principles calculations, repeated from Garay et al. The printed reference 17 identifies J. Alloys Compd. 484 (2009) 822\u2013831. Preserve reported values, uncertainty fields and conditions; count repeated results once.",
+  "records": [
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-XJH7MKZWNI.5dc3eb",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 2
+      },
+      "merged_ids": [
+        "ORC-XJH7MKZWNI.965cbc"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.666667
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "SiSr2",
+          "model_phase": "SISR2_C37"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r02#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 1.895
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -37.9,
+      "value_printed": -37.9,
+      "value_stored": -37900.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-R7MCVZ3TXI.30dace",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 3
+      },
+      "merged_ids": [
+        "ORC-R7MCVZ3TXI.face3f"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.666667
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "SiSr2",
+          "model_phase": "SISR2_C37"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r03#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.065
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -41.3,
+      "value_printed": -41.3,
+      "value_stored": -41300.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-4IQIRR4G6L.18917c",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 5
+      },
+      "merged_ids": [
+        "ORC-4IQIRR4G6L.8ad5ad"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.625
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "Si3Sr5",
+          "model_phase": "SI3SR5_D8L"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r05#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.015
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -40.3,
+      "value_printed": -40.3,
+      "value_stored": -40300.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-4NZW6V5CB7.2c7067",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 6
+      },
+      "merged_ids": [
+        "ORC-4NZW6V5CB7.e7d668"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.625
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "Si3Sr5",
+          "model_phase": "SI3SR5_D8L"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r06#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.215
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -44.3,
+      "value_printed": -44.3,
+      "value_stored": -44300.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": "dft",
+          "before": "model",
+          "evidence": {
+            "printed": null
+          },
+          "field": "evidence_class",
+          "gate": "page",
+          "rule": "first_principles_value_coded_model",
+          "visual_check": {
+            "checked": "2026-10-24",
+            "image_sha256": "6ddbcf7881b8a1e25231b7c1f2ead4ac2c90f281b3c0e7fcee390cf3cf0b08c4",
+            "page": 2,
+            "pdf_sha256_prefix": "0735078f7a34cd04",
+            "seen": "Table 2 '...calculated enthalpies of formation by GGA and LDA': SiSr rows '-51.7 +/- 4.1, [15]', '-46.9, GGA [17]', '-53.1, LDA [17]' kJ/mol atoms; CrB, oC8 Cmcm.",
+            "verdict": "corrected"
+          }
+        },
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "dft",
+      "evidence_class_before_gates": "model",
+      "evidence_identity": {
+        "alias_ids": [
+          "ORC-ZFGCMVYTPX.bdc602"
+        ],
+        "basis": "Garay et al. CALPHAD 2009 Table 2 reports -46.9 kJ/mol-atom for SrSi in the first-principles GGA column. Li et al. 2011 Table 2 repeats -46.9 as GGA and cites Garay et al. J. Alloys Compd. 484 (2009) 822-831. That original Table 4 reports -46.89 in the GGA column, rounding to -46.9; the CALPHAD paper also cites that calculation paper as reference 29. The two retained reports refer to the same SrSi GGA result.",
+        "canonical_id": "ORC-5VW6EUBSRK.174c2f",
+        "canonical_reporting_source": {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "pdf_page": 4,
+          "printed_page": 553,
+          "reference_label": "29 (related first-principles paper)",
+          "table": 2
+        },
+        "printed_page": 827,
+        "reporting_source": {
+          "doi": "10.1016/j.calphad.2011.09.007",
+          "pdf_page": 2,
+          "reference_label": "17",
+          "table": 2
+        },
+        "role": "duplicate_representation",
+        "source_doi": "10.1016/j.jallcom.2009.05.083",
+        "source_link_discrepancy": {
+          "basis": "Reference 17 in Li et al. names the J. Alloys Compd. calculation paper, but the current resolver links to the related CALPHAD assessment. Identity was verified against both source PDFs.",
+          "existing_resolved_doi": "10.1016/j.calphad.2009.07.001",
+          "status": "documented; broader reference-resolution correction remains separate",
+          "verified_original_doi": "10.1016/j.jallcom.2009.05.083"
+        },
+        "source_rounding": {
+          "basis": "Original Table 4 GGA column versus one-decimal reports in the two CALPHAD tables. The retained values are not replaced by the more precise primary-source value.",
+          "original_source_value_kJ_mol_atom": -46.89,
+          "retained_reporting_value_kJ_mol_atom": -46.9
+        },
+        "table": 4
+      },
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-ZFGCMVYTPX.bdc602",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 8
+      },
+      "merged_ids": [
+        "ORC-ZFGCMVYTPX.cf19f8"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "class_gate": "first-principles (DFT) value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.5
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "SiSr",
+          "model_phase": "SISR_B33"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r08#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.345
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 10.01,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                7.101,
+                13.266
+              ],
+              "class": "dft",
+              "entry": "dft/literature/strata/pblock_anion",
+              "floor": 10.01,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 124,
+              "stratum": "literature/pblock_anion",
+              "value": 10.01
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -46.9,
+      "value_printed": -46.9,
+      "value_stored": -46900.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-VDSFOJ7ZWT.428991",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 9
+      },
+      "merged_ids": [
+        "ORC-VDSFOJ7ZWT.865ef8"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.5
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "SiSr",
+          "model_phase": "SISR_B33"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r09#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.655
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -53.1,
+      "value_printed": -53.1,
+      "value_stored": -53100.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-UDVK5MDZST.136b26",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 11
+      },
+      "merged_ids": [
+        "ORC-UDVK5MDZST.55a3f6"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.333333
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "\u03b2-Si2Sr",
+          "model_phase": "SI2SR_CC"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r11#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 1.795
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -35.9,
+      "value_printed": -35.9,
+      "value_stored": -35900.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        }
+      ],
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted"
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-D5KD6WENLG.84dafb",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 12
+      },
+      "merged_ids": [
+        "ORC-D5KD6WENLG.9fd845"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.333333
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "\u03b2-Si2Sr",
+          "model_phase": "SI2SR_CC"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r12#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.235
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -44.7,
+      "value_printed": -44.7,
+      "value_stored": -44700.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted",
+        "specification_gaps": [
+          "state:T_K",
+          "temperature not stated"
+        ],
+        "state_fully_specified": false
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-PPFJUUN6ZW.607caf",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 14
+      },
+      "merged_ids": [
+        "ORC-PPFJUUN6ZW.637855"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.333333
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "\u03b1-Si2Sr",
+          "model_phase": "SI2SR_ALPHA"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r14#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_basis": "not_printed",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 1.785
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -35.7,
+      "value_printed": -35.7,
+      "value_stored": -35700.0
+    },
+    {
+      "chemical_system": "SI-SR",
+      "cited_sources": [
+        {
+          "doi": "10.1016/j.calphad.2009.07.001",
+          "first_author": "Garay",
+          "kind": "assessment",
+          "label": "17",
+          "paper": "doi:10.1016/j.calphad.2009.07.001",
+          "reference": "A. Garay, M.E. Williams, G. Tr\u00e1paga, R. Arr\u00f3yave, Thermodynamics, lattice stability and defect structure of strontium silicides via first-principles calculations, J. Alloys Compd. 484 (2009) 822\u2013831.",
+          "status": "resolved",
+          "year": "2009"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "elements": [
+        "SI",
+        "SR"
+      ],
+      "evidence_class": "model",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted",
+        "specification_gaps": [
+          "state:T_K",
+          "temperature not stated"
+        ],
+        "state_fully_specified": false
+      },
+      "fold_lpo": 0,
+      "fold_lso": 4,
+      "id": "ORC-GM7U7E26UE.427288",
+      "locator": {
+        "artifact": "table",
+        "asset": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2",
+        "caption": "Reported experimental information on the intermediate phases as well as calculated enthalpies of formation by GGA and LDA.",
+        "label": "2",
+        "page": 2,
+        "row": 15
+      },
+      "merged_ids": [
+        "ORC-GM7U7E26UE.f8b21c"
+      ],
+      "model_unlinked_reason": "reporting paper's own calculation, several TDBs cite this paper (SiSr-09Gar-ass.tdb, SiSr-09Gar-sub.tdb)",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "model_value",
+        "measured_in": "doi:10.1016/j.calphad.2009.07.001",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "SR": 0.333333
+      },
+      "overall_composition_basis": "from_formula",
+      "paper": "doi:10.1016/j.calphad.2011.09.007",
+      "paper_id": "doi:10.1016/j.calphad.2011.09.007",
+      "phases": [
+        {
+          "label": "\u03b1-Si2Sr",
+          "model_phase": "SI2SR_ALPHA"
+        }
+      ],
+      "pid": "doi:10.1016/j.calphad.2011.09.007/p2/tab-2/r15#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "SI": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "DIAMOND_A4"
+        },
+        "SR": {
+          "fixed_state_variables": {
+            "T": 298.15
+          },
+          "phase": "FCC_A1"
+        }
+      },
+      "source_system": "SI-SR",
+      "system": "SI-SR",
+      "temperature_basis": "not_printed",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.1
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 ffca6a37ee60",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.5,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.994852,
+                4.245425
+              ],
+              "class": "model_calculated",
+              "entry": "model/HM_FORM",
+              "floor": 3.5,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 2076,
+              "value": 3.5
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "column_header",
+      "unit_printed": "kJ/mol atoms",
+      "unit_stored": "J/mol-atom",
+      "value": -42.0,
+      "value_printed": -42.0,
+      "value_stored": -42000.0
+    }
+  ],
+  "methods": {
+    "ORC-XJH7MKZWNI.5dc3eb": "GGA",
+    "ORC-R7MCVZ3TXI.30dace": "LDA",
+    "ORC-4IQIRR4G6L.18917c": "GGA",
+    "ORC-4NZW6V5CB7.2c7067": "LDA",
+    "ORC-ZFGCMVYTPX.bdc602": "GGA",
+    "ORC-VDSFOJ7ZWT.428991": "LDA",
+    "ORC-UDVK5MDZST.136b26": "GGA",
+    "ORC-D5KD6WENLG.84dafb": "LDA",
+    "ORC-PPFJUUN6ZW.607caf": "GGA",
+    "ORC-GM7U7E26UE.427288": "LDA"
+  }
+}

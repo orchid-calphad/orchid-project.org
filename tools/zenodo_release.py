@@ -66,7 +66,7 @@ MAX_BYTES = 50 * 10**9  # Zenodo per-record limit
 ZIP_DATE = (1980, 1, 1, 0, 0, 0)
 STORED = (".gz", ".parquet", ".zip", ".png", ".jpg")
 
-DOCS = ["README.md", "CHANGELOG.md", "LICENSE", "LICENSES.md", "NOTICE.md"]
+DOCS = ["README.md", "CHANGELOG.md", "LICENSE", "LICENSES.md", "NOTICE.md", "CITATIONS.md", "CITATIONS.json"]
 RECORDS = {  # name -> (include patterns, exclude patterns); "dir/**" = everything below dir
     "orchid-data": (DOCS + ["CITATION.cff", "DATASET_CARD.md", "parquet/MANIFEST.json", "zenodo/README.md",
                             "zenodo/dois.json", "zenodo/*.metadata.json", "zenodo/metadata_numbers.json"], []),

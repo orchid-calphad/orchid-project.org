@@ -1,0 +1,979 @@
+{
+  "review_id": "rare-earth-boride-classification-20261027",
+  "reporting_doi": "10.1016/j.calphad.2020.101740",
+  "reporting_pdf_sha256": "2b83f091c2d978f372817fe433338560df2e9bb75a9799dd53365059ff4c588b",
+  "records": [
+    {
+      "chemical_system": "B-CE",
+      "cited_sources": [
+        {
+          "kind": "unknown",
+          "label": "30",
+          "status": "unresolved"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": "B-CE",
+          "before": "B-CE-DY-LU",
+          "evidence": {
+            "basis": "phase_formula",
+            "overall_composition": {
+              "CE": 0.2,
+              "DY": 0.0,
+              "LU": 0.0
+            },
+            "phases": [
+              "CeB4"
+            ]
+          },
+          "field": "system",
+          "gate": "A1",
+          "rule": "system_of_the_state"
+        }
+      ],
+      "elements": [
+        "B",
+        "CE"
+      ],
+      "evidence_class": "dft",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted",
+        "specification_gaps": [
+          "reference-dependent quantity without a resolved reference state",
+          "state:T_K",
+          "state:computation_context",
+          "state:reference_state",
+          "temperature not stated"
+        ],
+        "state_fully_specified": false,
+        "system_is_state_subsystem": true
+      },
+      "fold_lpo": 4,
+      "fold_lso": 0,
+      "id": "ORC-SQH32E73M5",
+      "locator": {
+        "artifact": "table",
+        "asset": "sha256:2b83f091c2d978f3/p25/tab-2",
+        "caption": "The experimental and calculated enthalpies of formation of intermetallic compounds in the RE-B (RE=Ce, Dy, Lu) binary systems",
+        "label": "2",
+        "page": 25,
+        "row": 3
+      },
+      "method": "First-principle calculation",
+      "method_basis": "printed in the table row/column",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_other_calculation",
+        "class": "computed",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "CE": 0.2
+      },
+      "overall_composition_basis": "from_formula",
+      "overall_composition_stored": {
+        "CE": 0.2,
+        "DY": 0.0,
+        "LU": 0.0
+      },
+      "paper": "doi:10.1016/j.calphad.2020.101740",
+      "paper_id": "doi:10.1016/j.calphad.2020.101740",
+      "phases": [
+        {
+          "label": "CeB4"
+        }
+      ],
+      "pid": "sha256:2b83f091c2d978f3/p25/tab-2/r03#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "B": {
+          "phase": "printed:none"
+        },
+        "CE": {
+          "phase": "printed:none"
+        }
+      },
+      "reference_state_stored": {
+        "B": {
+          "phase": "printed:none"
+        },
+        "CE": {
+          "phase": "printed:none"
+        },
+        "DY": {
+          "phase": "printed:none"
+        },
+        "LU": {
+          "phase": "printed:none"
+        }
+      },
+      "source_system": "B-CE-DY-LU",
+      "system": "B-CE",
+      "temperature_basis": "not_printed",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "printed",
+        "value": 1.5
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 6229649aa8e4",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 10.01,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                7.101,
+                13.266
+              ],
+              "class": "dft",
+              "entry": "dft/literature/strata/pblock_anion",
+              "floor": 10.01,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 124,
+              "stratum": "literature/pblock_anion",
+              "value": 10.01
+            },
+            "sigma_printed": {
+              "kind": "plus_minus_coverage_not_stated",
+              "taken_as": "1 sigma",
+              "value": 1.5
+            },
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.05
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "printed_unit",
+      "unit_printed": "kJ/mol-atom",
+      "unit_stored": "J/mol-atom",
+      "value": -53.5,
+      "value_printed": -53.5,
+      "value_stored": -53500.0
+    },
+    {
+      "chemical_system": "B-CE",
+      "cited_sources": [
+        {
+          "kind": "unknown",
+          "label": "32",
+          "status": "unresolved"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": "B-CE",
+          "before": "B-CE-DY-LU",
+          "evidence": {
+            "basis": "phase_formula",
+            "overall_composition": {
+              "CE": 0.2,
+              "DY": 0.0,
+              "LU": 0.0
+            },
+            "phases": [
+              "CeB4"
+            ]
+          },
+          "field": "system",
+          "gate": "A1",
+          "rule": "system_of_the_state"
+        }
+      ],
+      "elements": [
+        "B",
+        "CE"
+      ],
+      "evidence_class": "experimental",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted",
+        "specification_gaps": [
+          "reference-dependent quantity without a resolved reference state",
+          "state:reference_state"
+        ],
+        "state_fully_specified": false,
+        "system_is_state_subsystem": true
+      },
+      "fold_lpo": 4,
+      "fold_lso": 0,
+      "id": "ORC-XGTVCVN6TQ",
+      "locator": {
+        "artifact": "table",
+        "asset": "sha256:2b83f091c2d978f3/p25/tab-2",
+        "caption": "The experimental and calculated enthalpies of formation of intermetallic compounds in the RE-B (RE=Ce, Dy, Lu) binary systems",
+        "label": "2",
+        "page": 25,
+        "row": 5
+      },
+      "method": "Experiment",
+      "method_basis": "printed in the table row/column",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_experimental",
+        "class": "experimental",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "CE": 0.2
+      },
+      "overall_composition_basis": "from_formula",
+      "overall_composition_stored": {
+        "CE": 0.2,
+        "DY": 0.0,
+        "LU": 0.0
+      },
+      "paper": "doi:10.1016/j.calphad.2020.101740",
+      "paper_id": "doi:10.1016/j.calphad.2020.101740",
+      "phases": [
+        {
+          "label": "CeB4"
+        }
+      ],
+      "pid": "sha256:2b83f091c2d978f3/p25/tab-2/r05#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "B": {
+          "phase": "printed:none"
+        },
+        "CE": {
+          "phase": "printed:none"
+        }
+      },
+      "reference_state_stored": {
+        "B": {
+          "phase": "printed:none"
+        },
+        "CE": {
+          "phase": "printed:none"
+        },
+        "DY": {
+          "phase": "printed:none"
+        },
+        "LU": {
+          "phase": "printed:none"
+        }
+      },
+      "source_system": "B-CE-DY-LU",
+      "system": "B-CE",
+      "temperature_K": 298.15,
+      "temperature_basis": "assumed_standard_298K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.4952
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 6229649aa8e4",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.8,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.133406,
+                6.594162
+              ],
+              "class": "experimental_unspecified",
+              "entry": "value_types/HM_FORM/classes/experimental_unspecified",
+              "floor": 3.8,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 30,
+              "value": 3.8
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.0005
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "printed_unit",
+      "unit_printed": "kJ/mol-atom",
+      "unit_stored": "J/mol-atom",
+      "value": -49.904,
+      "value_printed": -49.904,
+      "value_stored": -49904.0
+    },
+    {
+      "chemical_system": "B-DY",
+      "cited_sources": [
+        {
+          "kind": "unknown",
+          "label": "38",
+          "status": "unresolved"
+        }
+      ],
+      "conditions": {
+        "kind": "cited_source",
+        "note": "conditions in the cited source"
+      },
+      "corrections": [
+        {
+          "after": 298.15,
+          "before": 298.0,
+          "evidence": {
+            "printed": "298 K"
+          },
+          "field": "temperature_K",
+          "gate": "G1",
+          "rule": "standard_reference_temperature"
+        },
+        {
+          "after": "B-DY",
+          "before": "B-CE-DY-LU",
+          "evidence": {
+            "basis": "phase_formula",
+            "overall_composition": {
+              "CE": 0.0,
+              "DY": 0.333333,
+              "LU": 0.0
+            },
+            "phases": [
+              "DyB2"
+            ]
+          },
+          "field": "system",
+          "gate": "A1",
+          "rule": "system_of_the_state"
+        }
+      ],
+      "elements": [
+        "B",
+        "DY"
+      ],
+      "evidence_class": "experimental",
+      "flags": {
+        "calphad_check": "not_available",
+        "espei_certified": false,
+        "espei_ready": false,
+        "extraction_accepted": true,
+        "review_state": "extracted",
+        "specification_gaps": [
+          "reference-dependent quantity without a resolved reference state"
+        ],
+        "state_fully_specified": false,
+        "system_is_state_subsystem": true
+      },
+      "fold_lpo": 4,
+      "fold_lso": 0,
+      "id": "ORC-RGYHX5NTA6",
+      "locator": {
+        "artifact": "table",
+        "asset": "sha256:2b83f091c2d978f3/p25/tab-2",
+        "caption": "The experimental and calculated enthalpies of formation of intermetallic compounds in the RE-B (RE=Ce, Dy, Lu) binary systems",
+        "label": "2",
+        "page": 25,
+        "row": 15
+      },
+      "method": "Experiments",
+      "method_basis": "printed in the table row/column",
+      "observation_type": "equilibrium_property",
+      "origin": {
+        "basis": "printed_source_experimental",
+        "class": "experimental",
+        "own_work_of_paper": false
+      },
+      "overall_composition": {
+        "DY": 0.333333
+      },
+      "overall_composition_basis": "from_formula",
+      "overall_composition_stored": {
+        "CE": 0.0,
+        "DY": 0.333333,
+        "LU": 0.0
+      },
+      "paper": "doi:10.1016/j.calphad.2020.101740",
+      "paper_id": "doi:10.1016/j.calphad.2020.101740",
+      "phases": [
+        {
+          "label": "DyB2"
+        }
+      ],
+      "pid": "sha256:2b83f091c2d978f3/p25/tab-2/r15#equilibrium_property",
+      "pressure_Pa": 101325,
+      "pressure_basis": "assumed_default_1_atm_not_printed",
+      "pressure_basis_stored": "unstated_assumed",
+      "property": "HM_FORM",
+      "property_group": "formation",
+      "property_printed": "Enthalpy of formation",
+      "reader_agreement": "multi_reader",
+      "reader_agreement_label": "confirmed (two or more readers)",
+      "reader_tier": "preliminary_flash+claude",
+      "readers": [
+        "claude-opus-5.5",
+        "gemini-3.8-flash",
+        "text_layer"
+      ],
+      "record_kind": "general_table",
+      "reference_state": {
+        "B": {
+          "phase": "printed:\u03b1-Dy and \u03b2-B"
+        },
+        "DY": {
+          "phase": "printed:\u03b1-Dy and \u03b2-B"
+        }
+      },
+      "reference_state_stored": {
+        "B": {
+          "phase": "printed:\u03b1-Dy and \u03b2-B"
+        },
+        "CE": {
+          "phase": "printed:\u03b1-Dy and \u03b2-B"
+        },
+        "DY": {
+          "phase": "printed:\u03b1-Dy and \u03b2-B"
+        },
+        "LU": {
+          "phase": "printed:\u03b1-Dy and \u03b2-B"
+        }
+      },
+      "source_system": "B-CE-DY-LU",
+      "system": "B-DY",
+      "temperature_K": 298.15,
+      "temperature_K_stored": 298.0,
+      "temperature_basis": "printed",
+      "temperature_printed": "298 K",
+      "tool_release": "tools-release-v2.1.18",
+      "uncertainty": {
+        "basis": "stated_default",
+        "note": "5% default",
+        "value": 2.722
+      },
+      "uncertainty_budget": {
+        "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 6229649aa8e4",
+        "quantities": {
+          "value": {
+            "sigma_composition": null,
+            "sigma_conversion": null,
+            "sigma_effective": 3.8,
+            "sigma_method": {
+              "basis": "calibrated",
+              "ci95": [
+                2.133406,
+                6.594162
+              ],
+              "class": "experimental_unspecified",
+              "entry": "value_types/HM_FORM/classes/experimental_unspecified",
+              "floor": 3.8,
+              "floor_unit": "kJ/mol-atom",
+              "n_pairs": 30,
+              "value": 3.8
+            },
+            "sigma_printed": null,
+            "sigma_reading": {
+              "basis": "last_printed_digit",
+              "value": 0.005
+            },
+            "sigma_scatter": null,
+            "unit": "kJ/mol-atom",
+            "value_type": "HM_FORM"
+          }
+        },
+        "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+      },
+      "unit": "kJ/mol-atom",
+      "unit_basis": "printed_unit",
+      "unit_printed": "kJ/mol-atom",
+      "unit_stored": "J/mol-atom",
+      "value": -54.44,
+      "value_printed": -54.44,
+      "value_stored": -54440.0
+    }
+  ],
+  "decisions": {
+    "ORC-SQH32E73M5": {
+      "evidence_class": "experimental",
+      "method": "direct synthesis calorimetry",
+      "source_doi": "10.1016/0925-8388(95)80024-7",
+      "basis": "Original paper Table 1, printed page 245, confirms CeB4 -53.5 +/- 1.5 kJ/g-atom by direct synthesis calorimetry. Reporting paper page 5 agrees; Table 2 classification conflicts. Calorimeter temperature 1473 K is not the standard formation reference temperature.",
+      "primary_numerical_table_verified": true,
+      "primary_pdf_sha256": "373f655e240123c77fc9c6e0b214ca2bbf8f400166526c40ea9d57bbf08e2470"
+    },
+    "ORC-XGTVCVN6TQ": {
+      "evidence_class": "dft",
+      "method": "first-principles calculation (OQMD)",
+      "source_url": "http://oqmd.org",
+      "basis": "Reporting paper page 5 identifies OQMD calculations; reference 32 on page 16 is OQMD (accessed 5 May 2019). Table 2 Experiment label conflicts. Historical OQMD record and numerical/reference-state match remain unverified.",
+      "primary_numerical_table_verified": false
+    },
+    "ORC-RGYHX5NTA6": {
+      "evidence_class": "dft",
+      "method": "first-principles calculation",
+      "source_doi": "10.1016/j.calphad.2018.04.004",
+      "basis": "Reporting paper page 6 explicitly identifies Colinet and Tedenac first-principles DyB2 calculation, reference 38 on page 17. Publisher abstract confirms DFT/VASP/GGA method. Table 2 Experiments label conflicts. Original PDF retrieval returned item-specific HTTP 401; numerical/reference-state match remains unverified.",
+      "primary_numerical_table_verified": false
+    }
+  },
+  "unresolved_identity_pairs": [
+    [
+      "ORC-XHZKQDXC67",
+      "ORC-FB5PWWV3MF"
+    ]
+  ],
+  "policy": "Preserve all numerical fields, printed uncertainties, conditions and printed citation labels. Exclude reviewed rows from fitting and calibration pending complete source-state verification. No LuB12 deduplication.",
+  "identity_review": {
+    "review_id": "lub12-source-identity-20261027",
+    "records": [
+      {
+        "chemical_system": "B-LU",
+        "cited_sources": [
+          {
+            "kind": "unknown",
+            "label": "30",
+            "status": "unresolved"
+          }
+        ],
+        "conditions": {
+          "kind": "cited_source",
+          "note": "conditions in the cited source"
+        },
+        "corrections": [
+          {
+            "after": 298.15,
+            "before": 298.0,
+            "evidence": {
+              "printed": "298 K"
+            },
+            "field": "temperature_K",
+            "gate": "G1",
+            "rule": "standard_reference_temperature"
+          },
+          {
+            "after": "B-LU",
+            "before": "B-CE-DY-LU",
+            "evidence": {
+              "basis": "phase_formula",
+              "overall_composition": {
+                "CE": 0.0,
+                "DY": 0.0,
+                "LU": 0.076923
+              },
+              "phases": [
+                "LuB12"
+              ]
+            },
+            "field": "system",
+            "gate": "A1",
+            "rule": "system_of_the_state"
+          }
+        ],
+        "elements": [
+          "B",
+          "LU"
+        ],
+        "evidence_class": "dft",
+        "flags": {
+          "calphad_check": "not_available",
+          "espei_certified": false,
+          "espei_ready": false,
+          "extraction_accepted": true,
+          "review_state": "extracted",
+          "specification_gaps": [
+            "reference-dependent quantity without a resolved reference state",
+            "state:computation_context"
+          ],
+          "state_fully_specified": false,
+          "system_is_state_subsystem": true
+        },
+        "fold_lpo": 4,
+        "fold_lso": 3,
+        "id": "ORC-XHZKQDXC67",
+        "locator": {
+          "artifact": "table",
+          "asset": "sha256:2b83f091c2d978f3/p25/tab-2",
+          "caption": "The experimental and calculated enthalpies of formation of intermetallic compounds in the RE-B (RE=Ce, Dy, Lu) binary systems",
+          "label": "2",
+          "page": 25,
+          "row": 36
+        },
+        "method": "First-principle calculation",
+        "method_basis": "printed in the table row/column",
+        "observation_type": "equilibrium_property",
+        "origin": {
+          "basis": "printed_source_other_calculation",
+          "class": "computed",
+          "own_work_of_paper": false
+        },
+        "overall_composition": {
+          "LU": 0.076923
+        },
+        "overall_composition_basis": "from_formula",
+        "overall_composition_stored": {
+          "CE": 0.0,
+          "DY": 0.0,
+          "LU": 0.076923
+        },
+        "paper": "doi:10.1016/j.calphad.2020.101740",
+        "paper_id": "doi:10.1016/j.calphad.2020.101740",
+        "phases": [
+          {
+            "label": "LuB12"
+          }
+        ],
+        "pid": "sha256:2b83f091c2d978f3/p25/tab-2/r36#equilibrium_property",
+        "pressure_Pa": 101325,
+        "pressure_basis": "assumed_default_1_atm_not_printed",
+        "pressure_basis_stored": "unstated_assumed",
+        "property": "HM_FORM",
+        "property_group": "formation",
+        "property_printed": "Enthalpy of formation",
+        "reader_agreement": "multi_reader",
+        "reader_agreement_label": "confirmed (two or more readers)",
+        "reader_tier": "preliminary_flash+claude",
+        "readers": [
+          "claude-opus-5.5",
+          "gemini-3.8-flash",
+          "text_layer"
+        ],
+        "record_kind": "general_table",
+        "reference_state": {
+          "B": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "LU": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          }
+        },
+        "reference_state_stored": {
+          "B": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "CE": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "DY": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "LU": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          }
+        },
+        "source_system": "B-CE-DY-LU",
+        "system": "B-LU",
+        "temperature_K": 298.15,
+        "temperature_K_stored": 298.0,
+        "temperature_basis": "printed",
+        "temperature_printed": "298 K",
+        "tool_release": "tools-release-v2.1.18",
+        "uncertainty": {
+          "basis": "stated_default",
+          "note": "5% default",
+          "value": 1.1827
+        },
+        "uncertainty_budget": {
+          "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 2ac260fa1872",
+          "quantities": {
+            "value": {
+              "sigma_composition": null,
+              "sigma_conversion": null,
+              "sigma_effective": 10.05,
+              "sigma_method": {
+                "basis": "calibrated",
+                "ci95": [
+                  7.205,
+                  13.326
+                ],
+                "class": "dft",
+                "entry": "dft/literature/strata/pblock_anion",
+                "floor": 10.05,
+                "floor_unit": "kJ/mol-atom",
+                "n_pairs": 123,
+                "stratum": "literature/pblock_anion",
+                "value": 10.05
+              },
+              "sigma_printed": null,
+              "sigma_reading": {
+                "basis": "last_printed_digit",
+                "value": 0.0005
+              },
+              "sigma_scatter": null,
+              "unit": "kJ/mol-atom",
+              "value_type": "HM_FORM"
+            }
+          },
+          "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+        },
+        "unit": "kJ/mol-atom",
+        "unit_basis": "printed_unit",
+        "unit_printed": "kJ/mol-atom",
+        "unit_stored": "J/mol-atom",
+        "value": -23.654,
+        "value_printed": -23.654,
+        "value_stored": -23654.0
+      },
+      {
+        "chemical_system": "B-LU",
+        "cited_sources": [
+          {
+            "kind": "unknown",
+            "label": "31",
+            "status": "unresolved"
+          }
+        ],
+        "conditions": {
+          "kind": "cited_source",
+          "note": "conditions in the cited source"
+        },
+        "corrections": [
+          {
+            "after": 298.15,
+            "before": 298.0,
+            "evidence": {
+              "printed": "298 K"
+            },
+            "field": "temperature_K",
+            "gate": "G1",
+            "rule": "standard_reference_temperature"
+          },
+          {
+            "after": "B-LU",
+            "before": "B-CE-DY-LU",
+            "evidence": {
+              "basis": "phase_formula",
+              "overall_composition": {
+                "CE": 0.0,
+                "DY": 0.0,
+                "LU": 0.076923
+              },
+              "phases": [
+                "LuB12"
+              ]
+            },
+            "field": "system",
+            "gate": "A1",
+            "rule": "system_of_the_state"
+          }
+        ],
+        "elements": [
+          "B",
+          "LU"
+        ],
+        "evidence_class": "dft",
+        "flags": {
+          "calphad_check": "not_available",
+          "espei_certified": false,
+          "espei_ready": false,
+          "extraction_accepted": true,
+          "review_state": "extracted",
+          "specification_gaps": [
+            "reference-dependent quantity without a resolved reference state",
+            "state:computation_context"
+          ],
+          "state_fully_specified": false,
+          "system_is_state_subsystem": true
+        },
+        "fold_lpo": 4,
+        "fold_lso": 3,
+        "id": "ORC-FB5PWWV3MF",
+        "locator": {
+          "artifact": "table",
+          "asset": "sha256:2b83f091c2d978f3/p25/tab-2",
+          "caption": "The experimental and calculated enthalpies of formation of intermetallic compounds in the RE-B (RE=Ce, Dy, Lu) binary systems",
+          "label": "2",
+          "page": 25,
+          "row": 37
+        },
+        "method": "First-principle calculation",
+        "method_basis": "printed in the table row/column",
+        "observation_type": "equilibrium_property",
+        "origin": {
+          "basis": "printed_source_other_calculation",
+          "class": "computed",
+          "own_work_of_paper": false
+        },
+        "overall_composition": {
+          "LU": 0.076923
+        },
+        "overall_composition_basis": "from_formula",
+        "overall_composition_stored": {
+          "CE": 0.0,
+          "DY": 0.0,
+          "LU": 0.076923
+        },
+        "paper": "doi:10.1016/j.calphad.2020.101740",
+        "paper_id": "doi:10.1016/j.calphad.2020.101740",
+        "phases": [
+          {
+            "label": "LuB12"
+          }
+        ],
+        "pid": "sha256:2b83f091c2d978f3/p25/tab-2/r37#equilibrium_property",
+        "pressure_Pa": 101325,
+        "pressure_basis": "assumed_default_1_atm_not_printed",
+        "pressure_basis_stored": "unstated_assumed",
+        "property": "HM_FORM",
+        "property_group": "formation",
+        "property_printed": "Enthalpy of formation",
+        "reader_agreement": "multi_reader",
+        "reader_agreement_label": "confirmed (two or more readers)",
+        "reader_tier": "preliminary_flash+claude",
+        "readers": [
+          "claude-opus-5.5",
+          "gemini-3.8-flash",
+          "text_layer"
+        ],
+        "record_kind": "general_table",
+        "reference_state": {
+          "B": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "LU": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          }
+        },
+        "reference_state_stored": {
+          "B": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "CE": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "DY": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          },
+          "LU": {
+            "phase": "printed:\u03b1-Lu and \u03b2-B"
+          }
+        },
+        "source_system": "B-CE-DY-LU",
+        "system": "B-LU",
+        "temperature_K": 298.15,
+        "temperature_K_stored": 298.0,
+        "temperature_basis": "printed",
+        "temperature_printed": "298 K",
+        "tool_release": "tools-release-v2.1.18",
+        "uncertainty": {
+          "basis": "stated_default",
+          "note": "5% default",
+          "value": 1.1827
+        },
+        "uncertainty_budget": {
+          "calibration": "orchid-uncertainty-calibration 2026-10-24 (audit round 2) sha256 2ac260fa1872",
+          "quantities": {
+            "value": {
+              "sigma_composition": null,
+              "sigma_conversion": null,
+              "sigma_effective": 10.05,
+              "sigma_method": {
+                "basis": "calibrated",
+                "ci95": [
+                  7.205,
+                  13.326
+                ],
+                "class": "dft",
+                "entry": "dft/literature/strata/pblock_anion",
+                "floor": 10.05,
+                "floor_unit": "kJ/mol-atom",
+                "n_pairs": 123,
+                "stratum": "literature/pblock_anion",
+                "value": 10.05
+              },
+              "sigma_printed": null,
+              "sigma_reading": {
+                "basis": "last_printed_digit",
+                "value": 0.0005
+              },
+              "sigma_scatter": null,
+              "unit": "kJ/mol-atom",
+              "value_type": "HM_FORM"
+            }
+          },
+          "sigma_rule": "max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter)"
+        },
+        "unit": "kJ/mol-atom",
+        "unit_basis": "printed_unit",
+        "unit_printed": "kJ/mol-atom",
+        "unit_stored": "J/mol-atom",
+        "value": -23.654,
+        "value_printed": -23.654,
+        "value_stored": -23654.0
+      }
+    ],
+    "decision": "Preserve both literature records and exclude both from fitting and calibration until independent source identities are established. No deduplication or numerical substitution.",
+    "basis": "Table 2 page 25 prints -23.654 for LuB12 twice with references 30 and 31. Reference 30 on page 16 is Ce/Pr/Nd/Gd calorimetry; reference 31 is Materials Project. Lu-B prose on page 7 names MP31 and OQMD32. This conflict prevents a defensible row-to-source assignment. Equal values do not prove a duplicate.",
+    "reporting_doi": "10.1016/j.calphad.2020.101740",
+    "reporting_pdf_sha256": "2b83f091c2d978f372817fe433338560df2e9bb75a9799dd53365059ff4c588b",
+    "source_pages": [
+      7,
+      16,
+      25
+    ],
+    "snapshot_check": {
+      "mp": {
+        "path": "hulls/dft-mp/B/B-LU.json",
+        "phase": "mp-aaackvor",
+        "energy_eV_atom": -0.24636507384615286
+      },
+      "oqmd": {
+        "path": "hulls/dft-oqmd/B/B-LU.json",
+        "phase": "oqmd-28503",
+        "energy_eV_atom": -0.246470615769231
+      },
+      "limitation": "Current local snapshots do not establish the historical entries or original row attribution used by the reporting paper."
+    },
+    "readmission": "Verify original historical entry identities and numerical/reference-state provenance for both rows. If one calculation is repeated, retain both literature records and link to one source-verified canonical fitting observation. If independent, permit both with documented provenance."
+  }
+}

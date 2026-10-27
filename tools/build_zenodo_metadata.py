@@ -196,8 +196,11 @@ def cite_html(name, data):
     return h
 
 
+import project_credits
+
+
 def footer_html():
-    return ("<p>Browse: <a href=\"%s\">orchid-project.org</a> · data site <a href=\"%s\">data.orchid-project.org</a> · source "
+    return project_credits.html_block() + ("<p>Browse: <a href=\"%s\">orchid-project.org</a> · data site <a href=\"%s\">data.orchid-project.org</a> · source "
             "<a href=\"https://github.com/orchid-calphad/orchid-data\">github.com/orchid-calphad/orchid-data</a>.</p><p>%s</p>"
             % (WEBSITE, DATA_URL, oc.FUNDING_NOTE))
 
@@ -241,7 +244,7 @@ def description(name, data):
             "<h3>How</h3>" + I("<p>Tables and passages of lawfully held papers were read independently by language-model readers "
                                "(Gemini Flash, Claude Opus, Gemini Pro for confirmation) and the PDF text layer; a value is accepted "
                                "only on reader agreement plus deterministic checks: quote verification (the sentence must be verbatim "
-                               "on one page and contain the printed value), the field-placement rule (fields not printed in the quote "
+                               "on one page and contain the printed value; released quotes are at most 500 characters, a longer one is clipped at export to a contiguous part that still contains the printed value, flag <code>quote_clipped</code>), the field-placement rule (fields not printed in the quote "
                                "or row are dropped), printed-page sign checks of formation enthalpies, and cross-checks against DFT "
                                "(Materials Project, OQMD) and Kim et al. 2017. {lit_dups} exact duplicates were merged; reaction types "
                                "and property codes mapped to controlled vocabularies; every correction is listed with its evidence in "
@@ -511,6 +514,8 @@ def related(name, data):
             r += site
     if oc.PAPER:   # orchid_cite.PAPER, set when the paper has an arXiv id or DOI
         r.append({"identifier": oc.PAPER["identifier"], "relation": "isSupplementTo", "scheme": oc.PAPER["scheme"]})
+    existing = {(e["identifier"], e["relation"]) for e in r}
+    r += [e for e in project_credits.related_identifiers() if (e["identifier"], e["relation"]) not in existing]
     return r
 
 
@@ -531,8 +536,8 @@ def record(name, data):
             "communities": [{"identifier": oc.ZENODO_COMMUNITY}], "related_identifiers": related(name, data), "notes": notes}
     return {"_comment": "Zenodo deposition metadata (legacy REST format: PUT /api/deposit/depositions/<id> with this object as the body, "
                         "or enter the fields in the web form). Written by tools/build_zenodo_metadata.py (numbers: metadata_numbers.json); "
-                        "do not edit by hand. No `grants` (NSF 2608825 is not in Zenodo's awards database): enter the funding as a custom "
-                        "award, see ZENODO_FUNDING_MANUAL.md. publication_date is set by Zenodo at publication. DOI placeholders "
+                        "do not edit by hand. No `grants` payload: enter both NSF awards in the Funding form; use a custom "
+                        "award if no matching indexed award exists, see ZENODO_FUNDING_MANUAL.md. publication_date is set by Zenodo at publication. DOI placeholders "
                         "10.5281/zenodo.PENDING-<name> are replaced by tools/zenodo_release.py writeback.",
             "record": name, "doi": _doi(data, name), "metadata": meta}
 
@@ -564,7 +569,7 @@ def write_sheets(data, outdir):
         body += "<tr><td>Keywords (one each)</td><td>%s</td></tr>" % "<br>".join(E(k) for k in md["keywords"])
         body += "<tr><td>Language</td><td>English</td></tr><tr><td>Access</td><td>Open (public, no embargo)</td></tr>"
         body += "<tr><td>Community</td><td><code>%s</code></td></tr>" % E(md["communities"][0]["identifier"])
-        body += "<tr><td>Funding</td><td>custom award, see ZENODO_FUNDING_MANUAL.md (NSF, 2608825)</td></tr>"
+        body += "<tr><td>Funding</td><td>NSF awards 2608825 and 2534344; see ZENODO_FUNDING_MANUAL.md</td></tr>"
         body += "<tr><td>Additional notes</td><td>%s</td></tr></table>" % E(md["notes"])
         body += "<h2>Related works</h2><table><tr><th>Relation</th><th>Identifier</th><th>Resource type</th></tr>%s</table>" % rel
         body += "<h2>Description</h2><div class=d>%s</div>" % md["description"]

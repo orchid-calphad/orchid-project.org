@@ -68,6 +68,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import doi_corrections  # noqa: E402
 import orchid_cite  # noqa: E402
+import phase_label_check  # noqa: E402
 
 DOI_CORR = doi_corrections.load()   # shared DOI correction table
 
@@ -1070,6 +1071,10 @@ def build(a):
                 cid = cal["aliases"].get(cid, cid)
                 cid = redirect.get(cid, cid)
                 if cid in entries:
+                    en = entries[cid]
+                    model_name = en["models"][0]["phase_name"] if en["models"] else cid.split(":")[-1].upper()
+                    if phase_label_check.terminal_mapping_error(r.get("printed_label"), model_name, en["elements"], en):
+                        continue
                     entries[cid]["corpus"]["mappings"][(r.get("basis"), r.get("confidence"))] += 1
                     entries[cid]["corpus"].setdefault("labels", collections.Counter())[r.get("printed_label")] += 1
                     n_map += 1
@@ -1102,6 +1107,9 @@ def build(a):
                     basis = "exact_tdb_name"
                 if not pid or pid not in entries:
                     lit_stats["phase_mentions_unlinked"] += 1
+                    continue
+                if phase_label_check.terminal_mapping_error(lab, mp or str(lab), els, entries[pid]):
+                    lit_stats["terminal_phase_mentions_rejected"] += 1
                     continue
                 lit_stats["phase_mentions_linked"] += 1
                 seen[pid] = (lab, basis)
@@ -2066,6 +2074,15 @@ a review candidate. Paper labels come from the machine-extracted literature valu
 Every file stays below 45 MB: the full records are split by system, and `registry.json` is the index over them.
 To get all full records, read `registry.json` and then each distinct `detail` file (1 file per system).
 
+## TDB provenance
+
+`tdb_provenance.json`, `tdb_provenance.schema.json`, and `TDB_PROVENANCE.md` describe the generation method and
+potential of registered TDB artifacts (initially the four Cu-Zr example models). Join `models[].sha256` to
+`tdb_provenance.json` records by `sha256`. The `phaseforge` and `phaseforge_plus` tags distinguish the MLIP-only
+and fitted workflows; `potential` identifies the model and checkpoint. Missing matches mean unknown provenance.
+These metadata do not add review-only models to the phase registry or change thermodynamic values.
+They are generated separately by `tools/build_tdb_provenance.py` from reviewed example sidecars.
+
 ## Compact entry (`registry.json`)
 
 `{id, system, elements, preferred_name, status, structure, names[], tdb_names[], stoichiometry, counts, detail}`.
@@ -2217,7 +2234,9 @@ def main(argv=None):
         for d, _, fs in os.walk(out_dir):
             for f in fs:
                 disk.add(os.path.relpath(os.path.join(d, f), out_dir))
-        extra = sorted(x for x in disk - set(out) - {pq_ for pq_, _, _ in PARQUET_TABLES} - {man_rel}
+        # the TDB provenance files in phases/ are written and checked by build_tdb_provenance.py, not by this builder
+        owned_elsewhere = {"TDB_PROVENANCE.md", "tdb_provenance.json", "tdb_provenance.schema.json"}
+        extra = sorted(x for x in disk - set(out) - {pq_ for pq_, _, _ in PARQUET_TABLES} - {man_rel} - owned_elsewhere
                        if not x.startswith(PAGES_DIR + os.sep))
         bad += ["stale file: " + x for x in extra]
         pm = os.path.join(out_dir, man_rel)

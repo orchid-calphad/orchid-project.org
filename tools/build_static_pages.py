@@ -60,6 +60,7 @@ DATA_URL = "https://data.orchid-project.org/"
 SITE_URL = "https://orchid-project.org/"
 LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/"
 CITE_DATA = DEFAULT_DATA  # repository holding zenodo/dois.json (set from --data in main)
+AGENT_GUIDANCE = '## Agent use: fitting, identity, and evaluation\n- Extraction acceptance is not fitting eligibility. Check flags.espei_ready, flags.espei_certified, gate_failures, and flags.specification_gaps before fitting; MCP summaries expose the corresponding fields directly.\n- A human_review_correction_requires_downstream_revalidation specification gap blocks fitting. Preserve corrections with before/after values, source DOI, page, and adjudicator. AI-assisted source adjudication is not independent human re-review, and corrected records do not replace the frozen review sample used for accuracy estimates.\n- Deduplicate observations using duplicate_of and evidence_identity.canonical_id. Treat alternate-unit representations as one observation; merged_ids and merged_pids retain aliases. These identifiers are not evidence of independent measurements.\n- Use fold_lso for leave-system-out and fold_lpo for leave-paper-out evaluation. Keep duplicate and alternate-unit aliases in the same split, including aliases across papers; a paper split alone does not prove absence of leakage.\n- Keep experimental, model, dft, unspecified, and assessed_phase_diagram evidence separate. Materials Project and OQMD use different energy references. Use uncertainty_budget.sigma_effective with its documented basis.\n- Pin the data commit and record model hashes and the software environment. Cite original sources as well as ORCHID; a Zenodo DOI containing PENDING is not a published identifier.\n- The orchid-mcp package provides tools, resources, and citation guidance. Local use requires ORCHID_DATA_DIR and ORCHID_SITE_DATA_DIR; use fields=full for complete provenance. A working local server does not imply a public HTTP endpoint.\n'
 CAP_VALUES = 1500
 QUOTE_MAX = 400
 DATASET_NAME = "ORCHID data: literature thermodynamic data, calculated phase diagrams and DFT hulls"
@@ -1393,6 +1394,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "> %s" % desc, "",
         "Evidence classes are never mixed: experimental | model (CALPHAD, linked to the TDB by SHA-256) | dft | unspecified.",
         "Formation enthalpies are in kJ/mol-atom when the per-atom basis is known; temperatures in K; compositions in mole fraction.", "",
+        AGENT_GUIDANCE,
         "## Per system (SYS = element symbols, uppercase, sorted alphabetically, joined by '-', e.g. AL-NI)",
         "- Markdown page: %ssystems/<SYS>.md (summary, calculated diagrams, invariants, formation enthalpies with DFT, other properties, sources)" % DATA_URL,
         "- HTML page: %ssystems/<SYS>.html" % DATA_URL,
@@ -1432,7 +1434,7 @@ def index_pages(out, sys_summary, comp_summary, papers_all, paper_values, paper_
         "- Papers to read, corrections and new data (types A-E): https://github.com/orchid-calphad/orchid-data/blob/main/CONTRIBUTING.md and contributions/SCHEMA.md; plain-English guide %scontribute/" % SITE_URL, ""])
     lines = ["# ORCHID data: all systems", "", "> One line per chemical system: accepted literature values by evidence class, "
              "invariants, formation enthalpies, calculated phase diagrams. Append .md to read a system.", "",
-             "Release: %s. Licence: CC BY 4.0 (cite ORCHID and each source paper)." % release, "", "## Systems", ""]
+             "Release: %s. Licence: CC BY 4.0 (cite ORCHID and each source paper)." % release, "", AGENT_GUIDANCE, "## Systems", ""]
     for s in sorted(sys_summary, key=lambda k: (len(k.split("-")), k)):
         v = sys_summary[s]
         parts = ["%d values" % v["n"]]

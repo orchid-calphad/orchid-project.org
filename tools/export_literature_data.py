@@ -29,6 +29,9 @@ Deterministic: same inputs give byte-identical outputs (sorted keys, gzip mtime 
 """
 from __future__ import annotations
 
+import dft_evidence_identity as dft_identity
+import mgpb_evidence_review as mgpb_review
+import boride_evidence_review as boride_review
 import argparse
 import csv
 import glob
@@ -49,6 +52,7 @@ import literature_quality as quality  # noqa: E402
 import literature_gates as gates  # noqa: E402
 import phase_rule  # noqa: E402
 import phase_label_check  # noqa: E402
+import quote_clip  # noqa: E402
 import orchid_cite  # noqa: E402
 import uncertainty_budget as ub  # noqa: E402
 import ml_folds  # noqa: E402
@@ -566,6 +570,14 @@ def espei_fields(records, data):
     for r in records:
         fl = r["flags"]
         blocked = [f for f in phase_rule.BLOCKING_FLAGS if fl.get(f)]
+        phases = r.get("phases") or []
+        if not phases or any(str(p.get("label") or "").strip().lower() in
+                             ("", "unknown", "other", "unspecified", "none", "n/a", "?", "-") for p in phases):
+            blocked.append("phase_identity_missing")
+        if any(p.get("model_phase_rejected", {}).get("reason") in
+               ("terminal_element_absent_from_model_endmembers", "element_polymorph_contradicts_model")
+               and not p.get("model_phase") for p in phases):
+            blocked.append("terminal_phase_mapping_unresolved")
         if fl.get("espei_ready") and blocked:
             fl["espei_ready"] = False
             fl["espei_ready_upstream"] = True
@@ -974,10 +986,11 @@ def load_text(store, contexts, records):
 
 # ----------------------------------------------------------------------------------------------- output
 
-CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_group", "property", "property_code_raw",
+CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_group", "property", "property_expression", "component", "property_code_raw",
                "property_printed", "value", "unit", "unit_basis", "per_formula_unit_divisor", "value_before_quality_fix",
                "basis_correction", "sign_heading_printed", "value_stored", "unit_stored", "value_printed", "unit_printed", "uncertainty", "value_range", "value_expression",
                "temperature_K", "temperature_printed", "temperature_basis", "temperature_bound", "temperature_max_K",
+               "temperature_range_K", "temperature_range_K_stored",
                "temperature_uncertainty", "uncertainty_budget", "sigma_effective", "sigma_method_class", "pressure_Pa", "pressure_basis", "phases", "phase_compositions",
                "overall_composition", "overall_composition_basis", "reference_state", "reaction", "transition_kind",
                "transition_kind_printed", "evidence_class",
@@ -990,7 +1003,7 @@ CSV_COLUMNS = ["id", "system", "record_kind", "observation_type", "property_grou
                "phases_stored", "phases_dropped", "unit_stored", "pressure_basis_stored", "phase_compositions_dropped",
                "transition_kind_stored", "uncertainty_stored", "reference_state_stored", "related_records",
                "temperature_basis_stored", "chemical_system", "paper_id", "fold_lso", "fold_lpo", "source_system",
-               "overall_composition_stored"]
+               "overall_composition_stored", "evidence_identity", "source_evidence_review"]
 
 
 def summarize_context(ctx):
@@ -1081,14 +1094,16 @@ papers, page images, crops and full text are **not** redistributed.
 | `gate_failures` | `[{{gate, code, effect, detail, visual_check}}]`: a gate demoted (`effect` `not_accepted`: `flags.extraction_accepted` false) or flagged (`not_espei_ready`: `espei_ready` and `espei_certified` false; `flag_only`) the value; codes also in `flags.gate_failures`; see QUALITY_FIXES.md section 7 |
 | `phase_compositions_dropped` | compositions printed under a label that the page check found not to be a phase of the row (a column header); kept, not used |
 | `transition_kind_stored` | the reaction type before a page-checked correction to the printed type |
-| `uncertainty_stored`, `reference_state_stored`, `temperature_basis_stored` | the stored uncertainty / reference state before a page-checked correction (e.g. a scatter-aware sigma for compounds whose independent measurements disagree, `uncertainty.basis = scatter_between_sources`; a printed sigma combined with the composition offset of a value measured at a phase's historical formula, `uncertainty.basis = printed_with_composition_offset`; the reference state the page states; a value converted to the standard reference state carries the conversion in `corrections[].evidence.conversion`; primary works of `cited_sources` resolved from the paper's reference list keep the unresolved entries in `corrections[].before`) |
+| `uncertainty_stored`, `reference_state_stored`, `temperature_basis_stored` | values retained before a correction. For records with between-source scatter or composition-offset estimates, the reported uncertainty is also retained in the primary `uncertainty` field; the estimate and its derivation are kept in `uncertainty_budget.quantities.value.estimate_provenance`. Reference-state conversions retain the original value and conversion in `corrections[].evidence.conversion`. |
 | `property_expression` | (audit round 2) `{{form, term, printed, temperature_range_K}}` when the value is one coefficient of a printed expression in T (`A + B T`, a Cp polynomial); the property code then ends in `_EXPRESSION_TERM` and the record has no single temperature (`temperature_K_stored` keeps the one stored before) |
 | `calorimeter_temperature_K`, `reference_temperature_K` | (audit round 2) the calorimeter temperature of a standard enthalpy of formation stored at 298.15 K (direct-synthesis / solute-solvent drop calorimetry); the reference temperature of a heat content H(T) - H(298) stored at its row temperature T. Property codes `HM_FROM_COMPOUNDS` / `GM_FROM_COMPOUNDS` / `SM_FROM_COMPOUNDS`: formation quantities whose printed reference is compounds (e.g. oxides), not the elements; `flags.non_crystalline_state`: liquid / amorphous / glassy state printed at room temperature |
 | `related_records` | ids of records of the same measurement listed in another paper (a compilation), or of the independent measurements behind a scatter-aware sigma |
 | `merged_ids`, `merged_pids` | ids (and persistent locators) of records that were exact duplicates of this one and were merged into it |
 | `value_range` | `{{min,max}}` when a range was printed; `value_expression`: a printed expression (model parameters) |
-| `uncertainty` | `{{value, basis, note}}`; `basis: printed` is the source's own; `stated_default` / `reading_resolution` are ORCHID placeholders (e.g. "5% default", "10% placeholder; none printed") and are **not** measured uncertainties |
-| `uncertainty_budget` | uncertainty budget of the record's measured quantities, components kept separate (PI decision 2026-10-24; tools/uncertainty_budget.py; calibration in UNCERTAINTY_CALIBRATION.json / .md): `{{calibration (version and sha256 of UNCERTAINTY_CALIBRATION.json), sigma_rule, quantities{{value, composition, temperature_K}}}}`; `value` = the record's value, `composition` = its printed phase compositions (mole fraction), `temperature_K` = the equilibration temperature of a phase-composition / assemblage observation. Per quantity, in its `unit`: `sigma_printed` `{{value, kind, taken_as}}` as printed (null if none; ORCHID placeholders are not printed sigmas), `sigma_reading` `{{value, basis}}` half of the last printed digit (`last_printed_digit`; compositions: `last_stored_digit`), `sigma_method` `{{class, value, floor, floor_unit, basis (calibrated / prior / calibrated vs experiment), n_pairs, ci95, entry}}` the method-class floor (robust between-study scatter of independent same-method measurements in ORCHID, or a documented prior; DFT: calibrated sigma_DFT; model values: model-vs-experiment deviation), `sigma_composition` (value measured at a historical formula: `{{value, dx, slope}}`), `sigma_scatter` (page-checked mutually inconsistent group: `{{value, n_sources, group}}`), `sigma_conversion` (reference-state conversion), then `sigma_effective` = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter) (`sigma_effective_reason` when none applies). Null = the component does not apply. CSV: the budget as JSON plus `sigma_effective` and `sigma_method_class` of the value |
+| `uncertainty` | `{{value, basis, note}}`; `basis: printed` is the source's own, in the record unit; between-source scatter and composition-offset estimates do not replace it; `stated_default` / `reading_resolution` are ORCHID placeholders (e.g. "5% default", "10% placeholder; none printed") and are **not** measured uncertainties |
+| `evidence_identity` | Canonical observation ID, alias IDs, role and source evidence. Repeated extractions, later reports of the same calculation and alternate printed unit representations remain separate literature records but represent one observation for calibration and fitting. Source-link discrepancies are retained in the identity review and are not silently treated as verified citations. Available in JSON and CSV. Decisions: `DFT_EVIDENCE_IDENTITIES.json`, `MGPB_EVIDENCE_REVIEW.json` and `SRSI_EVIDENCE_REVIEW.json`. The DFT review retains the initial source group at the top level and subsequent groups under `additional_reviews`. The canonical ID selects a retained database record. When only secondary reports are available, `source_doi` identifies the original calculation and `canonical_reporting_source` identifies the report selected for fitting. `source_context_discrepancy` documents differences in reported conditions without overwriting them. |
+| `source_evidence_review` | Source pages, prior classification and state metadata, unresolved source discrepancies and fitting status. Mg2Pb experimental rows from a mixed DFT table retain both unit representations; their measurement temperature is null pending primary-source review and they are excluded from calibration and fitting. The original table heading remains in `temperature_printed` and the prior numeric interpretation in `temperature_K_stored`. The Sr–Si review records corrections from model to DFT classification and repairs citation links from the printed reference. Repeated GGA/LDA reports retain their reported quantities and are linked to canonical records for calibration and fitting. The boride review corrects three conflicting experimental/DFT labels using the original CeB4 calorimetry paper and the reporting paper's source attributions. Reported values, uncertainties and conditions remain intact. These rows are excluded from fitting and calibration until their primary-source states are fully verified; the review distinguishes verified primary numerical evidence from method-only verification. Two LuB12 rows with conflicting source attributions are separately retained and excluded from fitting and calibration until independent source identities are established. Equality of the reported values is not treated as proof of duplication. |
+| `uncertainty_budget` | uncertainty budget of the record's measured quantities, components kept separate (PI decision 2026-10-24; tools/uncertainty_budget.py; calibration in UNCERTAINTY_CALIBRATION.json / .md): `{{calibration (version and sha256 of UNCERTAINTY_CALIBRATION.json), sigma_rule, quantities{{value, composition, temperature_K}}}}`; `value` = the record's value, `composition` = its printed phase compositions (mole fraction), `temperature_K` = the equilibration temperature of a phase-composition / assemblage observation. Per quantity, in its `unit`: `sigma_printed` `{{value, kind, taken_as}}` is the reported component expressed on the stated sigma convention (with `printed` retaining the interval when a coverage conversion is applied; null if none; ORCHID placeholders are not printed sigmas), `sigma_reading` `{{value, basis}}` half of the last printed digit (`last_printed_digit`; compositions: `last_stored_digit`), `sigma_method` `{{class, value, floor, floor_unit, basis (calibrated / prior / calibrated vs experiment), n_pairs, ci95, entry}}` the method-class floor (robust between-study scatter of independent same-method measurements in ORCHID, or a documented prior; DFT: calibrated sigma_DFT; model values: model-vs-experiment deviation), `sigma_composition` (value measured at a historical formula: `{{value, dx, slope}}`), `sigma_scatter` (page-checked mutually inconsistent group: `{{value, n_sources, group}}`), `sigma_conversion` (reference-state conversion), then `sigma_effective` = max(sqrt(max(printed, reading, method)^2 + composition^2 + conversion^2), scatter) (`sigma_effective_reason` when none applies). `estimate_provenance` retains the separately estimated uncertainty, its basis and derivation when an earlier estimate occupied the primary field. These estimates do not replace the source-reported uncertainty. The effective sigma and the fitting weights are unchanged by this separation. Null = the component does not apply. CSV: the budget as JSON plus `sigma_effective` and `sigma_method_class` of the value |
 | `temperature_K` | equilibrium / measurement temperature in K; `temperature_printed` as printed (unit as printed, often °C); `temperature_basis` how it was obtained (`printed`, `quantity_label`, `caption`, `assumed_room_temperature`, `not_printed`, ...); `temperature_bound` `{{op, value_K, printed}}` for a printed bound (`op` `<` upper bound, `>` lower bound), `temperature_max_K` / `temperature_range_K` for ranges; `temperature_uncertainty` `{{value,basis}}` |
 | `pressure_Pa`, `pressure_basis` | pressure and how it was set: `printed`, or `assumed_default_1_atm_not_printed` (1 atm assumed, no pressure printed; the record builder's label kept in `pressure_basis_stored`) |
 | `phases` | `[{{label, model_phase, mapping_confidence, pearson_symbol, prototype, label_variants, label_source}}]`: printed phase label and, where mapped, the CALPHAD model phase; `label_variants`: other readers' spellings of the same printed label (kept when duplicate readings were merged, e.g. 'NiAl (B2)' beside 'B2'); `label_source: page_check` for a phase added from the printed reaction on a page check; `structure_basis: mapped_model_phase`: the Pearson symbol / prototype are those of the mapped model phase, not printed; `model_phase_rejected` {{model_phase, reason, pearson_symbol, prototype}}: a corpus mapping the label cannot carry (tools/phase_label_check.py); `model_phase_basis: system_alias:<id>`: the model phase comes from (or is confirmed by) the per-system alias table of conventional phase names (tools/phase_aliases.json, e.g. Cu-Sn ε -> CU3SN_L, Cu-Zn β -> BCC_A2, Cu-Si κ -> HCP_A3), applied when the printed composition / temperature agree (`model_phase_alias_check`: composition, temperature, composition+temperature or label_only); `structure_basis: system_alias`: Pearson symbol / prototype are the handbook structure of that alias |
@@ -1103,12 +1118,12 @@ papers, page images, crops and full text are **not** redistributed.
 | `method` | row-level method only when printed (table cell/column, or inside the value's quoted sentence); `method_basis` says which |
 | `conditions` | `{{kind: paper_context, paper}}`: the containing paper's own experimental context applies (see `contexts`); `paper_context_not_extracted`; `cited_source` ("conditions in the cited source"): the value is cited from another work and the containing paper's context does **not** apply; `not_applicable_own_calculation` |
 | `conditions_summary` | (CSV only) accepted context items of that paper, condensed |
-| `cited_sources` | the value's own source(s) as printed in the paper's reference list: `{{label, reference, doi, first_author, year, kind, status, paper}}`; `year` is re-derived from the printed `reference` (a parenthesised year first, never a page number; tools/literature_quality.py `cited_year`), and where this changed the reader's year that year is kept in `year_read` with the rule in `year_basis` (`printed_parenthesised_year`, `printed_year_not_page`, `page_number_not_year`, `ambiguous_several_years`, `after_citing_paper`; a null year means no year could be read safely); a DOI dropped as a mismatch is null with `doi_status: dropped_mismatch` and `doi_correction` (the printed `reference` is kept) |
+| `cited_sources` | the value's own source(s) as printed in the paper's reference list: `{{label, reference, doi, first_author, year, kind, status, paper}}`; `year` is re-derived from the printed `reference` (a parenthesised year first, never a page number; tools/literature_quality.py `cited_year`), and where this changed the reader's year that year is kept in `year_read` with the rule in `year_basis` (`printed_parenthesised_year`, `printed_year_not_page`, `page_number_not_year`, `ambiguous_several_years`, `after_citing_paper`; a null year means no year could be read safely); a DOI dropped as a mismatch is null with `doi_status: dropped_mismatch` and `doi_correction` (the printed `reference` is kept). A source-page-verified replacement has `doi_status: corrected_from_printed_reference`, the prior link in `doi_original`, and a `doi_correction` identifier in `SOURCE_REFERENCE_CORRECTIONS.json`. The corresponding `origin.measured_in` uses the verified source, while `origin.measured_in_original` preserves the prior link. This correction does not change the reported value, uncertainty, or evidence class. |
 | `citations_printed` | (text) citation labels printed in the sentence |
 | `paper` | id of the containing paper (`doi:<doi>` or `sha256:<pdf prefix>`) -> `papers.json`; CSV adds `paper_citation`, `paper_doi` |
-| `quote`, `quote_page` | (running text) the short verbatim excerpt backing the value (usually the sentence that states it; some excerpts span several sentences) and its page (`null` with `flags.page_unreadable` when the page read was not a page number); for tables `locator` gives table label, caption, page and row instead |
+| `quote`, `quote_page` | (running text) the short verbatim excerpt backing the value (usually the sentence that states it; at most 500 characters: a longer excerpt is clipped at export to a contiguous substring, word boundaries, no ellipsis inserted, that still contains the printed value, with `flags.quote_clipped` = true and the original length in `flags.quote_chars_original`; the clipped text is verbatim on the same page) and its page (`null` with `flags.page_unreadable` when the page read was not a page number); for tables `locator` gives table label, caption, page and row instead |
 | `locator` | `{{artifact: table|text_passage, label, caption, page, row, asset}}` |
-| `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready` (the value CAN be used in ESPEI: complete state, phases mapped to a model, phase-rule / unit checks, proper format, and the physical phase rule of QUALITY_FIXES.md section 6; `espei_ready_upstream` true and `espei_phase_rule` {{result, reason, detail}} when only the phase rule turned it false), `espei_certified` (`espei_ready` AND agreement with a CALPHAD prediction: `plausibility.result` = pass), `espei_certified_basis` (`pycalphad_invariant_agreement`; later bases may be added, e.g. `espei_driving_force`), `calphad_check` (`agrees`, `disagrees`, `not_available`), `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check: result, model, dT_K, dx {{phase: mole-fraction difference}}, calculation, tolerance {{dT_K, dx}}, `fail_reason` for fails with |dT| < 5 K), `plausibility_before_correction` (the cross-check of a value whose temperature a gate corrected; computed on the old temperature), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts; data-hardening flags (QUALITY_FIXES.md): `page_unreadable`, `reference_state_dropped_not_in_quote`, `basis_inferred_from_magnitude`, `basis_corrected_from_formula`, `sign_from_heading`, `dft_outlier_unexplained` |
+| `flags` | `extraction_accepted` (reader agreement + checks passed; the explorer hides `false` by default), `row_state` (`settled`, `awaiting_reader`, `disputed_in_review_queue`), `review_state`, `espei_ready` (the value CAN be used in ESPEI: complete state, phases mapped to a model, phase-rule / unit checks, proper format, and the physical phase rule of QUALITY_FIXES.md section 6; `espei_ready_upstream` true and `espei_phase_rule` {{result, reason, detail}} when only the phase rule turned it false), `espei_certified` (`espei_ready` AND agreement with a CALPHAD prediction: `plausibility.result` = pass), `espei_certified_basis` (`pycalphad_invariant_agreement`; later bases may be added, e.g. `espei_driving_force`), `calphad_check` (`agrees`, `disagrees`, `not_available`), `state_fully_specified`, `specification_gaps`, `plausibility` (CALPHAD cross-check: result, model, dT_K, dx {{phase: mole-fraction difference}}, calculation, tolerance {{dT_K, dx}}, `fail_reason` for fails with |dT| < 5 K), `plausibility_before_correction` (the cross-check of a value whose temperature a gate corrected; computed on the old temperature), `source_disputed`, `judge_adjudicated`, `magnitude_suspect`, `system_mismatch`, `value_in_quote`, `quote_clipped` / `quote_chars_original` / `quote_original_sha256` (the quote was clipped to 500 characters at export; the printed value is inside the clipped text; the hash, 16 hex characters of the SHA-256 of the original quote, is shared by the values read from the same long sentence), `unsigned_in_print` (minus sign absent in print, value as printed), `sign_pdf_page_verified` (sign corrected from the PDF page image; `value_first_reader` kept), `has_dropped_fields` / `dropped_field_count` (fields removed because they were not printed in the quote; content not published), `review_flags` (codes only), `second_reader`, reader conflicts; data-hardening flags (QUALITY_FIXES.md): `page_unreadable`, `reference_state_dropped_not_in_quote`, `basis_inferred_from_magnitude`, `basis_corrected_from_formula`, `sign_from_heading`, `dft_outlier_unexplained` |
 | `link_rule` | (text) the rule that linked the value to its quote: the quote is verbatim on one page/passage and the printed value is inside it |
 | `reader_agreement`, `reader_agreement_label` | (tables) how many independent visual readers carry the value: `multi_reader` ("confirmed (two or more readers)"), `single_reader` ("unconfirmed (single reader)": one visual reader read the row and no second reader has confirmed it; the explorer shows a "single reader" badge), `single_reader_text_layer` ("single reader + PDF text layer": one visual reader, every value also printed in the PDF text layer). Two blind, independent Claude reads (`claude-opus-5.5` and `claude-opus-5.5#2` in `readers`) count as two readers. Where the record builder did not classify the value (invariant tables, running text) it is derived from `readers` (`reader_agreement_basis: derived_from_readers`, settled rows only) |
 | `readers`, `reader_tier`, `tool_release` | extraction provenance: the readers whose readings agreed (`text_layer` = the PDF text layer), the reader tier, a pipeline status of the table or passage (which reader passes ran), not an agreement claim (`preliminary_flash+claude`: two independent model readers agree; `confirmed_pro`: confirmed by a third reader; `+fable_judge`: a judge chose between disagreeing readers; `preliminary_flash` for text: first reader, with the second reader's agreement in `flags.second_reader`), the record-builder release |
@@ -1220,6 +1235,18 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     applied = apply_contributions(records, data or orchid_cite.DEFAULT_DATA)
     if applied:   # accepted contributed corrections (page-checked); none: the release is byte-identical
         qreport["contributed_corrections"] = applied
+    # Source-adjudicated student-review corrections precede readiness and uncertainty derivation.
+    # Guarded fields abort the batch if upstream data have changed since adjudication.
+    import human_review_corrections
+    with open(os.path.join(os.path.dirname(__file__), "human_review_corrections_20261026.json"), encoding="utf-8") as fh:
+        qreport["human_review_corrections"] = human_review_corrections.apply(records, json.load(fh))
+    # independent source check (ORCHID-IC-20261027-v1): page-adjudicated corrections of records that a second reviewer
+    # found defective; guarded the same way, corrected records are not ESPEI-ready until revalidated
+    with open(os.path.join(os.path.dirname(__file__), "independent_check_corrections_20261027.json"), encoding="utf-8") as fh:
+        qreport["independent_check_corrections"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-IC-20261027-v1", gate="IC20261027",
+            rule="source_adjudicated_independent_check",
+            gap="independent_check_correction_requires_downstream_revalidation")
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     # audit round 3 (H9): formation values left in a unit other than kJ/mol-atom / kJ/mol (basis unstated), by unit
     fu = Counter(str(r.get("unit")) for r in records if r.get("property") in ("HM_FORM", "GM_FORM")
@@ -1233,6 +1260,18 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     # uncertainty budget of every value (tools/uncertainty_budget.py; PI decision 2026-10-24): components kept
     # separate, method floors calibrated from the release's own independent measurements; printed values and printed
     # uncertainties are not altered
+    import source_reference_corrections
+    source_reference_corrections.annotate(records)
+    import srsi_evidence_review
+    srsi_evidence_review.annotate(records)
+    boride_review.annotate(records)
+    dft_identity.annotate(records)
+    mgpb_review.annotate(records)
+    import independent_check_review
+    independent_check_review.annotate(records)
+    # the ESPEI summary of espei_fields() precedes the late annotations: recount readiness and certification
+    qreport["espei"]["espei_ready"] = sum(1 for r in records if (r.get("flags") or {}).get("espei_ready"))
+    qreport["espei"]["espei_certified"] = sum(1 for r in records if (r.get("flags") or {}).get("espei_certified"))
     store.uncertainty_calibration = ub.calibrate(records, ub.load_dft_calibration(data or orchid_cite.DEFAULT_DATA))
     ub.annotate(records, store.uncertainty_calibration)
     for r in records:   # machine-learning folds (tools/ml_folds.py): leave-system-out and leave-paper-out, 5 folds
@@ -1243,13 +1282,23 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
             if pk and pk in store.papers:
                 store.papers[pk]["systems"].add(r["system"])
     papers = store.finalize_papers()
+    source_reference_corrections.reconcile_papers(records, papers)
+    srsi_evidence_review.reconcile_papers(records, papers)
+    # quotes longer than 500 characters are clipped HERE, at export (PI decision 2026-10-24): a contiguous substring of
+    # the original that keeps the printed value, `flags.quote_clipped`; the record store keeps the full quote
+    qreport.setdefault("counts", {})["quotes_clipped"] = sum(1 for r in records if quote_clip.clip_record(r))
     # year of each cited source re-derived from its printed reference (page numbers read as years; audit A5 F2)
     cy = Counter()
     quality.fix_cited_years(records, lambda pk: (papers.get(pk) or {}).get("year") if pk else None, cy)
     qreport.setdefault("counts", {}).update({k: v for k, v in sorted(cy.items())})
+    for c in contexts.values():   # (the system files carry the context items of their papers: clip them all)
+        for it in c.get("items") or []:
+            quote_clip.clip_context_item(it)
     used_ctx = {r["paper"] for r in records if (r.get("conditions") or {}).get("kind") == "paper_context"}
     contexts_out = {k: contexts[k] for k in sorted(contexts) if k in used_ctx}
     store.notes["contexts_unused_no_own_experimental_values"] = len(contexts) - len(contexts_out)
+    qreport["counts"]["context_quotes_clipped"] = sum(
+        1 for c in contexts_out.values() for it in c.get("items") or [] if it.get("quote_clipped"))
     store.quality = qreport
     return store, records, papers, contexts_out
 
@@ -1258,10 +1307,14 @@ PD_SYSTEMS = set()
 
 
 def outputs(store, records, papers, contexts):
+    papers = repair_replacement_chars(papers, crossref_name_words(store.bib.cache_dir))
     pdi = os.path.join(SITE, "data", "phase-diagrams", "index.json")
     if os.path.exists(pdi):
         PD_SYSTEMS.update(json.load(open(pdi, encoding="utf-8")).get("systems", {}))
-    files = {}
+    import source_reference_corrections
+    import srsi_evidence_review
+    files = {"SOURCE_REFERENCE_CORRECTIONS.json": dumps(source_reference_corrections.REVIEW).encode(),
+             "SRSI_EVIDENCE_REVIEW.json": dumps(srsi_evidence_review.REVIEW).encode()}
     cite = orchid_cite.cite_as("literature")
     by_sys = defaultdict(list)
     for r in records:
@@ -1366,7 +1419,6 @@ def outputs(store, records, papers, contexts):
                        "uncertainty_calibration_md": "UNCERTAINTY_CALIBRATION.md"},
              "systems": index_systems}
     files["index.json"] = dumps(index).encode()
-    papers = repair_replacement_chars(papers, crossref_name_words(store.bib.cache_dir))
     files["papers.json"] = dumps(papers).encode()
     files["contexts.json"] = dumps(contexts).encode()
     files["orchid-literature.jsonl.gz"] = gz(("\n".join(dumps(r) for r in records) + "\n").encode())
@@ -1398,6 +1450,9 @@ def outputs(store, records, papers, contexts):
         "ORCHID literature values: orchid-literature.csv.gz, orchid-literature.jsonl.gz, index.json, "
         "systems/*.json, papers.json, contexts.json (release %s)." % RELEASE)).encode()
     files["CITATION.cff"] = orchid_cite.cff("literature").encode()
+    files["DFT_EVIDENCE_IDENTITIES.json"] = dumps(dft_identity.REVIEW).encode()
+    files["MGPB_EVIDENCE_REVIEW.json"] = dumps(mgpb_review.REVIEW).encode()
+    files["BORIDE_EVIDENCE_REVIEW.json"] = dumps(boride_review.REVIEW).encode()
     files["UNCERTAINTY_CALIBRATION.json"] = ub.calibration_bytes(store.uncertainty_calibration)
     files["UNCERTAINTY_CALIBRATION.md"] = ub.calibration_md(store.uncertainty_calibration, records).encode()
     return files, tot

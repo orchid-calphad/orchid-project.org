@@ -13,6 +13,9 @@ Unit tests (no release needed) and, when the release is present, invariants of t
   8. licence statements: no "fair use" / "single sentence" claims in released text files
   9. bibliography counts: zenodo/bibliography.metadata.json and DATASET_CARD.md agree with bibliography/index.json
  10. hull catalogs: the energy corrections applied upstream are stated (MP2020 for the MP GGA_GGA+U snapshot)
+ 11. quotes: no released quote (literature records, context items, Parquet, any JSON `quote` field of the release)
+     is longer than 500 characters; a clipped quote carries flags.quote_clipped, still contains the printed value and
+     keeps its quote_page (PI decision 2026-10-24; clipping happens at export, tools/quote_clip.py)
 usage: ~/orchid-py313/bin/python tools/tests/test_release_integrity.py [--data ~/projects/orchid-data]"""
 import argparse
 import glob
@@ -187,6 +190,62 @@ for layer in ("dft-mp", "dft-oqmd"):
           pv.get("correction_model") != "none" and bool(pv.get("upstream_energy_corrections")), pv.get("correction_model"))
 pv = json.load(open(os.path.join(D, "hulls", "dft-mp", "catalog.json")))["provenance"]
 check("MP GGA_GGA+U hulls: MP2020 named", pv["thermo_type"] != "GGA_GGA+U" or "MP2020" in pv["upstream_energy_corrections"])
+
+# ------------------------------------------------------------------ quotes: at most 500 characters, printed value kept
+import quote_clip as QC  # noqa: E402
+
+n_q = n_clip = 0
+bad_q, bad_clip = [], []
+for line in gzip.open(os.path.join(D, "literature", "orchid-literature.jsonl.gz"), "rt", encoding="utf-8"):
+    rec = json.loads(line)
+    q = rec.get("quote")
+    if not q:
+        continue
+    n_q += 1
+    if len(q) > QC.MAX_QUOTE_CHARS:
+        bad_q.append((rec["id"], len(q)))
+    fl = rec.get("flags") or {}
+    if fl.get("quote_clipped"):
+        n_clip += 1
+        req = QC.numbers(rec.get("value_printed")) or QC.numbers(rec.get("temperature_printed"))
+        if (not all(QC._spans(q, t) for t in req) or rec.get("quote_page") is None
+                or fl.get("quote_chars_original", 0) <= QC.MAX_QUOTE_CHARS or not fl.get("quote_original_sha256")):
+            bad_clip.append(rec["id"])
+    elif len(q) <= QC.MAX_QUOTE_CHARS and fl.get("quote_chars_original"):
+        bad_clip.append(rec["id"])
+check("quotes: none of %d literature quotes is longer than %d characters" % (n_q, QC.MAX_QUOTE_CHARS), not bad_q, bad_q[:3])
+check("quotes: %d clipped quotes carry quote_clipped, keep the printed value and quote_page" % n_clip, not bad_clip, bad_clip[:3])
+
+
+def long_quotes(o, path=""):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            if k == "quote" and isinstance(v, str) and len(v) > QC.MAX_QUOTE_CHARS:
+                yield path, len(v)
+            else:
+                yield from long_quotes(v, path + "/" + k)
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            yield from long_quotes(v, path)
+
+
+bad_files = []
+for pat in ("literature/contexts.json", "literature/systems/*.json", "literature/dft_parity.json", "espei/**/*.json",
+            "assessed-phase-assemblages/**/*.json", "phase-diagrams/**/*.json", "bibliography/*.json"):
+    for f in glob.glob(os.path.join(D, pat), recursive=True):
+        try:
+            doc = json.load(open(f, encoding="utf-8"))
+        except ValueError:
+            continue
+        if next(long_quotes(doc), None):
+            bad_files.append(os.path.relpath(f, D))
+check("quotes: no JSON file of the release has a `quote` field above %d characters" % QC.MAX_QUOTE_CHARS, not bad_files,
+      bad_files[:3])
+if pd is not None:
+    for tbl, col in (("literature_values", "quote"), ("experimental_context", "quote"), ("dft_parity", "quote")):
+        t = pd.read_parquet(os.path.join(D, "parquet", tbl + ".parquet"), columns=[col])[col].dropna()
+        check("quotes: Parquet %s.%s has no value above %d characters (max %d)" % (tbl, col, QC.MAX_QUOTE_CHARS,
+              int(t.str.len().max())), int(t.str.len().max()) <= QC.MAX_QUOTE_CHARS)
 
 print("%d failures" % len(fails))
 sys.exit(1 if fails else 0)

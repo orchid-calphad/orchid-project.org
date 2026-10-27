@@ -48,7 +48,7 @@ check("page-converted value written from the release; an unrelated dataset value
       abs(B.page_converted_value(cr, -10389.0) - (-9624.0)) < 1e-6 and B.page_converted_value(cr, -10000.0) is None
       and B.page_converted_value({"value": -9.6, "unit": "kJ/mol-atom"}, -10389.0) is None)
 s_, info_ = B.printed_sigma({"unit": "kJ/mol-atom", "uncertainty": {"value": 2.522, "basis": "printed_with_composition_offset"}}, -8700.0)
-check("composition-offset sigma is a printed-based sigma", abs(s_ - 2522.0) < 1e-6 and info_["coverage"] == "printed_with_composition_offset")
+check("composition-offset estimate alone is not a reported sigma", s_ is None)
 
 D = orchid_cite.DEFAULT_DATA
 E = os.path.join(D, "espei")
