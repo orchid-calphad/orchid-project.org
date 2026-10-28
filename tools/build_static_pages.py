@@ -1551,7 +1551,7 @@ def main(argv=None):
                     if a.check:
                         bad.append("orphan: " + os.path.join(dp, f))
                     else:
-                        os.remove(os.path.join(dp, f))
+                        raise RuntimeError("Y18: orphan needs preservation before removal: " + os.path.join(dp, f))
     n_html = len(pages)
     if a.check:
         if bad:

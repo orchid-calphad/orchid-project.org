@@ -582,7 +582,7 @@ def record(name, data):
                         "or enter the fields in the web form). Written by tools/build_zenodo_metadata.py (numbers: metadata_numbers.json); "
                         "do not edit by hand. No `grants` payload: enter both NSF awards in the Funding form; use a custom "
                         "award if no matching indexed award exists, see ZENODO_FUNDING_MANUAL.md. publication_date is set by Zenodo at publication. DOI placeholders "
-                        "10.5281/zenodo.PENDING-<name> are replaced by tools/zenodo_release.py writeback.",
+                        "unassigned per-record DOI are replaced by tools/zenodo_release.py writeback.",
             "record": name, "doi": _doi(data, name), "metadata": meta}
 
 

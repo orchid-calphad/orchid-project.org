@@ -1895,7 +1895,7 @@ def cmd_build(src, args):
             for fn in fns:
                 rel = os.path.relpath(os.path.join(dp, fn), root)
                 if rel not in out:
-                    os.remove(os.path.join(dp, fn))
+                    raise RuntimeError("Y18: stale bibliography file must be preserved: " + os.path.join(dp, fn))
     for rel, content in out.items():
         p = os.path.join(root, rel)
         os.makedirs(os.path.dirname(p), exist_ok=True)

@@ -1619,7 +1619,7 @@ def zenodo_metadata(s, data):
                fmt(s["point_method"]["centroid"]), fmt(s["point_method"]["pole_of_inaccessibility"]),
                fmt(s["two_phase_tie_lines"]["with_tie_line"]), orchid_cite.LICENCE_SCOPE, e["text"], u["text"]))
     return {"_comment": "Zenodo deposition metadata (legacy REST format). Written by tools/build_assessed_assemblages.py. "
-                        "DOI placeholders 10.5281/zenodo.PENDING-<name> are replaced by tools/zenodo_release.py writeback.",
+                        "DOI placeholders unassigned per-record DOI are replaced by tools/zenodo_release.py writeback.",
             "record": DATASET, "doi": e["doi"],
             "metadata": {"title": e["title"], "upload_type": "dataset", "version": orchid_cite.VERSION, "description": desc + project_credits.html_block() + "<p>" + orchid_cite.FUNDING_NOTE + "</p>",
                          "creators": [{"name": "%s, %s" % (f, g), "affiliation": af, "orcid": o} for f, g, af, o in orchid_cite.AUTHORS],
@@ -1731,6 +1731,8 @@ def main(argv=None):
         return 0
     os.makedirs(out_dir, exist_ok=True)
     disk = {os.path.relpath(os.path.join(d, f), out_dir) for d, _, fs in os.walk(out_dir) for f in fs}
+    if disk - set(out):
+        raise RuntimeError("Y18: stale assessed files require preservation: " + repr(sorted(disk-set(out))))
     for rel in sorted(disk - set(out)):
         os.remove(os.path.join(out_dir, rel))
     for rel, b in sorted(out.items()):

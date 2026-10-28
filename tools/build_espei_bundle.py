@@ -3190,6 +3190,8 @@ def main(argv=None):
             return 1
         print("ok: %d files current" % len(files))
         return 0
+    if stale:
+        raise RuntimeError("Y18: obsolete release files require preservation before removal: " + repr(stale))
     for rel in stale:
         os.remove(os.path.join(out, rel))
     for rel, data in files.items():
