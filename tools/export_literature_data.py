@@ -1192,6 +1192,34 @@ def apply_contributions(records, data):
     return oc.apply_corrections(by_id, corrections, gates.load_visual())
 
 
+
+def placeholder_reaccept(records, has_real_phases):
+    """Lift R3 `state_phases_missing` from records whose phases were recovered on the page (gate PR20261027).
+
+    Acceptance returns only when that failure was the record's sole `not_accepted` failure (the Y6 population was
+    accepted before the placeholder gate); `espei_ready` and `espei_certified` are left as the correction set them.
+    Returns the number of records accepted again.
+    """
+    n = 0
+    for r in records:
+        if not any(c.get("gate") == "PR20261027" for c in r.get("corrections") or []) or not has_real_phases(r):
+            continue
+        gf = r.get("gate_failures") or []
+        if not any(g.get("code") == "state_phases_missing" for g in gf):
+            continue
+        r["gate_failures"] = [g for g in gf if g.get("code") != "state_phases_missing"]
+        mirror = r["flags"].get("gate_failures")
+        if isinstance(mirror, list) and "state_phases_missing" in mirror:
+            mirror.remove("state_phases_missing")
+        r.setdefault("corrections", []).append({
+            "gate": "PR20261027", "field": "gate_failures", "before": "state_phases_missing", "after": None,
+            "rule": "placeholder_recovery_lifts_state_phases_missing",
+            "evidence": {"evidence_id": "ORCHID-PR-20261027-v1", "basis": "phases recovered on the printed page"}})
+        if not any(g.get("effect") == "not_accepted" for g in r["gate_failures"]):
+            r["flags"]["extraction_accepted"] = True
+            n += 1
+    return n
+
 def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
     store = Store(corpus, pdfs)
     # pass 1: all sources (cited works resolve across stores)
@@ -1300,6 +1328,16 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
             records, json.load(fh), evidence_id="ORCHID-PR-20261027-v1", gate="PR20261027",
             rule="source_adjudicated_placeholder_recovery",
             gap="placeholder_recovery_requires_downstream_revalidation")
+    # Codex Y10 (ORCHID-Y10-20261027-v1): system/state moves, table page mismatches, survivor temperatures and blocked
+    # duplicate aliases, page-checked; a Claude blind check agreed on 48/50 (the two t190 Ni-Te moves are held back)
+    # and Y11 (ORCHID-Y11-20261027-v1): two temperatures from the fit-facing precision sample
+    for _cx, _eid in (("codex_y10_corrections_20261028.json", "ORCHID-Y10-20261027-v1"),
+                      ("codex_y11_corrections_20261028.json", "ORCHID-Y11-20261027-v1")):
+        with open(os.path.join(os.path.dirname(__file__), _cx), encoding="utf-8") as fh:
+            qreport.setdefault("codex_corrections", {})[_cx] = human_review_corrections.apply(
+                records, json.load(fh), evidence_id=_eid, gate="CX20261028",
+                rule="source_adjudicated_independent_check",
+                gap="independent_check_correction_requires_downstream_revalidation")
     # the table-context corrections name the printed phases after the gates ran: file those records under the system of
     # their own state again (audit round 2, A1 C4; literature_r2_compositions.c4_state_system), as every other record is
     import literature_r2_compositions as r2c
@@ -1310,10 +1348,32 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
 
         def add(self, gate, code, r, action, **kw):
             self.n[code] += 1
-    _tc = [r for r in records if any(c.get("gate") in ("TC20261027", "TD20261028", "PR20261027") for c in r.get("corrections") or [])]
+    _tc = [r for r in records if any(c.get("gate") in ("TC20261027", "TD20261028", "PR20261027", "CX20261028") for c in r.get("corrections") or [])]
     _rf = _Refile()
     r2c.c4_state_system(_tc, _rf)
     qreport["table_context_refiled"] = dict(_rf.n)
+    # system moves made by a patch (CX20261028) set the system directly; drop zero-valued composition keys outside it,
+    # keeping the stored composition, as c4_state_system does for the records it re-files
+    for r in _tc:
+        if not any(c.get("gate") == "CX20261028" and c.get("field") == "system" for c in r.get("corrections") or []):
+            continue
+        els = set(r["system"].split("-"))
+        for pc in r.get("phase_compositions") or []:
+            comp = pc.get("composition") or {}
+            drop = {e: v for e, v in comp.items() if e not in els}
+            if drop and all(not v for v in drop.values() if isinstance(v, (int, float))):
+                pc.setdefault("composition_stored", comp)
+                pc["composition"] = {e: v for e, v in comp.items() if e in els}
+        oc = r.get("overall_composition")
+        if isinstance(oc, dict):
+            drop = {e: v for e, v in oc.items() if e not in els}
+            if drop and all(not v for v in drop.values() if isinstance(v, (int, float))):
+                r.setdefault("overall_composition_stored", oc)
+                r["overall_composition"] = {e: v for e, v in oc.items() if e in els}
+    # placeholder recovery restores acceptance (PI decision 27 Oct): a record demoted only by the placeholder-phase gate
+    # (R3 state_phases_missing) that now names a printed phase (PR20261027) is accepted again; ESPEI readiness stays off
+    import literature_r3_thermo as r3t
+    qreport["placeholder_recovery_reaccepted"] = placeholder_reaccept(records, r3t.has_real_phases)
     qreport["espei"], qreport["espei_phase_rule_failures"] = espei_fields(records, data or orchid_cite.DEFAULT_DATA)
     # audit round 3 (H9): formation values left in a unit other than kJ/mol-atom / kJ/mol (basis unstated), by unit
     fu = Counter(str(r.get("unit")) for r in records if r.get("property") in ("HM_FORM", "GM_FORM")

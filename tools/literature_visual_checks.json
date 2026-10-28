@@ -1373,7 +1373,7 @@
    "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
-   "checked": "2026-10-24",
+   "checked": "2026-10-24; 2026-10-28 Codex Y11 molar-basis flag added (ORCHID-Y11-20261027-v1)",
    "key": "flag:ORC-56OXWXS2EA",
    "kind": "page_flag",
    "verdict": "confirmed",
@@ -1382,6 +1382,11 @@
      "code": "stoichiometry_mismatch",
      "effect": "flag_only",
      "detail": "page check: the source attributes this value to Cu4Zr, the historical formula of Cu5Zr (Table 3 note); used for Cu5Zr with sigma inflated for the composition offset"
+    },
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "Table 3 prints J/mole, while the release normalizes to J/mol-atom by a magnitude heuristic; the page does not state that basis."
     }
    ],
    "seen": "Table 3 (p10, printed 437) dfH J/mole per mole of atoms, no T column. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Zr14 = Cu3Zr [33]; Cu10Zr7 = Cu3Zr2 [33]. Text p8 (435): 298 K calorimetry [27,33,34,44,45], fcc-Cu/hcp-Zr; [46] from fcc-Cu and bcc-Zr at 1123 K.",
@@ -1692,7 +1697,7 @@
    "page": 10,
    "pdf_sha256_prefix": "166ab57f131024cc",
    "image_sha256": "6881210796f3b9de675a7b30835dfd67ae960c4d8bea79e23fec4d2c9b65a358",
-   "checked": "2026-10-24",
+   "checked": "2026-10-24; 2026-10-28 Codex Y11 molar-basis flag added (ORCHID-Y11-20261027-v1)",
    "key": "flag:ORC-DQ35XUMV5X",
    "kind": "page_flag",
    "verdict": "confirmed",
@@ -1701,6 +1706,11 @@
      "code": "mutually_inconsistent",
      "effect": "not_certified",
      "detail": "page check: the CuZr formation enthalpies of [33], [44], [45], [27], [46] span 15.3 kJ/mol-atom against printed sigmas of 0.3-2 kJ; used only with the scatter-aware sigma, never certified"
+    },
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "Table 3 prints J/mole, while the release normalizes to J/mol-atom by a magnitude heuristic; the page does not state that basis."
     }
    ],
    "seen": "Table 3 (p10) ΔfH J/mole per mole of atoms, no temperature column; text p8 (printed 435): formation enthalpies at 298 K by calorimetry in [27, 33, 34, 44, 45], fcc-Cu / hcp-Zr; [46]: from mass-spectrometric Gibbs energies, fcc-Cu and bcc-Zr at 1123 K. Note: Cu5Zr = Cu4Zr [34], Cu9Zr2 [27, 46]; Cu51Z",
@@ -54405,8 +54415,178 @@
      "detail": "ORCHID-PA-20261028-v1: Table3: solution of solid Mg+Si at298K into liquid Mg-Si at1000K; includes heating of dropped sample. Printed solution heat 23.26 kJ/mol atoms is not integral liquid mixing enthalpy. Keep value; exclude from fitting."
     }
    ]
+  },
+  {
+   "key": "flag:ORC-6M2B5PL7AS.8ea5c5",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "eea623093b319986",
+   "image_sha256": "4841c454dc17790f84375e97ab76a6f8ff1279f3a64d1e8bae4cef8f52738c2c",
+   "seen": "The numerical value may be correct, but its molar normalization is not independently fit-safe from the page. Proposed exclusion for 2026.10.1 pending source-level resolution.",
+   "checked": "2026-10-27; Codex Y11 blind page reading (ORCHID-Y11-20261027-v1), confirmed by a Claude blind check; AI-assisted",
+   "flags": [
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "The page prints kJ/mol for the DFT mixing enthalpy, without defining whether mole means mole of atoms."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-J62EPXSSSY.975331",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": 5,
+   "pdf_sha256_prefix": "554f266061dfeecd",
+   "image_sha256": "6660775281ea1a17b5b6b1d3e7a73912f6432529bd4c0f7f2b913f0f8f03ff42",
+   "seen": "The numerical value may be correct, but its molar normalization is not independently fit-safe from the page. Proposed exclusion for 2026.10.1 pending source-level resolution.",
+   "checked": "2026-10-27; Codex Y11 blind page reading (ORCHID-Y11-20261027-v1), confirmed by a Claude blind check; AI-assisted",
+   "flags": [
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "The page prints J/mol for the SQS mixing enthalpy, without defining the molar basis."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-J62EPXSSSY.9dc623",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": 5,
+   "pdf_sha256_prefix": "554f266061dfeecd",
+   "image_sha256": "6660775281ea1a17b5b6b1d3e7a73912f6432529bd4c0f7f2b913f0f8f03ff42",
+   "seen": "The numerical value may be correct, but its molar normalization is not independently fit-safe from the page. Proposed exclusion for 2026.10.1 pending source-level resolution.",
+   "checked": "2026-10-27; Codex Y11 blind page reading (ORCHID-Y11-20261027-v1), confirmed by a Claude blind check; AI-assisted",
+   "flags": [
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "The page prints J/mol for the SQS mixing enthalpy, without defining the molar basis."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-MOCDYAXLE3.502caf",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "eea623093b319986",
+   "image_sha256": "4841c454dc17790f84375e97ab76a6f8ff1279f3a64d1e8bae4cef8f52738c2c",
+   "seen": "The numerical value may be correct, but its molar normalization is not independently fit-safe from the page. Proposed exclusion for 2026.10.1 pending source-level resolution.",
+   "checked": "2026-10-27; Codex Y11 blind page reading (ORCHID-Y11-20261027-v1), confirmed by a Claude blind check; AI-assisted",
+   "flags": [
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "The page prints kJ/mol for the DFT mixing enthalpy, without defining whether mole means mole of atoms."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-ODF2ZJIMSU.c0b517",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "eea623093b319986",
+   "image_sha256": "4841c454dc17790f84375e97ab76a6f8ff1279f3a64d1e8bae4cef8f52738c2c",
+   "seen": "The numerical value may be correct, but its molar normalization is not independently fit-safe from the page. Proposed exclusion for 2026.10.1 pending source-level resolution.",
+   "checked": "2026-10-27; Codex Y11 blind page reading (ORCHID-Y11-20261027-v1), confirmed by a Claude blind check; AI-assisted",
+   "flags": [
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "The page prints kJ/mol for the DFT mixing enthalpy, without defining whether mole means mole of atoms."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-RO57ELJICS.63f8d2",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": 4,
+   "pdf_sha256_prefix": "eea623093b319986",
+   "image_sha256": "4841c454dc17790f84375e97ab76a6f8ff1279f3a64d1e8bae4cef8f52738c2c",
+   "seen": "The numerical value may be correct, but its molar normalization is not independently fit-safe from the page. Proposed exclusion for 2026.10.1 pending source-level resolution.",
+   "checked": "2026-10-27; Codex Y11 blind page reading (ORCHID-Y11-20261027-v1), confirmed by a Claude blind check; AI-assisted",
+   "flags": [
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "The page prints kJ/mol for the DFT mixing enthalpy, without defining whether mole means mole of atoms."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-JHGFPEFR4Q",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": 7,
+   "pdf_sha256_prefix": "63a18f6828c8eb89",
+   "image_sha256": "811f8af8c01baf34fbaa3c49fc3c26bcf0825a58d7828706d3ae8c6b5312bcc3",
+   "seen": "The numerical value may be correct, but its molar normalization is not independently fit-safe from the page. Proposed exclusion for 2026.10.1 pending source-level resolution.",
+   "checked": "2026-10-27; Codex Y11 blind page reading (ORCHID-Y11-20261027-v1), confirmed by a Claude blind check; AI-assisted",
+   "flags": [
+    {
+     "code": "molar_basis_unverified",
+     "effect": "not_espei_ready",
+     "detail": "Table 6 prints J/mol for Ni5Zr, while the release normalizes to J/mol-atom by a magnitude heuristic; the page does not state that basis."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-JJB3GCBTIV",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": null,
+   "pdf_sha256_prefix": null,
+   "image_sha256": null,
+   "seen": "The printed row is Al-Au at 90 at.% Au; the record is filed as unary Au with Au = 1. Out of ESPEI until the move to AL-AU (2026.10.1).",
+   "checked": "2026-10-28; Claude blind check of Codex Y10/Y11 (integration/y10-y11-blindcheck-20261028/REPORT.md); AI-assisted",
+   "flags": [
+    {
+     "code": "filed_under_wrong_system",
+     "effect": "not_espei_ready",
+     "detail": "The printed row is Al-Au at 90 at.% Au; the record is filed as unary Au with Au = 1. Out of ESPEI until the move to AL-AU (2026.10.1)."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-2ZXJFN7YTS.d2db4d",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": null,
+   "pdf_sha256_prefix": null,
+   "image_sha256": null,
+   "seen": "-74600 J/mol at 1473 K does not match the printed row it cites ([50Gir]); misattributed reading, out of ESPEI until resolved.",
+   "checked": "2026-10-28; Claude blind check of Codex Y10/Y11 (integration/y10-y11-blindcheck-20261028/REPORT.md); AI-assisted",
+   "flags": [
+    {
+     "code": "value_row_misattributed",
+     "effect": "not_espei_ready",
+     "detail": "-74600 J/mol at 1473 K does not match the printed row it cites ([50Gir]); misattributed reading, out of ESPEI until resolved."
+    }
+   ]
+  },
+  {
+   "key": "flag:ORC-2ZXJFN7YTS.4c043c",
+   "kind": "flag",
+   "verdict": "confirmed",
+   "page": null,
+   "pdf_sha256_prefix": null,
+   "image_sha256": null,
+   "seen": "-74600 J/mol at 1473 K does not match the printed row it cites ([50Gir]); misattributed reading, out of ESPEI until resolved.",
+   "checked": "2026-10-28; Claude blind check of Codex Y10/Y11 (integration/y10-y11-blindcheck-20261028/REPORT.md); AI-assisted",
+   "flags": [
+    {
+     "code": "value_row_misattributed",
+     "effect": "not_espei_ready",
+     "detail": "-74600 J/mol at 1473 K does not match the printed row it cites ([50Gir]); misattributed reading, out of ESPEI until resolved."
+    }
+   ]
   }
  ],
  "description": "Visual source checks (2026-10-23/24): each entry is one rendered PDF page inspected visually by an ORCHID AI agent (Claude), not by a person (page image hash, PDF hash prefix, verdict, a short factual note of what is printed). No image or page text is stored. Used by tools/literature_gates.py; verdicts curated where a reader's verdict needed a decision ('curation', original in 'verdict_reader').",
- "n": 3142
+ "n": 3152
 }

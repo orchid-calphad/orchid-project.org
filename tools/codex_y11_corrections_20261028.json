@@ -1,0 +1,111 @@
+[
+ {
+  "record_id": "ORC-JJB3GCBTIV",
+  "verdict": "CORRECT_TEMPERATURE",
+  "before": {
+   "paper": "doi:10.1007/bf02868887",
+   "pid": "doi:10.1007/bf02868887/p8/tab-4/r09#equilibrium_property",
+   "locator": {
+    "artifact": "table",
+    "asset": "doi:10.1007/bf02868887/p8/tab-4",
+    "caption": "AI-Au Experimental Thermodynamic Data",
+    "label": "4",
+    "page": 8,
+    "row": 9
+   },
+   "system": "AU",
+   "property": "HM_FORM",
+   "value": -8.033,
+   "unit": "kJ/mol-atom",
+   "value_stored": -8033.0,
+   "unit_stored": "J/mol-atom",
+   "temperature_K": 298.15,
+   "temperature_basis": "assumed_standard_298K",
+   "phases": [
+    {
+     "label": "(Au)"
+    }
+   ],
+   "overall_composition": {
+    "AU": 1.0
+   },
+   "evidence_class": "experimental"
+  },
+  "after": {
+   "temperature_K": 773.15,
+   "temperature_basis": "printed"
+  },
+  "evidence": {
+   "report_id": "ORCHID-Y11-20261027-v1",
+   "paper": "doi:10.1007/bf02868887",
+   "pdf_page": 8,
+   "pdf_sha256": "963ba8cb82f314ad131093e145193bbce036381fa9b0b4ad79fd8a5a82eca4a0",
+   "rationale": "The record assumes 298.15 K, but the source row prints 500 degrees C (773.15 K)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 8,
+   "pdf_sha256_prefix": "963ba8cb82f314ad",
+   "image_sha256": "cfdfa2c3897e788d3c96b99ccb00a725e00ea15a75931601ea2776935a4cabff",
+   "seen": "Table 4 associates the (Au), -8033 J/mol entry with 500 degrees C.",
+   "checked": "2026-10-27; Codex rendered-page review, AI-assisted, not human re-review; ORCHID-Y11-20261027-v1"
+  },
+  "residual_concern": "Proposed for 2026.10.1; not applied to either locked repository.",
+  "guard_note": "Exact before-guard from committed orchid-data 7ac9ca9f18; flags and cited_sources intentionally excluded. | integration 2026-10-28"
+ },
+ {
+  "record_id": "ORC-3KKWBH2XDZ.b64d86",
+  "verdict": "CORRECT_TEMPERATURE",
+  "before": {
+   "paper": "doi:10.1016/j.jeurceramsoc.2019.07.012",
+   "pid": "sha256:8df6e975c3b6dbea/p3/tab-2/r15#equilibrium_property",
+   "locator": {
+    "artifact": "table",
+    "asset": "sha256:8df6e975c3b6dbea/p3/tab-2",
+    "caption": "Enthalpy (kJ/mole-atom) and entropy (kJ/K·mole-atom) of formation for the compounds in the Y-Si-C system at various temperatures.",
+    "label": "2",
+    "page": 3,
+    "row": 15
+   },
+   "system": "SI-Y",
+   "property": "HM_FORM",
+   "value": -93.0,
+   "unit": "kJ/mol-atom",
+   "value_stored": -93000.0,
+   "unit_stored": "J/mol-atom",
+   "temperature_K": 298.15,
+   "temperature_basis": "assumed_standard_298K",
+   "phases": [
+    {
+     "label": "Y5Si4"
+    }
+   ],
+   "overall_composition": {
+    "SI": 0.444444,
+    "Y": 0.555556
+   },
+   "evidence_class": "experimental"
+  },
+  "after": {
+   "temperature_K": 850.15,
+   "temperature_basis": "printed"
+  },
+  "evidence": {
+   "report_id": "ORCHID-Y11-20261027-v1",
+   "paper": "doi:10.1016/j.jeurceramsoc.2019.07.012",
+   "pdf_page": 3,
+   "pdf_sha256": "8df6e975c3b6dbea63b0baeb9d49faf44a4ceaa8f0497a3242ee168cd3a85b51",
+   "rationale": "The record assumes 298.15 K, while the page ties the cited experimental value to 577 degrees C (850.15 K)."
+  },
+  "visual_check": {
+   "verdict": "confirmed",
+   "page": 3,
+   "pdf_sha256_prefix": "8df6e975c3b6dbea",
+   "image_sha256": "85a3855602df80c06b0e34d4619267e5d0b17270364468b40ec3de7db851bcc1",
+   "seen": "Table 2 gives Y5Si4, -93.0 +/- 5.5, reference [66]; the adjoining text identifies the [66] EMF result at 577 degrees C.",
+   "checked": "2026-10-27; Codex rendered-page review, AI-assisted, not human re-review; ORCHID-Y11-20261027-v1"
+  },
+  "residual_concern": "Proposed for 2026.10.1; not applied to either locked repository.",
+  "guard_note": "Exact before-guard from committed orchid-data 7ac9ca9f18; flags and cited_sources intentionally excluded. | integration 2026-10-28"
+ }
+]

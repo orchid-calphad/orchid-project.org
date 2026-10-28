@@ -64,8 +64,8 @@ class TableDefects(unittest.TestCase):
         peratom_aliases = {p['record_id'] for p in json.loads((TOOLS / 'table_defects_corrections_20261028_peratom.json').read_text())}
         mine = ({p['record_id'] for p in PATCHES} | set(FLAG_IDS)) - peratom_aliases
         for f in glob.glob(str(TOOLS / '*corrections_2026*.json')):
-            if Path(f).name.startswith('table_defects_corrections_20261028'):
-                continue
+            if Path(f).name.startswith(('table_defects_corrections_20261028', 'codex_y1')):
+                continue  # later rounds (Codex Y10/Y11, 28 Oct) act on TD-targeted records by design: blocked duplicates
             other = json.loads(Path(f).read_text())
             if isinstance(other, list):
                 self.assertFalse(mine & {p.get('record_id') for p in other}, f)
