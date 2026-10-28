@@ -1338,6 +1338,13 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
                 records, json.load(fh), evidence_id=_eid, gate="CX20261028",
                 rule="source_adjudicated_independent_check",
                 gap="independent_check_correction_requires_downstream_revalidation")
+    # transition-span audit (ORCHID-TS-20261028-v1, Codex Y17): property series that cross a phase transition; the
+    # points on the far side of the printed transition get the phase the page assigns to them (phases only)
+    with open(os.path.join(os.path.dirname(__file__), "transition_span_corrections_20261028.json"), encoding="utf-8") as fh:
+        qreport["transition_span_corrections"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-TS-20261028-v1", gate="TS20261028",
+            rule="source_adjudicated_transition_span",
+            gap="transition_span_correction_requires_downstream_revalidation")
     # the table-context corrections name the printed phases after the gates ran: file those records under the system of
     # their own state again (audit round 2, A1 C4; literature_r2_compositions.c4_state_system), as every other record is
     import literature_r2_compositions as r2c
@@ -1348,7 +1355,7 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
 
         def add(self, gate, code, r, action, **kw):
             self.n[code] += 1
-    _tc = [r for r in records if any(c.get("gate") in ("TC20261027", "TD20261028", "PR20261027", "CX20261028") for c in r.get("corrections") or [])]
+    _tc = [r for r in records if any(c.get("gate") in ("TC20261027", "TD20261028", "PR20261027", "CX20261028", "TS20261028") for c in r.get("corrections") or [])]
     _rf = _Refile()
     r2c.c4_state_system(_tc, _rf)
     qreport["table_context_refiled"] = dict(_rf.n)
