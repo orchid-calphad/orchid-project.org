@@ -1278,6 +1278,15 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
                 records, json.load(fh), evidence_id="ORCHID-KI-20261027-v1", gate="KI20261027",
                 rule="source_adjudicated_known_issue",
                 gap="known_issue_correction_requires_downstream_revalidation")
+    # table defects (ORCHID-TD-20261028-v1): defects the table-context review saw on the printed pages and did not change
+    # (wrong phase labels, property mappings, temperatures, nm/Å scale, compositions, structure fields, duplicate readings),
+    # re-read on the rendered page; field patches and duplicate_of only where the page decides, the rest flagged in the
+    # page-check ledger (flag:<id>); integration/table-defects-20261028/HANDOFF.md
+    with open(os.path.join(os.path.dirname(__file__), "table_defects_corrections_20261028.json"), encoding="utf-8") as fh:
+        qreport["table_defect_corrections"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-TD-20261028-v1", gate="TD20261028",
+            rule="source_adjudicated_table_defect",
+            gap="table_defect_correction_requires_downstream_revalidation")
     # the table-context corrections name the printed phases after the gates ran: file those records under the system of
     # their own state again (audit round 2, A1 C4; literature_r2_compositions.c4_state_system), as every other record is
     import literature_r2_compositions as r2c
@@ -1288,7 +1297,7 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
 
         def add(self, gate, code, r, action, **kw):
             self.n[code] += 1
-    _tc = [r for r in records if any(c.get("gate") == "TC20261027" for c in r.get("corrections") or [])]
+    _tc = [r for r in records if any(c.get("gate") in ("TC20261027", "TD20261028") for c in r.get("corrections") or [])]
     _rf = _Refile()
     r2c.c4_state_system(_tc, _rf)
     qreport["table_context_refiled"] = dict(_rf.n)
