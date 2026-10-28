@@ -1287,6 +1287,19 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
             records, json.load(fh), evidence_id="ORCHID-TD-20261028-v1", gate="TD20261028",
             rule="source_adjudicated_table_defect",
             gap="table_defect_correction_requires_downstream_revalidation")
+    # PI decision (27 Oct): per-formula vs per-atom readings of one printed cell (t125, t232, t254): keep the per-atom record
+    with open(os.path.join(os.path.dirname(__file__), "table_defects_corrections_20261028_peratom.json"), encoding="utf-8") as fh:
+        qreport["table_defect_corrections_peratom"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-TD-20261028-v1", gate="TD20261028",
+            rule="source_adjudicated_table_defect",
+            gap="table_defect_correction_requires_downstream_revalidation")
+    # placeholder-phase recovery (ORCHID-PR-20261027-v1, Codex Y6): the phase printed for the row or its bounded group on
+    # the page, for records demoted because their phases were placeholders; phases only; blind sample 99/100 phase identity
+    with open(os.path.join(os.path.dirname(__file__), "placeholder_recovery_corrections_20261027.json"), encoding="utf-8") as fh:
+        qreport["placeholder_recovery"] = human_review_corrections.apply(
+            records, json.load(fh), evidence_id="ORCHID-PR-20261027-v1", gate="PR20261027",
+            rule="source_adjudicated_placeholder_recovery",
+            gap="placeholder_recovery_requires_downstream_revalidation")
     # the table-context corrections name the printed phases after the gates ran: file those records under the system of
     # their own state again (audit round 2, A1 C4; literature_r2_compositions.c4_state_system), as every other record is
     import literature_r2_compositions as r2c
@@ -1297,7 +1310,7 @@ def build(corpus, pdfs, open_tdb=DEFAULT_OPEN_TDB, data=None):
 
         def add(self, gate, code, r, action, **kw):
             self.n[code] += 1
-    _tc = [r for r in records if any(c.get("gate") in ("TC20261027", "TD20261028") for c in r.get("corrections") or [])]
+    _tc = [r for r in records if any(c.get("gate") in ("TC20261027", "TD20261028", "PR20261027") for c in r.get("corrections") or [])]
     _rf = _Refile()
     r2c.c4_state_system(_tc, _rf)
     qreport["table_context_refiled"] = dict(_rf.n)
