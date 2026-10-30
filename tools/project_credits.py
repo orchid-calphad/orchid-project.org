@@ -14,6 +14,9 @@ CREDITS = [
     dict(name='PhaseForge+', role='Construction and experimental tuning of CALPHAD models in the examples; repository name PhaseForgePlus',
          papers=[('C. Kunselman, S. Zhu, D. Sarıtürk, and R. Arróyave (2025), Construction and Tuning of CALPHAD Models Using Machine-Learned Interatomic Potentials and Experimental Data: A Case Study of the Pt–W System', '10.1007/s11669-025-01222-2')],
          repository='https://github.com/dogusariturk/PhaseForgePlus', software_doi='10.5281/zenodo.17519087'),
+    dict(name='MaterialsFramework', role='Uniform interface to machine-learning interatomic potentials (single-point energies, relaxations, molecular dynamics) used by PhaseForge and directly in the ORCHID examples and MLIP benchmarks',
+         papers=[], software_citation='D. Sarıtürk (2026), MaterialsFramework (v1.0.0), Zenodo',
+         repository='https://github.com/dogusariturk/MaterialsFramework', software_doi='10.5281/zenodo.15731044'),
     dict(name='Materials Project', role='DFT structures and energies; repository link is the API client, not the database itself',
          papers=[('A. Jain et al. (2013), Commentary: The Materials Project: A materials genome approach to accelerating materials innovation', '10.1063/1.4812323')],
          repository='https://github.com/materialsproject/api', website='https://materialsproject.org'),
@@ -33,6 +36,7 @@ def markdown():
     for c in CREDITS:
         lines += ['## '+c['name'], '', c['role']+'.', '']
         lines += ['- '+title+'. [Paper](https://doi.org/'+doi+').' for title,doi in c['papers']]
+        if c.get('software_citation'):lines += ['- '+c['software_citation']+'. [Software](https://doi.org/'+c['software_doi']+').']
         lines += ['- [Repository]('+c['repository']+').']
         if c.get('software_doi'):lines += ['- [Archived software](https://doi.org/'+c['software_doi']+'). Cite the version actually used.']
         if c.get('website'):lines += ['- [Data resource]('+c['website']+').']
@@ -50,7 +54,9 @@ def html_block():
     h = '<section id="software-data-credits"><h2>Software and data citations</h2><p>'+html.escape(INTRO)+'</p><ul>'
     for c in CREDITS:
         h += '<li><b>'+html.escape(c['name'])+'</b>: '+html.escape(c['role'])+'. '
-        h += '; '.join(html.escape(t)+' (<a href="https://doi.org/'+d+'">'+d+'</a>)' for t,d in c['papers'])
+        cites = [html.escape(t)+' (<a href="https://doi.org/'+d+'">'+d+'</a>)' for t,d in c['papers']]
+        if c.get('software_citation'):cites.append(html.escape(c['software_citation'])+' (<a href="https://doi.org/'+c['software_doi']+'">'+c['software_doi']+'</a>)')
+        h += '; '.join(cites)
         h += '. <a href="'+c['repository']+'">Repository</a>'
         if c.get('software_doi'):h += '; <a href="https://doi.org/'+c['software_doi']+'">archived software</a>'
         if c.get('website'):h += '; <a href="'+c['website']+'">data resource</a>'

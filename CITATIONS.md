@@ -32,6 +32,14 @@ Construction and experimental tuning of CALPHAD models in the examples; reposito
 - [Repository](https://github.com/dogusariturk/PhaseForgePlus).
 - [Archived software](https://doi.org/10.5281/zenodo.17519087). Cite the version actually used.
 
+## MaterialsFramework
+
+Uniform interface to machine-learning interatomic potentials (single-point energies, relaxations, molecular dynamics) used by PhaseForge and directly in the ORCHID examples and MLIP benchmarks.
+
+- D. Sarıtürk (2026), MaterialsFramework (v1.0.0), Zenodo. [Software](https://doi.org/10.5281/zenodo.15731044).
+- [Repository](https://github.com/dogusariturk/MaterialsFramework).
+- [Archived software](https://doi.org/10.5281/zenodo.15731044). Cite the version actually used.
+
 ## Materials Project
 
 DFT structures and energies; repository link is the API client, not the database itself.
@@ -50,3 +58,4 @@ DFT structures and energies; qmpy is the supporting software.
 - [Data resource](https://oqmd.org).
 
 The Cu–Zr gradient workflows additionally credit Courtney Kunselman’s ESPEI and littlemcmc branches, as pinned in the example requirements and provenance manifests: [analytic gradients](https://doi.org/10.1016/j.actamat.2025.121453), [gradient-informed HMC](https://doi.org/10.1016/j.actamat.2026.122412), [ESPEI fork](https://github.com/cjkunselman18/ESPEI), [littlemcmc fork](https://github.com/cjkunselman18/littlemcmc).
+
