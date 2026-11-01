@@ -102,6 +102,9 @@ def cited_names(old, data):
     return [nm for nm in orchid_cite.NAMES if nm in {by_doi.get(d) for d in re.findall(r"doi\.org/(10\.[^\"<\s]+)", old)}]
 
 
+HALLSTEDT = '<p class="muted"><strong>Whenever you cite ORCHID, whether the paper, this website or any Zenodo DOI, please also cite B. Hallstedt, <a href="https://doi.org/10.1016/j.calphad.2025.102833">The SGTE collection of binary datasets</a>, Calphad 89 (2025) 102833</strong> (<a href="https://www.sciencedirect.com/science/article/pii/S0364591625000367#appsec1">supplementary data</a>). ORCHID would not exist without it.</p>\n'
+
+
 def cite_block(old, data, names=None):
     """A cite block: the given datasets (default every dataset), then the umbrella; heading and intro kept."""
     names = [x for x in (names or orchid_cite.NAMES) if x != orchid_cite.UMBRELLA] + [orchid_cite.UMBRELLA]
@@ -119,6 +122,7 @@ def cite_block(old, data, names=None):
             if orchid_cite.THIRD_PARTY[k] not in also:
                 also.append(orchid_cite.THIRD_PARTY[k])
     return (head + "<ul>\n" + "\n".join(lis) + "\n</ul>\n" +
+            HALLSTEDT +
             '<p class="muted">Also cite %s.</p>\n' % html.escape("; ".join(also), quote=False) +
             "<pre>%s</pre>\n</section>\n" % html.escape(orchid_cite.bibtex_block(names[:-1], data)))
 
